@@ -1,0 +1,24 @@
+{
+    "name": "Appalachia.Simulation.Wind",
+    "rootNamespace": "",
+    "references": [
+        "GUID:27374ac3d2df75c448adb0e319b58fee",
+        "GUID:195705ddaa6fe6c42a576177c5d36a5c",
+        "GUID:cf75d8bea22d8fb469a2aa239cfc6930",
+        "GUID:61d5c5627f609f946a4c3771484d27dd",
+        "GUID:a15d55b77c0da1b42af8372f5619c965",
+        "GUID:b6294acf83d7a2d4ebc14a1f0fb45380",
+        "GUID:54e8cd18fc9996947836fd01b2b48f0f",
+        "GUID:d8b63aba1907145bea998dd612889d6b",
+        "GUID:c67cf058dd4aa774ea18e21e2cf75642"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

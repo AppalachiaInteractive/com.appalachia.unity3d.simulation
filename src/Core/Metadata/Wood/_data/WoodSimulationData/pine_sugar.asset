@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ebc057f721a531a4992e9e7eea91f2b2, type: 3}
+  m_Name: pine_sugar
+  m_EditorClassIdentifier: 
+  _niceName: 
+  _cachedName: 
+  id: 146
+  _category: Pine
+  densityMetadata: {fileID: 11400000, guid: 3331bb53e7a57dc46ab0084dea3e2a3c, type: 2}
+  charTemperature: 139
+  ignitionTemperature: 228
+  burnRate: {fileID: 11400000, guid: 48ebe2092f9ab4d4da71da1b69e4075f, type: 2}
+  burnScale: {fileID: 11400000, guid: 747f60abf758a6841810d6421db21b23, type: 2}
+  btuGreen: 11313.6123046875
+  btuDry: 19038.765625
+  smokeAmount: 1.0326393

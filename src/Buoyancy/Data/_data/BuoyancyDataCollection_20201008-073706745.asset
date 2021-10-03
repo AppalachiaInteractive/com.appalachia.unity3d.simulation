@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 461818b9d4d942579e156dae1c8f0334, type: 3}
+  m_Name: BuoyancyDataCollection_20201008-073706745
+  m_EditorClassIdentifier: 
+  _niceName: 
+  _cachedName: 
+  _items:
+    initializerCount: 64
+    values:
+      noTracking: 0
+      _values:
+      - {fileID: 11400000, guid: c95357844da15904db612b16b7ac64b6, type: 2}
+      - {fileID: 11400000, guid: 4eca11d19eecd254bb0d6bb3d7074a58, type: 2}
+      - {fileID: 11400000, guid: 2b9ef55fb380dcd429c563af61acb085, type: 2}
+      - {fileID: 11400000, guid: 17f8ab433f02af34d84225ca59744818, type: 2}
+      - {fileID: 11400000, guid: f3c210ecaa938b742afbd4e74a791153, type: 2}
+      - {fileID: 11400000, guid: bc384f3d37c7ce4459de286c1b340cdd, type: 2}
+      - {fileID: 11400000, guid: 9d71e0b59bfb7db4280153bcfd15e2f1, type: 2}
+      - {fileID: 11400000, guid: ebb46b3c5c26c8e4ca4161b06e0ae58f, type: 2}
+      - {fileID: 11400000, guid: b9be27988d508c743a63d2a51e548001, type: 2}
+      - {fileID: 11400000, guid: b54849db678ce554cb4ded2e15515c47, type: 2}
+      - {fileID: 11400000, guid: ce84424ccc2dbc647814b21f9020bd0a, type: 2}
+      - {fileID: 11400000, guid: dcee93b12bc827149b1716223f255348, type: 2}
+      - {fileID: 11400000, guid: ebe699c7e07587946a2ae7683c01567f, type: 2}
+      _capacityIncreaseMultiplier: 2
+      _count: 13
+    keys:
+      noTracking: 0
+      _values:
+      - floor_proxy
+      - Dugout_su2
+      - canoe_6m_LOD3
+      - Sphere
+      - canoe_2m_LOD3
+      - canoe_4m_LOD3
+      - canoe_5m_LOD3
+      - canoe_3m_LOD3
+      - 46ddb32de25eb1a42970276b624efd99
+      - 5ecbc4433937dd6459bf8fee0aca2acf
+      - 176d2c6991d2ac44c9e4a561717d9702
+      - 9b8575f7f1ae18c4aba451b5f90dbdb3
+      - 6a1b5b9fbf9c62f4e9a90526f2ef4172
+      _capacityIncreaseMultiplier: 2
+      _count: 13

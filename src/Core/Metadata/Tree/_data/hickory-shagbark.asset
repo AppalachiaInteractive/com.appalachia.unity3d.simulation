@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 773aa34ad01d5be41af9e052481587f0, type: 3}
+  m_Name: hickory-shagbark
+  m_EditorClassIdentifier: 
+  id: 16
+  woodData: {fileID: 11400000, guid: 87a6b2a2036980944b9ee4aae8520eeb, type: 2}
+  individuals:
+  - {fileID: 11400000, guid: 8a532ec46d3101d459540a1bd9e2d3e2, type: 2}

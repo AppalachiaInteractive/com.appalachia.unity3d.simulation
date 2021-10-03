@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34ed23e48e374b25a7d408df69150d30, type: 3}
+  m_Name: BuoyancyVoxelsDataStoreLookup_20201026-111834010
+  m_EditorClassIdentifier: 
+  _niceName: 
+  _cachedName: 
+  _items:
+    initializerCount: 64
+    values:
+      noTracking: 0
+      _values:
+      - {fileID: 11400000, guid: 7faebd7ffbbe3994098a39dbe884f5d0, type: 2}
+      - {fileID: 11400000, guid: 771993e3164d7954889c19e3f169f0cc, type: 2}
+      - {fileID: 11400000, guid: f6d19d890bc72154a8e34499a05cb209, type: 2}
+      - {fileID: 11400000, guid: 66ce4f93e739d67448731d1360b76cdc, type: 2}
+      - {fileID: 11400000, guid: 3c6b4019aa329cd4c849d458a26735ce, type: 2}
+      - {fileID: 11400000, guid: 11d72c589319c3f44a61d1b8e5f46c6d, type: 2}
+      - {fileID: 11400000, guid: 2aa99bcdd19cf4e4ebd609201bc6c9a0, type: 2}
+      _capacityIncreaseMultiplier: 2
+      _count: 7
+    keys:
+      noTracking: 0
+      _values:
+      - canoe_2m_LOD3
+      - canoe_2m_LOD3_46ddb32de25eb1a42970276b624efd99
+      - canoe_3m_LOD3_176d2c6991d2ac44c9e4a561717d9702
+      - canoe_4m_LOD3_5ecbc4433937dd6459bf8fee0aca2acf
+      - canoe_5m_LOD3_9b8575f7f1ae18c4aba451b5f90dbdb3
+      - canoe_6m_LOD3_6a1b5b9fbf9c62f4e9a90526f2ef4172
+      - canoe_6m_LOD3
+      _capacityIncreaseMultiplier: 2
+      _count: 7

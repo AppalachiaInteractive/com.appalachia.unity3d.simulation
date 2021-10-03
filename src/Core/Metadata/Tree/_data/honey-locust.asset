@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 773aa34ad01d5be41af9e052481587f0, type: 3}
+  m_Name: honey-locust
+  m_EditorClassIdentifier: 
+  id: 17
+  woodData: {fileID: 11400000, guid: b3757f228a93abd41ae2f7217f2a3106, type: 2}
+  individuals:
+  - {fileID: 11400000, guid: 8ce7508bd69bb3248bf3c6f3649314e6, type: 2}

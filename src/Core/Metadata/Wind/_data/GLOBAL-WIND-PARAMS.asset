@@ -1,0 +1,423 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 721e089ec8a14ce7bc5d36cedd9e6dbf, type: 3}
+  m_Name: GLOBAL-WIND-PARAMS
+  m_EditorClassIdentifier: 
+  _niceName: 
+  _cachedName: 
+  realtimeUpdate: 1
+  maximumWindSpeed: 25
+  showArrow: 0
+  showArrowComponents: 0
+  arrowMesh: {fileID: 4300000, guid: 1b57d2499903a95488fd2f7b03b034c1, type: 2}
+  arrowMaterial: {fileID: 2100000, guid: f3d66ef3fa0b576448b2b422976715fc, type: 2}
+  arrowOffset: {x: 0, y: 10, z: 0}
+  arrowScale: {x: 5, y: 5, z: 5}
+  headingChangeInterval: {x: 60, y: 600}
+  headingUpdateRange: {x: -60, y: 60}
+  headingUpdateSpeed: 0.05
+  baseAmplitude: 1
+  baseToGustRatio: 0.15
+  gustTexture: {fileID: 2800000, guid: b49712b1433bff9489d25d5e55859228, type: 3}
+  gustContrast: 1
+  gustAmplitudeSharpness: 0.25
+  gustStep: {x: 0.001, y: 0.01}
+  audioSharpness: 0.33
+  audioStep: {x: 0.001, y: 0.05}
+  trunks:
+    category: 1
+    strength: 1
+    groups:
+    - showAdvanced: 0
+      showVariation: 0
+      showBranchProperties: 0
+      category: 1
+      group: 1
+      strengthMin: 0
+      strengthMax: 2
+      cycleTimeMin: 1
+      cycleTimeMax: 60
+      fieldSizeMin: 1
+      fieldSizeMax: 256
+      variationStrengthMin: 0.99
+      variationStrengthMax: 99.99
+      branchStrengthMin: 0
+      branchStrengthMax: 0
+      enabled: 1
+      strength: 0.1
+      cycleTime: 60
+      fieldSize: 12
+      variationStrength: 20.99
+      oppositeStrength: 0
+      perpendicularStrength: 0
+      parallelStrength: 0
+    - showAdvanced: 0
+      showVariation: 0
+      showBranchProperties: 0
+      category: 1
+      group: 2
+      strengthMin: 0
+      strengthMax: 5
+      cycleTimeMin: 1
+      cycleTimeMax: 256
+      fieldSizeMin: 0.0001
+      fieldSizeMax: 1
+      variationStrengthMin: 0.99
+      variationStrengthMax: 99.99
+      branchStrengthMin: 0
+      branchStrengthMax: 0
+      enabled: 1
+      strength: 2.2
+      cycleTime: 60
+      fieldSize: 0.17
+      variationStrength: 20.99
+      oppositeStrength: 0
+      perpendicularStrength: 0
+      parallelStrength: 0
+  branches:
+    category: 2
+    strength: 1
+    groups:
+    - showAdvanced: 0
+      showVariation: 1
+      showBranchProperties: 0
+      category: 2
+      group: 1
+      strengthMin: 0
+      strengthMax: 3
+      cycleTimeMin: 0.1
+      cycleTimeMax: 30
+      fieldSizeMin: 1
+      fieldSizeMax: 1024
+      variationStrengthMin: 0.99
+      variationStrengthMax: 99.99
+      branchStrengthMin: 0
+      branchStrengthMax: 0
+      enabled: 1
+      strength: 0.5
+      cycleTime: 3
+      fieldSize: 256
+      variationStrength: 11
+      oppositeStrength: 0
+      perpendicularStrength: 0
+      parallelStrength: 0
+    - showAdvanced: 0
+      showVariation: 1
+      showBranchProperties: 1
+      category: 2
+      group: 2
+      strengthMin: 0
+      strengthMax: 20
+      cycleTimeMin: 0.1
+      cycleTimeMax: 200
+      fieldSizeMin: 1
+      fieldSizeMax: 1024
+      variationStrengthMin: 0.99
+      variationStrengthMax: 99.99
+      branchStrengthMin: 0
+      branchStrengthMax: 2
+      enabled: 1
+      strength: 3
+      cycleTime: 30
+      fieldSize: 256
+      variationStrength: 13.3
+      oppositeStrength: 1
+      perpendicularStrength: 1
+      parallelStrength: 0.5
+  leaves:
+    category: 3
+    strength: 1
+    groups:
+    - showAdvanced: 0
+      showVariation: 0
+      showBranchProperties: 0
+      category: 3
+      group: 1
+      strengthMin: 0
+      strengthMax: 1
+      cycleTimeMin: 0.01
+      cycleTimeMax: 60
+      fieldSizeMin: 0.001
+      fieldSizeMax: 0.1
+      variationStrengthMin: 0.99
+      variationStrengthMax: 99.99
+      branchStrengthMin: 0
+      branchStrengthMax: 0
+      enabled: 1
+      strength: 0.04
+      cycleTime: 1
+      fieldSize: 0.001
+      variationStrength: 20.99
+      oppositeStrength: 0
+      perpendicularStrength: 0
+      parallelStrength: 0
+    - showAdvanced: 0
+      showVariation: 0
+      showBranchProperties: 0
+      category: 3
+      group: 2
+      strengthMin: 0
+      strengthMax: 10
+      cycleTimeMin: 0.01
+      cycleTimeMax: 0.3
+      fieldSizeMin: 0.001
+      fieldSizeMax: 10
+      variationStrengthMin: 0.99
+      variationStrengthMax: 99.99
+      branchStrengthMin: 0
+      branchStrengthMax: 0
+      enabled: 1
+      strength: 0.4
+      cycleTime: 0.1
+      fieldSize: 4.18
+      variationStrength: 20.99
+      oppositeStrength: 0
+      perpendicularStrength: 0
+      parallelStrength: 0
+    - showAdvanced: 0
+      showVariation: 0
+      showBranchProperties: 0
+      category: 3
+      group: 3
+      strengthMin: 0
+      strengthMax: 50
+      cycleTimeMin: 0.01
+      cycleTimeMax: 120
+      fieldSizeMin: 0.001
+      fieldSizeMax: 1024
+      variationStrengthMin: 0.99
+      variationStrengthMax: 99.99
+      branchStrengthMin: 0
+      branchStrengthMax: 0
+      enabled: 1
+      strength: 0.4
+      cycleTime: 7.15
+      fieldSize: 128
+      variationStrength: 20.99
+      oppositeStrength: 0
+      perpendicularStrength: 0
+      parallelStrength: 0
+    - showAdvanced: 0
+      showVariation: 0
+      showBranchProperties: 0
+      category: 3
+      group: 4
+      strengthMin: 0
+      strengthMax: 32
+      cycleTimeMin: 0.01
+      cycleTimeMax: 60
+      fieldSizeMin: 0.1
+      fieldSizeMax: 24
+      variationStrengthMin: 0.99
+      variationStrengthMax: 99.99
+      branchStrengthMin: 0
+      branchStrengthMax: 0
+      enabled: 1
+      strength: 0.4
+      cycleTime: 7
+      fieldSize: 24
+      variationStrength: 20.99
+      oppositeStrength: 0
+      perpendicularStrength: 0
+      parallelStrength: 0
+  plants:
+    category: 4
+    strength: 1
+    groups:
+    - showAdvanced: 0
+      showVariation: 0
+      showBranchProperties: 0
+      category: 4
+      group: 1
+      strengthMin: 0
+      strengthMax: 1
+      cycleTimeMin: 0.001
+      cycleTimeMax: 30
+      fieldSizeMin: 1
+      fieldSizeMax: 256
+      variationStrengthMin: 0.99
+      variationStrengthMax: 99.99
+      branchStrengthMin: 0
+      branchStrengthMax: 0
+      enabled: 1
+      strength: 0.005
+      cycleTime: 4
+      fieldSize: 8
+      variationStrength: 20.99
+      oppositeStrength: 0
+      perpendicularStrength: 0
+      parallelStrength: 0
+    - showAdvanced: 0
+      showVariation: 0
+      showBranchProperties: 0
+      category: 4
+      group: 2
+      strengthMin: 0
+      strengthMax: 1
+      cycleTimeMin: 0.001
+      cycleTimeMax: 30
+      fieldSizeMin: 1
+      fieldSizeMax: 256
+      variationStrengthMin: 0.99
+      variationStrengthMax: 99.99
+      branchStrengthMin: 0
+      branchStrengthMax: 0
+      enabled: 1
+      strength: 0.859
+      cycleTime: 20
+      fieldSize: 32
+      variationStrength: 20.99
+      oppositeStrength: 0
+      perpendicularStrength: 0
+      parallelStrength: 0
+    - showAdvanced: 0
+      showVariation: 0
+      showBranchProperties: 0
+      category: 4
+      group: 3
+      strengthMin: 0
+      strengthMax: 3
+      cycleTimeMin: 1
+      cycleTimeMax: 30
+      fieldSizeMin: 1
+      fieldSizeMax: 24
+      variationStrengthMin: 0.99
+      variationStrengthMax: 99.99
+      branchStrengthMin: 0
+      branchStrengthMax: 0
+      enabled: 1
+      strength: 1.94
+      cycleTime: 14.9
+      fieldSize: 11.5
+      variationStrength: 20.99
+      oppositeStrength: 0
+      perpendicularStrength: 0
+      parallelStrength: 0
+    - showAdvanced: 0
+      showVariation: 0
+      showBranchProperties: 0
+      category: 4
+      group: 4
+      strengthMin: 0
+      strengthMax: 0.5
+      cycleTimeMin: 6
+      cycleTimeMax: 20
+      fieldSizeMin: 0.1
+      fieldSizeMax: 20
+      variationStrengthMin: 0.99
+      variationStrengthMax: 99.99
+      branchStrengthMin: 0
+      branchStrengthMax: 0
+      enabled: 1
+      strength: 0.109
+      cycleTime: 7.6
+      fieldSize: 0.1
+      variationStrength: 20.99
+      oppositeStrength: 0
+      perpendicularStrength: 0
+      parallelStrength: 0
+  grass:
+    category: 5
+    strength: 1
+    groups:
+    - showAdvanced: 0
+      showVariation: 0
+      showBranchProperties: 0
+      category: 5
+      group: 1
+      strengthMin: 0
+      strengthMax: 1
+      cycleTimeMin: 0.1
+      cycleTimeMax: 120
+      fieldSizeMin: 0.0001
+      fieldSizeMax: 1024
+      variationStrengthMin: 0.99
+      variationStrengthMax: 99.99
+      branchStrengthMin: 0
+      branchStrengthMax: 0
+      enabled: 1
+      strength: 0.004
+      cycleTime: 3
+      fieldSize: 48
+      variationStrength: 20.99
+      oppositeStrength: 0
+      perpendicularStrength: 0
+      parallelStrength: 0
+    - showAdvanced: 0
+      showVariation: 0
+      showBranchProperties: 0
+      category: 5
+      group: 2
+      strengthMin: 0
+      strengthMax: 20
+      cycleTimeMin: 0.1
+      cycleTimeMax: 120
+      fieldSizeMin: 64
+      fieldSizeMax: 512
+      variationStrengthMin: 0.99
+      variationStrengthMax: 99.99
+      branchStrengthMin: 0
+      branchStrengthMax: 0
+      enabled: 1
+      strength: 1.25
+      cycleTime: 15
+      fieldSize: 324
+      variationStrength: 20.99
+      oppositeStrength: 0
+      perpendicularStrength: 0
+      parallelStrength: 0
+    - showAdvanced: 0
+      showVariation: 0
+      showBranchProperties: 0
+      category: 5
+      group: 3
+      strengthMin: 0
+      strengthMax: 5
+      cycleTimeMin: 0.1
+      cycleTimeMax: 120
+      fieldSizeMin: 4
+      fieldSizeMax: 128
+      variationStrengthMin: 0.99
+      variationStrengthMax: 99.99
+      branchStrengthMin: 0
+      branchStrengthMax: 0
+      enabled: 1
+      strength: 0.1
+      cycleTime: 22
+      fieldSize: 37
+      variationStrength: 20.99
+      oppositeStrength: 0
+      perpendicularStrength: 0
+      parallelStrength: 0
+    - showAdvanced: 0
+      showVariation: 0
+      showBranchProperties: 0
+      category: 5
+      group: 4
+      strengthMin: 0
+      strengthMax: 5
+      cycleTimeMin: 0.00001
+      cycleTimeMax: 60
+      fieldSizeMin: 0.0001
+      fieldSizeMax: 20
+      variationStrengthMin: 0.99
+      variationStrengthMax: 99.99
+      branchStrengthMin: 0
+      branchStrengthMax: 0
+      enabled: 1
+      strength: 0.023
+      cycleTime: 6.243
+      fieldSize: 16
+      variationStrength: 20.99
+      oppositeStrength: 0
+      perpendicularStrength: 0
+      parallelStrength: 0

@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5055e54811e14323bac61ccf7ef3657b, type: 3}
+  m_Name: Reptile
+  m_EditorClassIdentifier: 
+  _niceName: Reptile
+  _cachedName: Reptile
+  _category: Organic
+  material: {fileID: 13400000, guid: 385947a34619c0244b75ec97d6f6fca9, type: 2}
+  defaultDensity: {fileID: 11400000, guid: a3495254b03d1d143b032b090b0c958b, type: 2}
+  wireColor: {r: 0, g: 1, b: 0, a: 1}
+  meshTransparency: 0.5
+  labelBackgroundColor: {r: 0.2264151, g: 0.2264151, b: 0.2264151, a: 1}
+  labelTextColor: {r: 1, g: 1, b: 1, a: 1}
+  surface: {fileID: 2100000, guid: 01ac4c136f590ed4db86f8218f946741, type: 2}

@@ -1,0 +1,13 @@
+using Appalachia.Simulation.Core;
+using Sirenix.OdinInspector;
+
+namespace Appalachia.Simulation.Physical.Density
+{
+    public class DensityMetadataCollection : MetadataLookupBase<DensityMetadataCollection, DensityMetadata>
+    {
+
+        [FoldoutGroup("Named")] public DensityMetadata ground;
+        [FoldoutGroup("Named")] public DensityMetadata air;
+        [FoldoutGroup("Named")] public DensityMetadata water;
+    }
+}

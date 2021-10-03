@@ -1,0 +1,17 @@
+{
+    "name": "Appalachia.Simulation.Obi",
+    "rootNamespace": "",
+    "references": [
+        "GUID:b6294acf83d7a2d4ebc14a1f0fb45380",
+        "GUID:da7abd44cdeea48609605c1c2c9609c0"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

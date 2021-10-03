@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 975e25e16f846fa42b54540c9a86131c, type: 3}
+  m_Name: Wood Burn Rate
+  m_EditorClassIdentifier: 
+  kgCharPerHour: 2
+  kgBurnPerHour: 1
+  ignitionRate: 0.0001

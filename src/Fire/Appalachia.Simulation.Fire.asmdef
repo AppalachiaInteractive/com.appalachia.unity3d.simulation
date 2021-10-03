@@ -1,0 +1,19 @@
+{
+    "name": "Appalachia.Simulation.Fire",
+    "rootNamespace": "",
+    "references": [
+        "GUID:15a8a4345cdb8584c9a4bab175bd5ded",
+        "GUID:a15d55b77c0da1b42af8372f5619c965",
+        "GUID:b6294acf83d7a2d4ebc14a1f0fb45380",
+        "GUID:54e8cd18fc9996947836fd01b2b48f0f"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
