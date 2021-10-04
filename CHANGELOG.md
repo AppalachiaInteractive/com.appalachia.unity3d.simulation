@@ -12,6 +12,12 @@
 ## Releasing
 | Hash | Date | Author | Changes |
 |------|------|--------|---------|
+| 7de2879cf4a234bf6b64b7c2b9165190f0e7e8fd | 2021-10-03 | Chris Schubert | Decreasing texture quality and converting to png |
+
+
+ ## Tag: `v0.1.2`
+| Hash | Date | Author | Changes |
+|------|------|--------|---------|
 
 
  ## Tag: `v0.1.1`
