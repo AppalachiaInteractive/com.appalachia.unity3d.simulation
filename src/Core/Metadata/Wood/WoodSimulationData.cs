@@ -1,7 +1,7 @@
 using Appalachia.Core.Editing.AssetDB;
 using Appalachia.Core.Scriptables;
-using Appalachia.Core.Trees.Simulation.Fuel;
 using Appalachia.Simulation.Physical.Density;
+using Internal.Core.Trees.Simulation.Fuel;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -23,11 +23,11 @@ namespace Appalachia.Simulation.Wood
         public float woodHardness => (densityMetadata == null ? 650f : densityMetadata.densityKGPerCubicMeter) / 1250f;
         
         [BoxGroup("Ignition")]
-        [PropertyRange(120, 200), SuffixLabel("°C")] 
+        [PropertyRange(120, 200), SuffixLabel("Â°C")] 
         public int charTemperature = 120;
         
         [BoxGroup("Ignition")]
-        [PropertyRange(150, 400), SuffixLabel("°C")] 
+        [PropertyRange(150, 400), SuffixLabel("Â°C")] 
         public int ignitionTemperature = 200;
         
         [BoxGroup("Burning")]
