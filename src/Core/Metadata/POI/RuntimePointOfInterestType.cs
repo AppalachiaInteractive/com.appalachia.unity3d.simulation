@@ -1,4 +1,4 @@
-namespace Appalachia.Core.Trees
+namespace Appalachia.Simulation.Core.Metadata.POI
 {
     public enum RuntimePointOfInterestType
     {

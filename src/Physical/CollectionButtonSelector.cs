@@ -1,17 +1,17 @@
 using System;
 using System.Collections.Generic;
-using Appalachia.Core.Comparers;
-using Appalachia.Core.Editing.Coloring;
-using Appalachia.Core.Editing.Preferences;
-using Appalachia.Core.Scriptables;
+using Appalachia.Base.Scriptables;
+using Appalachia.Core.Comparisons;
+using Appalachia.Editing.Preferences;
+using Appalachia.Editing.Preferences.Globals;
 using Appalachia.Simulation.Core;
-using Appalachia.Simulation.Physical;
-using Appalachia.Simulation.Physical.Density;
+using Appalachia.Simulation.Core.Metadata.Density;
+using Appalachia.Simulation.Core.Metadata.Materials;
 using Sirenix.OdinInspector;
 using Sirenix.Utilities.Editor;
 using UnityEngine;
 
-namespace Appalachia.Core.Editing
+namespace Appalachia.Simulation.Physical
 {
     public abstract class CollectionButtonSelector
     {

@@ -1,4 +1,4 @@
-namespace Appalachia.Core.Trees
+namespace Appalachia.Simulation.Trees
 {
     public enum TreeComponentType
     {

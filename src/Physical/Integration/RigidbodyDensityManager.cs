@@ -1,10 +1,10 @@
 using System;
-using Appalachia.Core.Editing;
-using Appalachia.Core.Editing.Attributes;
-using Appalachia.Core.Editing.Behaviours;
 using Appalachia.Core.Extensions;
-using Appalachia.Filtering;
-using Appalachia.Simulation.Physical.Density;
+using Appalachia.Core.Filtering;
+using Appalachia.Editing.Attributes;
+using Appalachia.Editing.Behaviours;
+using Appalachia.Simulation.Core.Metadata.Density;
+using Appalachia.Simulation.Core.Metadata.Materials;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
 using UnityEngine;

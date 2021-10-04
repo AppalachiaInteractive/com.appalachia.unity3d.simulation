@@ -1,11 +1,11 @@
 #region
 
 using System;
-using Appalachia.Core.Globals.Shading;
+using Appalachia.Globals.Shading;
 
 #endregion
 
-namespace Appalachia.Simulation.Wind
+namespace Appalachia.Simulation.Core.Metadata.Wind
 {
     public static class WindParameterHelper
     {

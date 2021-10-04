@@ -1,7 +1,6 @@
-using Appalachia.Simulation.Core;
 using Sirenix.OdinInspector;
 
-namespace Appalachia.Simulation.Physical.Density
+namespace Appalachia.Simulation.Core.Metadata.Density
 {
     public class DensityMetadataCollection : MetadataLookupBase<DensityMetadataCollection, DensityMetadata>
     {

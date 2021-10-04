@@ -1,4 +1,4 @@
-namespace Appalachia.Core.Trees.Rendering
+namespace Appalachia.Simulation.Trees.Rendering
 {
     public enum TreePrefabInstanceState
     {

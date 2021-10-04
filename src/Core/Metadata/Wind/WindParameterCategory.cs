@@ -2,13 +2,13 @@
 
 using System;
 using System.Collections.Generic;
-using Appalachia.Core.Globals.Shading;
+using Appalachia.Globals.Shading;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 #endregion
 
-namespace Appalachia.Simulation.Wind
+namespace Appalachia.Simulation.Core.Metadata.Wind
 {
     [Serializable]
     public class WindParameterCategory

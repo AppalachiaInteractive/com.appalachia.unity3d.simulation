@@ -1,6 +1,6 @@
 using Appalachia.Simulation.Buoyancy.Jobs;
-using Appalachia.Voxels.Casting;
-using Appalachia.Voxels.Persistence;
+using Appalachia.Spatial.Voxels.Casting;
+using Appalachia.Spatial.Voxels.Persistence;
 
 namespace Appalachia.Simulation.Buoyancy.Voxels
 {

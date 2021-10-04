@@ -1,8 +1,8 @@
 using System;
-using Appalachia.Core.Editing;
+using Appalachia.Core.Layers;
 using UnityEngine;
 
-namespace Appalachia.Core.Trees
+namespace Appalachia.Simulation.Core.Metadata.POI
 {
     [Serializable]
     public class RuntimePointOfInterest

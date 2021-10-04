@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Appalachia.Core.Trees.Mounting
+namespace Appalachia.Simulation.Trees.Mounting
 {
     [Serializable]
     public class TreePoint

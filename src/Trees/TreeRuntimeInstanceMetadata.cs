@@ -1,8 +1,9 @@
 using System.Collections.Generic;
-using Appalachia.Core.Scriptables;
-using Appalachia.Core.Trees.Types;
+using Appalachia.Base.Scriptables;
+using Appalachia.Simulation.Core.Metadata.POI;
+using Appalachia.Simulation.Core.Metadata.Tree.Types;
 
-namespace Appalachia.Core.Trees
+namespace Appalachia.Simulation.Trees
 {
     
     public class TreeRuntimeInstanceMetadata : SelfSavingAndIdentifyingScriptableObject<TreeRuntimeInstanceMetadata>

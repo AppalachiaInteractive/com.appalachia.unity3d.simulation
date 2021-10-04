@@ -1,7 +1,7 @@
 using System;
-using Appalachia.Core.Trees.Types;
+using Appalachia.Simulation.Core.Metadata.Tree.Types;
 
-namespace Appalachia.Core.Trees.Rendering
+namespace Appalachia.Simulation.Trees.Rendering
 {
     [Serializable]
     public class TreePrefabData

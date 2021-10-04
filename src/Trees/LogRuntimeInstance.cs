@@ -1,10 +1,10 @@
 #region
 
-using Appalachia.Core.Behaviours;
+using Appalachia.Base.Behaviours;
 using Appalachia.Core.Extensions;
-using Appalachia.Core.Globals.Shading;
+using Appalachia.Globals.Shading;
+using Appalachia.Simulation.Core.Metadata.Wood;
 using Appalachia.Simulation.Physical.Integration;
-using Appalachia.Simulation.Wood;
 using Sirenix.OdinInspector;
 using UnityEditor;
 using UnityEngine;
@@ -17,7 +17,7 @@ using Object = UnityEngine.Object;
 
 #endregion
 
-namespace Appalachia.Core.Trees
+namespace Appalachia.Simulation.Trees
 {
     [DisallowMultipleComponent]
     [ExecuteAlways]

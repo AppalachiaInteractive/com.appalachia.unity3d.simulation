@@ -1,5 +1,5 @@
 using Appalachia.Simulation.Buoyancy.Jobs;
-using Appalachia.Voxels.VoxelTypes;
+using Appalachia.Spatial.Voxels.VoxelTypes;
 
 namespace Appalachia.Simulation.Buoyancy.Voxels
 {

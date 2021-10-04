@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Appalachia.Core.Trees.Metadata
+namespace Appalachia.Simulation.Core.Metadata.Tree
 {
     [Serializable]
     public class TreeStageMetadata

@@ -1,10 +1,10 @@
 using System.Collections.Generic;
-using Appalachia.Core.Scriptables;
+using Appalachia.Base.Scriptables;
 using Sirenix.OdinInspector;
 using UnityEditor;
 using UnityEngine;
 
-namespace Appalachia.Core.Trees
+namespace Appalachia.Simulation.Trees
 {
     [CreateAssetMenu(menuName = "Internal/System/TreeRuntimeMetadataCollection", order = 0)]
     public class TreeRuntimeMetadataCollection : SelfSavingSingletonScriptableObject<TreeRuntimeMetadataCollection>

@@ -1,7 +1,7 @@
 #region
 
-using Appalachia.Core.Editing.Attributes;
-using Appalachia.Core.Scriptables;
+using Appalachia.Base.Scriptables;
+using Appalachia.Editing.Attributes;
 using Sirenix.OdinInspector;
 
 #endregion

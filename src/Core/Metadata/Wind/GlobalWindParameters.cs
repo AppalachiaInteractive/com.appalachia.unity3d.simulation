@@ -1,14 +1,14 @@
 #region
 
-using Appalachia.Core.Editing.Attributes;
-using Appalachia.Core.Scriptables;
-using Appalachia.Simulation.Physical.Density;
+using Appalachia.Base.Scriptables;
+using Appalachia.Editing.Attributes;
+using Appalachia.Simulation.Core.Metadata.Density;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 #endregion
 
-namespace Appalachia.Simulation.Wind
+namespace Appalachia.Simulation.Core.Metadata.Wind
 {
     public class GlobalWindParameters : SelfSavingScriptableObject<GlobalWindParameters>
     {

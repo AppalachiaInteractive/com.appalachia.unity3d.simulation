@@ -5,7 +5,7 @@
 
 using UnityEngine;
 
-namespace Appalachia.Core.Solvers {
+namespace Appalachia.Simulation.Physical.Solvers {
 
 public struct Spring {
     public Vector3 position;

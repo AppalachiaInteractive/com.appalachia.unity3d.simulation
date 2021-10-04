@@ -1,7 +1,7 @@
 using Appalachia.Core.Collections.Native.Pointers;
 using Appalachia.Simulation.Buoyancy.Data;
 using Appalachia.Simulation.Physical.Sampling;
-using Appalachia.Voxels;
+using Appalachia.Spatial.Voxels;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;

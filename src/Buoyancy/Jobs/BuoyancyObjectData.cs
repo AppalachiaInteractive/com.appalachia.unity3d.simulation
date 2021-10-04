@@ -1,7 +1,7 @@
 using System;
 using Appalachia.Core.Collections.Native;
 using Appalachia.Core.Collections.Native.Pointers;
-using Appalachia.Voxels.VoxelTypes;
+using Appalachia.Spatial.Voxels.VoxelTypes;
 using Unity.Collections;
 using UnityEngine;
 

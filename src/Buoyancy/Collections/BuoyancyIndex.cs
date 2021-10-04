@@ -1,11 +1,10 @@
-
+using Appalachia.Core.Collections;
 using Appalachia.Core.Collections.Implementations.Lists;
-using Appalachia.Simulation.Buoyancy;
-using Appalachia.Simulation.Buoyancy.Collections;
+using Appalachia.Utility;
 using Appalachia.Utility.Colors;
 using UnityEngine;
 
-namespace Appalachia.Core.Collections.Implementations.Lookups
+namespace Appalachia.Simulation.Buoyancy.Collections
 {
     public class BuoyancyLookup : AppaLookup<GameObject, Buoyant, AppaList_GameObject, AppaList_Buoyant>
     {

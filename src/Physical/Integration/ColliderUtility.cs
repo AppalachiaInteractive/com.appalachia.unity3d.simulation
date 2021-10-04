@@ -1,8 +1,8 @@
-using Appalachia.Core.Editing;
-using Appalachia.Core.Editing.Attributes;
-using Appalachia.Core.Editing.Behaviours;
-using Appalachia.Core.Editing.Coloring;
-using Appalachia.Filtering;
+using Appalachia.Core.Filtering;
+using Appalachia.Editing.Attributes;
+using Appalachia.Editing.Behaviours;
+using Appalachia.Editing.Preferences.Globals;
+using Appalachia.Simulation.Core.Metadata.Materials;
 using Sirenix.OdinInspector;
 using UnityEngine;
 

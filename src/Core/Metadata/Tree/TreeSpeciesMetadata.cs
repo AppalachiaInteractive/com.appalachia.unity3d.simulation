@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using Appalachia.Core.Scriptables;
-using Appalachia.Simulation.Wood;
+using Appalachia.Base.Scriptables;
+using Appalachia.Simulation.Core.Metadata.Wood;
 
-namespace Appalachia.Core.Trees.Metadata
+namespace Appalachia.Simulation.Core.Metadata.Tree
 {
     public class TreeSpeciesMetadata : SelfSavingAndIdentifyingScriptableObject<TreeSpeciesMetadata>
     {

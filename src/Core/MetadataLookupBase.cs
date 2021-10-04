@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using Appalachia.Core.Collections.Extensions;
-using Appalachia.Core.Editing.AssetDB;
-using Appalachia.Core.Scriptables;
+using Appalachia.Base.Scriptables;
+using Appalachia.Core.Extensions;
+using Appalachia.Editing.Assets;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Serialization;

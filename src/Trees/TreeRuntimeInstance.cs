@@ -1,8 +1,8 @@
 #region
 
 using System;
-using Appalachia.Core.Editing.Attributes;
-using Appalachia.Core.Trees.Metadata;
+using Appalachia.Editing.Attributes;
+using Appalachia.Simulation.Core.Metadata.Tree;
 using Sirenix.OdinInspector;
 using UnityEditor;
 using UnityEngine;
@@ -14,7 +14,7 @@ using Object = UnityEngine.Object;
 
 #endregion
 
-namespace Appalachia.Core.Trees
+namespace Appalachia.Simulation.Trees
 {
     [DisallowMultipleComponent]
     [ExecuteAlways]

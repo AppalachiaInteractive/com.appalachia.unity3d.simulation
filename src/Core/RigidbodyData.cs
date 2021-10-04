@@ -1,14 +1,14 @@
 #region
 
 using System;
-using Appalachia.Core.Editing.Attributes;
+using Appalachia.Editing.Attributes;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
 using UnityEngine;
 
 #endregion
 
-namespace Appalachia.Core.Spawning.Data
+namespace Appalachia.Simulation.Core
 {
     [Serializable]
     public class RigidbodyData

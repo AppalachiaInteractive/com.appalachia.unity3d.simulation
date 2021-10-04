@@ -1,20 +1,22 @@
 #region
 
 using System;
+using Appalachia.Base.Behaviours;
 using Appalachia.Core.Attributes;
-using Appalachia.Core.Behaviours;
 using Appalachia.Core.Collections.Implementations.Lookups;
-using Appalachia.Core.Editing.Attributes;
 using Appalachia.Core.Extensions;
+using Appalachia.Core.Filtering;
 using Appalachia.Core.Math;
-using Appalachia.Filtering;
+using Appalachia.Core.Math.Smoothing;
+using Appalachia.Editing.Attributes;
+using Appalachia.Simulation.Buoyancy.Collections;
 using Appalachia.Simulation.Buoyancy.Jobs;
 using Appalachia.Simulation.Core;
 using Appalachia.Simulation.Physical.Relays;
 using Appalachia.Simulation.Physical.Sampling;
-using Appalachia.Voxels;
-using Appalachia.Voxels.Gizmos;
-using Appalachia.Voxels.VoxelTypes;
+using Appalachia.Spatial.Voxels;
+using Appalachia.Spatial.Voxels.Gizmos;
+using Appalachia.Spatial.Voxels.VoxelTypes;
 using Sirenix.OdinInspector;
 using Unity.Jobs;
 using Unity.Mathematics;

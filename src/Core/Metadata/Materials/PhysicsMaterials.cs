@@ -2,14 +2,13 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using Appalachia.Core.Comparers;
-using Appalachia.Simulation.Core;
+using Appalachia.Core.Comparisons;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 #endregion
 
-namespace Appalachia.Simulation.Physical
+namespace Appalachia.Simulation.Core.Metadata.Materials
 {
     public class PhysicsMaterials : MetadataLookupBase<PhysicsMaterials, PhysicMaterialWrapper>
     {

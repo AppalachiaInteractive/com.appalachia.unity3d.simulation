@@ -1,4 +1,4 @@
-namespace Appalachia.Core.Trees.Mounting
+namespace Appalachia.Simulation.Trees.Mounting
 {
     public enum TreePointType
     {

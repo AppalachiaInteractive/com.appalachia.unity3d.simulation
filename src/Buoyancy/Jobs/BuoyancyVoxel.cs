@@ -1,5 +1,5 @@
 using System;
-using Appalachia.Core.Jobs.Types.temporal;
+using Appalachia.Jobs.Types.Temporal;
 using Unity.Mathematics;
 using UnityEngine;
 

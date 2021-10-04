@@ -5,7 +5,7 @@
 
 using UnityEngine;
 
-namespace Appalachia.Core.Solvers {
+namespace Appalachia.Simulation.Physical.Solvers {
 
 public static class InverseKinematics {
     public static void Update(Transform tracked, int mask, Vector3 target, float sqrThreshold = 0.000001f) {

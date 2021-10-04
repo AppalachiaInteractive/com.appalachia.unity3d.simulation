@@ -1,11 +1,11 @@
-using Appalachia.Core.Editing.AssetDB;
-using Appalachia.Core.Scriptables;
-using Appalachia.Simulation.Physical.Density;
-using Internal.Core.Trees.Simulation.Fuel;
+using Appalachia.Base.Scriptables;
+using Appalachia.Editing.Assets;
+using Appalachia.Simulation.Core.Metadata.Density;
+using Appalachia.Simulation.Core.Metadata.Fuel;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace Appalachia.Simulation.Wood
+namespace Appalachia.Simulation.Core.Metadata.Wood
 {
     [CreateAssetMenu(menuName = "Tree Species Editor/Simulation/Wood", order = 10)]
     public class WoodSimulationData : SelfCategorizingIdentifyingAndSavingScriptableObject<WoodSimulationData>, ICategorizable

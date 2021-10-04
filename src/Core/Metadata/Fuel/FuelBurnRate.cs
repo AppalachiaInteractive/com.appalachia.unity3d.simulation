@@ -1,7 +1,7 @@
-﻿using Appalachia.Core.Scriptables;
+﻿using Appalachia.Base.Scriptables;
 using UnityEngine;
 
-namespace Internal.Core.Trees.Simulation.Fuel
+namespace Appalachia.Simulation.Core.Metadata.Fuel
 {
     [CreateAssetMenu(menuName = "Internal/Metadata/Simulation/Heat/Fuel/FuelBurnRate", order = 0)]
     public class FuelBurnRate : InternalScriptableObject<FuelBurnRate>

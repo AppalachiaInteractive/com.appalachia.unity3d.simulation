@@ -1,7 +1,7 @@
 using System;
 using GPUInstancer;
 
-namespace Appalachia.Core.Trees
+namespace Appalachia.Simulation.Trees
 {
     [Serializable]
     public struct TreePrefabGPUInstancerPrototypeSet

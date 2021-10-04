@@ -1,8 +1,8 @@
 using Appalachia.Simulation.Core;
-using UnityEngine;
 using Obi;
+using UnityEngine;
 
-namespace Appalachia.Core.Obi
+namespace Appalachia.Simulation.Obi
 {
     /// <summary>
     /// Updater class that will perform simulation during FixedUpdate(). This is the most physically correct updater,

@@ -1,8 +1,8 @@
 using System;
-using Appalachia.Core.Scriptables;
-using Appalachia.Core.Trees.Types;
+using Appalachia.Base.Scriptables;
+using Appalachia.Simulation.Core.Metadata.Tree.Types;
 
-namespace Appalachia.Core.Trees.Metadata
+namespace Appalachia.Simulation.Core.Metadata.Tree
 {
     [Serializable]
     public class TreeIndividualMetadata : SelfSavingAndIdentifyingScriptableObject<TreeIndividualMetadata>

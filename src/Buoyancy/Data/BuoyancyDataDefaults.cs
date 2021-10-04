@@ -1,6 +1,6 @@
-using Appalachia.Core.Editing.Attributes;
-using Appalachia.Core.Scriptables;
-using Appalachia.Voxels;
+using Appalachia.Base.Scriptables;
+using Appalachia.Editing.Attributes;
+using Appalachia.Spatial.Voxels;
 using Sirenix.OdinInspector;
 
 namespace Appalachia.Simulation.Buoyancy.Data

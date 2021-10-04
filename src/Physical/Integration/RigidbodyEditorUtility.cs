@@ -1,8 +1,8 @@
 #if UNITY_EDITOR
-using Appalachia.Core.Editing;
-using Appalachia.Core.Editing.Attributes;
-using Appalachia.Core.Editing.Behaviours;
-using Appalachia.Core.Editing.Handle;
+using Appalachia.Editing.Attributes;
+using Appalachia.Editing.Behaviours;
+using Appalachia.Editing.Debugging;
+using Appalachia.Editing.Debugging.Handle;
 using Appalachia.Simulation.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;

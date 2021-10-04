@@ -1,13 +1,14 @@
 #region
 
-using Appalachia.Core.Editing.Attributes;
-using Appalachia.Core.Scriptables;
+using Appalachia.Base.Scriptables;
+using Appalachia.Editing.Attributes;
+using Appalachia.Simulation.Core.Metadata.Materials;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 #endregion
 
-namespace Appalachia.Simulation.Physical.Density
+namespace Appalachia.Simulation.Core.Metadata.Density
 {
 
     public class DensityMetadata : SelfCategorizingNamingSavingAndIdentifyingScriptableObject<DensityMetadata>

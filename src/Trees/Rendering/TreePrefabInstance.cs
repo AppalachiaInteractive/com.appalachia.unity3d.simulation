@@ -11,7 +11,7 @@ using UnityEngine.Rendering;
 
 #endregion
 
-namespace Appalachia.Core.Trees.Rendering
+namespace Appalachia.Simulation.Trees.Rendering
 {
     [DisallowMultipleComponent]
     [ExecuteAlways]

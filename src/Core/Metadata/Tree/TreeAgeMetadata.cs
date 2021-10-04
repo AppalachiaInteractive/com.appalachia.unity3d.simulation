@@ -1,7 +1,7 @@
 using System;
-using Appalachia.Core.Trees.Types;
+using Appalachia.Simulation.Core.Metadata.Tree.Types;
 
-namespace Appalachia.Core.Trees.Metadata
+namespace Appalachia.Simulation.Core.Metadata.Tree
 {
     [Serializable]
     public class TreeAgeMetadata

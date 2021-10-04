@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Appalachia.Core.Trees
+namespace Appalachia.Simulation.Trees
 {
     public interface ILogModel
     {

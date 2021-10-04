@@ -1,4 +1,4 @@
-namespace Appalachia.Core.Trees.Types
+namespace Appalachia.Simulation.Core.Metadata.Tree.Types
 {
     public enum StageType
     {

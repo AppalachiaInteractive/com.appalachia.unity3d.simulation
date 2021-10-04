@@ -1,13 +1,13 @@
-using Appalachia.Core.Collections.Extensions;
-using Appalachia.Core.Editing.AssetDB;
-using Appalachia.Core.Editing.Attributes;
-using Appalachia.Core.Scriptables;
-using Appalachia.Simulation.Physical.Density;
+using Appalachia.Base.Scriptables;
+using Appalachia.Core.Extensions;
+using Appalachia.Editing.Assets;
+using Appalachia.Editing.Attributes;
+using Appalachia.Simulation.Core.Metadata.Density;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Appalachia.Simulation.Physical
+namespace Appalachia.Simulation.Core.Metadata.Materials
 {
     [SmartLabel]
     public class PhysicMaterialWrapper : SelfCategorizingAndSavingScriptableObject<PhysicMaterialWrapper>
