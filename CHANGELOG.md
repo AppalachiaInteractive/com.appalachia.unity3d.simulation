@@ -12,6 +12,12 @@
 ## Releasing
 | Hash | Date | Author | Changes |
 |------|------|--------|---------|
+| b3149568dfd840e0b469da343eeba68b8c548267 | 2021-10-04 | Chris Schubert | Code cleanup and refactoring |
+
+
+ ## Tag: `v0.1.3`
+| Hash | Date | Author | Changes |
+|------|------|--------|---------|
 | 7de2879cf4a234bf6b64b7c2b9165190f0e7e8fd | 2021-10-03 | Chris Schubert | Decreasing texture quality and converting to png |
 
 
