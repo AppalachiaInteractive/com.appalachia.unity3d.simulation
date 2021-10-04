@@ -27,19 +27,23 @@ namespace Appalachia.Simulation.Core.Metadata.Wind
         [SmartLabel]
         public bool showAdvanced;
 
-        [FoldoutGroup("$" + nameof(group) + "/Setup"), ShowIf(nameof(showAdvanced))]
+        [FoldoutGroup("$" + nameof(group) + "/Setup")]
+        [ShowIf(nameof(showAdvanced))]
         [SmartLabel]
         public bool showVariation;
 
-        [FoldoutGroup("$" + nameof(group) + "/Setup"), ShowIf(nameof(showAdvanced))]
+        [FoldoutGroup("$" + nameof(group) + "/Setup")]
+        [ShowIf(nameof(showAdvanced))]
         [SmartLabel]
         public bool showBranchProperties;
 
-        [FoldoutGroup("$" + nameof(group) + "/Setup"), ShowIf(nameof(showAdvanced))]
+        [FoldoutGroup("$" + nameof(group) + "/Setup")]
+        [ShowIf(nameof(showAdvanced))]
         [SmartLabel]
         public WindParameterCategory.WindParameterCategoryType category;
 
-        [FoldoutGroup("$" + nameof(group) + "/Setup"), ShowIf(nameof(showAdvanced))]
+        [FoldoutGroup("$" + nameof(group) + "/Setup")]
+        [ShowIf(nameof(showAdvanced))]
         [SmartLabel]
         public WindParameterGroupType group;
 
@@ -67,19 +71,23 @@ namespace Appalachia.Simulation.Core.Metadata.Wind
         [SmartLabel]
         public float fieldSizeMax = 64.0f;
 
-        [FoldoutGroup("$" + nameof(group) + "/Setup"), ShowIf(nameof(showVariation))]
+        [FoldoutGroup("$" + nameof(group) + "/Setup")]
+        [ShowIf(nameof(showVariation))]
         [SmartLabel]
         public float variationStrengthMin = 0.99f;
 
-        [FoldoutGroup("$" + nameof(group) + "/Setup"), ShowIf(nameof(showVariation))]
+        [FoldoutGroup("$" + nameof(group) + "/Setup")]
+        [ShowIf(nameof(showVariation))]
         [SmartLabel]
         public float variationStrengthMax = 99.99f;
 
-        [FoldoutGroup("$" + nameof(group) + "/Setup"), ShowIf(nameof(showBranchProperties))]
+        [FoldoutGroup("$" + nameof(group) + "/Setup")]
+        [ShowIf(nameof(showBranchProperties))]
         [SmartLabel]
         public float branchStrengthMin;
 
-        [FoldoutGroup("$" + nameof(group) + "/Setup"), ShowIf(nameof(showBranchProperties))]
+        [FoldoutGroup("$" + nameof(group) + "/Setup")]
+        [ShowIf(nameof(showBranchProperties))]
         [SmartLabel]
         public float branchStrengthMax = 1.0f;
 
@@ -90,49 +98,65 @@ namespace Appalachia.Simulation.Core.Metadata.Wind
 
         [BoxGroup("$" + nameof(group) + "/Properties")]
         [PropertyRange(nameof(strengthMin), nameof(strengthMax))]
-        [OnValueChanged(nameof(ApplyProperties)), EnableIf(nameof(enabled))]
+        [OnValueChanged(nameof(ApplyProperties))]
+        [EnableIf(nameof(enabled))]
         [SmartLabel]
         public float strength = 1.0f;
 
         [BoxGroup("$" + nameof(group) + "/Properties")]
-        [PropertyRange(nameof(cycleTimeMin), nameof(cycleTimeMax)), SuffixLabel("seconds")]
-        [OnValueChanged(nameof(ApplyProperties)), EnableIf(nameof(enabled))]
+        [PropertyRange(nameof(cycleTimeMin), nameof(cycleTimeMax))]
+        [SuffixLabel("seconds")]
+        [OnValueChanged(nameof(ApplyProperties))]
+        [EnableIf(nameof(enabled))]
         [SmartLabel]
         public float cycleTime = 0.25f;
 
         [BoxGroup("$" + nameof(group) + "/Properties")]
-        [PropertyRange(nameof(fieldSizeMin), nameof(fieldSizeMax)), SuffixLabel("meters")]
-        [OnValueChanged(nameof(ApplyProperties)), EnableIf(nameof(enabled))]
+        [PropertyRange(nameof(fieldSizeMin), nameof(fieldSizeMax))]
+        [SuffixLabel("meters")]
+        [OnValueChanged(nameof(ApplyProperties))]
+        [EnableIf(nameof(enabled))]
         [SmartLabel]
         public float fieldSize = 4.0f;
 
-        [BoxGroup("$" + nameof(group) + "/Properties"), ShowIf(nameof(showVariation))]
+        [BoxGroup("$" + nameof(group) + "/Properties")]
+        [ShowIf(nameof(showVariation))]
         [PropertyRange(nameof(variationStrengthMin), nameof(variationStrengthMax))]
-        [OnValueChanged(nameof(ApplyProperties)), EnableIf(nameof(enabled))]
+        [OnValueChanged(nameof(ApplyProperties))]
+        [EnableIf(nameof(enabled))]
         [SmartLabel]
         public float variationStrength = 20.99f;
 
-        [BoxGroup("$" + nameof(group) + "/Properties"), ShowIf(nameof(showBranchProperties))]
+        [BoxGroup("$" + nameof(group) + "/Properties")]
+        [ShowIf(nameof(showBranchProperties))]
         [PropertyRange(nameof(branchStrengthMin), nameof(branchStrengthMax))]
-        [OnValueChanged(nameof(ApplyProperties)), EnableIf(nameof(enabled))]
+        [OnValueChanged(nameof(ApplyProperties))]
+        [EnableIf(nameof(enabled))]
         [SmartLabel]
         public float oppositeStrength = 1.0f;
 
-        [BoxGroup("$" + nameof(group) + "/Properties"), ShowIf(nameof(showBranchProperties))]
+        [BoxGroup("$" + nameof(group) + "/Properties")]
+        [ShowIf(nameof(showBranchProperties))]
         [PropertyRange(nameof(branchStrengthMin), nameof(branchStrengthMax))]
-        [OnValueChanged(nameof(ApplyProperties)), EnableIf(nameof(enabled))]
+        [OnValueChanged(nameof(ApplyProperties))]
+        [EnableIf(nameof(enabled))]
         [SmartLabel]
         public float perpendicularStrength = 1.0f;
 
-        [BoxGroup("$" + nameof(group) + "/Properties"), ShowIf(nameof(showBranchProperties))]
+        [BoxGroup("$" + nameof(group) + "/Properties")]
+        [ShowIf(nameof(showBranchProperties))]
         [PropertyRange(nameof(branchStrengthMin), nameof(branchStrengthMax))]
-        [OnValueChanged(nameof(ApplyProperties)), EnableIf(nameof(enabled))]
+        [OnValueChanged(nameof(ApplyProperties))]
+        [EnableIf(nameof(enabled))]
         [SmartLabel]
         public float parallelStrength = 1.0f;
 
         private int[] propertyIDs = new int[7];
 
-        public WindParameterGroup(WindParameterCategory.WindParameterCategoryType category, WindParameterGroupType groupType, bool showVariation)
+        public WindParameterGroup(
+            WindParameterCategory.WindParameterCategoryType category,
+            WindParameterGroupType groupType,
+            bool showVariation)
         {
             this.category = category;
             group = groupType;
@@ -141,7 +165,13 @@ namespace Appalachia.Simulation.Core.Metadata.Wind
 
         public void ApplyProperties()
         {
-            propertyIDs = WindParameterHelper.EnsurePropertyIDLookupIsCreated(propertyIDs, category, group, showVariation, showBranchProperties);
+            propertyIDs = WindParameterHelper.EnsurePropertyIDLookupIsCreated(
+                propertyIDs,
+                category,
+                group,
+                showVariation,
+                showBranchProperties
+            );
 
             Shader.SetGlobalFloat(propertyIDs[0], enabled ? strength : 0.0f);
             Shader.SetGlobalFloat(propertyIDs[1], cycleTime);

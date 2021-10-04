@@ -10,18 +10,18 @@ namespace Appalachia.Simulation.Buoyancy.Jobs
     [Serializable]
     public struct BuoyancyObjectData : IDisposable, IVoxelsInit
     {
-        [SerializeField] public NativeFloatPtr submersionPercentage;
         [SerializeField] public float previousSubmersionPercentage;
-        
-        [SerializeField] public NativeFloat3Ptr force;
-        [SerializeField] public NativeFloat3Ptr torque;
-        [SerializeField] public NativeFloat3Ptr hydrostaticForce;
-        [SerializeField] public NativeFloat3Ptr viscousWaterResistanceForce;
-        [SerializeField] public NativeFloat3Ptr pressureDragForce;
         [SerializeField] public NativeFloat3Ptr airResistanceForce;
-        [SerializeField] public NativeFloat3Ptr windResistanceForce;
-        [SerializeField] public NativeFloat3Ptr waveDriftingForce;
+
+        [SerializeField] public NativeFloat3Ptr force;
+        [SerializeField] public NativeFloat3Ptr hydrostaticForce;
+        [SerializeField] public NativeFloat3Ptr pressureDragForce;
         [SerializeField] public NativeFloat3Ptr slammingForce;
+        [SerializeField] public NativeFloatPtr submersionPercentage;
+        [SerializeField] public NativeFloat3Ptr torque;
+        [SerializeField] public NativeFloat3Ptr viscousWaterResistanceForce;
+        [SerializeField] public NativeFloat3Ptr waveDriftingForce;
+        [SerializeField] public NativeFloat3Ptr windResistanceForce;
 
         public void Dispose()
         {

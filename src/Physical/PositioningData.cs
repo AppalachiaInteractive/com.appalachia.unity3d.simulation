@@ -15,10 +15,11 @@ namespace Appalachia.Simulation.Physical
         {
             previous = current;
 
-            current = new PositiongDataInstant(body, ltw);;   
+            current = new PositiongDataInstant(body, ltw);
+            ;
         }
-        
-        #region IEquatable
+
+#region IEquatable
 
         public bool Equals(PositioningData other)
         {

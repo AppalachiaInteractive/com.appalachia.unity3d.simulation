@@ -30,8 +30,6 @@ namespace Appalachia.Simulation.Core.Metadata.Wind
         [OnValueChanged(nameof(ApplyProperties))]
         public float strength = 1.0f;
 
-        private int strengthPropertyID;
-
         [FoldoutGroup("Groups")]
         [ListDrawerSettings(
             Expanded = true,
@@ -42,7 +40,9 @@ namespace Appalachia.Simulation.Core.Metadata.Wind
             HideRemoveButton = true,
             NumberOfItemsPerPage = 5
         )]
-        public List<WindParameterGroup> groups = new List<WindParameterGroup>();
+        public List<WindParameterGroup> groups = new();
+
+        private int strengthPropertyID;
 
         public WindParameterCategory(WindParameterCategoryType category)
         {

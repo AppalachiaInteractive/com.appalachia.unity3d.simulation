@@ -12,26 +12,16 @@ namespace Appalachia.Simulation.Core.Metadata.Wind
 {
     public class GlobalWindParameters : SelfSavingScriptableObject<GlobalWindParameters>
     {
-        private void OnEnable()
-        {
-            if (maximumWindSpeed == 0f)
-            {
-                maximumWindSpeed = 25f;
-            }
-        }
-
         [FoldoutGroup("System")]
         [SmartLabel]
         public bool realtimeUpdate = true;
 
-        [BoxGroup("System/Physics"), ShowInInspector]
-        [SmartLabel]
-        public DensityMetadata airDensity => DensityMetadataCollection.instance.air;
-
         [BoxGroup("System/Physics")]
-        [SmartLabel, SuffixLabel("m/s"), PropertyRange(0.1f, 50f)]
+        [SmartLabel]
+        [SuffixLabel("m/s")]
+        [PropertyRange(0.1f, 50f)]
         public float maximumWindSpeed = 25f;
-        
+
         [BoxGroup("System/Setup")]
         [SmartLabel]
         public bool showArrow;
@@ -60,13 +50,13 @@ namespace Appalachia.Simulation.Core.Metadata.Wind
         [FoldoutGroup("Heading/Updates")]
         [MinMaxSlider(15f, 1200f, true)]
         [SmartLabel]
-        public Vector2 headingChangeInterval = new Vector2(60f, 600f);
-        
+        public Vector2 headingChangeInterval = new(60f, 600f);
+
         [FoldoutGroup("Heading/Updates")]
         [MinMaxSlider(-180f, 180f, true)]
         [SmartLabel]
-        public Vector2 headingUpdateRange = new Vector2(-60f, 60f); 
-        
+        public Vector2 headingUpdateRange = new(-60f, 60f);
+
         [FoldoutGroup("Heading/Updates")]
         [PropertyRange(0f, 1f)]
         [SmartLabel]
@@ -98,9 +88,10 @@ namespace Appalachia.Simulation.Core.Metadata.Wind
         public float gustAmplitudeSharpness = 0.25f;
 
         [FoldoutGroup("Motion/Gust")]
-        [MinMaxSlider(.0001f, 0.05f, true), SuffixLabel("/s")]
+        [MinMaxSlider(.0001f, 0.05f, true)]
+        [SuffixLabel("/s")]
         [SmartLabel]
-        public Vector2 gustStep = new Vector2(.001f, .01f);
+        public Vector2 gustStep = new(.001f, .01f);
 
         [FoldoutGroup("Motion/Audio")]
         [PropertyRange(.01f, 1.0f)]
@@ -108,24 +99,43 @@ namespace Appalachia.Simulation.Core.Metadata.Wind
         public float audioSharpness = 0.25f;
 
         [FoldoutGroup("Motion/Audio")]
-        [MinMaxSlider(.0001f, 0.05f, true), SuffixLabel("/s")]
+        [MinMaxSlider(.0001f, 0.05f, true)]
+        [SuffixLabel("/s")]
         [SmartLabel]
-        public Vector2 audioStep = new Vector2(.001f, .01f);
+        public Vector2 audioStep = new(.001f, .01f);
 
-        [InlineProperty, HideLabel]
+        [InlineProperty]
+        [HideLabel]
         public WindParameterCategory trunks;
 
-        [InlineProperty, HideLabel]
+        [InlineProperty]
+        [HideLabel]
         public WindParameterCategory branches;
 
-        [InlineProperty, HideLabel]
+        [InlineProperty]
+        [HideLabel]
         public WindParameterCategory leaves;
 
-        [InlineProperty, HideLabel]
+        [InlineProperty]
+        [HideLabel]
         public WindParameterCategory plants;
 
-        [InlineProperty, HideLabel]
+        [InlineProperty]
+        [HideLabel]
         public WindParameterCategory grass;
+
+        [BoxGroup("System/Physics")]
+        [ShowInInspector]
+        [SmartLabel]
+        public DensityMetadata airDensity => DensityMetadataCollection.instance.air;
+
+        private void OnEnable()
+        {
+            if (maximumWindSpeed == 0f)
+            {
+                maximumWindSpeed = 25f;
+            }
+        }
 
         /*
         [Button]

@@ -9,16 +9,16 @@ namespace Appalachia.Simulation.Buoyancy
     public struct WaterVoxel : IOctreeNodeGizmoDrawer
     {
         [SerializeField] public float3 currentVector;
-        
+
         [SerializeField] public float distanceToSurface;
-        
+
         public void DrawGizmo(float3 position, float3 scale)
         {
-            Gizmos.DrawLine(position, position + (currentVector*scale));
+            Gizmos.DrawLine(position, position + (currentVector * scale));
         }
 
-        #region Operators
-        
+#region Operators
+
         public static WaterVoxel operator *(WaterVoxel a, float b)
         {
             a.currentVector *= b;
@@ -26,13 +26,12 @@ namespace Appalachia.Simulation.Buoyancy
 
             return a;
         }
-        
-        
+
         public static WaterVoxel operator *(float a, WaterVoxel b)
         {
             return b * a;
         }
-        
+
         public static WaterVoxel operator +(WaterVoxel a, WaterVoxel b)
         {
             a.currentVector += b.currentVector;
@@ -40,7 +39,7 @@ namespace Appalachia.Simulation.Buoyancy
 
             return a;
         }
-        
+
         public static WaterVoxel operator -(WaterVoxel a, WaterVoxel b)
         {
             a.currentVector -= b.currentVector;
@@ -48,7 +47,7 @@ namespace Appalachia.Simulation.Buoyancy
 
             return a;
         }
-        
+
         public static WaterVoxel operator /(WaterVoxel a, WaterVoxel b)
         {
             a.currentVector /= b.currentVector;
@@ -57,6 +56,6 @@ namespace Appalachia.Simulation.Buoyancy
             return a;
         }
 
-        #endregion
+#endregion
     }
 }

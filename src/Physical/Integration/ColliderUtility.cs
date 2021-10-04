@@ -10,8 +10,16 @@ namespace Appalachia.Simulation.Physical.Integration
 {
     public class ColliderUtility : EditorOnlyMonoBehaviour
     {
-        [SmartLabel, InlineButton(nameof(ApplyToAll))] 
+        [SmartLabel]
+        [InlineButton(nameof(ApplyToAll))]
         public PhysicMaterialWrapper material;
+
+        [ShowInInspector]
+        [HideLabel]
+        public CollectionButtonSelector<PhysicsMaterials, PhysicMaterialWrapper> materialSelector;
+
+        public override EditorOnlyExclusionStyle exclusionStyle =>
+            EditorOnlyExclusionStyle.Component;
 
         private void ApplyToAll()
         {
@@ -23,23 +31,19 @@ namespace Appalachia.Simulation.Physical.Integration
             }
         }
 
-        [ShowInInspector, HideLabel]
-        public CollectionButtonSelector<PhysicsMaterials, PhysicMaterialWrapper>  materialSelector;
-
-        public override EditorOnlyExclusionStyle exclusionStyle => EditorOnlyExclusionStyle.Component;
-
         protected override void Internal_OnEnable()
         {
-            materialSelector = new CollectionButtonSelector<PhysicsMaterials, PhysicMaterialWrapper>(
-                PhysicsMaterials.instance,
-                (mat) =>
-                {
-                    material = mat;
-                    ApplyToAll();
-                },
-                ColorPrefs.Instance.PhysicMaterialSelectorButton,
-                ColorPrefs.Instance.PhysicMaterialSelectorColorDrop
-            );
+            materialSelector =
+                new CollectionButtonSelector<PhysicsMaterials, PhysicMaterialWrapper>(
+                    PhysicsMaterials.instance,
+                    mat =>
+                    {
+                        material = mat;
+                        ApplyToAll();
+                    },
+                    ColorPrefs.Instance.PhysicMaterialSelectorButton,
+                    ColorPrefs.Instance.PhysicMaterialSelectorColorDrop
+                );
         }
     }
 }

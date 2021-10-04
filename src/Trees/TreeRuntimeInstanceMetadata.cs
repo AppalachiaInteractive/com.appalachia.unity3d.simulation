@@ -5,10 +5,10 @@ using Appalachia.Simulation.Core.Metadata.Tree.Types;
 
 namespace Appalachia.Simulation.Trees
 {
-    
-    public class TreeRuntimeInstanceMetadata : SelfSavingAndIdentifyingScriptableObject<TreeRuntimeInstanceMetadata>
+    public class
+        TreeRuntimeInstanceMetadata : SelfSavingAndIdentifyingScriptableObject<
+            TreeRuntimeInstanceMetadata>
     {
-        
         public string speciesName;
 
         public int individualID;
@@ -18,8 +18,7 @@ namespace Appalachia.Simulation.Trees
         public StageType stage;
 
         public float rootDepth;
-        
-        public List<RuntimePointOfInterest> pointsOfInterest = new List<RuntimePointOfInterest>();
 
+        public List<RuntimePointOfInterest> pointsOfInterest = new();
     }
 }

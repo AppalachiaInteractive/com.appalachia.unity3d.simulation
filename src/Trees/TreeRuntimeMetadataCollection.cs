@@ -7,15 +7,17 @@ using UnityEngine;
 namespace Appalachia.Simulation.Trees
 {
     [CreateAssetMenu(menuName = "Internal/System/TreeRuntimeMetadataCollection", order = 0)]
-    public class TreeRuntimeMetadataCollection : SelfSavingSingletonScriptableObject<TreeRuntimeMetadataCollection>
+    public class
+        TreeRuntimeMetadataCollection : SelfSavingSingletonScriptableObject<
+            TreeRuntimeMetadataCollection>
     {
-        public List<TreeRuntimeInstanceMetadata> treeRuntimeInstanceMetadatas = new List<TreeRuntimeInstanceMetadata>();
+        public List<TreeRuntimeInstanceMetadata> treeRuntimeInstanceMetadatas = new();
 
-#if  UNITY_EDITOR
+#if UNITY_EDITOR
         protected override void OnEnable()
         {
             base.OnEnable();
-            
+
             if (Application.isPlaying)
             {
                 return;
@@ -28,7 +30,7 @@ namespace Appalachia.Simulation.Trees
         private void UpdateLists()
         {
             treeRuntimeInstanceMetadatas.Clear();
-        
+
             var ts = AssetDatabase.FindAssets("t: TreeRuntimeInstanceMetadata");
 
             foreach (var t in ts)

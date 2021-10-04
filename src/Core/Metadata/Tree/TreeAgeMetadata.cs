@@ -15,8 +15,6 @@ namespace Appalachia.Simulation.Core.Metadata.Tree
         public TreeStageMetadata dead;
         public TreeStageMetadata deadFelled;
         public TreeStageMetadata deadFelledRotted;
-        
-        
 
         public TreeStageMetadata this[StageType stage]
         {
@@ -89,23 +87,21 @@ namespace Appalachia.Simulation.Core.Metadata.Tree
             return normal != null;
         }
 
-
         public bool CanCut(StageType stageType)
         {
             if (stageType == StageType.Normal)
             {
-                return stump != null && felled != null;
+                return (stump != null) && (felled != null);
             }
 
             if (stageType == StageType.Dead)
             {
-                return stump != null && deadFelled != null;
+                return (stump != null) && (deadFelled != null);
             }
 
             return false;
         }
-        
-        
+
         public bool CanBare(StageType stageType)
         {
             if (stageType == StageType.Felled)
@@ -130,8 +126,7 @@ namespace Appalachia.Simulation.Core.Metadata.Tree
 
             return false;
         }
-        
-        
+
         public bool CanRot(StageType stageType)
         {
             if (stageType == StageType.Stump)
@@ -148,7 +143,7 @@ namespace Appalachia.Simulation.Core.Metadata.Tree
             {
                 return deadFelledRotted != null;
             }
-            
+
             return false;
         }
     }

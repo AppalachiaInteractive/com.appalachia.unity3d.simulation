@@ -10,11 +10,10 @@ namespace Appalachia.Simulation.Buoyancy.Voxels
         {
         }
 
-        public AppaList_BuoyancyVoxelsDataStore(int capacity, float capacityIncreaseMultiplier = 2, bool noTracking = false) : base(
-            capacity,
-            capacityIncreaseMultiplier,
-            noTracking
-        )
+        public AppaList_BuoyancyVoxelsDataStore(
+            int capacity,
+            float capacityIncreaseMultiplier = 2,
+            bool noTracking = false) : base(capacity, capacityIncreaseMultiplier, noTracking)
         {
         }
 

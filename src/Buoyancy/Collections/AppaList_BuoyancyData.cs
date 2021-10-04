@@ -15,11 +15,10 @@ namespace Appalachia.Simulation.Buoyancy.Collections
         {
         }
 
-        public AppaList_BuoyancyData(int capacity, float capacityIncreaseMultiplier = 2, bool noTracking = false) : base(
-            capacity,
-            capacityIncreaseMultiplier,
-            noTracking
-        )
+        public AppaList_BuoyancyData(
+            int capacity,
+            float capacityIncreaseMultiplier = 2,
+            bool noTracking = false) : base(capacity, capacityIncreaseMultiplier, noTracking)
         {
         }
 

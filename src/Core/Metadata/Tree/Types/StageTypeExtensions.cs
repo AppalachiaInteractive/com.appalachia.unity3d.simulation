@@ -4,7 +4,6 @@ namespace Appalachia.Simulation.Core.Metadata.Tree.Types
 {
     public static class StageTypeExtensions
     {
-        
         public static bool IsDead(this StageType stageType)
         {
             switch (stageType)
@@ -24,7 +23,7 @@ namespace Appalachia.Simulation.Core.Metadata.Tree.Types
                     throw new ArgumentOutOfRangeException(nameof(stageType), stageType, null);
             }
         }
-        
+
         public static bool IsBare(this StageType stageType)
         {
             switch (stageType)
@@ -44,7 +43,7 @@ namespace Appalachia.Simulation.Core.Metadata.Tree.Types
                     throw new ArgumentOutOfRangeException(nameof(stageType), stageType, null);
             }
         }
-        
+
         public static bool IsRotted(this StageType stageType)
         {
             switch (stageType)
@@ -64,7 +63,7 @@ namespace Appalachia.Simulation.Core.Metadata.Tree.Types
                     throw new ArgumentOutOfRangeException(nameof(stageType), stageType, null);
             }
         }
-        
+
         public static bool IsFelled(this StageType stageType)
         {
             switch (stageType)
@@ -84,8 +83,7 @@ namespace Appalachia.Simulation.Core.Metadata.Tree.Types
                     throw new ArgumentOutOfRangeException(nameof(stageType), stageType, null);
             }
         }
-        
-        
+
         public static bool IsStump(this StageType stageType)
         {
             switch (stageType)
@@ -105,8 +103,7 @@ namespace Appalachia.Simulation.Core.Metadata.Tree.Types
                     throw new ArgumentOutOfRangeException(nameof(stageType), stageType, null);
             }
         }
-        
-        
+
         public static bool IsStumpOrFelled(this StageType stageType)
         {
             return IsFelled(stageType) || IsStump(stageType);

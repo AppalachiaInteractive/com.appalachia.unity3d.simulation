@@ -11,7 +11,30 @@ namespace Appalachia.Simulation.Physical.Sampling
     public struct TrilinearSamples<T> : IDisposable
         where T : struct
     {
-        public TrilinearSamples(Bounds b, int3 subdivisions, Allocator allocator = Allocator.Persistent)
+        public bool isCreated;
+        public bool isPopulated;
+
+        public int3 subdivisions;
+        public int count;
+        public float4x4 localToWorld;
+
+        public float3 sampleStrengths;
+        public int3 idx000;
+        public int3 idx001;
+        public int3 idx010;
+        public int3 idx011;
+        public int3 idx100;
+        public int3 idx101;
+        public int3 idx110;
+        public int3 idx111;
+
+        public NativeArray<float3> points;
+        public NativeArray<T> values;
+
+        public TrilinearSamples(
+            Bounds b,
+            int3 subdivisions,
+            Allocator allocator = Allocator.Persistent)
         {
             this.subdivisions = subdivisions;
             count = subdivisions.x * subdivisions.y * subdivisions.z;
@@ -46,26 +69,6 @@ namespace Appalachia.Simulation.Physical.Sampling
             }
         }
 
-        public bool isCreated;
-        public bool isPopulated;
-
-        public int3 subdivisions;
-        public int count;
-        public float4x4 localToWorld;
-        
-        public NativeArray<float3> points;
-        public NativeArray<T> values;
-
-        public float3 sampleStrengths;
-        public int3 idx000;
-        public int3 idx001;
-        public int3 idx010;
-        public int3 idx011;
-        public int3 idx100;
-        public int3 idx101;
-        public int3 idx110;
-        public int3 idx111;
-        
         public T c000 => Get(idx000);
         public T c001 => Get(idx001);
         public T c010 => Get(idx010);
@@ -75,20 +78,20 @@ namespace Appalachia.Simulation.Physical.Sampling
         public T c110 => Get(idx110);
         public T c111 => Get(idx111);
 
+        public void Dispose()
+        {
+            isCreated = false;
+            isPopulated = false;
+
+            points.SafeDispose();
+            values.SafeDispose();
+        }
+
         public T Sample(float3 time, ITrilinearSampler<T> sampler)
         {
             SetSampleIndices(time);
 
             return sampler.Sample(this);
-        }
-        
-        public void Dispose()
-        {
-            isCreated = false;
-            isPopulated = false;
-            
-            points.SafeDispose();
-            values.SafeDispose();
         }
 
         public T Get(int3 index)
@@ -97,19 +100,21 @@ namespace Appalachia.Simulation.Physical.Sampling
 
             return values[flatIndex];
         }
-        
+
         public T Get(int x, int y, int z)
         {
             var index = GetIndex(x, y, z);
-            
+
             return values[index];
         }
-        
+
         public int GetIndex(int3 index)
         {
-            return (subdivisions.y * subdivisions.z * index.x) + (subdivisions.z * index.y) + index.z;
+            return (subdivisions.y * subdivisions.z * index.x) +
+                   (subdivisions.z * index.y) +
+                   index.z;
         }
-        
+
         public int GetIndex(int x, int y, int z)
         {
             return (subdivisions.y * subdivisions.z * x) + (subdivisions.z * y) + z;
@@ -124,16 +129,20 @@ namespace Appalachia.Simulation.Physical.Sampling
 
         private void SetSampleIndices(float3 time)
         {
-            var exactIndexPosition = new float3(time.x * subdivisions.x, time.y * subdivisions.y, time.z * subdivisions.z);
+            var exactIndexPosition = new float3(
+                time.x * subdivisions.x,
+                time.y * subdivisions.y,
+                time.z * subdivisions.z
+            );
 
-            var floor = (int3)math.floor(exactIndexPosition);
+            var floor = (int3) math.floor(exactIndexPosition);
             var remai = exactIndexPosition % float3c.one;
-            var ceili = (int3)math.ceil(exactIndexPosition);
-                
+            var ceili = (int3) math.ceil(exactIndexPosition);
+
             sampleStrengths.x = (remai.x - floor.x) / (ceili.x - floor.x);
             sampleStrengths.y = (remai.y - floor.y) / (ceili.y - floor.y);
             sampleStrengths.z = (remai.z - floor.z) / (ceili.z - floor.z);
-            
+
             idx000 = new int3(floor.x, floor.y, floor.z);
             idx001 = new int3(floor.x, floor.y, ceili.z);
             idx010 = new int3(floor.x, ceili.y, floor.z);

@@ -13,11 +13,27 @@ namespace Appalachia.Simulation.Core
     public static class PhysicsSimulator
     {
         private const string _PRF_PFX = nameof(PhysicsSimulator) + ".";
-        
+
         private const string MENU_BASE = "Tools/Physics/";
-        private const string MENU_TOGGLE = MENU_BASE + "Toggle Physics Simulation" + SHC.CTRL_ALT_SHFT_S;
+
+        private const string MENU_TOGGLE =
+            MENU_BASE + "Toggle Physics Simulation" + SHC.CTRL_ALT_SHFT_S;
 
         private static bool s_Enabled;
+
+        public static OnSimulationStart onSimulationStart;
+
+        public static OnSimulationUpdate onSimulationUpdate;
+
+        public static OnSimulationEnd onSimulationEnd;
+
+        private static readonly ProfilerMarker _PRF_Update =
+            new(_PRF_PFX + nameof(PhysicsSimulator_Update));
+
+        private static double _elapsed;
+
+        private static int _hits;
+        private static int _frames;
 
         static PhysicsSimulator()
         {
@@ -44,36 +60,23 @@ namespace Appalachia.Simulation.Core
             if (enabled && !s_Enabled)
             {
                 Physics.autoSimulation = false;
-                
+
                 onSimulationStart?.Invoke();
-                
+
                 EditorApplication.update += PhysicsSimulator_Update;
                 s_Enabled = true;
             }
             else if (!enabled && s_Enabled)
             {
                 Physics.autoSimulation = true;
-                
+
                 onSimulationEnd?.Invoke();
-                
+
                 EditorApplication.update -= PhysicsSimulator_Update;
                 s_Enabled = false;
             }
         }
 
-        public static OnSimulationStart onSimulationStart;
-
-        public static OnSimulationUpdate onSimulationUpdate;
-
-        public static OnSimulationEnd onSimulationEnd;
-
-        private static readonly ProfilerMarker _PRF_Update = new ProfilerMarker(_PRF_PFX + nameof(PhysicsSimulator_Update));
-
-        private static double _elapsed = 0.0;
-
-        private static int _hits;
-        private static int _frames;
-        
         private static void PhysicsSimulator_Update()
         {
             using (_PRF_Update.Auto())
@@ -84,7 +87,7 @@ namespace Appalachia.Simulation.Core
 
                     return;
                 }
-              
+
                 _elapsed += Time.deltaTime;
                 _frames += 1;
 

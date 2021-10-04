@@ -7,7 +7,7 @@ namespace Appalachia.Simulation.Trees.Rendering
     public class TreePrefabData
     {
         public int treePrefabID;
-        
+
         public TreePrefabGPUInstancerPrototypeSet prototypes;
         public TreePrefabGPUInstancerPrototypeSet ngoPrototypes;
         public int individualID;

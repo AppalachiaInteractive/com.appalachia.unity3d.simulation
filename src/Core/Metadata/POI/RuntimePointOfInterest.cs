@@ -8,7 +8,7 @@ namespace Appalachia.Simulation.Core.Metadata.POI
     public class RuntimePointOfInterest
     {
         public string name;
-        
+
         public RuntimePointOfInterestType zoneType;
 
         public float radius;
@@ -18,7 +18,5 @@ namespace Appalachia.Simulation.Core.Metadata.POI
         public LayerSelection layer;
 
         public SphereCollider sphereCollider;
-        
-        
     }
 }

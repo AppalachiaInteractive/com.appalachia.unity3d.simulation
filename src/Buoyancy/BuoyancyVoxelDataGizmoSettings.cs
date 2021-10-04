@@ -8,7 +8,9 @@ using Sirenix.OdinInspector;
 
 namespace Appalachia.Simulation.Buoyancy
 {
-    public class BuoyancyVoxelDataGizmoSettings : SelfSavingSingletonScriptableObject<BuoyancyVoxelDataGizmoSettings>
+    public class
+        BuoyancyVoxelDataGizmoSettings : SelfSavingSingletonScriptableObject<
+            BuoyancyVoxelDataGizmoSettings>
     {
         private const string _GC = "Cumulative";
         private const string _GS = "Selected";
@@ -43,16 +45,18 @@ namespace Appalachia.Simulation.Buoyancy
         [BoxGroup(_GSC)]
         [SmartLabel]
         public float gizmoCenterOfMassSize;
-        
+
         [BoxGroup(_GSS)]
         [SmartLabel(Postfix = true)]
         public bool drawSelectedSubmersionPositions;
 
         [BoxGroup(_GSS)]
-        [SmartLabel] public float gizmoSubmersionBaseSize;
-        
+        [SmartLabel]
+        public float gizmoSubmersionBaseSize;
+
         [BoxGroup(_GSS)]
-        [SmartLabel] public float gizmoSubmersionFlexSize;
+        [SmartLabel]
+        public float gizmoSubmersionFlexSize;
 
         [BoxGroup(_GSS)]
         [SmartLabel(Postfix = true)]
@@ -63,22 +67,32 @@ namespace Appalachia.Simulation.Buoyancy
         public bool drawSelectedForcePositions;
 
         [BoxGroup(_GSF)]
-        [SmartLabel, PropertyRange(0f, 1f)] public float gizmoForceBaseSize;
-        
+        [SmartLabel]
+        [PropertyRange(0f, 1f)]
+        public float gizmoForceBaseSize;
+
         [BoxGroup(_GSF)]
-        [SmartLabel, PropertyRange(0f, 1f)] public float gizmoForceFlexSize;
-        
+        [SmartLabel]
+        [PropertyRange(0f, 1f)]
+        public float gizmoForceFlexSize;
+
         [BoxGroup(_GSF)]
-        [SmartLabel, PropertyRange(0f, 1f)] public float gizmoForceSizeLimit;
+        [SmartLabel]
+        [PropertyRange(0f, 1f)]
+        public float gizmoForceSizeLimit;
 
         [SmartLabel(Postfix = true)]
         public bool drawSelectedForceLines;
 
         [BoxGroup(_GSFL)]
-        [SmartLabel, PropertyRange(0f, 1f)] public float drawSelectedForceLinesScale;
-        
+        [SmartLabel]
+        [PropertyRange(0f, 1f)]
+        public float drawSelectedForceLinesScale;
+
         [BoxGroup(_GSFL)]
-        [SmartLabel, PropertyRange(0.001f, .05f)] public float drawSelectedForceLinesOffset;
+        [SmartLabel]
+        [PropertyRange(0.001f, .05f)]
+        public float drawSelectedForceLinesOffset;
 
         [BoxGroup(_GSFL)]
         [SmartLabel(Postfix = true)]

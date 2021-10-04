@@ -22,21 +22,21 @@ namespace Appalachia.Simulation.Buoyancy.Jobs
 
             public void Execute()
             {
-                float sum = 0f;
+                var sum = 0f;
 
                 var length = buoyancyVoxels.Length;
-                
+
                 for (var index = 0; index < length; index++)
                 {
                     if (!voxelsActive.IsSet(index))
                     {
                         continue;
                     }
-                    
+
                     var buoyancyVoxel = buoyancyVoxels[index];
 
                     var submersion = buoyancyVoxel.submersion.value;
-                    
+
                     sum += submersion;
                 }
 
@@ -185,49 +185,41 @@ namespace Appalachia.Simulation.Buoyancy.Jobs
 
 */
         /// <summary>
-        /// Buoyancy is a hydrostatic force - it's there even if the water isn't flowing or if the boat stays still
-        /// F_buoyancy = rho * g * V
-        /// rho - density of the medium you are in
-        /// g - localGravity
-        /// V - volume of fluid directly above the curved surface 
-        ///
-        /// V = z * S * n 
-        /// z - distance to surface
-        /// S - surface area
-        /// n - normal to the surface
-        /// ---------------------------------------------------
-        /// Let W(x,y) give the height of the water surface at (x,y). In this case, W is a sum of sine waves.
-        /// Let P(y) give the pressure at distance y relative to the water surface (negative is underwater).
-        /// We will define P(y) as:
-        /// 
-        /// P(y) = 
-        ///     P_0 if y GE 0 
+        ///     Buoyancy is a hydrostatic force - it's there even if the water isn't flowing or if the boat stays still
+        ///     F_buoyancy = rho * g * V
+        ///     rho - density of the medium you are in
+        ///     g - localGravity
+        ///     V - volume of fluid directly above the curved surface
+        ///     V = z * S * n
+        ///     z - distance to surface
+        ///     S - surface area
+        ///     n - normal to the surface
+        ///     ---------------------------------------------------
+        ///     Let W(x,y) give the height of the water surface at (x,y). In this case, W is a sum of sine waves.
+        ///     Let P(y) give the pressure at distance y relative to the water surface (negative is underwater).
+        ///     We will define P(y) as:
+        ///     P(y) =
+        ///     P_0 if y GE 0
         ///     P_0 + p * g * y if y LT 0
-        /// 
-        ///  where P_0 is standard atmospheric pressure, p is the density of water, and g is gravitational acceleration.
-        /// 
-        /// Our algorithm is then:
-        ///
-        /// for each face (pos1, pos2, pos3):
-        ///   let center = (pos1 + pos2 + pos3) / 3
-        ///   let n = (pos2 - pos1) * (pos3 - pos1)
-        ///   let normal = n / ||n||
-        ///   Let a = ||n|| / 2
-        ///   let f = -normal * a * P(center.y - W(center.x, center.z))
-        ///   apply force f at point c
-        ///
-        /// Air resistance on the part of the object above the water, facing the velocity direction
-        ///
-        /// Wind resistance on the part of the object above the water, facing the wind.
-        /// 
+        ///     where P_0 is standard atmospheric pressure, p is the density of water, and g is gravitational acceleration.
+        ///     Our algorithm is then:
+        ///     for each face (pos1, pos2, pos3):
+        ///     let center = (pos1 + pos2 + pos3) / 3
+        ///     let n = (pos2 - pos1) * (pos3 - pos1)
+        ///     let normal = n / ||n||
+        ///     Let a = ||n|| / 2
+        ///     let f = -normal * a * P(center.y - W(center.x, center.z))
+        ///     apply force f at point c
+        ///     Air resistance on the part of the object above the water, facing the velocity direction
+        ///     Wind resistance on the part of the object above the water, facing the wind.
         ///     Calculate the wave drifting force so the boat can float with the waves
-        ///  Drifting from waves according to:
-        /// http://ocw.mit.edu/courses/mechanical-engineering/2-019-design-of-ocean-systems-spring-2011/lecture-notes/MIT2_019S11_DVL1.pdf
-        /// F = rho * g * A^2 * n 
-        /// rho - density of the medium
-        /// g - localGravity
-        /// A - area
-        /// n - normal
+        ///     Drifting from waves according to:
+        ///     http://ocw.mit.edu/courses/mechanical-engineering/2-019-design-of-ocean-systems-spring-2011/lecture-notes/MIT2_019S11_DVL1.pdf
+        ///     F = rho * g * A^2 * n
+        ///     rho - density of the medium
+        ///     g - localGravity
+        ///     A - area
+        ///     n - normal
         /// </summary>
         [BurstCompile]
         public struct CalculateForcesJob : IJobParallelFor, ITrilinearSampler<WaterVoxel>
@@ -254,8 +246,9 @@ namespace Appalachia.Simulation.Buoyancy.Jobs
                 {
                     return;
                 }
-                
+
                 var voxel = voxels[index];
+
                 //var samplePoint = samplePoints[voxel.indices];
                 var buoyancyVoxel = buoyancyVoxels[index];
 
@@ -322,29 +315,26 @@ namespace Appalachia.Simulation.Buoyancy.Jobs
                 var c01 = (nx * samples.c001) + (sx * samples.c101);
                 var c10 = (nx * samples.c010) + (sx * samples.c110);
                 var c11 = (nx * samples.c011) + (sx * samples.c111);
-                
+
                 var sy = samples.sampleStrengths.y;
                 var ny = 1.0f - sy;
 
                 var c0 = (ny * c00) + (sy * c10);
-                var c1 = (ny * c01) + (sy * c11);                
-                
+                var c1 = (ny * c01) + (sy * c11);
+
                 var sz = samples.sampleStrengths.z;
                 var nz = 1.0f - sz;
 
                 var c = (nz * c0) + (sz * c1);
-                
+
                 return c;
             }
 
-            private BuoyancyVoxel UpdateSubmersionState(
-                Voxel voxel,
-                BuoyancyVoxel buoyancyVoxel
-                )
+            private BuoyancyVoxel UpdateSubmersionState(Voxel voxel, BuoyancyVoxel buoyancyVoxel)
             {
                 var voxelWorldPostiion = voxel.worldPosition.value;
                 var waterWorldPosition = voxelWorldPostiion;
-                
+
                 waterWorldPosition.y = worldWaterHeight;
 
                 var offsetWaterWorldPosition = waterWorldPosition;
@@ -352,23 +342,23 @@ namespace Appalachia.Simulation.Buoyancy.Jobs
 
                 buoyancyVoxel.water = waterWorldPosition;
                 buoyancyVoxel.offsetWater = offsetWaterWorldPosition;
-                
-                
-                buoyancyVoxel.distanceToSurface = voxelWorldPostiion.y -  waterWorldPosition.y;
-                buoyancyVoxel.offsetDistanceToSurface = voxelWorldPostiion.y -  offsetWaterWorldPosition.y;
+
+                buoyancyVoxel.distanceToSurface = voxelWorldPostiion.y - waterWorldPosition.y;
+                buoyancyVoxel.offsetDistanceToSurface =
+                    voxelWorldPostiion.y - offsetWaterWorldPosition.y;
 
                 var targetSubmersion = 1.0f;
                 var targetOffsetSubmersion = 1.0f;
-                
+
                 var smoothing = submersionEngageSmoothing;
                 var offsetSmoothing = submersionEngageSmoothing;
-                
+
                 if (buoyancyVoxel.distanceToSurface >= 0)
                 {
                     targetSubmersion = 0f;
                     smoothing = submersionDisengageSmoothing;
                 }
-                
+
                 if (buoyancyVoxel.offsetDistanceToSurface >= 0)
                 {
                     targetOffsetSubmersion = 0f;
@@ -377,27 +367,30 @@ namespace Appalachia.Simulation.Buoyancy.Jobs
 
                 var submersion = buoyancyVoxel.submersion;
                 var offsetSubmersion = buoyancyVoxel.offsetSubmersion;
-                
+
                 var currentSubmersion = submersion.value;
                 var currentOffsetSubmersion = offsetSubmersion.value;
-                
+
                 var newSubmersion = math.lerp(currentSubmersion, targetSubmersion, smoothing);
-                var newOffsetSubmersion = math.lerp(currentOffsetSubmersion, targetOffsetSubmersion, offsetSmoothing);
-                
+                var newOffsetSubmersion = math.lerp(
+                    currentOffsetSubmersion,
+                    targetOffsetSubmersion,
+                    offsetSmoothing
+                );
+
                 submersion.Update(newSubmersion);
                 offsetSubmersion.Update(newOffsetSubmersion);
-                
+
                 buoyancyVoxel.submersion = submersion;
                 buoyancyVoxel.offsetSubmersion = offsetSubmersion;
 
                 return buoyancyVoxel;
             }
 
-            private BuoyancyVoxel HydrostaticForce(
-                BuoyancyVoxel buoyancyVoxel)
+            private BuoyancyVoxel HydrostaticForce(BuoyancyVoxel buoyancyVoxel)
             {
                 var offsetSubmersion = buoyancyVoxel.offsetSubmersion.value;
-                
+
                 buoyancyVoxel.hydrostaticForce = offsetSubmersion * archimedesForce;
                 buoyancyVoxel.hydrostaticForce.x = 0;
                 buoyancyVoxel.hydrostaticForce.z = 0;
@@ -419,7 +412,11 @@ namespace Appalachia.Simulation.Buoyancy.Jobs
                 var airSurfaceFactor = math.clamp(voxel.normalVelocityCodirectionality, 0, 1);
                 var airResistanceArea = areaInAir * airSurfaceFactor;
                 var voxelVelocitySq = voxel.worldVelocity.value * voxel.worldVelocity.value;
-                var airResistanceForce = -0.5f * airDensity * voxelVelocitySq * airResistanceArea * metadata.CoefficientAirResistance;
+                var airResistanceForce = -0.5f *
+                                         airDensity *
+                                         voxelVelocitySq *
+                                         airResistanceArea *
+                                         metadata.CoefficientAirResistance;
 
                 buoyancyVoxel.airResistanceForce = airResistanceForce;
 
@@ -429,30 +426,38 @@ namespace Appalachia.Simulation.Buoyancy.Jobs
             private BuoyancyVoxel WindResistanceForce(
                 Voxel voxel,
                 BuoyancyVoxel buoyancyVoxel,
-                float areaInAir
-                )
+                float areaInAir)
             {
-                var windSurfaceFactor = math.clamp(math.dot(voxel.faceData.worldNormal, windDynamicPressure), -1, 0);
+                var windSurfaceFactor = math.clamp(
+                    math.dot(voxel.faceData.worldNormal, windDynamicPressure),
+                    -1,
+                    0
+                );
                 var windResistanceArea = math.abs(areaInAir * windSurfaceFactor);
-                var windResistanceForce = windDynamicPressure * windResistanceArea * metadata.CoefficientWindResistance;
+                var windResistanceForce = windDynamicPressure *
+                                          windResistanceArea *
+                                          metadata.CoefficientWindResistance;
 
                 buoyancyVoxel.windResistanceForce = -windResistanceForce;
 
                 return buoyancyVoxel;
             }
-            
 
             private BuoyancyVoxel WaveDriftingForce(
                 Voxel voxel,
                 BuoyancyVoxel buoyancyVoxel,
-                float areaInWater
-            )
+                float areaInWater)
             {
                 var currentSample = Sample(currentSamples);
-                var waveSurfaceFactor = math.clamp(math.dot(voxel.faceData.worldNormal, currentSample.currentVector), -1f, 0f);
+                var waveSurfaceFactor = math.clamp(
+                    math.dot(voxel.faceData.worldNormal, currentSample.currentVector),
+                    -1f,
+                    0f
+                );
                 var waveResistanceArea = math.abs(waveSurfaceFactor) * areaInWater;
 
-                var waveDriftingForce = .5f * waterDensity * waveResistanceArea * currentSample.currentVector;
+                var waveDriftingForce =
+                    .5f * waterDensity * waveResistanceArea * currentSample.currentVector;
 
                 buoyancyVoxel.waveDriftingForce = waveDriftingForce;
                 buoyancyVoxel.waveDriftingForce.y = 0;
@@ -461,12 +466,10 @@ namespace Appalachia.Simulation.Buoyancy.Jobs
             }
 
             /// <summary>
-            /// Capture the response of the fluid to sudden accelerations or penetrations
-            /// https://www.orcina.com/webhelp/OrcaFlex/Content/html/Slammingtheory.htm
+            ///     Capture the response of the fluid to sudden accelerations or penetrations
+            ///     https://www.orcina.com/webhelp/OrcaFlex/Content/html/Slammingtheory.htm
             /// </summary>
-            private BuoyancyVoxel SlammingForce(
-                Voxel voxel,
-                BuoyancyVoxel buoyancyVoxel)
+            private BuoyancyVoxel SlammingForce(Voxel voxel, BuoyancyVoxel buoyancyVoxel)
             {
                 if (!buoyancyVoxel.submersion.hasDifference1)
                 {
@@ -488,31 +491,39 @@ namespace Appalachia.Simulation.Buoyancy.Jobs
                */
 
                 // Cs and Ce are slam coefficients for entry (subscript s for slam) and exit (subscript e) respectively. 
-                var slamCoefficient = buoyancyVoxel.submersion.delta > 0 ? metadata.slamEntryCoefficient : -metadata.slamExitCoefficient;
+                var slamCoefficient = buoyancyVoxel.submersion.delta > 0
+                    ? metadata.slamEntryCoefficient
+                    : -metadata.slamExitCoefficient;
 
                 var submersionDelta = math.abs(buoyancyVoxel.submersion.delta);
-                
+
                 // n is a unit vector in the water surface outward normal direction. This (together with the minus sign in the
                 // exit slam force formula) ensures that the slam force opposes the penetration of the water surface in both directions.
                 var slamSurfaceFactor = math.clamp(voxel.normalVelocityCodirectionality, 0, 1);
-                
+
                 // Aw = The instantaneous slam water-plane area, the area of the intersection of the water surface and voxel.
                 var slamWaterplaneArea = voxel.worldSurfaceArea * submersionDelta;
-                
+
                 // vn is the component in the surface normal direction of the cylinder velocity relative to the fluid velocity.        
                 var voxelVelocity = voxel.worldVelocity.value;
                 var voxelVelocitySq = voxelVelocity * voxelVelocity;
 
-                var slammingForce = .5f * slamCoefficient * slamWaterplaneArea * voxelVelocitySq * slamSurfaceFactor;
+                var slammingForce = .5f *
+                                    slamCoefficient *
+                                    slamWaterplaneArea *
+                                    voxelVelocitySq *
+                                    slamSurfaceFactor;
 
-                var slamForceHorizontality = buoyancyVoxel.submersion.delta > 0 ? metadata.slamEntryHorizontality : metadata.slamExitHorizontality;
-                    
+                var slamForceHorizontality = buoyancyVoxel.submersion.delta > 0
+                    ? metadata.slamEntryHorizontality
+                    : metadata.slamExitHorizontality;
+
                 slammingForce.x *= slamForceHorizontality;
                 slammingForce.z *= slamForceHorizontality;
                 buoyancyVoxel.slammingForce = slammingForce;
                 return buoyancyVoxel;
             }
-            
+
             private BuoyancyVoxel CheckForcesAreValid(BuoyancyVoxel buoyancyVoxel)
             {
                 buoyancyVoxel.hydrostaticForce = BuoyancyJobHelper.CheckForceIsValid(
@@ -539,7 +550,10 @@ namespace Appalachia.Simulation.Buoyancy.Jobs
                     buoyancyVoxel.waveDriftingForce,
                     BuoyancyJobHelper.ForceType.WaveDrifting
                 );
-                buoyancyVoxel.slammingForce = BuoyancyJobHelper.CheckForceIsValid(buoyancyVoxel.slammingForce, BuoyancyJobHelper.ForceType.Slamming);
+                buoyancyVoxel.slammingForce = BuoyancyJobHelper.CheckForceIsValid(
+                    buoyancyVoxel.slammingForce,
+                    BuoyancyJobHelper.ForceType.Slamming
+                );
 
                 return buoyancyVoxel;
             }
@@ -553,14 +567,42 @@ namespace Appalachia.Simulation.Buoyancy.Jobs
                 buoyancyVoxel.windResistanceForce *= metadata.windResistanceScale;
                 buoyancyVoxel.waveDriftingForce *= metadata.waveDriftingScale;
                 buoyancyVoxel.slammingForce *= metadata.slammingScale;
-                
-                buoyancyVoxel.hydrostaticForce = math.clamp(buoyancyVoxel.hydrostaticForce, -metadata.hydrostaticLimit*mass, metadata.hydrostaticLimit*mass); 
-                buoyancyVoxel.viscousWaterResistanceForce = math.clamp(buoyancyVoxel.viscousWaterResistanceForce, -metadata.viscousWaterResistanceLimit*mass, metadata.viscousWaterResistanceLimit*mass); 
-                buoyancyVoxel.pressureDragForce = math.clamp(buoyancyVoxel.pressureDragForce, -metadata.pressureDragLimit*mass, metadata.pressureDragLimit*mass); 
-                buoyancyVoxel.airResistanceForce = math.clamp(buoyancyVoxel.airResistanceForce, -metadata.airResistanceLimit*mass, metadata.airResistanceLimit*mass); 
-                buoyancyVoxel.windResistanceForce = math.clamp(buoyancyVoxel.windResistanceForce, -metadata.windResistanceLimit*mass, metadata.windResistanceLimit*mass);
-                buoyancyVoxel.waveDriftingForce = math.clamp(buoyancyVoxel.waveDriftingForce, -metadata.waveDriftingLimit*mass, metadata.waveDriftingLimit*mass); 
-                buoyancyVoxel.slammingForce = math.clamp(buoyancyVoxel.slammingForce, -metadata.slammingLimit*mass, metadata.slammingLimit*mass); 
+
+                buoyancyVoxel.hydrostaticForce = math.clamp(
+                    buoyancyVoxel.hydrostaticForce,
+                    -metadata.hydrostaticLimit * mass,
+                    metadata.hydrostaticLimit * mass
+                );
+                buoyancyVoxel.viscousWaterResistanceForce = math.clamp(
+                    buoyancyVoxel.viscousWaterResistanceForce,
+                    -metadata.viscousWaterResistanceLimit * mass,
+                    metadata.viscousWaterResistanceLimit * mass
+                );
+                buoyancyVoxel.pressureDragForce = math.clamp(
+                    buoyancyVoxel.pressureDragForce,
+                    -metadata.pressureDragLimit * mass,
+                    metadata.pressureDragLimit * mass
+                );
+                buoyancyVoxel.airResistanceForce = math.clamp(
+                    buoyancyVoxel.airResistanceForce,
+                    -metadata.airResistanceLimit * mass,
+                    metadata.airResistanceLimit * mass
+                );
+                buoyancyVoxel.windResistanceForce = math.clamp(
+                    buoyancyVoxel.windResistanceForce,
+                    -metadata.windResistanceLimit * mass,
+                    metadata.windResistanceLimit * mass
+                );
+                buoyancyVoxel.waveDriftingForce = math.clamp(
+                    buoyancyVoxel.waveDriftingForce,
+                    -metadata.waveDriftingLimit * mass,
+                    metadata.waveDriftingLimit * mass
+                );
+                buoyancyVoxel.slammingForce = math.clamp(
+                    buoyancyVoxel.slammingForce,
+                    -metadata.slammingLimit * mass,
+                    metadata.slammingLimit * mass
+                );
 
                 var force = buoyancyVoxel.hydrostaticForce +
                             buoyancyVoxel.viscousWaterResistanceForce +
@@ -575,7 +617,7 @@ namespace Appalachia.Simulation.Buoyancy.Jobs
                 force = math.clamp(force, -metadata.limit * mass, metadata.limit * mass);
 
                 buoyancyVoxel.force = force;
-                
+
                 return buoyancyVoxel;
             }
         }
@@ -592,7 +634,7 @@ namespace Appalachia.Simulation.Buoyancy.Jobs
             public NativeFloat3Ptr windResistanceForce;
             public NativeFloat3Ptr waveDriftingForce;
             public NativeFloat3Ptr slammingForce;
-            
+
             public void Execute()
             {
                 force.Value = 0;
@@ -637,22 +679,31 @@ namespace Appalachia.Simulation.Buoyancy.Jobs
                 var buoyancyVoxel = buoyancyVoxels[index];
 
                 hydrostaticForce.Add(buoyancyVoxel.hydrostaticForce / activeRatio);
-                viscousWaterResistanceForce.Add(buoyancyVoxel.viscousWaterResistanceForce / activeRatio);
+                viscousWaterResistanceForce.Add(
+                    buoyancyVoxel.viscousWaterResistanceForce / activeRatio
+                );
                 pressureDragForce.Add(buoyancyVoxel.pressureDragForce / activeRatio);
                 airResistanceForce.Add(buoyancyVoxel.airResistanceForce / activeRatio);
                 windResistanceForce.Add(buoyancyVoxel.windResistanceForce / activeRatio);
                 waveDriftingForce.Add(buoyancyVoxel.waveDriftingForce / activeRatio);
                 slammingForce.Add(buoyancyVoxel.slammingForce / activeRatio);
-                
+
                 var voxelForce = buoyancyVoxel.force;
 
                 force.Add(voxelForce / activeRatio);
 
-                var voxelTorque = GetTorqueFromForce(worldCenterOfMass, voxelForce, voxel.worldPosition.value);
+                var voxelTorque = GetTorqueFromForce(
+                    worldCenterOfMass,
+                    voxelForce,
+                    voxel.worldPosition.value
+                );
                 torque.Add(voxelTorque);
             }
-            
-            private static float3 GetTorqueFromForce(float3 centerOfMass, float3 force, float3 position)
+
+            private static float3 GetTorqueFromForce(
+                float3 centerOfMass,
+                float3 force,
+                float3 position)
             {
                 var x = position - centerOfMass;
                 var torque = math.cross(x, force);

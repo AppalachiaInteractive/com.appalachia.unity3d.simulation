@@ -6,7 +6,8 @@ using UnityEngine;
 namespace Appalachia.Simulation.Buoyancy.Voxels
 {
     [Serializable]
-    public class BuoyancyVoxelsLookup : AppaLookup<string, BuoyancyVoxelsDataStore, AppaList_string, AppaList_BuoyancyVoxelsDataStore>
+    public class BuoyancyVoxelsLookup : AppaLookup<string, BuoyancyVoxelsDataStore, AppaList_string,
+        AppaList_BuoyancyVoxelsDataStore>
     {
         protected override string GetDisplayTitle(string key, BuoyancyVoxelsDataStore value)
         {

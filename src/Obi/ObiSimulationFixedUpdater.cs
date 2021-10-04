@@ -5,9 +5,8 @@ using UnityEngine;
 namespace Appalachia.Simulation.Obi
 {
     /// <summary>
-    /// Updater class that will perform simulation during FixedUpdate(). This is the most physically correct updater,
-    /// and the one to be used in most cases. Also allows to perform substepping, greatly improving convergence.
-                  
+    ///     Updater class that will perform simulation during FixedUpdate(). This is the most physically correct updater,
+    ///     and the one to be used in most cases. Also allows to perform substepping, greatly improving convergence.
     [AddComponentMenu("Physics/Obi/Obi Simulation Fixed Updater", 801)]
     [ExecuteAlways]
     public class ObiSimulationFixedUpdater : ObiUpdater
@@ -23,18 +22,14 @@ namespace Appalachia.Simulation.Obi
 #endif
         }
 
-#if UNITY_EDITOR
-        private void OnEnable()
+        private void Update()
         {
-            PhysicsSimulator.onSimulationUpdate -= FixedUpdate;
-            PhysicsSimulator.onSimulationUpdate += FixedUpdate;
+            ObiProfiler.EnableProfiler();
+            Interpolate(Time.fixedDeltaTime, accumulatedTime);
+            ObiProfiler.DisableProfiler();
+
+            accumulatedTime += Time.deltaTime;
         }
-        
-        private void OnDisable()
-        {
-            PhysicsSimulator.onSimulationUpdate -= FixedUpdate;
-        }
-#endif
 
         private void FixedUpdate()
         {
@@ -54,13 +49,17 @@ namespace Appalachia.Simulation.Obi
             accumulatedTime -= deltaTime;
         }
 
-        private void Update()
+#if UNITY_EDITOR
+        private void OnEnable()
         {
-            ObiProfiler.EnableProfiler();
-            Interpolate(Time.fixedDeltaTime, accumulatedTime);
-            ObiProfiler.DisableProfiler();
-
-            accumulatedTime += Time.deltaTime;
+            PhysicsSimulator.onSimulationUpdate -= FixedUpdate;
+            PhysicsSimulator.onSimulationUpdate += FixedUpdate;
         }
+
+        private void OnDisable()
+        {
+            PhysicsSimulator.onSimulationUpdate -= FixedUpdate;
+        }
+#endif
     }
 }

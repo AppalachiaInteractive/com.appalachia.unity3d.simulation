@@ -5,9 +5,8 @@ using Appalachia.Spatial.Voxels.Persistence;
 namespace Appalachia.Simulation.Buoyancy.Voxels
 {
     [Serializable]
-    public class BuoyancyVoxelsDataStore : VoxelPersistentObjectAndElementsDataStore<BuoyancyVoxels, BuoyancyVoxelsDataStore, BuoyancyObjectData,
-        BuoyancyVoxel>
+    public class BuoyancyVoxelsDataStore : VoxelPersistentObjectAndElementsDataStore<BuoyancyVoxels,
+        BuoyancyVoxelsDataStore, BuoyancyObjectData, BuoyancyVoxel>
     {
-        
     }
 }

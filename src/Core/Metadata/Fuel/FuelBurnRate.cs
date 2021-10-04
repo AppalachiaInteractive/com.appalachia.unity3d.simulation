@@ -9,6 +9,5 @@ namespace Appalachia.Simulation.Core.Metadata.Fuel
         public float kgCharPerHour = 2f;
         public float kgBurnPerHour = 1f;
         public float ignitionRate = 0.05f;
-        
     }
 }

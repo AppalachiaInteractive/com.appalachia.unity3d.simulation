@@ -8,9 +8,6 @@ namespace Appalachia.Simulation.Physical.Relays
 {
     public class TriggerRelay_EnterStay : TriggerRelay
     {
-        public event OnRelayedTrigger OnRelayedTriggerEnter;
-        public event OnRelayedTrigger OnRelayedTriggerStay;
-
         private void OnTriggerEnter(Collider other)
         {
             OnRelayedTriggerEnter?.Invoke(this, relayingColliders, other);
@@ -20,5 +17,8 @@ namespace Appalachia.Simulation.Physical.Relays
         {
             OnRelayedTriggerStay?.Invoke(this, relayingColliders, other);
         }
+
+        public event OnRelayedTrigger OnRelayedTriggerEnter;
+        public event OnRelayedTrigger OnRelayedTriggerStay;
     }
 }

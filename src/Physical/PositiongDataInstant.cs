@@ -31,12 +31,20 @@ namespace Appalachia.Simulation.Physical
             localCenterOfMass = body.centerOfMass;
             mass = body.mass;
         }
-        
-        #region IEquatable
+
+#region IEquatable
 
         public bool Equals(PositiongDataInstant other)
         {
-            return time.Equals(other.time) && localToWorld.Equals(other.localToWorld) && position.Equals(other.position) && rotation.Equals(other.rotation) && localVelocity.Equals(other.localVelocity) && localHeading.Equals(other.localHeading) && localAngularVelocity.Equals(other.localAngularVelocity) && localCenterOfMass.Equals(other.localCenterOfMass) && mass.Equals(other.mass);
+            return time.Equals(other.time) &&
+                   localToWorld.Equals(other.localToWorld) &&
+                   position.Equals(other.position) &&
+                   rotation.Equals(other.rotation) &&
+                   localVelocity.Equals(other.localVelocity) &&
+                   localHeading.Equals(other.localHeading) &&
+                   localAngularVelocity.Equals(other.localAngularVelocity) &&
+                   localCenterOfMass.Equals(other.localCenterOfMass) &&
+                   mass.Equals(other.mass);
         }
 
         public override bool Equals(object obj)

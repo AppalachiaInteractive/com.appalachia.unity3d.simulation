@@ -14,21 +14,55 @@ namespace Appalachia.Simulation.Core
     public class RigidbodyData
     {
         private const string _PRF_PFX = nameof(RigidbodyData) + ".";
-        
+
+        private static readonly ProfilerMarker _PRF_RigidbodyData =
+            new(_PRF_PFX + nameof(RigidbodyData));
+
+        private static readonly ProfilerMarker _PRF_ApplyTo = new(_PRF_PFX + nameof(ApplyTo));
+
+        private static readonly ProfilerMarker _PRF_GetFrom = new(_PRF_PFX + nameof(GetFrom));
+
         [ReadOnly]
-        [SerializeField, SmartLabel(Postfix = true)]
+        [SerializeField]
+        [SmartLabel(Postfix = true)]
         public bool set;
 
-        [SerializeField, SmartLabel(Postfix = true)] public bool useGravity = true;
-        [ShowIf(nameof(showMass)), SerializeField, SmartLabel] public float mass = 1.0f;
-        [SerializeField, SmartLabel] public RigidbodyConstraints constraints = RigidbodyConstraints.None;
-        [SerializeField, SmartLabel(Postfix = true)] public bool detectCollisions = true;
-        [SerializeField, SmartLabel] public float drag;
-        [SerializeField, SmartLabel] public float angularDrag;
-        [SerializeField, SmartLabel] public bool isKinematic;
-        [SerializeField, SmartLabel] public RigidbodyInterpolation interpolation = RigidbodyInterpolation.None;
+        [SerializeField]
+        [SmartLabel(Postfix = true)]
+        public bool useGravity = true;
 
-        [HideInInspector, SerializeField, SmartLabel]
+        [ShowIf(nameof(showMass))]
+        [SerializeField]
+        [SmartLabel]
+        public float mass = 1.0f;
+
+        [SerializeField]
+        [SmartLabel]
+        public RigidbodyConstraints constraints = RigidbodyConstraints.None;
+
+        [SerializeField]
+        [SmartLabel(Postfix = true)]
+        public bool detectCollisions = true;
+
+        [SerializeField]
+        [SmartLabel]
+        public float drag;
+
+        [SerializeField]
+        [SmartLabel]
+        public float angularDrag;
+
+        [SerializeField]
+        [SmartLabel]
+        public bool isKinematic;
+
+        [SerializeField]
+        [SmartLabel]
+        public RigidbodyInterpolation interpolation = RigidbodyInterpolation.None;
+
+        [HideInInspector]
+        [SerializeField]
+        [SmartLabel]
         public bool showMass = true;
 
         public RigidbodyData(bool showMass)
@@ -36,7 +70,6 @@ namespace Appalachia.Simulation.Core
             this.showMass = showMass;
         }
 
-        private static readonly ProfilerMarker _PRF_RigidbodyData = new ProfilerMarker(_PRF_PFX + nameof(RigidbodyData));
         public RigidbodyData(Rigidbody rigidbody)
         {
             using (_PRF_RigidbodyData.Auto())
@@ -53,7 +86,6 @@ namespace Appalachia.Simulation.Core
             }
         }
 
-        private static readonly ProfilerMarker _PRF_ApplyTo = new ProfilerMarker(_PRF_PFX + nameof(ApplyTo));
         public void ApplyTo(Rigidbody rigidbody)
         {
             using (_PRF_ApplyTo.Auto())
@@ -74,7 +106,6 @@ namespace Appalachia.Simulation.Core
             }
         }
 
-        private static readonly ProfilerMarker _PRF_GetFrom = new ProfilerMarker(_PRF_PFX + nameof(GetFrom));
         public void GetFrom(Rigidbody rigidbody)
         {
             using (_PRF_GetFrom.Auto())

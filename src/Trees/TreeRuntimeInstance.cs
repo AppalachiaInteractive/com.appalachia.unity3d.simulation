@@ -20,20 +20,24 @@ namespace Appalachia.Simulation.Trees
     [ExecuteAlways]
     public class TreeRuntimeInstance : MonoBehaviour
     {
-        [InlineEditor(), SmartLabel]
-        public TreeSpeciesMetadata speciesMetadata;
-        
-        [InlineEditor(), SmartLabel]
-        public TreeRuntimeInstanceMetadata metadata;
-        
+        [InlineEditor]
         [SmartLabel]
-        public LODGroup lodGroup;
+        public TreeSpeciesMetadata speciesMetadata;
+
+        [InlineEditor]
+        [SmartLabel]
+        public TreeRuntimeInstanceMetadata metadata;
+
+        [SmartLabel] public LODGroup lodGroup;
+
+        [NonSerialized] private TreeAgeMetadata _ageMetadata;
+
         //public Rigidbody rigidbody;
 
+        [NonSerialized] private TreeIndividualMetadata _individualMetadata;
 
-        [NonSerialized]
-        private TreeIndividualMetadata _individualMetadata;
-        
+        [NonSerialized] private TreeStageMetadata _stageMetadata;
+
         public TreeIndividualMetadata individualMetadata
         {
             get
@@ -42,16 +46,13 @@ namespace Appalachia.Simulation.Trees
                 {
                     return _individualMetadata;
                 }
-                
+
                 _individualMetadata = speciesMetadata.GetIndividual(metadata.individualID);
-                
+
                 return _individualMetadata;
             }
         }
 
-        [NonSerialized]
-        private TreeAgeMetadata _ageMetadata;
-        
         public TreeAgeMetadata ageMetadata
         {
             get
@@ -60,7 +61,7 @@ namespace Appalachia.Simulation.Trees
                 {
                     return _ageMetadata;
                 }
-                
+
                 if (individualMetadata != null)
                 {
                     _ageMetadata = individualMetadata[metadata.age];
@@ -70,9 +71,6 @@ namespace Appalachia.Simulation.Trees
             }
         }
 
-        [NonSerialized]
-        private TreeStageMetadata _stageMetadata;
-        
         public TreeStageMetadata stageMetadata
         {
             get
@@ -91,12 +89,18 @@ namespace Appalachia.Simulation.Trees
             }
         }
 
+        public bool CanCut => (ageMetadata != null) && ageMetadata.CanCut(metadata.stage);
+
+        public bool CanBare => (ageMetadata != null) && ageMetadata.CanBare(metadata.stage);
+
+        public bool CanRot => (ageMetadata != null) && ageMetadata.CanRot(metadata.stage);
 
 #if UNITY_EDITOR
-        [SerializeField, HideInInspector]
+        [SerializeField]
+        [HideInInspector]
         private ITreeModel _model;
 
-        private bool _missingModel => _model == null || _model.MissingContainer;
+        private bool _missingModel => (_model == null) || _model.MissingContainer;
 
         [Button(ButtonSizes.Medium)]
         [GUIColor(0.79f, 0.68f, 0.19f)]
@@ -123,7 +127,7 @@ namespace Appalachia.Simulation.Trees
                 _model = GetComponentInParent<ITreeModel>();
             }
         }
-        
+
         [Button]
         public void ClearModels()
         {
@@ -135,14 +139,5 @@ namespace Appalachia.Simulation.Trees
             }
         }
 #endif
-
-       
-
-        public bool CanCut => ageMetadata != null && ageMetadata.CanCut(metadata.stage);
-
-        public bool CanBare => ageMetadata != null && ageMetadata.CanBare(metadata.stage);
-
-        public bool CanRot => ageMetadata != null && ageMetadata.CanRot(metadata.stage);
-
     }
 }

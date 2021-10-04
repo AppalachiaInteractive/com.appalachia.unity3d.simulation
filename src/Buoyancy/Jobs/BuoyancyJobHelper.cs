@@ -35,7 +35,5 @@ namespace Appalachia.Simulation.Buoyancy.Jobs
         {
             Debug.LogWarning($"{forceType} force is NaN!");
         }
-
-
     }
 }

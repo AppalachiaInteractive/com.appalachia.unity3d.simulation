@@ -5,10 +5,11 @@ using Appalachia.Simulation.Core.Metadata.Tree.Types;
 namespace Appalachia.Simulation.Core.Metadata.Tree
 {
     [Serializable]
-    public class TreeIndividualMetadata : SelfSavingAndIdentifyingScriptableObject<TreeIndividualMetadata>
+    public class
+        TreeIndividualMetadata : SelfSavingAndIdentifyingScriptableObject<TreeIndividualMetadata>
     {
         public int individualID;
-        
+
         public TreeAgeMetadata sapling;
         public TreeAgeMetadata young;
         public TreeAgeMetadata adult;
@@ -62,7 +63,7 @@ namespace Appalachia.Simulation.Core.Metadata.Tree
                     throw new ArgumentOutOfRangeException(nameof(ageType), ageType, null);
             }
         }
-        
+
         public bool TryGet(AgeType ageType, out TreeAgeMetadata ageMetadata)
         {
             switch (ageType)
@@ -85,7 +86,7 @@ namespace Appalachia.Simulation.Core.Metadata.Tree
                 default:
                     throw new ArgumentOutOfRangeException(nameof(ageType), ageType, null);
             }
-            
+
             return ageMetadata != null;
         }
     }

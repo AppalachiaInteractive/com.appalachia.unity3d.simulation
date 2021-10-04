@@ -12,9 +12,9 @@ namespace Appalachia.Simulation.Core.Metadata.Materials
 {
     public class PhysicsMaterials : MetadataLookupBase<PhysicsMaterials, PhysicMaterialWrapper>
     {
-        [FoldoutGroup("Misc")]
-        public Material physicsVisualizationMaterial;
-        
+        [FoldoutGroup("Misc")] public Material physicsVisualizationMaterial;
+
+        private Dictionary<PhysicMaterial, PhysicMaterialWrapper> _lookup;
 
         [Button]
         public void SearchAll()
@@ -22,8 +22,11 @@ namespace Appalachia.Simulation.Core.Metadata.Materials
             var list = all;
             for (var i = 0; i < list.Count; i++)
             {
-                if (list[i] == null) continue;
-                
+                if (list[i] == null)
+                {
+                    continue;
+                }
+
                 if (list[i].CanSearch)
                 {
                     list[i].Search();
@@ -31,8 +34,6 @@ namespace Appalachia.Simulation.Core.Metadata.Materials
             }
         }
 
-        private Dictionary<PhysicMaterial, PhysicMaterialWrapper> _lookup;
-        
         public PhysicMaterialWrapper Lookup(PhysicMaterial m)
         {
             if (_lookup == null)
@@ -47,7 +48,12 @@ namespace Appalachia.Simulation.Core.Metadata.Materials
 
             if (_lookup.Count == 0)
             {
-                _lookup = all.Where(a => a != null).ToDictionary(k => k.material, i => i, ObjectComparer<PhysicMaterial>.Instance);
+                _lookup = all.Where(a => a != null)
+                             .ToDictionary(
+                                  k => k.material,
+                                  i => i,
+                                  ObjectComparer<PhysicMaterial>.Instance
+                              );
             }
 
             if (_lookup.ContainsKey(m))

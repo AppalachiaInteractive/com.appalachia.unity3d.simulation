@@ -16,24 +16,32 @@ namespace Appalachia.Simulation.Physical.Integration
     public class RigidbodyDensityManager : EditorOnlyMonoBehaviour
     {
         private const string _PRF_PFX = nameof(RigidbodyDensityManager) + ".";
-        
-        [BoxGroup("Density"), OnValueChanged(nameof(Initialize), true)]
+
+        [BoxGroup("Density")]
+        [OnValueChanged(nameof(Initialize), true)]
 #if UNITY_EDITOR
-        [HorizontalGroup("Density/A", .7f), HideLabel, LabelWidth(0), InlineEditor()]
+        [HorizontalGroup("Density/A", .7f)]
+        [HideLabel]
+        [LabelWidth(0)]
+        [InlineEditor]
 #else
         [InlineEditor]
 #endif
         public DensityMetadata density;
-        
+
 #if UNITY_EDITOR
 
-        public override EditorOnlyExclusionStyle exclusionStyle => EditorOnlyExclusionStyle.Component;
-        
+        public override EditorOnlyExclusionStyle exclusionStyle =>
+            EditorOnlyExclusionStyle.Component;
+
         private bool _canCreateDensity => density == null;
 
-        private static readonly ProfilerMarker _PRF_CreateNewDensity = new ProfilerMarker(_PRF_PFX + nameof(CreateNewDensity));
+        private static readonly ProfilerMarker _PRF_CreateNewDensity =
+            new(_PRF_PFX + nameof(CreateNewDensity));
+
         [HorizontalGroup("Density/A", .3f)]
-        [Button, EnableIf(nameof(_canCreateDensity))]
+        [Button]
+        [EnableIf(nameof(_canCreateDensity))]
         public void CreateNewDensity()
         {
             using (_PRF_CreateNewDensity.Auto())
@@ -43,19 +51,27 @@ namespace Appalachia.Simulation.Physical.Integration
         }
 #endif
 
-        [HorizontalGroup("Density/B", .3f), SmartLabel(Postfix = true), OnValueChanged(nameof(Initialize))]
+        [HorizontalGroup("Density/B", .3f)]
+        [SmartLabel(Postfix = true)]
+        [OnValueChanged(nameof(Initialize))]
         public bool overrideDensity;
 
-        [HorizontalGroup("Density/B", .7f), SmartLabel, EnableIf(nameof(overrideDensity)), PropertyRange(100f, 1500f), OnValueChanged(nameof(Initialize))]
+        [HorizontalGroup("Density/B", .7f)]
+        [SmartLabel]
+        [EnableIf(nameof(overrideDensity))]
+        [PropertyRange(100f, 1500f)]
+        [OnValueChanged(nameof(Initialize))]
         public float densityKGPerCubicMeter = 1000f;
 
-
-        [BoxGroup("Runtime"), ReadOnly, NonSerialized, ShowInInspector]
+        [BoxGroup("Runtime")]
+        [ReadOnly]
+        [NonSerialized]
+        [ShowInInspector]
         private float _volume;
 
         public float volume
         {
-            get { return _volume; }
+            get => _volume;
             set
             {
                 _volume = value;
@@ -63,16 +79,24 @@ namespace Appalachia.Simulation.Physical.Integration
             }
         }
 
-        [BoxGroup("Runtime"), ReadOnly, NonSerialized, ShowInInspector]
+        [BoxGroup("Runtime")]
+        [ReadOnly]
+        [NonSerialized]
+        [ShowInInspector]
         public Vector3 volumeTakenAtScale;
 
-        [BoxGroup("Runtime"), ReadOnly]
+        [BoxGroup("Runtime")]
+        [ReadOnly]
         public Rigidbody rb;
 
-        [BoxGroup("Runtime"), ReadOnly, ShowInInspector]
+        [BoxGroup("Runtime")]
+        [ReadOnly]
+        [ShowInInspector]
         public float mass => rb.mass;
 
-        private static readonly ProfilerMarker _PRF_Internal_Awake = new ProfilerMarker(_PRF_PFX + nameof(Internal_Awake));
+        private static readonly ProfilerMarker _PRF_Internal_Awake =
+            new(_PRF_PFX + nameof(Internal_Awake));
+
         protected override void Internal_Awake()
         {
             using (_PRF_Internal_Awake.Auto())
@@ -81,7 +105,9 @@ namespace Appalachia.Simulation.Physical.Integration
             }
         }
 
-        private static readonly ProfilerMarker _PRF_Internal_OnEnable = new ProfilerMarker(_PRF_PFX + nameof(Internal_OnEnable));
+        private static readonly ProfilerMarker _PRF_Internal_OnEnable =
+            new(_PRF_PFX + nameof(Internal_OnEnable));
+
         protected override void Internal_OnEnable()
         {
             using (_PRF_Internal_OnEnable.Auto())
@@ -90,7 +116,8 @@ namespace Appalachia.Simulation.Physical.Integration
             }
         }
 
-        private static readonly ProfilerMarker _PRF_Initialize = new ProfilerMarker(_PRF_PFX + nameof(Initialize));
+        private static readonly ProfilerMarker _PRF_Initialize = new(_PRF_PFX + nameof(Initialize));
+
         [Button]
         public void Initialize()
         {
@@ -114,8 +141,8 @@ namespace Appalachia.Simulation.Physical.Integration
 
                 var lossyScale = rb.transform.lossyScale;
                 var scaleChanged = (lossyScale - volumeTakenAtScale).magnitude < .01f;
-            
-                if (_volume == 0f || scaleChanged)
+
+                if ((_volume == 0f) || scaleChanged)
                 {
                     var originalMass = rb.mass;
 
@@ -123,13 +150,12 @@ namespace Appalachia.Simulation.Physical.Integration
                     _volume = rb.mass;
                     volumeTakenAtScale = lossyScale;
                     rb.mass = originalMass;
-                
                 }
 
                 if (density != null)
                 {
                     var newMass = density.densityKGPerCubicMeter * _volume;
-                
+
                     rb.mass = newMass;
 
                     //var scale = ;
@@ -138,7 +164,8 @@ namespace Appalachia.Simulation.Physical.Integration
             }
         }
 
-        private static readonly ProfilerMarker _PRF_CreateNow = new ProfilerMarker(_PRF_PFX + nameof(CreateNow));
+        private static readonly ProfilerMarker _PRF_CreateNow = new(_PRF_PFX + nameof(CreateNow));
+
         public static RigidbodyDensityManager CreateNow(GameObject go)
         {
             using (_PRF_CreateNow.Auto())
@@ -153,7 +180,7 @@ namespace Appalachia.Simulation.Physical.Integration
                 if (densityManager.rb == null)
                 {
                     densityManager.rb = go.GetComponent<Rigidbody>();
-            
+
                     if (densityManager.rb == null)
                     {
                         densityManager.rb = go.AddComponent<Rigidbody>();
@@ -162,7 +189,9 @@ namespace Appalachia.Simulation.Physical.Integration
 
                 if (densityManager.density == null)
                 {
-                    var colliders = go.FilterComponentsFromChildren<Collider>().NoTriggers().RunFilter();
+                    var colliders = go.FilterComponentsFromChildren<Collider>()
+                                      .NoTriggers()
+                                      .RunFilter();
 
                     if (colliders.Length == 0)
                     {
@@ -174,7 +203,7 @@ namespace Appalachia.Simulation.Physical.Integration
                     }
 
                     PhysicMaterialWrapper material = null;
-                
+
                     for (var i = 0; i < colliders.Length; i++)
                     {
                         var c = colliders[i];
@@ -196,13 +225,16 @@ namespace Appalachia.Simulation.Physical.Integration
 
                     if (material == null)
                     {
-                        Debug.LogError("Need to set collider materials!  Using default material & density for now...", densityManager);
+                        Debug.LogError(
+                            "Need to set collider materials!  Using default material & density for now...",
+                            densityManager
+                        );
                         material = PhysicsMaterials.instance.defaultValue;
                     }
 
                     densityManager.density = material.defaultDensity;
                 }
-            
+
                 densityManager.Initialize();
 
                 return densityManager;

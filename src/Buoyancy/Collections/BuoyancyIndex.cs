@@ -1,12 +1,12 @@
 using Appalachia.Core.Collections;
 using Appalachia.Core.Collections.Implementations.Lists;
-using Appalachia.Utility;
 using Appalachia.Utility.Colors;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Buoyancy.Collections
 {
-    public class BuoyancyLookup : AppaLookup<GameObject, Buoyant, AppaList_GameObject, AppaList_Buoyant>
+    public class
+        BuoyancyLookup : AppaLookup<GameObject, Buoyant, AppaList_GameObject, AppaList_Buoyant>
     {
         protected override string GetDisplayTitle(GameObject key, Buoyant value)
         {

@@ -18,18 +18,20 @@ namespace Appalachia.Simulation.Trees.Rendering
     public class TreePrefabInstance : MonoBehaviour
     {
         public TreePrefabInstanceData instanceData;
-        
+
         public void OnEnable()
         {
             var lightProbeProxyVolume = FindObjectsOfType<LightProbeProxyVolume>()
-                .OrderByDescending(lppv => lppv.boundsGlobal.size)
-                .FirstOrDefault(lppv => lppv.boundsGlobal.Contains(transform.position));
+                                       .OrderByDescending(lppv => lppv.boundsGlobal.size)
+                                       .FirstOrDefault(
+                                            lppv => lppv.boundsGlobal.Contains(transform.position)
+                                        );
 
             var renderers = GetComponentsInChildren<MeshRenderer>();
-            
+
             foreach (var r in renderers)
-            { 
-                if (lightProbeProxyVolume != null && r.lightProbeProxyVolumeOverride == null) 
+            {
+                if ((lightProbeProxyVolume != null) && (r.lightProbeProxyVolumeOverride == null))
                 {
                     r.lightProbeUsage = LightProbeUsage.UseProxyVolume;
                     r.lightProbeProxyVolumeOverride = lightProbeProxyVolume.gameObject;
@@ -38,13 +40,13 @@ namespace Appalachia.Simulation.Trees.Rendering
                 {
                     r.lightProbeUsage = LightProbeUsage.BlendProbes;
                 }
-                
-                GameObjectUtility.SetStaticEditorFlags(r.gameObject, StaticEditorFlags.ContributeGI);
+
+                GameObjectUtility.SetStaticEditorFlags(
+                    r.gameObject,
+                    StaticEditorFlags.ContributeGI
+                );
                 r.receiveGI = ReceiveGI.LightProbes;
             }
         }
-
-
-       
     }
 }

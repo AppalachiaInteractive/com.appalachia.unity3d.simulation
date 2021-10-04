@@ -7,10 +7,10 @@ namespace Appalachia.Simulation.Core.Metadata.Tree
     public class TreeSpeciesMetadata : SelfSavingAndIdentifyingScriptableObject<TreeSpeciesMetadata>
     {
         public string speciesName;
-        
+
         public WoodSimulationData woodData;
-        
-        public List<TreeIndividualMetadata> individuals = new List<TreeIndividualMetadata>();
+
+        public List<TreeIndividualMetadata> individuals = new();
 
         private Dictionary<int, TreeIndividualMetadata> _lookup;
 
@@ -20,7 +20,7 @@ namespace Appalachia.Simulation.Core.Metadata.Tree
             {
                 _lookup = new Dictionary<int, TreeIndividualMetadata>();
             }
-            
+
             if (_lookup.Count == 0)
             {
                 for (var i = 0; i < individuals.Count; i++)
@@ -30,7 +30,7 @@ namespace Appalachia.Simulation.Core.Metadata.Tree
                     _lookup.Add(individual.individualID, individual);
                 }
             }
-            
+
             return _lookup[individualID];
         }
     }

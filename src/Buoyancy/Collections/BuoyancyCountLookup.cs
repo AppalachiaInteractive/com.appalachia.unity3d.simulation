@@ -1,6 +1,5 @@
 using Appalachia.Core.Collections;
 using Appalachia.Core.Collections.Implementations.Lists;
-using Appalachia.Utility;
 using Appalachia.Utility.Colors;
 using UnityEngine;
 

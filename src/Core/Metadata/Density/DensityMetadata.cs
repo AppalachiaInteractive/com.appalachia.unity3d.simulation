@@ -10,22 +10,23 @@ using UnityEngine;
 
 namespace Appalachia.Simulation.Core.Metadata.Density
 {
-
-    public class DensityMetadata : SelfCategorizingNamingSavingAndIdentifyingScriptableObject<DensityMetadata>
+    public class DensityMetadata : SelfCategorizingNamingSavingAndIdentifyingScriptableObject<
+        DensityMetadata>
     {
-
-        [SerializeField, SmartLabel]
+        [SerializeField]
+        [SmartLabel]
         public float densityGramPerCubicCentimeter;
-        
-        [ShowInInspector, SmartLabel]
+
+        [SerializeField]
+        [SmartLabel]
+        public PhysicMaterialWrapper materialWrapper;
+
+        [ShowInInspector]
+        [SmartLabel]
         public float densityKGPerCubicMeter
         {
             get => densityGramPerCubicCentimeter * 1000.0f;
             set => densityGramPerCubicCentimeter = value / 1000.0f;
         }
-
-        [SerializeField, SmartLabel]
-        public PhysicMaterialWrapper materialWrapper;
-
     }
 }
