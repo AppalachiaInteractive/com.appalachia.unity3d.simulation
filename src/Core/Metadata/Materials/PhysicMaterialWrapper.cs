@@ -1,7 +1,7 @@
-using Appalachia.Base.Scriptables;
+using Appalachia.Core.Assets;
+using Appalachia.Core.Attributes.Editing;
 using Appalachia.Core.Extensions;
-using Appalachia.Editing.Assets;
-using Appalachia.Editing.Attributes;
+using Appalachia.Core.Scriptables;
 using Appalachia.Simulation.Core.Metadata.Density;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -41,7 +41,7 @@ namespace Appalachia.Simulation.Core.Metadata.Materials
 #if UNITY_EDITOR
             if (defaultDensity == null)
             {
-                defaultDensity = AssetDatabaseHelper.FindAssets<DensityMetadata>()
+                defaultDensity = AssetDatabaseManager.FindAssets<DensityMetadata>()
                                                     .FirstOrDefault_NoAlloc(
                                                          dm => dm.materialWrapper == this
                                                      );
@@ -58,7 +58,7 @@ namespace Appalachia.Simulation.Core.Metadata.Materials
         [EnableIf(nameof(CanSearch))]
         public void Search()
         {
-            var materials = AssetDatabaseHelper.FindAssets<PhysicMaterial>();
+            var materials = AssetDatabaseManager.FindAssets<PhysicMaterial>();
 
             var foundMaterial = materials.FirstOrDefault_NoAlloc(m => m.name == name);
 
@@ -85,7 +85,7 @@ namespace Appalachia.Simulation.Core.Metadata.Materials
                 }
             }
 
-            var surfaces = AssetDatabaseHelper.FindAssets<Material>();
+            var surfaces = AssetDatabaseManager.FindAssets<Material>();
 
             var foundSurface = surfaces.FirstOrDefault_NoAlloc(m => m.name == $"physics_{name}");
 

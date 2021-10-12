@@ -3,8 +3,9 @@
 using System;
 using Appalachia.Audio;
 using Appalachia.Audio.Components;
-using Appalachia.Base.Behaviours;
-using Appalachia.Editing.Attributes;
+using Appalachia.Core.Attributes.Editing;
+using Appalachia.Core.Behaviours;
+using Appalachia.Core.Shading;
 using Appalachia.Globals.Shading;
 using Appalachia.Simulation.Core.Metadata.Wind;
 using Sirenix.OdinInspector;
@@ -393,7 +394,6 @@ namespace Appalachia.Simulation.Wind
                 debugParameters = GlobalWindParameters.LoadOrCreateNew(
                     "GLOBAL-WIND-PARAMS_DEBUG",
                     false,
-                    false,
                     false
                 );
             }
@@ -402,7 +402,6 @@ namespace Appalachia.Simulation.Wind
             {
                 parameters = GlobalWindParameters.LoadOrCreateNew(
                     "GLOBAL-WIND-PARAMS",
-                    false,
                     false,
                     false
                 );
@@ -536,6 +535,7 @@ namespace Appalachia.Simulation.Wind
 
                 using (_PRF_SetGlobalShaderProperties_SetDefaults.Auto())
                 {
+                    // ReSharper disable once RedundantAssignment
                     currentAudioStrength = gustAudioEffect;
                     currentAudioStrengthVeryHigh = gustAudioEffect;
                     currentAudioStrengthHigh = gustAudioEffect;

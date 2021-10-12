@@ -2,7 +2,7 @@
 
 using System;
 using System.Collections.Generic;
-using Appalachia.Globals.Shading;
+using Appalachia.Core.Shading;
 using Sirenix.OdinInspector;
 using UnityEngine;
 

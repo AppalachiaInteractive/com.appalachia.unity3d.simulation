@@ -1,8 +1,8 @@
 #region
 
-using Appalachia.Base.Behaviours;
+using Appalachia.Core.Behaviours;
 using Appalachia.Core.Extensions;
-using Appalachia.Globals.Shading;
+using Appalachia.Core.Shading;
 using Appalachia.Simulation.Core.Metadata.Wood;
 using Appalachia.Simulation.Physical.Integration;
 using Sirenix.OdinInspector;
@@ -21,7 +21,7 @@ namespace Appalachia.Simulation.Trees
     [DisallowMultipleComponent]
     [ExecuteAlways]
     [RequireComponent(typeof(RigidbodyDensityManager))]
-    public class LogRuntimeInstance : InternalInstancedMonoBehaviour
+    public class LogRuntimeInstance : AppalachiaInstancedMonoBehaviour
     {
         [FormerlySerializedAs("densityRigidbodyManager")]
         [FoldoutGroup("References")]

@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Appalachia.Base.Scriptables;
+using Appalachia.Core.Scriptables;
 using Appalachia.Simulation.Core.Metadata.POI;
 using Appalachia.Simulation.Core.Metadata.Tree.Types;
 

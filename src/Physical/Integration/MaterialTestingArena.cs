@@ -1,7 +1,7 @@
 using System;
+using Appalachia.Core.Attributes.Editing;
 using Appalachia.Core.Filtering;
-using Appalachia.Editing.Attributes;
-using Appalachia.Editing.Behaviours;
+using Appalachia.Editing.Core.Behaviours;
 using Appalachia.Editing.Debugging.Testing;
 using Appalachia.Simulation.Core.Metadata.Materials;
 using Sirenix.OdinInspector;

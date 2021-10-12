@@ -1,18 +1,18 @@
 #region
 
 using System;
-using Appalachia.Base.Behaviours;
 using Appalachia.Core.Attributes;
+using Appalachia.Core.Attributes.Editing;
+using Appalachia.Core.Behaviours;
 using Appalachia.Core.Collections.Native;
 using Appalachia.Core.Extensions;
 using Appalachia.Core.Filtering;
 using Appalachia.Core.Math.Smoothing;
-using Appalachia.Editing.Attributes;
+using Appalachia.Core.Preferences.Globals;
+using Appalachia.Core.Shading;
 using Appalachia.Editing.Debugging.Handle;
-using Appalachia.Editing.Preferences.Globals;
-using Appalachia.Globals.Shading;
 using Appalachia.Jobs;
-using Appalachia.MeshData;
+using Appalachia.Jobs.MeshData;
 using Appalachia.Simulation.Buoyancy.Data;
 using Appalachia.Simulation.Buoyancy.Jobs;
 using Appalachia.Simulation.Buoyancy.Voxels;
@@ -43,7 +43,7 @@ namespace Appalachia.Simulation.Buoyancy
     [RequireComponent(typeof(Rigidbody))]
     [RequireComponent(typeof(RigidbodyDensityManager))]
     [ExecutionOrder(-90)]
-    public class Buoyant : InternalInstancedMonoBehaviour
+    public class Buoyant : AppalachiaInstancedMonoBehaviour
     {
         private const string _PRF_PFX = nameof(Buoyant) + ".";
 

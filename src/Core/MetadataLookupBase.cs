@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using Appalachia.Base.Scriptables;
+using Appalachia.Core.Assets;
 using Appalachia.Core.Extensions;
-using Appalachia.Editing.Assets;
+using Appalachia.Core.Scriptables;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -11,7 +11,7 @@ namespace Appalachia.Simulation.Core
 {
     public abstract class MetadataLookupBase<T, TValue> : SelfSavingSingletonScriptableObject<T>
         where T : MetadataLookupBase<T, TValue>
-        where TValue : InternalScriptableObject<TValue>, ICategorizable
+        where TValue : AppalachiaScriptableObject<TValue>, ICategorizable
     {
         [FormerlySerializedAs("generic")]
         [FormerlySerializedAs("defaultWrapper")]
@@ -67,9 +67,9 @@ namespace Appalachia.Simulation.Core
         protected void PopulateAll(List<TValue> values)
         {
 #if UNITY_EDITOR
-            var assets = AssetDatabaseHelper.FindAssets<TValue>();
+            var assets = AssetDatabaseManager.FindAssets<TValue>();
 
-            for (var i = 0; i < assets.Length; i++)
+            for (var i = 0; i < assets.Count; i++)
             {
                 var asset = assets[i];
 

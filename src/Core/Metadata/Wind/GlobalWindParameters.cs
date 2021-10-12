@@ -1,7 +1,7 @@
 #region
 
-using Appalachia.Base.Scriptables;
-using Appalachia.Editing.Attributes;
+using Appalachia.Core.Attributes.Editing;
+using Appalachia.Core.Scriptables;
 using Appalachia.Simulation.Core.Metadata.Density;
 using Sirenix.OdinInspector;
 using UnityEngine;

@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Appalachia.Base.Scriptables;
 using Appalachia.Core.Comparisons;
-using Appalachia.Editing.Preferences;
-using Appalachia.Editing.Preferences.Globals;
+using Appalachia.Core.Preferences;
+using Appalachia.Core.Preferences.Globals;
+using Appalachia.Core.Scriptables;
 using Appalachia.Simulation.Core;
 using Appalachia.Simulation.Core.Metadata.Density;
 using Appalachia.Simulation.Core.Metadata.Materials;
@@ -54,7 +54,7 @@ namespace Appalachia.Simulation.Physical
             TC instance,
             Action<TV> select)
             where TC : MetadataLookupBase<TC, TV>
-            where TV : InternalScriptableObject<TV>, ICategorizable
+            where TV : AppalachiaScriptableObject<TV>, ICategorizable
         {
             return new(instance, select, ColorPrefs.Instance.GenericSelectorButton, ColorPrefs
                .Instance.GenericSelectorColorDrop);
@@ -67,7 +67,7 @@ namespace Appalachia.Simulation.Physical
     [HideReferenceObjectPicker]
     public sealed class CollectionButtonSelector<T, TValue> : CollectionButtonSelector
         where T : MetadataLookupBase<T, TValue>
-        where TValue : InternalScriptableObject<TValue>, ICategorizable
+        where TValue : AppalachiaScriptableObject<TValue>, ICategorizable
     {
         private static GUITabGroup _tabGroup;
         private static Dictionary<string, GUITabPage> _tabs;
@@ -98,7 +98,7 @@ namespace Appalachia.Simulation.Physical
         {
             if (_itemsPerRow == null)
             {
-                _itemsPerRow = PREFS.REG("Collection Buttons", "Items Per Row", 4, 1, 25);
+                _itemsPerRow = PREFS.REG("Appalachia/Collection Buttons", "Items Per Row", 4, 1, 25);
             }
 
             if (_tabGroup == null)

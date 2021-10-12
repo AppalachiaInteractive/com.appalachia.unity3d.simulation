@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Appalachia.Core.Runtime.Trees
 {
-    public class GlobalTreeRuntimeManager: InternalMonoBehaviour
+    public class GlobalTreeRuntimeManager : InternalMonoBehaviour
     {
         public List<TreeSpeciesPrefabData> species;
         public LinkedList<TreePrefabInstanceData> instances;

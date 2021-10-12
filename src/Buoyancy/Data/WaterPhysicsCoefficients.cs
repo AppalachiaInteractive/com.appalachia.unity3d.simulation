@@ -1,6 +1,6 @@
 using System;
-using Appalachia.Base.Scriptables;
-using Appalachia.Editing.Attributes;
+using Appalachia.Core.Attributes.Editing;
+using Appalachia.Core.Scriptables;
 using Sirenix.OdinInspector;
 
 namespace Appalachia.Simulation.Buoyancy.Data

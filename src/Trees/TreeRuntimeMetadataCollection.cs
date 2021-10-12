@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Appalachia.Base.Scriptables;
+using Appalachia.Core.Scriptables;
 using Sirenix.OdinInspector;
 using UnityEditor;
 using UnityEngine;

@@ -1,6 +1,6 @@
 #if UNITY_EDITOR
-using Appalachia.Editing.Attributes;
-using Appalachia.Editing.Behaviours;
+using Appalachia.Core.Attributes.Editing;
+using Appalachia.Editing.Core.Behaviours;
 using Appalachia.Editing.Debugging;
 using Appalachia.Editing.Debugging.Handle;
 using Appalachia.Simulation.Core;

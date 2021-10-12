@@ -1,12 +1,12 @@
 #region
 
 using System;
-using Appalachia.Base.Behaviours;
 using Appalachia.Core.Attributes;
+using Appalachia.Core.Attributes.Editing;
+using Appalachia.Core.Behaviours;
 using Appalachia.Core.Extensions;
 using Appalachia.Core.Filtering;
 using Appalachia.Core.Math.Smoothing;
-using Appalachia.Editing.Attributes;
 using Appalachia.Simulation.Buoyancy.Collections;
 using Appalachia.Simulation.Buoyancy.Jobs;
 using Appalachia.Simulation.Core;
@@ -28,7 +28,7 @@ namespace Appalachia.Simulation.Buoyancy
 {
     [ExecuteAlways]
     [ExecutionOrder(-100)]
-    public class Water : InternalMonoBehaviour
+    public class Water : AppalachiaMonoBehaviour
     {
         private const string _PRF_PFX = nameof(Water) + ".";
 

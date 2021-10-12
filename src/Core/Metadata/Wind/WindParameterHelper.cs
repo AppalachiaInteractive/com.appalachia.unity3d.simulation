@@ -1,7 +1,7 @@
 #region
 
 using System;
-using Appalachia.Globals.Shading;
+using Appalachia.Core.Shading;
 
 #endregion
 

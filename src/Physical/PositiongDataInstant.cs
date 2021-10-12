@@ -1,6 +1,6 @@
 using System;
+using Appalachia.Core.Attributes.Editing;
 using Appalachia.Core.Extensions;
-using Appalachia.Editing.Attributes;
 using Unity.Mathematics;
 using UnityEngine;
 

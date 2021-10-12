@@ -51,7 +51,7 @@ namespace Internal.Core.Trees.Simulation.Fuel
                 load.ToWood();
             }
             
-            AssetDatabaseSaveManager.SaveAssetsNextFrame();
+            AssetDatabaseManager.SaveAssetsNextFrame();
         }
         
         #endif

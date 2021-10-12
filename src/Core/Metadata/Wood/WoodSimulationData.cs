@@ -1,5 +1,5 @@
-using Appalachia.Base.Scriptables;
-using Appalachia.Editing.Assets;
+using Appalachia.Core.Assets;
+using Appalachia.Core.Scriptables;
 using Appalachia.Simulation.Core.Metadata.Density;
 using Appalachia.Simulation.Core.Metadata.Fuel;
 using Sirenix.OdinInspector;
@@ -66,9 +66,9 @@ namespace Appalachia.Simulation.Core.Metadata.Wood
                 return;
             }
 
-            var densities = AssetDatabaseHelper.FindAssets<DensityMetadata>();
+            var densities = AssetDatabaseManager.FindAssets<DensityMetadata>();
 
-            for (var i = 0; i < densities.Length; i++)
+            for (var i = 0; i < densities.Count; i++)
             {
                 var d = densities[i];
 

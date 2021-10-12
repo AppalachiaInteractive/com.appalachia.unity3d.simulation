@@ -1,7 +1,7 @@
 #region
 
 using System;
-using Appalachia.Editing.Attributes;
+using Appalachia.Core.Attributes.Editing;
 using Appalachia.Simulation.Core.Metadata.Tree;
 using Sirenix.OdinInspector;
 using UnityEditor;
