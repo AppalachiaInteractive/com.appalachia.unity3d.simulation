@@ -1,0 +1,97 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 971376ed0df34fef8dc3e768ff4321cb, type: 3}
+  m_Name: BranchSettingsDataContainerSelection_20200506-023256003
+  m_EditorClassIdentifier: 
+  objects:
+  - {fileID: 11400000, guid: fceb98961219b764ba0ea7fc16875279, type: 2}
+  - {fileID: 11400000, guid: 3bc68f938876c5742923b856855a75af, type: 2}
+  - {fileID: 11400000, guid: a75d641e967136a4a86b43650996368f, type: 2}
+  - {fileID: 11400000, guid: e13bd08fb0726c0458c5f0fbc78bb431, type: 2}
+  - {fileID: 11400000, guid: e6d3f05055b8ffa459c9f2f415c67c34, type: 2}
+  - {fileID: 11400000, guid: 1c7039c88860279418e1574a4fa06101, type: 2}
+  - {fileID: 11400000, guid: e866c06889e7c654dbb7adede9cadd33, type: 2}
+  - {fileID: 11400000, guid: fbc66e8810128454d8f9872fed2150e8, type: 2}
+  - {fileID: 11400000, guid: 8fd441f7fcc9303419b480d59ae15c38, type: 2}
+  - {fileID: 11400000, guid: 6b2abd79de69631418398405391d7784, type: 2}
+  - {fileID: 11400000, guid: 5dd4d062e98175748a1bc63b5c699f2a, type: 2}
+  - {fileID: 11400000, guid: f1d0ecbf722f3a347af56a847b5d6b3f, type: 2}
+  - {fileID: 11400000, guid: 58f8347e3e4b4c44490be9db569d9df1, type: 2}
+  - {fileID: 11400000, guid: ea370fbb52052d54ea16a254df77f717, type: 2}
+  - {fileID: 11400000, guid: beb04b5c1d8ae4743b7966a90681c67f, type: 2}
+  - {fileID: 11400000, guid: e6d919f632bf38f4e95bd889c6c10ff7, type: 2}
+  - {fileID: 11400000, guid: 6b8941c25b4b07c4f85c76dd5de97b9d, type: 2}
+  - {fileID: 11400000, guid: 9687b74943dcb5244b428ebc488f06e4, type: 2}
+  - {fileID: 11400000, guid: 083d8ccc6325fe4438a0b2b425bc713d, type: 2}
+  - {fileID: 11400000, guid: b8c2645c534dbef4c91782cfd5a3a12d, type: 2}
+  - {fileID: 11400000, guid: b98d1a6e16144184580cbd78cfc4af63, type: 2}
+  - {fileID: 11400000, guid: 3e8b073a5e5b2a1468cbd58abd07a87c, type: 2}
+  - {fileID: 11400000, guid: 79657113752ef444fa8d3add77f703df, type: 2}
+  - {fileID: 11400000, guid: ed3e2dbd028f03e4c9641cf2ef98d60d, type: 2}
+  - {fileID: 11400000, guid: dc2813db824c8054992acd1e10364371, type: 2}
+  - {fileID: 11400000, guid: 0447656c35201db4ebf7b236ec3131b1, type: 2}
+  - {fileID: 11400000, guid: 9d5e6c097c52cfd4897a2e7d42f7917a, type: 2}
+  - {fileID: 11400000, guid: 27319e8b963127740a439d191dc4fd88, type: 2}
+  - {fileID: 11400000, guid: 2771b125852f4b442b9a04c6c4a432fc, type: 2}
+  - {fileID: 11400000, guid: 81a9f1fadfc5dfa43b3c19f17594fa38, type: 2}
+  - {fileID: 11400000, guid: a1ff7fb943b8a0344a098393a067abc8, type: 2}
+  - {fileID: 11400000, guid: 213468c9aaa32ae47aa7df1ca33f3a7d, type: 2}
+  - {fileID: 11400000, guid: 2a18d5d647dd13749b6574a0823a4891, type: 2}
+  - {fileID: 11400000, guid: f24f6e0c193d1bd498cff80e11728263, type: 2}
+  - {fileID: 11400000, guid: 41f902390b14f8f46b04bd2a1ed8495e, type: 2}
+  - {fileID: 11400000, guid: 589f6569d416a4843b0c55cddc9b36f6, type: 2}
+  - {fileID: 11400000, guid: 5054e65e7325faa47a45119379e9c71f, type: 2}
+  - {fileID: 11400000, guid: 99e78cb3906ad12408ead75ded0a9c6a, type: 2}
+  - {fileID: 11400000, guid: 1152ac369b15fd94992406dcc4b9877b, type: 2}
+  - {fileID: 11400000, guid: fbd1ab2bd097bbd4abcac48e15a0657f, type: 2}
+  objectNames:
+  - Ash-White-Branch
+  - Beech-Branch
+  - Birch-Black-Branch
+  - Birch-Paper-Branch
+  - Birch-Yellow-Branch
+  - Buckeye-Yellow-Branch
+  - Cedar-Thuja-Branch
+  - Chestnut-Branch
+  - Cucumber-Tree-Branch
+  - Dogwood-Flowering-Branch
+  - Elm-Branch
+  - Hemlock-Eastern-Branch
+  - Hickory-Pecan-Branch
+  - Hickory-Shagbark-Branch
+  - Honey-Locust-Branch
+  - Juniper-Red-Branch
+  - Linden-Branch
+  - Maple-Moosewood-Branch
+  - Maple-Red-Branch
+  - Maple-Silver-Branch
+  - Maple-Sugar-Branch
+  - Oak-Blackjack-Branch
+  - Oak-Red-Branch
+  - Oak-White-Branch
+  - Pawpaw-Branch
+  - Pine-Pitch-Branch
+  - Pine-Shortleaf-Branch
+  - Pine-Table-Mountain-Branch
+  - Pine-Virginia-Branch
+  - Pine-White-Branch
+  - Sassafras-Branch
+  - Serviceberry-Branch
+  - Spruce-Branch
+  - Sumac-Branch
+  - Sweetgum-Branch
+  - SycamoreBranch1
+  - Tamarack-Branch
+  - Tuliptree-Branch
+  - Walnut-Branch
+  - Willow-Branch
+  _selected: {fileID: 11400000, guid: 2771b125852f4b442b9a04c6c4a432fc, type: 2}

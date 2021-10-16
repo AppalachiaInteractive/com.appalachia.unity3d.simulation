@@ -10,8 +10,8 @@
     "GUID:4f51890e4f8fa0a4fb69d0fd0e4e89c2",
     "GUID:b6294acf83d7a2d4ebc14a1f0fb45380",
     "GUID:54e8cd18fc9996947836fd01b2b48f0f",
-    "GUID:c67cf058dd4aa774ea18e21e2cf75642",
-    "GUID:d8b63aba1907145bea998dd612889d6b"
+    "GUID:d8b63aba1907145bea998dd612889d6b",
+    "GUID:c67cf058dd4aa774ea18e21e2cf75642"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],
@@ -21,5 +21,6 @@
   "autoReferenced": true,
   "defineConstraints": [],
   "versionDefines": [],
-  "noEngineReferences": false
+  "noEngineReferences": false,
+  "optionalUnityReferences": []
 }

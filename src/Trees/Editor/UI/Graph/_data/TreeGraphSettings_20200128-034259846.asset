@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d56624587b5e44cb8f04bf0684abaf84, type: 3}
+  m_Name: TreeGraphSettings_20200128-034259846
+  m_EditorClassIdentifier: 
+  graphSize: 300
+  horizontalBufferPixels: 6
+  horizontalSubtreeBufferPixels: 12
+  verticalBufferPixels: 12
+  justification: 1
+  nodeHeight: 30
+  nodeWidth: 45
+  nodeIconSize: 20
+  nodeIconPaddingX: 2
+  nodeIconPaddingY: 2
+  nodePadding: 24
+  visibleIconPadding: 1
+  visibleIconSize: 14
+  countPadding: 4
+  countSize: 11
+  statsWindowWidth: 120
+  statsWidth: 95.3
+  statsHeight: 57.5
+  statsPaddingX: -4.6
+  statsPaddingY: 2.8
+  scrollSpeed: 8
+  fastScrollSpeed: 16

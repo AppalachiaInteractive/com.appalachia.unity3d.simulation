@@ -1,9 +1,9 @@
 using System;
+using Appalachia.CI.Integration.Assets;
 using Appalachia.Core.Attributes.Editing;
 using Appalachia.Core.Scriptables;
 using Appalachia.Spatial.Voxels;
 using Sirenix.OdinInspector;
-using UnityEditor;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Buoyancy.Data
@@ -131,7 +131,7 @@ namespace Appalachia.Simulation.Buoyancy.Data
             set
             {
                 _mesh = value;
-                AssetDatabase.TryGetGUIDAndLocalFileIdentifier(_mesh, out _meshGUID, out long _);
+                AssetDatabaseManager.TryGetGUIDAndLocalFileIdentifier(_mesh, out _meshGUID, out long _);
             }
 #endif
         }
@@ -147,7 +147,7 @@ namespace Appalachia.Simulation.Buoyancy.Data
                     return null;
                 }
 
-                AssetDatabase.TryGetGUIDAndLocalFileIdentifier(_mesh, out _meshGUID, out long _);
+                AssetDatabaseManager.TryGetGUIDAndLocalFileIdentifier(_mesh, out _meshGUID, out long _);
 #endif
                 return _meshGUID;
             }

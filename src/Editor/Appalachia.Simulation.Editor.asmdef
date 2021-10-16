@@ -1,0 +1,36 @@
+{
+  "name": "Appalachia.Simulation.Editor",
+  "rootNamespace": "",
+  "references": [
+    "GUID:4a600fa6fa2ca854b8f233a23710b315",
+    "GUID:195705ddaa6fe6c42a576177c5d36a5c",
+    "GUID:a19f071f3a1a79b48bffa624a937253c",
+    "GUID:4c32fdd75da6bc94f9b79f03f11f5e30",
+    "GUID:88ac10f46bdca804b922c5ba742a7a98",
+    "GUID:63a32ad87b517324398da8a6fcd4c2a6",
+    "GUID:9ed0d0ce44091f74492c01391adaaf6f",
+    "GUID:a15d55b77c0da1b42af8372f5619c965",
+    "GUID:55480544bf2803d4b8897bbc17b67656",
+    "GUID:53c314c6d5379534e87ce0066f9abb79",
+    "GUID:a4d999b198ed04a449148ce79f89f0f4",
+    "GUID:fb0b66b1ed6661b4cb2076d8464715d5",
+    "GUID:b6294acf83d7a2d4ebc14a1f0fb45380",
+    "GUID:54e8cd18fc9996947836fd01b2b48f0f"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": true,
+  "precompiledReferences": [
+    "Sirenix.OdinInspector.Attributes.dll",
+    "Sirenix.OdinInspector.Editor.dll",
+    "Sirenix.Utilities.Editor.dll"
+  ],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false,
+  "optionalUnityReferences": []
+}

@@ -2,6 +2,7 @@
   "name": "Appalachia.Simulation.ReactionSystem",
   "rootNamespace": "",
   "references": [
+    "GUID:56ca8901b63fd204692a4a27f67b605e",
     "GUID:a0053698365916c4291e09a4f5495c0b",
     "GUID:4a600fa6fa2ca854b8f233a23710b315",
     "GUID:195705ddaa6fe6c42a576177c5d36a5c",
@@ -31,5 +32,6 @@
   "autoReferenced": true,
   "defineConstraints": [],
   "versionDefines": [],
-  "noEngineReferences": false
+  "noEngineReferences": false,
+  "optionalUnityReferences": []
 }

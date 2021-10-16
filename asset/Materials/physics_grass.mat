@@ -1,0 +1,201 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: physics_grass
+  m_Shader: {fileID: 4800000, guid: c4b35175295eb02428c7f4cb88591bdb, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _BumpMap:
+        m_Texture: {fileID: 2800000, guid: 272d605d9e040c9418e8f7362c944c24, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BurnMap:
+        m_Texture: {fileID: 2800000, guid: 4c3884f1a869f9443a5c55e771c701c1, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BurnNoise:
+        m_Texture: {fileID: 2800000, guid: 026dfc64f1bab7b4eae0975faef4dd55, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _CharNormal:
+        m_Texture: {fileID: 2800000, guid: f2b65193a8a4c4648bf768cbe5190e55, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailAlbedoMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailNormalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EmissionMap:
+        m_Texture: {fileID: 2800000, guid: 4c3884f1a869f9443a5c55e771c701c1, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: 3beecdbf503762c4687171961e7a8390, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MetallicGlossMap:
+        m_Texture: {fileID: 2800000, guid: 4c3884f1a869f9443a5c55e771c701c1, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _OcclusionMap:
+        m_Texture: {fileID: 2800000, guid: 4cc8512401079c748a2b5ed223761198, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ParallaxMap:
+        m_Texture: {fileID: 2800000, guid: 66351c167ed89d241ac4b9bf1b19b4f7, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _TerrainBumpMap:
+        m_Texture: {fileID: 2800000, guid: ba88c67ff57a57d4b89483b2dcdb28d3, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _TerrainMetallicGlossMap:
+        m_Texture: {fileID: 2800000, guid: 4c3884f1a869f9443a5c55e771c701c1, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _TerrainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _WetnessMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _tex3coord:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _texcoord:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _ALBEDOO: 0
+    - _AODirect: 0
+    - _AOIndirect: 1
+    - _AOProbeStrength: 0.8
+    - _AlphaToCoverage: 0
+    - _BANNER: 1
+    - _BURN1: 0
+    - _BURNN: 0
+    - _BlendFade: 0.01
+    - _BlendHeightLimit: 0.2
+    - _BlendThreshold: 0.01
+    - _Brightness: 0
+    - _BumpScale: 1
+    - _BurnMapScaleX: 1
+    - _BurnMapScaleY: 1
+    - _BurnNoiseScaleX: 1
+    - _BurnNoiseScaleY: 1
+    - _BurnSpeed: 0.01
+    - _Burnable: 0
+    - _Burned: 0
+    - _CharredNormalScale: 1
+    - _Contrast: 1
+    - _ContrastCorrection: 1
+    - _CullMode: 2
+    - _Cutoff: 0.5
+    - _DetailNormalMapScale: 1
+    - _DisplacementStrength: 1
+    - _DstBlend: 0
+    - _EMISSIONN: 0
+    - _ENVIRONMENTT: 0
+    - _EmissionContrast: 2.5
+    - _EmissionStrength: 1
+    - _GLOBALILLUMINATIONN: 0
+    - _GROUNDINGG: 0
+    - _GlobalIlluminationAlbedoEffect: 1
+    - _GlobalIlluminationEmissiveEffect: 1
+    - _GlossMapScale: 1
+    - _Glossiness: 0.091
+    - _GlossyReflections: 1
+    - _GlowBias: 0
+    - _GlowPower: 1
+    - _GlowScale: 1
+    - _GroundDisplacementHeightCutoff: 0.5
+    - _GroundDisplacementHeightFadeRange: 0.5
+    - _GroundDisplacementX: 0
+    - _GroundDisplacementZ: 0
+    - _GroundFadeDistanceX: 1
+    - _GroundFadeDistanceZ: 1
+    - _GroundFadePowerX: 1.25
+    - _GroundFadePowerZ: 1.25
+    - _GroundFadeStartX: 1
+    - _GroundFadeStartZ: 1
+    - _Grounded: 0
+    - _Heat: 0
+    - _IgnoreMetallicMap: 0
+    - _InvertSmoothness: 0
+    - _InvertTerrainSmoothness: 0
+    - _LimitBlendHeight: 0
+    - _MaskClipValue: 0.5
+    - _Metallic: 0
+    - _Mode: 0
+    - _NORMALL: 0
+    - _OCCLUSIONN: 0
+    - _Occlusion: 0.5
+    - _OcclusionStrength: 1
+    - _Parallax: 0.02
+    - _RENDERINGG: 0
+    - _RainWetness: 0
+    - _SPECULARITYY: 0
+    - _SURFACEE: 0
+    - _Saturation: 0
+    - _SmoothnessTextureChannel: 0
+    - _SpecularHighlights: 1
+    - _SrcBlend: 1
+    - _SubmersionWetness: 0
+    - _TERRAINNBLEND: 0
+    - _TerrainBlend: 0
+    - _TerrainBumpMapScale: 1
+    - _TerrainGlossiness: 0.1
+    - _TerrainMetallic: 0
+    - _TerrainOcclusionStrength: 1
+    - _TriplanarContrast: 1
+    - _UVSec: 0
+    - _WETNESS: 0
+    - _WETT: 0
+    - _Wetness: 0
+    - _WetnessDarkening: 0.65
+    - _WetnessPorosity: 0.1
+    - _WetnessSmoothness: 0.3
+    - _Wettable: 0
+    - _WindProtection: 0
+    - _ZTestMode: 4
+    - _ZWrite: 1
+    - _ZWriteMode: 1
+    - __dirty: 1
+    m_Colors:
+    - _BurnColor1: {r: 1, g: 0.5137254, b: 0, a: 1}
+    - _BurnColor2: {r: 1, g: 0.11372546, b: 0, a: 1}
+    - _CharColor1: {r: 0.30980387, g: 0.30980387, b: 0.30980387, a: 1}
+    - _CharColor2: {r: 0.13333327, g: 0.13333327, b: 0.13333327, a: 1}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _GroundDisplacementDirection: {r: 0, g: -1, b: 0, a: 0}
+    - _TerrainOffset: {r: 0, g: 0, b: 0, a: 0}
+    - _TerrainScale: {r: 2, g: 2, b: 0, a: 0}
+  m_BuildTextureStacks: []

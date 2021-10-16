@@ -1,4 +1,4 @@
-using Appalachia.Core.Assets;
+using Appalachia.CI.Integration.Assets;
 using Appalachia.Core.Scriptables;
 using Appalachia.Simulation.Core.Metadata.Density;
 using Appalachia.Simulation.Core.Metadata.Fuel;
@@ -9,8 +9,7 @@ namespace Appalachia.Simulation.Core.Metadata.Wood
 {
     [CreateAssetMenu(menuName = "Tree Species Editor/Simulation/Wood", order = 10)]
     public class WoodSimulationData :
-        SelfCategorizingIdentifyingAndSavingScriptableObject<WoodSimulationData>,
-        ICategorizable
+        SelfCategorizingIdentifyingAndSavingScriptableObject<WoodSimulationData>
     {
         [BoxGroup("Physical")] public DensityMetadata densityMetadata;
 

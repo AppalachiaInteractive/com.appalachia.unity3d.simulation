@@ -42,14 +42,14 @@ namespace Appalachia.Simulation.Core
 
         public static bool IsSimulationActive => !Physics.autoSimulation;
 
-        [MenuItem(MENU_TOGGLE, true, priority = MENU_P.TOOLS.PHYSICS.PRIORITY)]
+        [MenuItem(MENU_TOGGLE, true, priority = APPA_MENU.TOOLS.PHYSICS.PRIORITY)]
         public static bool TogglePhysicsSimulationValidate()
         {
             Menu.SetChecked(MENU_TOGGLE, s_Enabled);
             return true;
         }
 
-        [MenuItem(MENU_TOGGLE, false, priority = MENU_P.TOOLS.PHYSICS.PRIORITY)]
+        [MenuItem(MENU_TOGGLE, false, priority = APPA_MENU.TOOLS.PHYSICS.PRIORITY)]
         public static void TogglePhysicsSimulation()
         {
             SetEnabled(!s_Enabled);

@@ -1,6 +1,7 @@
 #region
 
 using System;
+using Appalachia.CI.Integration.Assets;
 using Appalachia.Core.Attributes;
 using Appalachia.Core.Attributes.Editing;
 using Appalachia.Core.Behaviours;
@@ -319,7 +320,7 @@ namespace Appalachia.Simulation.Buoyancy
                 {
                     originalBodyData = new RigidbodyData(body);
                 }
-                else if (body.mass != originalBodyData.mass)
+                else if (Math.Abs(body.mass - originalBodyData.mass) > float.Epsilon)
                 {
                     originalBodyData.GetFrom(body);
                 }
@@ -387,7 +388,7 @@ namespace Appalachia.Simulation.Buoyancy
                 {
                     var mesh = MeshObjectManager.GetCheapestMesh(gameObject);
 
-                    AssetDatabase.TryGetGUIDAndLocalFileIdentifier(mesh, out var key, out long _);
+                    AssetDatabaseManager.TryGetGUIDAndLocalFileIdentifier(mesh, out var key, out long _);
 
                     buoyancyData =
                         BuoyancyDataCollection.instance.GetOrLoadOrCreateNew(

@@ -1,12 +1,12 @@
-﻿/*using Internal.Core.Base;
+﻿/*using Appalachia.Core.Scriptables;
 using Sirenix.OdinInspector;
 using UnityEditor;
 using UnityEngine;
 
-namespace Internal.Core.Trees.Simulation.Fuel
+namespace Appalachia.Simulation.Trees.Simulation.Fuel
 {
     [CreateAssetMenu(menuName = "Internal/Metadata/Simulation/Heat/Fuel/FuelMetadata", order = 0)]
-    public class FuelMetadata : InternalScriptableObject<FuelMetadata>
+    public class FuelMetadata : AppalachiaScriptableObject<FuelMetadata>
     {
         public float btuPerKgGreen;
         public float btuPerKgDry;
@@ -40,13 +40,13 @@ namespace Internal.Core.Trees.Simulation.Fuel
         [Button, ShowInInspector]
         public static void ConvertAllToWood()
         {
-            var metadatas = AssetDatabase.FindAssets("t: FuelMetadata");
+            var metadatas = AssetDatabaseManager.FindAssets("t: FuelMetadata");
 
             foreach (var asset in metadatas)
             {
-                var path = AssetDatabase.GUIDToAssetPath(asset);
+                var path = AssetDatabaseManager.GUIDToAssetPath(asset);
 
-                var load = AssetDatabase.LoadAssetAtPath<FuelMetadata>(path);
+                var load = AssetDatabaseManager.LoadAssetAtPath<FuelMetadata>(path);
                 
                 load.ToWood();
             }

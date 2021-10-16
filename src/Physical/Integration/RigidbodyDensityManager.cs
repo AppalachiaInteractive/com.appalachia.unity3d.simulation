@@ -215,7 +215,7 @@ namespace Appalachia.Simulation.Physical.Integration
                             continue;
                         }
 
-                        material = PhysicsMaterials.instance.Lookup(mat);
+                        material = PhysicsMaterialsCollection.instance.Lookup(mat);
 
                         if (material != null)
                         {
@@ -229,7 +229,7 @@ namespace Appalachia.Simulation.Physical.Integration
                             "Need to set collider materials!  Using default material & density for now...",
                             densityManager
                         );
-                        material = PhysicsMaterials.instance.defaultValue;
+                        material = PhysicsMaterialsCollection.instance.defaultValue;
                     }
 
                     densityManager.density = material.defaultDensity;

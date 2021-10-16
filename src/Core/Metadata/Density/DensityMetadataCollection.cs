@@ -1,3 +1,4 @@
+using Appalachia.Core.Scriptables;
 using Sirenix.OdinInspector;
 
 namespace Appalachia.Simulation.Core.Metadata.Density

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Appalachia.Core.Assets;
+using Appalachia.CI.Integration.Assets;
 using Appalachia.Core.Extensions;
 using Appalachia.Core.Layers;
 using Appalachia.Core.Shading;
@@ -926,7 +926,7 @@ namespace Appalachia.Simulation.ReactionSystem.TouchBend.Data
                 return;
             }
 
-            var path = AssetDatabase.GetAssetPath(tex);
+            var path = AssetDatabaseManager.GetAssetPath(tex);
 
             if (path == null)
             {

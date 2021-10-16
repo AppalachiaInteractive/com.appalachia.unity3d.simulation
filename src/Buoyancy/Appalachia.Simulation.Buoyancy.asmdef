@@ -2,6 +2,7 @@
   "name": "Appalachia.Simulation.Buoyancy",
   "rootNamespace": "",
   "references": [
+    "GUID:56ca8901b63fd204692a4a27f67b605e",
     "GUID:bd2961106a865a542b8ec0d49cb152f3",
     "GUID:4a600fa6fa2ca854b8f233a23710b315",
     "GUID:195705ddaa6fe6c42a576177c5d36a5c",
@@ -37,5 +38,6 @@
   "autoReferenced": true,
   "defineConstraints": [],
   "versionDefines": [],
-  "noEngineReferences": false
+  "noEngineReferences": false,
+  "optionalUnityReferences": []
 }
