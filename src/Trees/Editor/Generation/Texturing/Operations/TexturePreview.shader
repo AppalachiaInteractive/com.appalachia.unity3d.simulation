@@ -1,4 +1,4 @@
-Shader "internal/core/trees/TexturePreview"
+Shader "appalachia/core/trees/TexturePreview"
 {
     Properties
     {        

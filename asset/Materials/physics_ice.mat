@@ -20,7 +20,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _BumpMap:
-        m_Texture: {fileID: 2800000, guid: c929f57137044294c9e9e8520ba20151, type: 3}
+        m_Texture: {fileID: 2800000, guid: 24f65586251a0904697708f329a17670, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BurnMap:
@@ -52,11 +52,11 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 670b886095790c84598289ed9b670beb, type: 3}
+        m_Texture: {fileID: 2800000, guid: 55ca98e5f753dc041946045b86fce3b7, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
-        m_Texture: {fileID: 2800000, guid: b60cd951d2af04b44a07ca1c07c3ed7d, type: 3}
+        m_Texture: {fileID: 2800000, guid: b1902a9fd988287438b93feee712e236, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
@@ -79,6 +79,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _WetnessMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _tex3coord:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -87,13 +91,16 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    m_Ints: []
     m_Floats:
     - _ALBEDOO: 0
     - _AODirect: 0
     - _AOIndirect: 1
     - _AOProbeStrength: 0.8
+    - _AlphaToCoverage: 0
     - _BANNER: 1
     - _BURN1: 0
+    - _BURNN: 0
     - _BlendFade: 0.01
     - _BlendHeightLimit: 0.2
     - _BlendThreshold: 0.01
@@ -112,6 +119,7 @@ Material:
     - _CullMode: 2
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
+    - _DisplacementStrength: 1
     - _DstBlend: 0
     - _EMISSIONN: 0
     - _ENVIRONMENTT: 0
@@ -139,9 +147,11 @@ Material:
     - _GroundFadeStartZ: 1
     - _Grounded: 0
     - _Heat: 0
+    - _IgnoreMetallicMap: 0
     - _InvertSmoothness: 0
     - _InvertTerrainSmoothness: 0
     - _LimitBlendHeight: 0
+    - _MaskClipValue: 0.5
     - _Metallic: 0
     - _Mode: 0
     - _NORMALL: 0
@@ -150,12 +160,14 @@ Material:
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _RENDERINGG: 0
+    - _RainWetness: 0
     - _SPECULARITYY: 0
     - _SURFACEE: 0
     - _Saturation: 0
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
+    - _SubmersionWetness: 0
     - _TERRAINNBLEND: 0
     - _TerrainBlend: 0
     - _TerrainBumpMapScale: 1
@@ -165,12 +177,16 @@ Material:
     - _TriplanarContrast: 1
     - _UVSec: 0
     - _WETNESS: 0
+    - _WETT: 0
     - _Wetness: 0
     - _WetnessDarkening: 0.65
     - _WetnessPorosity: 0.1
     - _WetnessSmoothness: 0.3
+    - _Wettable: 0
     - _WindProtection: 0
+    - _ZTestMode: 4
     - _ZWrite: 1
+    - _ZWriteMode: 1
     - __dirty: 1
     m_Colors:
     - _BurnColor1: {r: 1, g: 0.5137254, b: 0, a: 1}
@@ -182,3 +198,4 @@ Material:
     - _GroundDisplacementDirection: {r: 0, g: -1, b: 0, a: 0}
     - _TerrainOffset: {r: 0, g: 0, b: 0, a: 0}
     - _TerrainScale: {r: 2, g: 2, b: 0, a: 0}
+  m_BuildTextureStacks: []

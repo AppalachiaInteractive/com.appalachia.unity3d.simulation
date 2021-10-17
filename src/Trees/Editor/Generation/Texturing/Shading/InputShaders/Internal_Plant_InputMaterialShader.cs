@@ -13,7 +13,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading.InputShaders
 
         public bool CanProvideProfiles(Shader shader)
         {
-            return shader.name.ToLower().Contains("internal/plant-individual");
+            return shader.name.ToLower().Contains("appalachia/plant-individual");
         }
 
         public bool FailOnMissingTexture(TextureMap texture)
@@ -38,7 +38,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading.InputShaders
 
         public IEnumerable<InputTextureProfile> GetInputProfiles(Material m)
         {
-            if (m.shader.name == "internal/plant-individual")
+            if (m.shader.name == "appalachia/plant-individual")
             {
                 return _plant;
             }

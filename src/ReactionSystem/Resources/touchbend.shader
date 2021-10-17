@@ -1,4 +1,4 @@
-Shader "internal/touchbend/touchbend"
+Shader "appalachia/touchbend/touchbend"
 {
 	Properties
 	{

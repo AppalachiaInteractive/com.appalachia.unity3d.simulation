@@ -21,7 +21,7 @@ namespace Appalachia.Simulation.Trees.UI.UV
         // re-usable rect for drawing graphs
         private static Rect r = new Rect(0, 0, 0, 0);
 
-        private static LazyShader _previewShader = new LazyShader("internal/core/trees/TexturePreview");
+        private static LazyShader _previewShader = new LazyShader("appalachia/core/trees/TexturePreview");
         private static Material _previewMaterial;
 
         private static Material previewMaterial

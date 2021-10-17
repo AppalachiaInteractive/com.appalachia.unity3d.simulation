@@ -1,4 +1,4 @@
-Shader "internal/core/trees/TextureCombiner"
+Shader "appalachia/core/trees/TextureCombiner"
 {
     Properties
     {        

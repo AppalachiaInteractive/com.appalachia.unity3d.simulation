@@ -20,7 +20,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _BumpMap:
-        m_Texture: {fileID: 2800000, guid: 860eb468a6bfcc74b8288d6457a5bfa6, type: 3}
+        m_Texture: {fileID: 2800000, guid: 569bc38f2720fe141aaa5d7458ea9e11, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BurnMap:
@@ -52,11 +52,11 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: c37675aa7c2afbb4fbf491de96addd18, type: 3}
+        m_Texture: {fileID: 2800000, guid: 7dfc16690fb1daf43ae71eab20e790b6, type: 3}
         m_Scale: {x: 4, y: 4}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
-        m_Texture: {fileID: 2800000, guid: 48cc708243ed3d040892659b8e8cae8c, type: 3}
+        m_Texture: {fileID: 2800000, guid: 988c1cab6ca35e64791d3f7de5498686, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
@@ -91,6 +91,7 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    m_Ints: []
     m_Floats:
     - _ALBEDOO: 0
     - _AODirect: 0
@@ -198,3 +199,4 @@ Material:
     - _GroundDisplacementDirection: {r: 0, g: -1, b: 0, a: 0}
     - _TerrainOffset: {r: 0, g: 0, b: 0, a: 0}
     - _TerrainScale: {r: 2, g: 2, b: 0, a: 0}
+  m_BuildTextureStacks: []

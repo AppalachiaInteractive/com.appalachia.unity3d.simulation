@@ -1,4 +1,4 @@
-Shader "internal/core/trees/TextureFlipper"
+Shader "appalachia/core/trees/TextureFlipper"
 {
     Properties
     {        

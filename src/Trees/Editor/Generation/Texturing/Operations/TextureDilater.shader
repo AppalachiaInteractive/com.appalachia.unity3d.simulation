@@ -1,4 +1,4 @@
-Shader "internal/core/trees/TextureDilater"
+Shader "appalachia/core/trees/TextureDilater"
 {
 	Properties
 	{
