@@ -12,9 +12,15 @@
 ## Releasing
 | Hash | Date | Author | Changes |
 |------|------|--------|---------|
+| 43b4cc50ac6b645752c6391e67e77e1ec18a4e2d | 2021-10-17 | Chris Schubert | Fixing doozy input issues |
 
 
- ## Tag: `v0.1.5, origin/main`
+ ## Tag: `v0.1.6`
+| Hash | Date | Author | Changes |
+|------|------|--------|---------|
+
+
+ ## Tag: `v0.1.5`
 | Hash | Date | Author | Changes |
 |------|------|--------|---------|
 | ef9fd887df13c2eeea370eba934f199248bcfe8e | 2021-10-16 | Chris Schubert | More project cleanup and refactoring |
