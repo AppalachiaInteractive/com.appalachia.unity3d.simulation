@@ -12,6 +12,12 @@
 ## Releasing
 | Hash | Date | Author | Changes |
 |------|------|--------|---------|
+| 16c5c0e05359643235a3571381ad1d36313dbb4d | 2021-10-17 | Chris Schubert | Decreasing texture and audio quality for size savings |
+
+
+ ## Tag: `v0.1.8`
+| Hash | Date | Author | Changes |
+|------|------|--------|---------|
 
 
  ## Tag: `v0.1.7`
