@@ -12,6 +12,12 @@
 ## Releasing
 | Hash | Date | Author | Changes |
 |------|------|--------|---------|
+| 5de533a6bee5a1bf31c0faaa2471017d9850428c | 2021-10-17 | Chris Schubert | Updating packages |
+
+
+ ## Tag: `v0.1.9`
+| Hash | Date | Author | Changes |
+|------|------|--------|---------|
 | 16c5c0e05359643235a3571381ad1d36313dbb4d | 2021-10-17 | Chris Schubert | Decreasing texture and audio quality for size savings |
 
 
