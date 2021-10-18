@@ -12,6 +12,11 @@
 ## Releasing
 | Hash | Date | Author | Changes |
 |------|------|--------|---------|
+
+
+ ## Tag: `v0.1.7`
+| Hash | Date | Author | Changes |
+|------|------|--------|---------|
 | 43b4cc50ac6b645752c6391e67e77e1ec18a4e2d | 2021-10-17 | Chris Schubert | Fixing doozy input issues |
 
 

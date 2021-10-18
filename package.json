@@ -1,7 +1,7 @@
 {
   "name": "com.appalachia.unity3d.simulation",
   "displayName": "Appalachia.Simulation for Unity3D",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "unity": "2020.3",
   "description": "Simulations for physics and other processes to produce a richer game world.",
   "keywords": [
