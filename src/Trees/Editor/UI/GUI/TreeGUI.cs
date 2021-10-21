@@ -439,9 +439,9 @@ namespace Appalachia.Simulation.Trees.UI.GUI
                 }
                 else
                 {
-                    UIStateStacks.foregroundColor.Push(color);
+                    UIStateStacks.color.Push(color);
                     UnityEngine.GUI.DrawTexture(rect, EditorGUIUtility.whiteTexture);
-                    UIStateStacks.foregroundColor.Pop();
+                    UIStateStacks.color.Pop();
                 }
             }
 

@@ -545,12 +545,8 @@ namespace Appalachia.Simulation.Trees.Build.Execution
                 var buildCollision = instance.buildRequest.ShouldBuild(BuildCategory.Collision, requestLevel);
                 var buildLOD = instance.buildRequest.ShouldBuild(BuildCategory.LevelsOfDetail, requestLevel);
 
-                var geometryIndex = -1;
-
                 foreach (var levelOfDetail in instance.lods)
                 {
-                    geometryIndex += 1;
-
                     if (!buildLOD && (levelOfDetail.lodLevel > 0))
                     {
                         break;
