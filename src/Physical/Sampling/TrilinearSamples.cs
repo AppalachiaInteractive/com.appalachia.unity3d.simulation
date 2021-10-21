@@ -1,6 +1,6 @@
 using System;
 using Appalachia.Core.Collections.Native;
-using Appalachia.Utility.Constants;
+using Appalachia.Utility.src.Constants;
 using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
