@@ -526,7 +526,7 @@ static void ApplyToImpostors(Action<AmplifyImpostor> action, AmplifyImpostor[] i
         }
         catch (Exception ex)
         {
-            DebugHelper.LogError($"Failed to apply operation to impostor: {ex.Message}", ex, impostor);
+            Debug.LogError($"Failed to apply operation to impostor: {ex.Message}", ex, impostor);
             EditorUtility.ClearProgressBar();
         }
     }

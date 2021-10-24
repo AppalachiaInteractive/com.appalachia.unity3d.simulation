@@ -1,6 +1,6 @@
 using Appalachia.Core.Collections;
 using Appalachia.Core.Collections.Implementations.Lists;
-using Appalachia.Utility.src.Colors;
+using Appalachia.Utility.Colors;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Buoyancy.Collections

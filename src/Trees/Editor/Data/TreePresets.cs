@@ -12,13 +12,13 @@ namespace Appalachia.Simulation.Trees.Data
         [FoldoutGroup("Trunk")] public BranchSettings trunk_branch;
         [FoldoutGroup("Trunk")] public CurvatureSettings trunk_curvature;
         [FoldoutGroup("Trunk")] public LimbSettings trunk_limb;
-        
+
         [FoldoutGroup("Root")]public DistributionSettings root_distribution;
         [FoldoutGroup("Root")]public BranchSettings root_branch;
         [FoldoutGroup("Root")]public CollarSettings root_collar;
         [FoldoutGroup("Root")]public CurvatureSettings root_curvature;
         [FoldoutGroup("Root")]public LimbSettings root_limb;
-        
+
         [FoldoutGroup("Branch")]public DistributionSettings branch_distribution;
         [FoldoutGroup("Branch")]public BranchSettings branch_branch;
         [FoldoutGroup("Branch")]public CollarSettings branch_collar;
@@ -26,11 +26,11 @@ namespace Appalachia.Simulation.Trees.Data
         [FoldoutGroup("Branch")]public LimbSettings branch_limb;
 
         [FoldoutGroup("Leaf")]public DistributionSettings leaf_distribution;
-        
+
         [FoldoutGroup("Knot")]public DistributionSettings knot_distribution;
 
         [FoldoutGroup("Fungus")]public DistributionSettings fungus_distribution;
-        
+
         [FoldoutGroup("Fruit")]public DistributionSettings fruit_distribution;
 
         [Button]
