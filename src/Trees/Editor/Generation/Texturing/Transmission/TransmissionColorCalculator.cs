@@ -27,7 +27,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Transmission
                     return;
                 }
 
-                texture.ToReadable();
+                texture.SetReadable();
 
                 var leafAverage = GetAverageColor(texture, true, true);
                 Color.RGBToHSV(leafAverage, out var h, out var s, out var v);

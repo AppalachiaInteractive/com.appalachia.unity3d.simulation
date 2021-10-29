@@ -10,7 +10,7 @@ namespace Appalachia.Simulation.Trees.Hierarchy
     [Serializable]
     public abstract class CollaredBarkHierarchyData : BarkHierarchyData
     {
-        //[ShowIfGroup("CL", MemberName = nameof(showCollar), Animate = false)]
+        //[ShowIfGroup("CL", Condition = nameof(showCollar), Animate = false)]
         [TreeHeader, /*ShowIf(nameof(showCollar)),*/ PropertyOrder(100)]
         //[FoldoutGroup("CL/Branch Collar", false)]
         [ShowIf(nameof(showCollar))]

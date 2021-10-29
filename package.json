@@ -25,20 +25,23 @@
     "com.unity.mathematics": "1.2.4",
     "com.unity.collections": "1.0.0-pre.6",
     "com.unity.burst": "1.6.1",
-    "com.appalachia.unity3d.utility": "0.1.3",
-    "com.appalachia.unity3d.spatial": "0.1.6",
-    "com.appalachia.unity3d.jobs": "0.1.6",
-    "com.appalachia.unity3d.editing": "0.1.9",
-    "com.appalachia.unity3d.core": "0.1.7",
-    "com.appalachia.unity3d.ci": "0.1.3",
-    "com.appalachia.unity3d.virtual-method.obi-physics": "0.1.16",
-    "com.appalachia.unity3d.globals": "0.1.6",
-    "com.appalachia.unity3d.gurbu.gpu-instancer": "0.1.14",
-    "com.appalachia.unity3d.amplify.impostors": "0.1.17",
+    "com.appalachia.unity3d.utility": "0.1.4",
+    "com.appalachia.unity3d.spatial": "0.1.7",
+    "com.appalachia.unity3d.jobs": "0.1.7",
+    "com.appalachia.unity3d.editing": "0.1.10",
+    "com.appalachia.unity3d.core": "0.1.8",
+    "com.appalachia.unity3d.ci": "0.1.4",
+    "com.appalachia.unity3d.globals": "0.1.7",
     "com.unity.editorcoroutines": "1.0.0",
-    "com.appalachia.unity3d.rendering": "0.1.8",
-    "com.appalachia.unity3d.hendrik-haupt.enviro": "0.1.14",
-    "com.appalachia.unity3d.audio": "0.1.11"
+    "com.appalachia.unity3d.rendering": "0.1.9",
+    "com.appalachia.unity3d.audio": "0.1.12",
+    "com.unity.addressables": "1.19.9",
+    "com.unity.render-pipelines.core": "12.1.0",
+    "com.appalachia.unity3d.third-party.gurbu": "0.1.0",
+    "com.appalachia.unity3d.third-party.hendrikhaupt": "0.1.0",
+    "com.appalachia.unity3d.third-party.amplify": "0.1.0",
+    "com.appalachia.unity3d.third-party.virtualmethod": "0.1.0",
+    "com.unity.timeline": "1.6.2"
   },
   "scripts": {
     "preversion": "bash ~/com.appalachia/appa/appa package unity3d preversion",
@@ -51,6 +54,5 @@
     "prepublishOnly": "bash ~/com.appalachia/appa/appa package unity3d prepublishOnly",
     "publish": "bash ~/com.appalachia/appa/appa package unity3d publish",
     "postpublish": "bash ~/com.appalachia/appa/appa package unity3d postpublish"
-  },
-  "exports": null
+  }
 }

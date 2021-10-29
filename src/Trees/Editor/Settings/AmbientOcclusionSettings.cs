@@ -25,26 +25,26 @@ namespace Appalachia.Simulation.Trees.Settings
         public bool generateBakeMesh = true;
         
         [PropertyTooltip("The type of ambient occlusion to generate.")]
-        [ShowIfGroup("AO", MemberName = nameof(showTreeSettings))]
+        [ShowIfGroup("AO", Condition = nameof(showTreeSettings))]
         [OnValueChanged(nameof(AmbientOcclusionSettingsChanged))]
         public AmbientOcclusionStyle style;
 
         [PropertyTooltip(
             "The density of generated ambient occlusion.  Higher is darker.")]
-        [ShowIf("AO", MemberName = nameof(generateAmbientOcclusion))]
+        [ShowIf("AO", Condition = nameof(generateAmbientOcclusion))]
         [Range(0f, 2f)]
         [OnValueChanged(nameof(AmbientOcclusionSettingsChanged))]
         public float density = 1f;
         
         [PropertyTooltip("The distance to fire rays from when sampling ambient occlusion.")]
-        [ShowIfGroup("AO", MemberName = nameof(showTreeSettings))]
+        [ShowIfGroup("AO", Condition = nameof(showTreeSettings))]
         [ShowIf(nameof(showRaytracing))]
         [Range(1f, 20f)]
         [OnValueChanged(nameof(AmbientOcclusionSettingsChanged))]
         public float raytracingRange = 10;
 
         [PropertyTooltip("The number of samples to take when sampling ambient occlusion.  Higher is slower.")]
-        [ShowIfGroup("AO", MemberName = nameof(showTreeSettings))]
+        [ShowIfGroup("AO", Condition = nameof(showTreeSettings))]
         [ShowIf(nameof(showRaytracing))]
         [Range(4f, 64f)]
         [OnValueChanged(nameof(AmbientOcclusionSettingsChanged))]

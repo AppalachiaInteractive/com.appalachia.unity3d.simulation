@@ -5,6 +5,7 @@ using Appalachia.Simulation.Trees.Generation.Texturing.Shading.OutputShaders;
 
 namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading
 {
+    
     public static class TreeShaderFactory
     {
 

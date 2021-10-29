@@ -15,7 +15,7 @@ namespace Appalachia.Simulation.Trees.Settings
         public bool impostorAfterLastLevel = true;
 
         private bool _showImpostors => impostorAfterLastLevel;
-        [ShowIfGroup("A", MemberName = nameof(_showImpostors))]
+        [ShowIfGroup("A", Condition = nameof(_showImpostors))]
         [BoxGroup("A/Mesh")]
         [PropertyTooltip("How many snapshots per axis.")]
         [PropertyRange(8, 24)]

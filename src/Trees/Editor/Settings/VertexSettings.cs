@@ -17,7 +17,7 @@ namespace Appalachia.Simulation.Trees.Settings
         [OnValueChanged(nameof(VertexDataSettingsChanged))]
         public bool generate = true;
         
-        [ShowIfGroup("Log", MemberName = nameof(generate))]
+        [ShowIfGroup("Log", Condition = nameof(generate))]
 
         [BoxGroup("Log/Log Settings", CenterLabel = true)]
         [PropertyTooltip("Adjusts how big the first noise scale is.")]

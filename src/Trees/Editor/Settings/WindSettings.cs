@@ -19,7 +19,7 @@ namespace Appalachia.Simulation.Trees.Settings
         [OnValueChanged(nameof(VertexDataSettingsChanged))]
         public bool generateWind = true;
         
-        [ShowIfGroup("Wind", MemberName = nameof(generateWind))]
+        [ShowIfGroup("Wind", Condition = nameof(generateWind))]
 
         [FoldoutGroup("Wind/Mesh Settings")]
         [PropertyTooltip(

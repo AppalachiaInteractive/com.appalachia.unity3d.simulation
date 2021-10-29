@@ -17,7 +17,7 @@ namespace Appalachia.Simulation.Trees.Hierarchy
         
         [TreeHeader]
         [PropertyOrder(100)]
-        //[ShowIfGroup("TR", MemberName = nameof(showTrunk), Animate = false)]
+        //[ShowIfGroup("TR", Condition = nameof(showTrunk), Animate = false)]
         //[FoldoutGroup("TR/Trunk", false)]
         [ShowIf(nameof(showTrunk))]
         [TabGroup("Trunk", Paddingless = true)]

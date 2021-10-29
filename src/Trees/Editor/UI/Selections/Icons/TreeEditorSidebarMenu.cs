@@ -105,7 +105,7 @@ namespace Appalachia.Simulation.Trees.UI.Selections.Icons
         {
             if (_pending)
             {
-                HandleKeybaordMenuNavigation();
+                HandleKeyboardMenuNavigation();
                 _pending = false;
             }
         }

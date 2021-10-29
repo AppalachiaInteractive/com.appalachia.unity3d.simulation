@@ -1261,7 +1261,7 @@ namespace Appalachia.Simulation.Trees.Build.Execution
         }
 
 
-        [MenuItem("Tools/Trees/Mip Maps/Preserve Coverage")]
+        [UnityEditor.MenuItem(PKG.Menu.Appalachia.Tools.Base + "Trees/Mip Maps/Preserve Coverage")]
         private static void MipMaps_PreserveCoverage()
         {
             var treeGuids = AssetDatabaseManager.FindAssets("t: TreeDataContainer");

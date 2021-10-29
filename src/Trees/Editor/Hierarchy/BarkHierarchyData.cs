@@ -19,7 +19,7 @@ namespace Appalachia.Simulation.Trees.Hierarchy
         
         private bool showLimbEnds => geometry.geometryMode != BranchGeometryMode.Frond;
         [FormerlySerializedAs("breakage")]
-        //[ShowIfGroup("LE", MemberName = nameof(showLimbEnds), Animate = false)]
+        //[ShowIfGroup("LE", Condition = nameof(showLimbEnds), Animate = false)]
         [TreeHeader, PropertyOrder(200)]
         //[FoldoutGroup("LE/Limb Ends", false)
         [ShowIf(nameof(showLimbEnds))]
@@ -27,7 +27,7 @@ namespace Appalachia.Simulation.Trees.Hierarchy
         public LimbSettings limb;
 
         private bool showCurvature => true;
-        //[ShowIfGroup("CV", MemberName = nameof(showCurvature), Animate = false)]
+        //[ShowIfGroup("CV", Condition = nameof(showCurvature), Animate = false)]
         [TreeHeader, PropertyOrder(60)]
         //[FoldoutGroup("CV/Curvature", false)]
         [ShowIf(nameof(showCurvature))]
@@ -35,7 +35,7 @@ namespace Appalachia.Simulation.Trees.Hierarchy
         public CurvatureSettings curvature;
 
         private bool showShape => true;
-        //[ShowIfGroup("SH", MemberName = nameof(showShape), Animate = false)]
+        //[ShowIfGroup("SH", Condition = nameof(showShape), Animate = false)]
         [TreeHeader, PropertyOrder(0)]
         //[FoldoutGroup("SH/Shape", false)]
         [ShowIf(nameof(showShape))]
