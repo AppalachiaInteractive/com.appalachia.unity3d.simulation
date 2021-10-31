@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Rects
 {
-    public class LeafUVRectCollection : SelfSavingSingletonScriptableObject<LeafUVRectCollection>
+    public class LeafUVRectCollection : SingletonAppalachiaObject<LeafUVRectCollection>
     {
         public List<LeafUVRectSet> leafUVRectSets = new List<LeafUVRectSet>();
         

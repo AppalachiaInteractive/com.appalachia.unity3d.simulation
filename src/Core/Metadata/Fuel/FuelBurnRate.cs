@@ -3,11 +3,16 @@ using UnityEngine;
 
 namespace Appalachia.Simulation.Core.Metadata.Fuel
 {
-    [CreateAssetMenu(menuName = "Internal/Metadata/Simulation/Heat/Fuel/FuelBurnRate", order = 0)]
-    public class FuelBurnRate : AppalachiaScriptableObject<FuelBurnRate>
+    public class FuelBurnRate : AppalachiaObject<FuelBurnRate>
     {
         public float kgCharPerHour = 2f;
         public float kgBurnPerHour = 1f;
         public float ignitionRate = 0.05f;
+
+        [UnityEditor.MenuItem(PKG.Menu.Assets.Base + nameof(FuelBurnRate), priority = PKG.Menu.Assets.Priority)]
+        public static void CreateAsset()
+        {
+            CreateNew();
+        }
     }
 }

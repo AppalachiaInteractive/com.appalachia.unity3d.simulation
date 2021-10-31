@@ -33,7 +33,6 @@ using Random = UnityEngine.Random;
 
 namespace Appalachia.Simulation.Trees
 {
-    [CreateAssetMenu(menuName = "Tree Species Editor/New/Tree", order = 0)]
     [Serializable]
     public class TreeDataContainer : TSEDataContainer, ISpeciesDataProvider
     {
@@ -963,6 +962,12 @@ namespace Appalachia.Simulation.Trees
             {
                 dc.species.hierarchies.CopyHierarchiesTo(species.hierarchies);
             }
+        }
+
+        [UnityEditor.MenuItem(PKG.Menu.Assets.Base + nameof(TreeDataContainer), priority = PKG.Menu.Assets.Priority)]
+        public static void CreateAsset()
+        {
+            CreateNew();
         }
     }
 }

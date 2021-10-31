@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.UI.Gizmos
 {
-    public class TreeGizmoDelegate : SelfSavingSingletonScriptableObject<TreeGizmoDelegate>, ISpeciesGizmoDelegate
+    public class TreeGizmoDelegate : SingletonAppalachiaObject<TreeGizmoDelegate>, ISpeciesGizmoDelegate
     {
         private TreeGizmoDelegate()
         {

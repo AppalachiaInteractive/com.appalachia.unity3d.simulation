@@ -7,7 +7,7 @@ namespace Appalachia.Simulation.ReactionSystem
 {
     [ExecuteAlways]
     [DisallowMultipleComponent]
-    public class ReactionSystem : AppalachiaMonoBehaviour
+    public class ReactionSystem : AppalachiaBehaviour
     {
         private const string _PRF_PFX = nameof(ReactionSystem) + ".";
 

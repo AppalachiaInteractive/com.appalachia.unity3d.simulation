@@ -7,7 +7,7 @@ namespace Appalachia.Simulation.Buoyancy.Data
 {
     [Serializable]
     public class
-        WaterPhysicsCoefficients : SelfSavingSingletonScriptableObject<WaterPhysicsCoefficients>
+        WaterPhysicsCoefficients : SingletonAppalachiaObject<WaterPhysicsCoefficients>
     {
         [InlineProperty]
         [SmartLabel]

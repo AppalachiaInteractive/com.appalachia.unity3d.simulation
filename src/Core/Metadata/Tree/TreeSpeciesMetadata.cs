@@ -4,7 +4,7 @@ using Appalachia.Simulation.Core.Metadata.Wood;
 
 namespace Appalachia.Simulation.Core.Metadata.Tree
 {
-    public class TreeSpeciesMetadata : SelfSavingAndIdentifyingScriptableObject<TreeSpeciesMetadata>
+    public class TreeSpeciesMetadata : IdentifiableAppalachiaObject<TreeSpeciesMetadata>
     {
         public string speciesName;
 

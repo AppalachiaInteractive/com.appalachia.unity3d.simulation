@@ -3,7 +3,7 @@ using Appalachia.Core.Scriptables;
 namespace Appalachia.Simulation.Core.Metadata.Wood
 {
     public class
-        WoodSimulationDataCollection : MetadataLookupBase<WoodSimulationDataCollection,
+        WoodSimulationDataCollection : AppalachiaMetadataCollection<WoodSimulationDataCollection,
             WoodSimulationData>
     {
     }

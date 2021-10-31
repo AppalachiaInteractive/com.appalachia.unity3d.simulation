@@ -6,9 +6,8 @@ using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Core
 {
-    [CreateAssetMenu(menuName = "Internal/System/TreeRuntimeMetadataCollection", order = 0)]
     public class
-        TreeRuntimeMetadataCollection : SelfSavingSingletonScriptableObject<
+        TreeRuntimeMetadataCollection : SingletonAppalachiaObject<
             TreeRuntimeMetadataCollection>
     {
         public List<TreeRuntimeInstanceMetadata> treeRuntimeInstanceMetadatas = new();
@@ -39,6 +38,12 @@ namespace Appalachia.Simulation.Trees.Core
                 var i = AssetDatabaseManager.LoadAssetAtPath<TreeRuntimeInstanceMetadata>(path);
                 treeRuntimeInstanceMetadatas.Add(i);
             }
+        }
+
+        [UnityEditor.MenuItem(PKG.Menu.Assets.Base + nameof(TreeRuntimeMetadataCollection), priority = PKG.Menu.Assets.Priority)]
+        public static void CreateAsset()
+        {
+            CreateNew();
         }
 #endif
     }

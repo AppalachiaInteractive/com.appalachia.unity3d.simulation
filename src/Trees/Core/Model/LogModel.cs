@@ -18,7 +18,7 @@ using UnityEngine;
 namespace Appalachia.Simulation.Trees.Core.Model
 {
     [ExecuteAlways]
-    public class LogModel : EditorOnlyFrustumCulledMonoBehaviour, ILogModel
+    public class LogModel : EditorOnlyFrustumCulledBehaviour, ILogModel
     {
         private ILogDataProvider _container;
         [HideInInspector] public RaycastHit[] _hits = new RaycastHit[24];

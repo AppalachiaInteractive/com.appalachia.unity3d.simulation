@@ -24,7 +24,6 @@ using Random = UnityEngine.Random;
 
 namespace Appalachia.Simulation.Trees
 {
-    [CreateAssetMenu(menuName = "Tree Species Editor/New/Branch", order = 1)]
     [Serializable]
     public class BranchDataContainer : TSEDataContainer
     {
@@ -316,6 +315,12 @@ namespace Appalachia.Simulation.Trees
             {
                 dc.branch.hierarchies.CopyHierarchiesTo(branch.hierarchies);
             }
+        }
+
+        [UnityEditor.MenuItem(PKG.Menu.Assets.Base + nameof(BranchDataContainer), priority = PKG.Menu.Assets.Priority)]
+        public static void CreateAsset()
+        {
+            CreateNew();
         }
     }
 }

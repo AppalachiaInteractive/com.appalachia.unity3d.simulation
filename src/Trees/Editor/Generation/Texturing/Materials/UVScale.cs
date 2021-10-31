@@ -17,12 +17,12 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials
         //[PropertyRange(1, 5)]
         [HorizontalGroup(.5f), LabelWidth(20)]
         [ValueDropdown(nameof(GetValuesX))]
-        public float x = 1f;
+        public float x;
         
         //[PropertyRange(1, 5)]
         [HorizontalGroup(.5f), LabelWidth(20)]
         [ValueDropdown(nameof(GetValuesY))]
-        public float y = 1f;
+        public float y;
 
 
         private static float[] valuesX;

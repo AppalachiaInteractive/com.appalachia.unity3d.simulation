@@ -25,7 +25,7 @@ namespace Appalachia.Simulation.Wind
 {
     [DisallowMultipleComponent]
     [ExecuteAlways]
-    public class GlobalWindManager : SingletonMonoBehaviour<GlobalWindManager>
+    public class GlobalWindManager : SingletonAppalachiaBehaviour<GlobalWindManager>
     {
         private const string _PRF_PFX = nameof(GlobalWindManager) + ".";
         private static readonly ProfilerMarker _PRF_Awake = new(_PRF_PFX + "Awake");

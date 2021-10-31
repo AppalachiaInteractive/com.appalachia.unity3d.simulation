@@ -7,8 +7,8 @@ using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Core.Serialization
 {
-    public abstract class ResponsiveSelfSavingSingletonScriptableObject<T> : SelfSavingSingletonScriptableObject<T>, IResponsive
-        where T : SelfSavingSingletonScriptableObject<T>
+    public abstract class ResponsiveSingletonAppalachiaObject<T> : SingletonAppalachiaObject<T>, IResponsive
+        where T : SingletonAppalachiaObject<T>
     {
         #if UNITY_EDITOR
         

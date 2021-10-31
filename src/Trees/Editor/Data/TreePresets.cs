@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Data
 {
-    public class TreePresets : SelfSavingSingletonScriptableObject<TreePresets>, ISerializationCallbackReceiver
+    public class TreePresets : SingletonAppalachiaObject<TreePresets>, ISerializationCallbackReceiver
     {
         [FoldoutGroup("Trunk")] public DistributionSettings trunk_distribution;
         [FoldoutGroup("Trunk")] public BranchSettings trunk_branch;

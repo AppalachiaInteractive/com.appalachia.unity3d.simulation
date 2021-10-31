@@ -6,7 +6,7 @@ using Appalachia.Simulation.Core.Metadata.Tree.Types;
 namespace Appalachia.Simulation.Trees.Core
 {
     public class
-        TreeRuntimeInstanceMetadata : SelfSavingAndIdentifyingScriptableObject<
+        TreeRuntimeInstanceMetadata : IdentifiableAppalachiaObject<
             TreeRuntimeInstanceMetadata>
     {
         public string speciesName;

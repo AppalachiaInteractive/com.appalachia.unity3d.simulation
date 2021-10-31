@@ -9,7 +9,7 @@ using Sirenix.OdinInspector;
 namespace Appalachia.Simulation.Buoyancy
 {
     public class
-        BuoyancyVoxelDataGizmoSettings : SelfSavingSingletonScriptableObject<
+        BuoyancyVoxelDataGizmoSettings : SingletonAppalachiaObject<
             BuoyancyVoxelDataGizmoSettings>
     {
         private const string _GC = "Cumulative";

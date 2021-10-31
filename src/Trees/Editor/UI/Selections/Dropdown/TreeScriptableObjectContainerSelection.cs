@@ -9,9 +9,9 @@ using UnityEngine;
 namespace Appalachia.Simulation.Trees.UI.Selections.Dropdown
 {
     [Serializable]
-    public abstract class TreeScriptableObjectContainerSelection <T, TS> : SelfSavingSingletonScriptableObject<TS>
-        where TS : SelfSavingSingletonScriptableObject<TS> 
-        where T : ScriptableObject//AppalachiaScriptableObject<T>
+    public abstract class TreeScriptableObjectContainerSelection <T, TS> : SingletonAppalachiaObject<TS>
+        where TS : SingletonAppalachiaObject<TS> 
+        where T : ScriptableObject
     {
         [SerializeField, HideInInspector] private T[] objects;
         [SerializeField, HideInInspector] private string[] objectNames;

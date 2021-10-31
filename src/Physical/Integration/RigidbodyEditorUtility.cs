@@ -12,7 +12,7 @@ namespace Appalachia.Simulation.Physical.Integration
 {
     [DisallowMultipleComponent]
     [RequireComponent(typeof(Rigidbody))]
-    public class RigidbodyEditorUtility : EditorOnlyMonoBehaviour
+    public class RigidbodyEditorUtility : EditorOnlyBehaviour
     {
         [HorizontalGroup("zzz")]
         [ReadOnly]

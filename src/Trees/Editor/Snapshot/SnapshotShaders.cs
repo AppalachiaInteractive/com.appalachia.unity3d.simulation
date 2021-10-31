@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Snapshot
 {
-    public class SnapshotShaders : SelfSavingSingletonScriptableObject<SnapshotShaders>
+    public class SnapshotShaders : SingletonAppalachiaObject<SnapshotShaders>
     {
         public Shader albedo;
         public Shader normal;

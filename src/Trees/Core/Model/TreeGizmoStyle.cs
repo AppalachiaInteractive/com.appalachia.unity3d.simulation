@@ -10,7 +10,7 @@ namespace Appalachia.Simulation.Trees.Core.Model
 {
 #if UNITY_EDITOR
 
-    public class TreeGizmoStyle : SelfSavingSingletonScriptableObject<TreeGizmoStyle>
+    public class TreeGizmoStyle : SingletonAppalachiaObject<TreeGizmoStyle>
     {
        
         

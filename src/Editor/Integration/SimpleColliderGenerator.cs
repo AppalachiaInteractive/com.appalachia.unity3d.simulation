@@ -12,7 +12,7 @@ namespace Appalachia.Simulation.Integration
 {
     [ExecuteAlways]
     [DisallowMultipleComponent]
-    public class SimpleColliderGenerator : EditorOnlyFrustumCulledMonoBehaviour
+    public class SimpleColliderGenerator : EditorOnlyFrustumCulledBehaviour
     {
         public override EditorOnlyExclusionStyle exclusionStyle => EditorOnlyExclusionStyle.Component;
 

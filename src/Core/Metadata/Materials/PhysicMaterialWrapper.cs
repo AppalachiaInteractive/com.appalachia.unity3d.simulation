@@ -11,7 +11,7 @@ namespace Appalachia.Simulation.Core.Metadata.Materials
 {
     [SmartLabel]
     public class
-        PhysicMaterialWrapper : SelfCategorizingAndSavingScriptableObject<PhysicMaterialWrapper>
+        PhysicMaterialWrapper : CategorizableAppalachiaObject<PhysicMaterialWrapper>
     {
         [SmartLabel]
         [SmartLabelChildren]

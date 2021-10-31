@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace Appalachia.Simulation.Core.Metadata.Materials
 {
-    public class PhysicsMaterialsCollection : MetadataLookupBase<PhysicsMaterialsCollection, PhysicMaterialWrapper>
+    public class PhysicsMaterialsCollection : AppalachiaMetadataCollection<PhysicsMaterialsCollection, PhysicMaterialWrapper>
     {
         [FoldoutGroup("Misc")] public Material physicsVisualizationMaterial;
 

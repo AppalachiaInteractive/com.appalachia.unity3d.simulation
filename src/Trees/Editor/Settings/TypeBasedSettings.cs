@@ -4,7 +4,7 @@ using Appalachia.Simulation.Trees.Extensions;
 
 namespace Appalachia.Simulation.Trees.Settings
 {
-    public abstract class TypeBasedSettings<T> : ResponsiveSelfSavingScriptableObject<T>
+    public abstract class TypeBasedSettings<T> : ResponsiveAppalachiaObject<T>
         where T : TypeBasedSettings<T>
     {
         public override void UpdateSettingsType(ResponsiveSettingsType t)

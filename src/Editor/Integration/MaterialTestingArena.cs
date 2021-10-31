@@ -11,7 +11,7 @@ using Random = UnityEngine.Random;
 
 namespace Appalachia.Simulation.Integration
 {
-    public class MaterialTestingArena : EditorOnlyMonoBehaviour
+    public class MaterialTestingArena : EditorOnlyBehaviour
     {
         [FoldoutGroup("Center")]
         [SmartLabel]

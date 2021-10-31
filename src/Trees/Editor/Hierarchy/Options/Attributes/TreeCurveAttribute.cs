@@ -9,9 +9,9 @@ namespace Appalachia.Simulation.Trees.Hierarchy.Options.Attributes
     {
         public SettingsUpdateTarget target;
         public float MinTime;
-        public float MaxTime = 1f;
+        public float MaxTime;
         public float MinValue;
-        public float MaxValue = 1f;
+        public float MaxValue;
 
         public TreeCurveAttribute(
             SettingsUpdateTarget target = SettingsUpdateTarget.Distribution,

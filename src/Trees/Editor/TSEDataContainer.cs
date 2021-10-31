@@ -19,7 +19,7 @@ using UnityEngine.Serialization;
 
 namespace Appalachia.Simulation.Trees
 {
-    public abstract class TSEDataContainer : ResponsiveAppalachiaScriptableObject<TSEDataContainer>
+    public abstract class TSEDataContainer : ResponsiveAppalachiaObject<TSEDataContainer>
     {
         [HideInInspector] 
         public bool initialized;

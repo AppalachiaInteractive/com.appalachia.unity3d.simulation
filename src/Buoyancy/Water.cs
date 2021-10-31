@@ -28,7 +28,7 @@ namespace Appalachia.Simulation.Buoyancy
 {
     [ExecuteAlways]
     [ExecutionOrder(-100)]
-    public class Water : AppalachiaMonoBehaviour
+    public class Water : AppalachiaBehaviour
     {
         private const string _PRF_PFX = nameof(Water) + ".";
 

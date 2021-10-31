@@ -60,7 +60,7 @@ namespace Appalachia.Simulation.Core
             }
         }
 
-        [MenuItem(PKG.Menu.Appalachia.Tools.Base + MENU_TOGGLE, false, priority = PKG.Priority)]
+        [MenuItem(PKG.Menu.Appalachia.Tools.Base + MENU_TOGGLE, priority = PKG.Priority)]
         public static void TogglePhysicsSimulation()
         {
             SetEnabled(!s_Enabled);

@@ -7,9 +7,8 @@ using UnityEngine;
 
 namespace Appalachia.Simulation.Core.Metadata.Wood
 {
-    [CreateAssetMenu(menuName = "Tree Species Editor/Simulation/Wood", order = 10)]
     public class WoodSimulationData :
-        SelfCategorizingIdentifyingAndSavingScriptableObject<WoodSimulationData>
+        CategorizableIdentifiableAppalachiaObject<WoodSimulationData>
     {
         [BoxGroup("Physical")] public DensityMetadata densityMetadata;
 
@@ -85,6 +84,11 @@ namespace Appalachia.Simulation.Core.Metadata.Wood
 #pragma warning restore 612
         }
 
+        [UnityEditor.MenuItem(PKG.Menu.Assets.Base + nameof(WoodSimulationData), priority = PKG.Menu.Assets.Priority)]
+        public static void CreateAsset()
+        {
+            CreateNew();
+        }
 #endif
     }
 }

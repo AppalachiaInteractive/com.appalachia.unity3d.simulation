@@ -9,7 +9,7 @@ using UnityEngine;
 namespace Appalachia.Simulation.Buoyancy.Data
 {
     [Serializable]
-    public class BuoyancyData : SelfSavingScriptableObject<BuoyancyData>
+    public class BuoyancyData : AppalachiaObject<BuoyancyData>
     {
         [SmartLabel(Postfix = true)]
         [SerializeField]

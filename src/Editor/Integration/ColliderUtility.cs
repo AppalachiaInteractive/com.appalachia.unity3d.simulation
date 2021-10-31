@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Appalachia.Simulation.Integration
 {
-    public class ColliderUtility : EditorOnlyMonoBehaviour
+    public class ColliderUtility : EditorOnlyBehaviour
     {
         [SmartLabel]
         [InlineButton(nameof(ApplyToAll))]

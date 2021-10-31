@@ -12,7 +12,7 @@ namespace Appalachia.Simulation.Trees.Settings
         "Control the generation of all tree species.",
         titleAlignment: TitleAlignments.Split
     )]
-    public class TreeGlobalSettings : SelfSavingSingletonScriptableObject<TreeGlobalSettings>
+    public class TreeGlobalSettings : SingletonAppalachiaObject<TreeGlobalSettings>
     {
         [TitleGroup("Layers")]
         [BoxGroup("Layers/Trees")]

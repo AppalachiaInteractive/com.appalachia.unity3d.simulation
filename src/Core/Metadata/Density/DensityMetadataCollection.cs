@@ -4,7 +4,7 @@ using Sirenix.OdinInspector;
 namespace Appalachia.Simulation.Core.Metadata.Density
 {
     public class
-        DensityMetadataCollection : MetadataLookupBase<DensityMetadataCollection, DensityMetadata>
+        DensityMetadataCollection : AppalachiaMetadataCollection<DensityMetadataCollection, DensityMetadata>
     {
         [FoldoutGroup("Named")] public DensityMetadata ground;
         [FoldoutGroup("Named")] public DensityMetadata air;

@@ -24,7 +24,7 @@ namespace Appalachia.Simulation.Trees.Core.Model
 {
     
     [ExecuteAlways]
-    public class TreeModel : EditorOnlyFrustumCulledMonoBehaviour, ITreeModel
+    public class TreeModel : EditorOnlyFrustumCulledBehaviour, ITreeModel
     {
         private ISpeciesDataProvider _container;
         [HideInInspector] public RaycastHit[] _hits = new RaycastHit[24];

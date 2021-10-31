@@ -21,7 +21,7 @@ namespace Appalachia.Simulation.Trees.Core
     [DisallowMultipleComponent]
     [ExecuteAlways]
     [RequireComponent(typeof(RigidbodyDensityManager))]
-    public class LogRuntimeInstance : AppalachiaInstancedMonoBehaviour
+    public class LogRuntimeInstance : InstancedAppalachiaBehaviour
     {
         [FormerlySerializedAs("densityRigidbodyManager")]
         [FoldoutGroup("References")]

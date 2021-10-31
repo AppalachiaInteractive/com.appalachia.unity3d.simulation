@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Output
 {
-    public class DefaultShaderResource : SelfSavingSingletonScriptableObject<DefaultShaderResource>
+    public class DefaultShaderResource : SingletonAppalachiaObject<DefaultShaderResource>
     {
         public OutputShaderSelectionSet branchShaderSet;
         public OutputShaderSelectionSet tiledShaderSet;

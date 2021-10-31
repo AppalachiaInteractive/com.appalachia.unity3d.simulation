@@ -3,9 +3,14 @@ using UnityEngine;
 
 namespace Appalachia.Simulation.Core.Metadata.Fuel
 {
-    [CreateAssetMenu(menuName = "Internal/Metadata/Simulation/Heat/Fuel/FuelBurnScale", order = 0)]
-    public class FuelBurnScale : AppalachiaScriptableObject<FuelBurnScale>
+    public class FuelBurnScale : AppalachiaObject<FuelBurnScale>
     {
         public Vector3 burnScale;
+
+        [UnityEditor.MenuItem(PKG.Menu.Assets.Base + nameof(FuelBurnScale), priority = PKG.Menu.Assets.Priority)]
+        public static void CreateAsset()
+        {
+            CreateNew();
+        }
     }
 }

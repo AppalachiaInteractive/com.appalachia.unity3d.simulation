@@ -5,7 +5,7 @@ using Sirenix.OdinInspector;
 
 namespace Appalachia.Simulation.Buoyancy.Data
 {
-    public class BuoyancyDataDefaults : SelfSavingSingletonScriptableObject<BuoyancyDataDefaults>
+    public class BuoyancyDataDefaults : SingletonAppalachiaObject<BuoyancyDataDefaults>
     {
         [SmartLabel]
         [PropertyRange(0.00001f, 0.01f)]

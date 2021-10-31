@@ -8,7 +8,7 @@ namespace Appalachia.Simulation.ReactionSystem.Base
 {
     [ExecuteAlways]
     [Serializable]
-    public abstract class ReactionSubsystemBase : AppalachiaMonoBehaviour
+    public abstract class ReactionSubsystemBase : AppalachiaBehaviour
     {
         private const string _PRF_PFX = nameof(ReactionSubsystemBase) + ".";
 

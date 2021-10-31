@@ -7,9 +7,8 @@ using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Core.Serialization
 {
-    public abstract class ResponsiveNestedScriptableObject<T, TP> : NestedScriptableObject<T, TP>, IResponsive
-        where T : ResponsiveNestedScriptableObject<T, TP>
-        where TP : ResponsiveAppalachiaScriptableObject<TP>
+    public abstract class ResponsiveAppalachiaObject<T> : AppalachiaObject<T>, IResponsive
+        where T : AppalachiaObject<T>
     {
         #if UNITY_EDITOR
         

@@ -432,11 +432,11 @@ static void Impostors_Settings_PixelPadding(bool all, int padding)
 
  
 [UnityEditor.MenuItem(     "Tools/Impostors/All/Settings/Bake Preset/Individual Plant")]       static void Impostors_All_Settings_BakePreset_IndividualPlant() { Impostors_Settings_BakePreset( true, "internal_plant-individual_billboard-bake"); }
-[UnityEditor.MenuItem(PKG.Menu.Appalachia.Tools.Base + "Impostors/Selected/Settings/Bake Preset/Individual Plant")] static void  Impostors_Selected_Settings_BakePreset_IndividualPlant() { Impostors_Settings_BakePreset(false, "internal_plant-individual_billboard-bake"); }
+[UnityEditor.MenuItem(PKG.Menu.Appalachia.Tools.Base + "Impostors/Selected/Settings/Bake Preset/Individual Plant")] static void  Impostors_Selected_Settings_BakePreset_IndividualPlant() { Impostors_Settings_BakePreset(priority = PKG.Priority "internal_plant-individual_billboard-bake"); }
 [UnityEditor.MenuItem(     "Tools/Impostors/All/Settings/Bake Preset/Individual Plant Emissive")]       static void Impostors_All_BakePreset_IndividualPlantEmissive() { Impostors_Settings_BakePreset( true, "internal_plant-individual-emissive_billboard-bake"); }
-[UnityEditor.MenuItem(PKG.Menu.Appalachia.Tools.Base + "Impostors/Selected/Settings/Bake Preset/Individual Plant Emissive")] static void  Impostors_Selected_BakePreset_IndividualPlantEmissive() { Impostors_Settings_BakePreset(false,  "internal_plant-individual-emissive_billboard-bake"); }
+[UnityEditor.MenuItem(PKG.Menu.Appalachia.Tools.Base + "Impostors/Selected/Settings/Bake Preset/Individual Plant Emissive")] static void  Impostors_Selected_BakePreset_IndividualPlantEmissive() { Impostors_Settings_BakePreset(priority = PKG.Priority  "internal_plant-individual-emissive_billboard-bake"); }
 [UnityEditor.MenuItem(     "Tools/Impostors/All/Settings/Bake Preset/Standard Deferred")]       static void Impostors_All_Settings_BakePreset_StandardShader() { Impostors_Settings_BakePreset( true, "StandardDeferred"); }
-[UnityEditor.MenuItem(PKG.Menu.Appalachia.Tools.Base + "Impostors/Selected/Settings/Bake Preset/Standard Deferred")] static void  Impostors_Selected_Settings_BakePreset_StandardShader() { Impostors_Settings_BakePreset(false, "StandardDeferred"); }
+[UnityEditor.MenuItem(PKG.Menu.Appalachia.Tools.Base + "Impostors/Selected/Settings/Bake Preset/Standard Deferred")] static void  Impostors_Selected_Settings_BakePreset_StandardShader() { Impostors_Settings_BakePreset(priority = PKG.Priority "StandardDeferred"); }
 
 static void Impostors_Settings_BakePreset(bool all, string presetName) 
 {
@@ -456,7 +456,7 @@ static void Impostors_Settings_BakePreset(bool all, string presetName)
 
 
 [UnityEditor.MenuItem(     "Tools/Impostors/All/Bake Impostors")]       static void Impostors_All_Bake() { Impostors_Bake( true); }
-[UnityEditor.MenuItem(PKG.Menu.Appalachia.Tools.Base + "Impostors/Selected/Bake Impostors")] static void  Impostors_Selected_Bake() { Impostors_Bake(false); }
+[UnityEditor.MenuItem(PKG.Menu.Appalachia.Tools.Base + "Impostors/Selected/Bake Impostors")] static void  Impostors_Selected_Bake() { Impostors_Bake(priority = PKG.Priority); }
 
 static void Impostors_Bake(bool all) 
 {

@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Appalachia.Simulation.ReactionSystem.TouchBend.Data
 {
     [Serializable]
-    public class TouchBendComponentInfo : SelfSavingScriptableObject<TouchBendComponentInfo>,
+    public class TouchBendComponentInfo : AppalachiaObject<TouchBendComponentInfo>,
                                           IEquatable<TouchBendComponentInfo>
     {
         public Texture2D texture;

@@ -2,7 +2,7 @@ using Appalachia.Core.Scriptables;
 
 namespace Appalachia.Simulation.Trees.UI.Selections.State
 {
-    public class TreeSpeciesEditorSelection : SelfSavingSingletonScriptableObject<TreeSpeciesEditorSelection>
+    public class TreeSpeciesEditorSelection : SingletonAppalachiaObject<TreeSpeciesEditorSelection>
     {
         public TreeSelection tree;
         

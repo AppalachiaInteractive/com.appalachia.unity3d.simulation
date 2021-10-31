@@ -13,7 +13,7 @@ namespace Appalachia.Simulation.Physical.Integration
 {
     [ExecuteAlways]
     [DisallowMultipleComponent]
-    public class RigidbodyDensityManager : EditorOnlyMonoBehaviour
+    public class RigidbodyDensityManager : EditorOnlyBehaviour
     {
         private const string _PRF_PFX = nameof(RigidbodyDensityManager) + ".";
 

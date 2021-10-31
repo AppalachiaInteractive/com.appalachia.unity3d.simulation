@@ -44,7 +44,7 @@ namespace Appalachia.Simulation.Buoyancy
     [RequireComponent(typeof(Rigidbody))]
     [RequireComponent(typeof(RigidbodyDensityManager))]
     [ExecutionOrder(-90)]
-    public class Buoyant : AppalachiaInstancedMonoBehaviour
+    public class Buoyant : InstancedAppalachiaBehaviour
     {
         private const string _PRF_PFX = nameof(Buoyant) + ".";
 

@@ -26,7 +26,6 @@ using Random = UnityEngine.Random;
 
 namespace Appalachia.Simulation.Trees
 {
-    [CreateAssetMenu(menuName = "Tree Species Editor/New/Log", order = 0)]
     [Serializable]
     public class LogDataContainer : TSEDataContainer, ILogDataProvider
     {
@@ -616,6 +615,15 @@ namespace Appalachia.Simulation.Trees
             {
                 dc.log.hierarchies.CopyHierarchiesTo(log.hierarchies);
             }
+        }
+
+        [UnityEditor.MenuItem(
+            PKG.Menu.Assets.Base + nameof(LogDataContainer),
+            priority = PKG.Menu.Assets.Priority
+        )]
+        public static void CreateAsset()
+        {
+            CreateNew();
         }
     }
 }

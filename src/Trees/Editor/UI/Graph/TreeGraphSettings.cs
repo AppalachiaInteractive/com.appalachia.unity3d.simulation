@@ -3,7 +3,7 @@ using Sirenix.OdinInspector;
 
 namespace Appalachia.Simulation.Trees.UI.Graph
 {
-    public class TreeGraphSettings : SelfSavingSingletonScriptableObject<TreeGraphSettings>
+    public class TreeGraphSettings : SingletonAppalachiaObject<TreeGraphSettings>
     {
         [BoxGroup("Graph")]
         public float graphSize = 250f;
