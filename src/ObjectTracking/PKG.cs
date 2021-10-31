@@ -8,7 +8,7 @@ namespace Appalachia.Simulation.ObjectTracking
 {
     internal static partial class PKG
     {
-        public const int Priority = -302000;
+        public const int Priority = -469000;
         public const string Name = "Simulation/ObjectTracking";
         public const string Prefix = Root + Name + "/";
         public const string Root = "Appalachia/";

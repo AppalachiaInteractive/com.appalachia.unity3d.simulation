@@ -45,7 +45,8 @@ namespace Appalachia.Simulation.Trees.Build.Execution
         {
             try
             {
-                if (_executing || 
+                if (!TreeBuildManager._enabled ||
+                    _executing || 
                     EditorApplication.isCompiling ||
                     EditorApplication.isPlayingOrWillChangePlaymode ||
                     (CTX == null) ||
