@@ -8,7 +8,7 @@ namespace Appalachia.Simulation.Core
 {
     internal static partial class PKG
     {
-        public const int Priority = -305000;
+        public const int Priority = -308000;
         public const string Name = "Simulation";
         public const string Prefix = Root + Name + "/";
         public const string Root = "Appalachia/";
