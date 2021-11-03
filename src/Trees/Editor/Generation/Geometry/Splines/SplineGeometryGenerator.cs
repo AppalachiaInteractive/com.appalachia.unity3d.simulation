@@ -15,6 +15,7 @@ using Appalachia.Simulation.Trees.Hierarchy;
 using Appalachia.Simulation.Trees.Hierarchy.Options.Properties;
 using Appalachia.Simulation.Trees.Settings;
 using Appalachia.Simulation.Trees.Shape;
+using Appalachia.Utility.Extensions;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Generation.Geometry.Splines

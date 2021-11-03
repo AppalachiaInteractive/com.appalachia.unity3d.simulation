@@ -1,6 +1,7 @@
 using Appalachia.Core.Extensions;
 using Appalachia.Simulation.Trees.Generation.Texturing.Materials.Management;
 using Appalachia.Simulation.Trees.UI.Branches;
+using Appalachia.Utility.Extensions;
 using UnityEditor;
 
 namespace Appalachia.Simulation.Trees.UI.UV

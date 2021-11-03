@@ -3,6 +3,7 @@ using Appalachia.Core.Attributes.Editing;
 using Appalachia.Core.Extensions;
 using Appalachia.Core.Scriptables;
 using Appalachia.Simulation.Core.Metadata.Density;
+using Appalachia.Utility.Extensions;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Serialization;

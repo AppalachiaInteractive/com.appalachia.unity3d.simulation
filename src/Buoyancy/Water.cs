@@ -15,6 +15,7 @@ using Appalachia.Simulation.Physical.Sampling;
 using Appalachia.Spatial.Voxels;
 using Appalachia.Spatial.Voxels.Gizmos;
 using Appalachia.Spatial.Voxels.VoxelTypes;
+using Appalachia.Utility.Extensions;
 using Sirenix.OdinInspector;
 using Unity.Jobs;
 using Unity.Mathematics;

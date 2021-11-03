@@ -2,6 +2,7 @@ using Appalachia.Core.Extensions;
 using Appalachia.Core.Scriptables;
 using Appalachia.Simulation.Trees.Core.Editing;
 using Appalachia.Simulation.Trees.Core.Settings;
+using Appalachia.Utility.Extensions;
 using UnityEditor;
 using UnityEngine;
 

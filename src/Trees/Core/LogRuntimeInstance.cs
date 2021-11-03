@@ -5,6 +5,7 @@ using Appalachia.Core.Extensions;
 using Appalachia.Core.Shading;
 using Appalachia.Simulation.Core.Metadata.Wood;
 using Appalachia.Simulation.Physical.Integration;
+using Appalachia.Utility.Extensions;
 using Sirenix.OdinInspector;
 using UnityEditor;
 using UnityEngine;

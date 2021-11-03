@@ -1,6 +1,7 @@
 using System;
 using Appalachia.Core.Extensions;
 using Appalachia.Simulation.Trees.Hierarchy.Options;
+using Appalachia.Utility.Extensions;
 using Sirenix.OdinInspector;
 using UnityEngine;
 

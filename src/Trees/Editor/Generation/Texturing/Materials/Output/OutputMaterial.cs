@@ -11,6 +11,7 @@ using Appalachia.Simulation.Trees.Generation.Texturing.Materials.Base;
 using Appalachia.Simulation.Trees.Generation.Texturing.Output;
 using Appalachia.Simulation.Trees.Generation.Texturing.Shading.OutputShaders;
 using Appalachia.Simulation.Trees.Generation.Texturing.Specifications;
+using Appalachia.Utility.Extensions;
 using Sirenix.OdinInspector;
 using UnityEngine;
 

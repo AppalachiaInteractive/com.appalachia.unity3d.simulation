@@ -3,6 +3,7 @@
 using Appalachia.Core.Extensions;
 using Appalachia.Simulation.Trees.Generation.Texturing.Materials.Management;
 using Appalachia.Simulation.Trees.UI.Species;
+using Appalachia.Utility.Extensions;
 
 #endregion
 

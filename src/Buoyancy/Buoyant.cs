@@ -26,6 +26,7 @@ using Appalachia.Simulation.Wind;
 using Appalachia.Spatial.Voxels;
 using Appalachia.Spatial.Voxels.Gizmos;
 using Appalachia.Utility.Constants;
+using Appalachia.Utility.Extensions;
 using Sirenix.OdinInspector;
 using Unity.Burst;
 using Unity.Jobs;

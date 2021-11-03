@@ -5,6 +5,7 @@ using Appalachia.CI.Integration.Assets;
 using Appalachia.Core.Extensions;
 using Appalachia.Editing.Core.State;
 using Appalachia.Simulation.Trees.Icons;
+using Appalachia.Utility.Extensions;
 using Appalachia.Utility.Reflection.Extensions;
 using Sirenix.Utilities.Editor;
 using UnityEditor;
