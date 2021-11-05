@@ -8,7 +8,7 @@ namespace Appalachia.Simulation.Buoyancy
 {
     internal static partial class PKG
     {
-        public const int Priority = -319000;
+        public const int Priority = -318000;
         public const string Name = "Simulation/Buoyancy";
         public const string Prefix = Root + Name + "/";
         public const string Root = "Appalachia/";
