@@ -15,6 +15,7 @@ C:/Users/Chris/com.appalachia/unity3d/appa/Assets/Appalachia.Simulation
 `0.2.0`
 | Hash | Date | Author | Changes |
 |------|------|--------|---------|
+| 20b08b1596979cb340ed06686945f533323d3326 | 2021-11-05 | Chris Schubert | Updating changelog and releaselog |
 | 8971ae5b358bce77d0d91a3641045a2b95249973 | 2021-11-05 | Chris Schubert | Updating changelog and releaselog |
 | 9ec0ab0d4f9e1ac280afc02584a224ed69dfce3b | 2021-11-05 | Chris Schubert | Updating changelog and releaselog |
 | 566d3af5b8753a91951a0468cb637fc41ab8c685 | 2021-11-05 | Chris Schubert | Updating changelog and releaselog |
