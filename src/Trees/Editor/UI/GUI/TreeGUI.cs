@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Appalachia.CI.Integration.Assets;
 using Appalachia.Core.Extensions;
+using Appalachia.Editing.Core.Layout;
 using Appalachia.Editing.Core.State;
 using Appalachia.Simulation.Trees.Icons;
 using Appalachia.Utility.Extensions;
@@ -440,9 +441,9 @@ namespace Appalachia.Simulation.Trees.UI.GUI
                 }
                 else
                 {
-                    UIStateStacks.color.Push(color);
+                    APPAGUI.StateStacks.color.Push(color);
                     UnityEngine.GUI.DrawTexture(rect, EditorGUIUtility.whiteTexture);
-                    UIStateStacks.color.Pop();
+                    APPAGUI.StateStacks.color.Pop();
                 }
             }
 
