@@ -14,13 +14,10 @@ C:/Users/Chris/com.appalachia/unity3d/appa/Assets/Appalachia.Simulation
 ## Releasing
 | Hash | Date | Author | Changes |
 |------|------|--------|---------|
+| 7839550501c59b222b1419f641fc1f47045f00cd | 2021-11-09 | Chris Schubert | Removing empty directories, adding some debugger passthroughs, and reformatting asmdefs |
+| 8449dd732a0f25dd95ce7ea8c88e29ad71dec929 | 2021-11-08 | Chris Schubert | Updating changelog and releaselog |
 | a8a8a72c18ce3fe9a295fa35a0140903714b057e | 2021-11-08 | Chris Schubert | Upgrading to new logging library |
 | 2158090e351146fb0546b647a9ffc3a81a534a91 | 2021-11-07 | Chris Schubert | Fixing shader includes and automatic references for resources |
-
-
- ## Tag: `v0.2.0`
-| Hash | Date | Author | Changes |
-|------|------|--------|---------|
 | b1f7d469beb94b4ff016ff60124e581665beadaa | 2021-11-06 | Chris Schubert | Updating changelog and releaselog |
 | 22ca0aa5a7beabc150e0cb2f00a6e180f50d1e91 | 2021-11-06 | Chris Schubert | Updating changelog and releaselog |
 | b5e266154e914bd4ae1bc81b86fac63e69e3b071 | 2021-11-06 | Chris Schubert | Updating changelog and releaselog |
