@@ -8,6 +8,7 @@ using Appalachia.Simulation.Trees.Generation.Texturing.Materials;
 using Appalachia.Simulation.Trees.Generation.Texturing.Materials.Output;
 using Appalachia.Simulation.Trees.Generation.Texturing.Transmission;
 using Appalachia.Simulation.Trees.Settings;
+using Appalachia.Utility.Logging;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Generation.Impostors
@@ -60,37 +61,37 @@ namespace Appalachia.Simulation.Trees.Generation.Impostors
 
             if (impostor == null)
             {
-                Debug.LogWarning("Prefab update required: Missing impostor.");
+               AppaLog.Warning("Prefab update required: Missing impostor.");
                 return true;
             }
 
             if (stage.asset.impostor == null)
             {
-                Debug.LogWarning("Prefab update required: Missing impostor asset.");
+               AppaLog.Warning("Prefab update required: Missing impostor asset.");
                 return true;
             }
 
             if (impostor.Data == null)
             {
-                Debug.LogWarning("Prefab update required: Impostor asset not assigned.");
+               AppaLog.Warning("Prefab update required: Impostor asset not assigned.");
                 return true;
             }
 
             if ((impostor.Renderers == null) || (impostor.Renderers.Length != 1))
             {
-                Debug.LogWarning("Prefab update required: Impostor renderers not set up.");
+               AppaLog.Warning("Prefab update required: Impostor renderers not set up.");
                 return true;
             }
 
             if (impostor.LodGroup == null)
             {
-                Debug.LogWarning("Prefab update required: Impostor LOD group not assigned.");
+               AppaLog.Warning("Prefab update required: Impostor LOD group not assigned.");
                 return true;
             }
 
             if (impostor.RootTransform == null)
             {
-                Debug.LogWarning("Prefab update required: Impostor root transform not assigned.");
+               AppaLog.Warning("Prefab update required: Impostor root transform not assigned.");
                 return true;
             }
 
@@ -100,20 +101,20 @@ namespace Appalachia.Simulation.Trees.Generation.Impostors
 
             if (impostorLOD.renderers.Length != 1)
             {
-                Debug.LogWarning("Prefab update required: Incorrect impostor renderer count.");
+               AppaLog.Warning("Prefab update required: Incorrect impostor renderer count.");
                 return true;
             }
 
             if (impostorLOD.renderers[0].sharedMaterial != impostor.Data.Material)
             {
-                Debug.LogWarning("Prefab update required: Incorrect impostor material.");
+               AppaLog.Warning("Prefab update required: Incorrect impostor material.");
                 return true;
             }
 
             var mf = impostorLOD.renderers[0].GetComponent<MeshFilter>();
             if (mf.sharedMesh != impostor.Data.Mesh)
             {
-                Debug.LogWarning("Prefab update required: Incorrect impostor mesh.");
+               AppaLog.Warning("Prefab update required: Incorrect impostor mesh.");
                 return true;
             }
 
@@ -526,7 +527,7 @@ static void ApplyToImpostors(Action<AmplifyImpostor> action, AmplifyImpostor[] i
         }
         catch (Exception ex)
         {
-            Debug.LogError($"Failed to apply operation to impostor: {ex.Message}", ex, impostor);
+            AppaLog.Error($"Failed to apply operation to impostor: {ex.Message}", ex, impostor);
             EditorUtility.ClearProgressBar();
         }
     }

@@ -20,6 +20,7 @@ using Appalachia.Simulation.Trees.Hierarchy.Options.Properties;
 using Appalachia.Simulation.Trees.Seeds;
 using Appalachia.Simulation.Trees.Shape;
 using Appalachia.Simulation.Trees.UI.Selections.State;
+using Appalachia.Utility.Logging;
 using Unity.EditorCoroutines.Editor;
 using UnityEditor;
 using UnityEngine;
@@ -71,7 +72,7 @@ namespace Appalachia.Simulation.Trees.Build.Execution
             }
             catch (Exception ex)
             {
-                Debug.LogError(ex);
+                AppaLog.Error(ex);
             }
         }
 
@@ -279,7 +280,7 @@ namespace Appalachia.Simulation.Trees.Build.Execution
                         {
                             using (BUILD_TIME.LOG_BUILD_MGR.HandleBuildError.Auto())
                             {
-                                Debug.LogError("Tree build failed.");
+                                AppaLog.Error("Tree build failed.");
 
                                 if (log != null)
                                 {

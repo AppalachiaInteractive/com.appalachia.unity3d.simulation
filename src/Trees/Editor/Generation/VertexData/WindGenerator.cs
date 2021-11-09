@@ -14,6 +14,7 @@ using Appalachia.Simulation.Trees.Hierarchy;
 using Appalachia.Simulation.Trees.Hierarchy.Options.Properties;
 using Appalachia.Simulation.Trees.Settings;
 using Appalachia.Simulation.Trees.Shape;
+using Appalachia.Utility.Logging;
 using UnityEngine;
 using Vector3 = UnityEngine.Vector3;
 
@@ -525,7 +526,7 @@ namespace Appalachia.Simulation.Trees.Generation.VertexData
                 if (!branchVectorsByShapeID.ContainsKey(vertex.shapeID))
                 {
                     var message = "Could not find vertex's shape in wind shape lookup!";
-                    Debug.LogError(message);
+                    AppaLog.Error(message);
                     throw new NotSupportedException(message);
                 }
 
@@ -786,7 +787,7 @@ namespace Appalachia.Simulation.Trees.Generation.VertexData
                     if (!phaseValuesByShapeID.ContainsKey(vertex.shapeID))
                     {
                         var message = "Could not find vertex's shape in wind shape lookup!";
-                        Debug.LogError(message);
+                        AppaLog.Error(message);
                         throw new NotSupportedException(message);
                     }
 

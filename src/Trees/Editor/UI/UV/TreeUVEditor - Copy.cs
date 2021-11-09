@@ -165,7 +165,7 @@ namespace Appalachia.Simulation.Trees
                     _tree.dataState = TSEDataContainer.DataState.Normal;
                 }#1#
 
-                Debug.LogError(ex);
+                AppaLog.Error(ex);
 
                 throw;
             }
@@ -858,7 +858,7 @@ namespace Appalachia.Simulation.Trees
                     _tree.dataState = TSEDataContainer.DataState.Normal;
                 }
 
-                Debug.LogError(ex);
+                AppaLog.Error(ex);
 
                 throw;
             }

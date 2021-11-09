@@ -6,6 +6,7 @@ using Appalachia.Simulation.Trees.Generation.Spline;
 using Appalachia.Simulation.Trees.Hierarchy;
 using Appalachia.Simulation.Trees.Hierarchy.Options.Properties;
 using Appalachia.Simulation.Trees.Shape;
+using Appalachia.Utility.Logging;
 using UnityEditor;
 using UnityEngine;
 
@@ -72,7 +73,7 @@ namespace Appalachia.Simulation.Trees.Generation.Geometry
 
                     if (shape.matrix.isIdentity)
                     {
-                        Debug.LogWarning(
+                       AppaLog.Warning(
                             $"Default matrix present for shape {shape.shapeID} in hierarchy {shape.hierarchyID}"
                         );
                     }

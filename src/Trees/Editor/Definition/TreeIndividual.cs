@@ -14,6 +14,7 @@ using Appalachia.Simulation.Trees.Hierarchy;
 using Appalachia.Simulation.Trees.Icons;
 using Appalachia.Simulation.Trees.Interfaces;
 using Appalachia.Simulation.Trees.Settings;
+using Appalachia.Utility.Logging;
 using UnityEditor;
 using UnityEngine;
 
@@ -245,19 +246,19 @@ namespace Appalachia.Simulation.Trees.Definition
                     
             if (runtime == null)
             {
-                Debug.LogWarning("Prefab update required: Missing TreeRuntimeInstance.");
+               AppaLog.Warning("Prefab update required: Missing TreeRuntimeInstance.");
                 return true;
             }
 
             if (runtime.metadata == null)
             {
-                Debug.LogWarning("Prefab update required: Missing tree runtime metadata.");
+               AppaLog.Warning("Prefab update required: Missing tree runtime metadata.");
                 return true;
             }
 
             if (runtime.metadata != stage.runtimeMetadata)
             {
-                Debug.LogWarning("Prefab update required: Missing tree runtime metadata.");
+               AppaLog.Warning("Prefab update required: Missing tree runtime metadata.");
                 return true;
             }
             
@@ -274,13 +275,13 @@ namespace Appalachia.Simulation.Trees.Definition
 
             if (childCount != points.Count)
             {
-                Debug.LogWarning("Prefab update required: Wrong point of interest count.");
+               AppaLog.Warning("Prefab update required: Wrong point of interest count.");
                 return true;
             }
             
             if (gameObject.name != "POINTS")
             {
-                Debug.LogWarning("Prefab update required: Wrong POI name.");
+               AppaLog.Warning("Prefab update required: Wrong POI name.");
                 return true;
             }
 

@@ -1,4 +1,5 @@
 using System;
+using Appalachia.Utility.Logging;
 using UnityEditor;
 using UnityEngine;
 
@@ -94,7 +95,7 @@ namespace Appalachia.Simulation.Trees.UI.Utilities
             {
                 if (_logOnError)
                 {
-                    Debug.LogError(ex);
+                    AppaLog.Error(ex);
                 }
 
                 if (_cancelOnError)

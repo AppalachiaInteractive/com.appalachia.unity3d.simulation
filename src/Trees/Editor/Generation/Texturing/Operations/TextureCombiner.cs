@@ -12,6 +12,7 @@ using Appalachia.Simulation.Trees.Generation.Texturing.Materials.Input;
 using Appalachia.Simulation.Trees.Generation.Texturing.Materials.Output;
 using Appalachia.Simulation.Trees.Generation.Texturing.Output;
 using Appalachia.Simulation.Trees.Generation.Texturing.Specifications;
+using Appalachia.Utility.Logging;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -56,7 +57,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Operations
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogError(ex);
+                    AppaLog.Error(ex);
                     throw;
                 }
 
@@ -305,7 +306,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Operations
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogError(ex);
+                    AppaLog.Error(ex);
 
                     if (rt != null)
                     {

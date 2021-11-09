@@ -27,6 +27,7 @@ using Appalachia.Spatial.Voxels;
 using Appalachia.Spatial.Voxels.Gizmos;
 using Appalachia.Utility.Constants;
 using Appalachia.Utility.Extensions;
+using Appalachia.Utility.Logging;
 using Sirenix.OdinInspector;
 using Unity.Burst;
 using Unity.Jobs;
@@ -418,7 +419,7 @@ namespace Appalachia.Simulation.Buoyancy
                 if (!TryGetComponent(out body))
                 {
                     body = gameObject.AddComponent<Rigidbody>();
-                    Debug.LogError(
+                    AppaLog.Error(
                         $"Buoyancy:Object \"{name}\" had no Rigidbody. Rigidbody has been added."
                     );
                 }
@@ -721,7 +722,7 @@ namespace Appalachia.Simulation.Buoyancy
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogException(ex);
+                    AppaLog.Exception(ex);
                     jobHandle.Complete();
                     throw;
                 }

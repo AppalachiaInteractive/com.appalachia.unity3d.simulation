@@ -5,6 +5,7 @@ using Appalachia.Simulation.Trees.Generation.Texturing.Materials.Management;
 using Appalachia.Simulation.Trees.Generation.Texturing.Materials.Rects;
 using Appalachia.Simulation.Trees.Icons;
 using Appalachia.Simulation.Trees.UI.GUI;
+using Appalachia.Utility.Logging;
 using UnityEditor;
 using UnityEngine;
 
@@ -156,7 +157,7 @@ namespace Appalachia.Simulation.Trees.UI.UV
                     _tree.dataState = TSEDataContainer.DataState.Normal;
                 }*/
 
-                Debug.LogError(ex);
+                AppaLog.Error(ex);
 
                 throw;
             }

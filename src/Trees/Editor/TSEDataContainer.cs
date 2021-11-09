@@ -12,6 +12,7 @@ using Appalachia.Simulation.Trees.Prefabs;
 using Appalachia.Simulation.Trees.ResponsiveUI;
 using Appalachia.Simulation.Trees.Settings;
 using Appalachia.Simulation.Trees.UI.Utilities;
+using Appalachia.Utility.Logging;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
 using UnityEngine;
@@ -90,7 +91,7 @@ namespace Appalachia.Simulation.Trees
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogError(ex);
+                    AppaLog.Error(ex);
                     dataState = DataState.PendingSave;
                 }
             }

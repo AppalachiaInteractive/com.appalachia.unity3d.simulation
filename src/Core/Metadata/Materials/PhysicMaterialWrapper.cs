@@ -4,6 +4,7 @@ using Appalachia.Core.Extensions;
 using Appalachia.Core.Scriptables;
 using Appalachia.Simulation.Core.Metadata.Density;
 using Appalachia.Utility.Extensions;
+using Appalachia.Utility.Logging;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -50,7 +51,7 @@ namespace Appalachia.Simulation.Core.Metadata.Materials
 
             if (defaultDensity == null)
             {
-                Debug.LogWarning($"Need default density for material {name}", this);
+                AppaLog.Warning($"Need default density for material {name}", this);
             }
 #endif
         }

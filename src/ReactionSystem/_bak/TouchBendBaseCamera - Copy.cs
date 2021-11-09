@@ -190,7 +190,7 @@ namespace Appalachia.Core.Runtime.TouchBend.Cameras
             }
             catch (Exception ex)
             {
-                Debug.LogError(ex);
+                AppaLog.Error(ex);
             }
         }
 
@@ -210,14 +210,14 @@ namespace Appalachia.Core.Runtime.TouchBend.Cameras
             
             if (center == null)
             {
-                Debug.LogError("Must assign system center.");
+                AppaLog.Error("Must assign system center.");
                 
                 return;
             }
             
             if (string.IsNullOrWhiteSpace(systemName))
             {
-                Debug.LogError("Must define system name.");
+                AppaLog.Error("Must define system name.");
             }
             
             if (!renderCamera)
@@ -241,7 +241,7 @@ namespace Appalachia.Core.Runtime.TouchBend.Cameras
         {
             if (cameraName == null)
             {
-                Debug.LogError("Must define camera name.");
+                AppaLog.Error("Must define camera name.");
                 return null;
             }
             

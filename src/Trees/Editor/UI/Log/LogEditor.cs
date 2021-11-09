@@ -11,6 +11,7 @@ using Appalachia.Simulation.Trees.UI.GUI;
 using Appalachia.Simulation.Trees.UI.Selections.Icons.Log;
 using Appalachia.Simulation.Trees.UI.Selections.State;
 using Appalachia.Simulation.Trees.UI.Species;
+using Appalachia.Utility.Logging;
 using Sirenix.OdinInspector.Editor;
 using Sirenix.Utilities.Editor;
 using UnityEditor;
@@ -260,7 +261,7 @@ namespace Appalachia.Simulation.Trees.UI.Log
                                 throw;
                             }
 
-                            Debug.LogError(ex);
+                            AppaLog.Error(ex);
                             _swallowMenuError = true;
                             return;
                         }
@@ -435,7 +436,7 @@ namespace Appalachia.Simulation.Trees.UI.Log
                     _log.RebuildStructures();
                 }
 
-                Debug.LogError(ex);
+                AppaLog.Error(ex);
                 _log.dataState = TSEDataContainer.DataState.Normal;
 
                 throw;

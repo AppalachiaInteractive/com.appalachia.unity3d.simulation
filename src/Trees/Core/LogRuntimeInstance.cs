@@ -6,6 +6,7 @@ using Appalachia.Core.Shading;
 using Appalachia.Simulation.Core.Metadata.Wood;
 using Appalachia.Simulation.Physical.Integration;
 using Appalachia.Utility.Extensions;
+using Appalachia.Utility.Logging;
 using Sirenix.OdinInspector;
 using UnityEditor;
 using UnityEngine;
@@ -101,7 +102,7 @@ namespace Appalachia.Simulation.Trees.Core
                 var errorMessage = $"Need to assign wood to this log [{name}]!";
 
 #if UNITY_EDITOR
-                Debug.LogWarning(errorMessage, this);
+               AppaLog.Warning(errorMessage, this);
                 return;
 #else
                 throw new NotSupportedException(errorMessage. this);
@@ -115,7 +116,7 @@ namespace Appalachia.Simulation.Trees.Core
                 var errorMessage = $"Need to assign density to this wood [{wood.name}]!";
 
 #if UNITY_EDITOR
-                Debug.LogWarning(errorMessage, this);
+               AppaLog.Warning(errorMessage, this);
                 return;
 #else
                 throw new NotSupportedException(errorMessage. this);

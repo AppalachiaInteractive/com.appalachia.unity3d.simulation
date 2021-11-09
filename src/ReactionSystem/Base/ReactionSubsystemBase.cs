@@ -1,6 +1,7 @@
 using System;
 using Appalachia.Core.Behaviours;
 using Appalachia.Core.Types.Enums;
+using Appalachia.Utility.Logging;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -88,7 +89,7 @@ namespace Appalachia.Simulation.ReactionSystem.Base
             }
             catch (Exception ex)
             {
-                Debug.LogError(ex);
+                AppaLog.Error(ex);
             }
         }
 

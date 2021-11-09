@@ -1,3 +1,4 @@
+using Appalachia.Utility.Logging;
 using Unity.Burst;
 using Unity.Mathematics;
 using UnityEngine;
@@ -33,7 +34,7 @@ namespace Appalachia.Simulation.Buoyancy.Jobs
         [BurstDiscard]
         public static void LogCheckForce(ForceType forceType)
         {
-            Debug.LogWarning($"{forceType} force is NaN!");
+           AppaLog.Warning($"{forceType} force is NaN!");
         }
     }
 }

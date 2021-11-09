@@ -1,4 +1,5 @@
 using System.Text;
+using Appalachia.Utility.Logging;
 using UnityEditor;
 using UnityEngine;
 
@@ -38,7 +39,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
             _builder.AppendLine($"[IsPartOfNonAssetPrefabInstance]:   {PrefabUtility.IsPartOfNonAssetPrefabInstance(go)}");
             _builder.AppendLine($"[IsPartOfPrefabThatCanBeAppliedTo]: {PrefabUtility.IsPartOfPrefabThatCanBeAppliedTo(go)}");
 
-            Debug.LogWarning(_builder.ToString());
+           AppaLog.Warning(_builder.ToString());
       
         }
 

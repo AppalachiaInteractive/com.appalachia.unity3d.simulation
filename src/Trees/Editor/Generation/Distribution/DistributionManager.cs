@@ -10,6 +10,7 @@ using Appalachia.Simulation.Trees.Hierarchy;
 using Appalachia.Simulation.Trees.Hierarchy.Options.Properties;
 using Appalachia.Simulation.Trees.Hierarchy.Settings;
 using Appalachia.Simulation.Trees.Shape;
+using Appalachia.Utility.Logging;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Generation.Distribution
@@ -50,7 +51,7 @@ namespace Appalachia.Simulation.Trees.Generation.Distribution
 
                     if (parentScale == 0f)
                     {
-                        Debug.LogWarning(
+                       AppaLog.Warning(
                             $"Not building shapes for hierarchy {hierarchy.hierarchyID} [{hierarchy.type}] because of parent scale."
                         );
                     }

@@ -17,6 +17,7 @@ using Appalachia.Simulation.Trees.Seeds;
 using Appalachia.Simulation.Trees.Settings;
 using Appalachia.Simulation.Trees.Snapshot;
 using Appalachia.Spatial.Octree;
+using Appalachia.Utility.Logging;
 using Sirenix.OdinInspector;
 using UnityEditor;
 using UnityEngine;
@@ -125,7 +126,7 @@ namespace Appalachia.Simulation.Trees
             }
             catch (Exception ex)
             {
-                Debug.LogError(ex.Message, this);
+                AppaLog.Error(ex.Message, this);
                 initialized = false;
                 throw;
             }

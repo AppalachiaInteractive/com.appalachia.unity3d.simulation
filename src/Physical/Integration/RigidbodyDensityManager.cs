@@ -5,6 +5,7 @@ using Appalachia.Core.Filtering;
 using Appalachia.Editing.Core.Behaviours;
 using Appalachia.Simulation.Core.Metadata.Density;
 using Appalachia.Simulation.Core.Metadata.Materials;
+using Appalachia.Utility.Logging;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
 using UnityEngine;
@@ -195,7 +196,7 @@ namespace Appalachia.Simulation.Physical.Integration
 
                     if (colliders.Length == 0)
                     {
-                        Debug.LogError("Cannot have density without colliders!");
+                        AppaLog.Error("Cannot have density without colliders!");
 
                         densityManager.enabled = false;
                         densityManager.DestroySafely();
@@ -225,7 +226,7 @@ namespace Appalachia.Simulation.Physical.Integration
 
                     if (material == null)
                     {
-                        Debug.LogError(
+                        AppaLog.Error(
                             "Need to set collider materials!  Using default material & density for now...",
                             densityManager
                         );

@@ -16,6 +16,7 @@ using Appalachia.Spatial.Voxels;
 using Appalachia.Spatial.Voxels.Gizmos;
 using Appalachia.Spatial.Voxels.VoxelTypes;
 using Appalachia.Utility.Extensions;
+using Appalachia.Utility.Logging;
 using Sirenix.OdinInspector;
 using Unity.Jobs;
 using Unity.Mathematics;
@@ -384,12 +385,12 @@ namespace Appalachia.Simulation.Buoyancy
                 {
                     if (c.attachedRigidbody)
                     {
-                        Debug.LogError("Water should REALLY not have a rigidbody!");
+                        AppaLog.Error("Water should REALLY not have a rigidbody!");
 
                         c.attachedRigidbody.detectCollisions = false;
                     }
 
-                    Debug.LogError("Water should not have real colliders!");
+                    AppaLog.Error("Water should not have real colliders!");
 
                     c.enabled = false;
                 }

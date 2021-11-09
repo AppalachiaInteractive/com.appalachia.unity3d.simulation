@@ -16,6 +16,7 @@ using Appalachia.Simulation.Trees.UI.Selections;
 using Appalachia.Simulation.Trees.UI.Selections.Dropdown;
 using Appalachia.Simulation.Trees.UI.Selections.Icons.Branch;
 using Appalachia.Simulation.Trees.UI.Selections.State;
+using Appalachia.Utility.Logging;
 using Sirenix.OdinInspector.Editor;
 using Sirenix.Utilities.Editor;
 using Unity.EditorCoroutines.Editor;
@@ -93,7 +94,7 @@ namespace Appalachia.Simulation.Trees.UI.Branches
         {
             if (_previewRenderUtility != null)
             {
-               //Debug.LogWarning($"Cleaning up preview utility {_previewRenderUtilityID} from branch editor.");
+               //AppaLog.Warning($"Cleaning up preview utility {_previewRenderUtilityID} from branch editor.");
                 _previewRenderUtility.Cleanup();
                 _previewRenderUtility = null;
             }
@@ -123,7 +124,7 @@ namespace Appalachia.Simulation.Trees.UI.Branches
         {
             if (_previewRenderUtility != null)
             {
-                //Debug.LogWarning($"Cleaning up preview utility {_previewRenderUtilityID} from branch editor.");
+                //AppaLog.Warning($"Cleaning up preview utility {_previewRenderUtilityID} from branch editor.");
                 _previewRenderUtility.Cleanup();
                 _previewRenderUtility = null;
             }
@@ -197,7 +198,7 @@ namespace Appalachia.Simulation.Trees.UI.Branches
                 {
                     _previewRenderUtilityCount += 1;
                     _previewRenderUtilityID = _previewRenderUtilityCount;
-                    //Debug.LogWarning($"Creating new preview utility {_previewRenderUtilityID} for branch editor.");
+                    //AppaLog.Warning($"Creating new preview utility {_previewRenderUtilityID} for branch editor.");
                     _previewRenderUtility = new PreviewRenderUtility();
                 }
 
@@ -494,7 +495,7 @@ namespace Appalachia.Simulation.Trees.UI.Branches
             }
             catch (Exception ex)
             {
-                Debug.LogError(ex);
+                AppaLog.Error(ex);
 
                 if ((branchData != null) &&
                     (branchData.branch != null) &&

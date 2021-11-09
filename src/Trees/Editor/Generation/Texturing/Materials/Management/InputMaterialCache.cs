@@ -18,6 +18,7 @@ using Appalachia.Simulation.Trees.Generation.Texturing.Materials.Input;
 using Appalachia.Simulation.Trees.Hierarchy;
 using Appalachia.Simulation.Trees.Prefabs;
 using Appalachia.Simulation.Trees.Settings;
+using Appalachia.Utility.Logging;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -318,7 +319,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Management
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogError(ex);
+                    AppaLog.Error(ex);
                     throw;
                 }
             }
@@ -355,7 +356,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Management
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogError(ex);
+                    AppaLog.Error(ex);
                     throw;
                 }
             }

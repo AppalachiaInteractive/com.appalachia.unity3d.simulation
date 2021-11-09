@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Appalachia.Simulation.Trees.Build.Execution;
 using Appalachia.Simulation.Trees.Generation.Texturing.Materials.Input;
+using Appalachia.Utility.Logging;
 using UnityEngine;
 
 #endregion
@@ -158,7 +159,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Atlassing
 
             if ((padding % 2) != 0)
             {
-                Debug.LogWarning("Padding not an even number");
+               AppaLog.Warning("Padding not an even number");
                 padding += 1;
             }
 

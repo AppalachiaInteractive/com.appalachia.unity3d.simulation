@@ -53,7 +53,7 @@ namespace Appalachia.Simulation.Buoyancy
     
                     if (!splashParticleSystem.isPlaying)
                     {
-                        //Debug.Log("Add foam");
+                        //AppaLog.Info("Add foam");
     
                         splashParticleSystem.Play();
                     }

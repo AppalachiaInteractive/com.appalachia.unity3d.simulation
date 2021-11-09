@@ -11,6 +11,7 @@ using Appalachia.Editing.Debugging.Handle;
 using Appalachia.Simulation.Core.Metadata.Tree.Types;
 using Appalachia.Simulation.Trees.Core.Interfaces;
 using Appalachia.Simulation.Trees.Core.Shape;
+using Appalachia.Utility.Logging;
 using Sirenix.OdinInspector;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -465,7 +466,7 @@ namespace Appalachia.Simulation.Trees.Core.Model
 
                 if (_container == null)
                 {
-                    Debug.LogError("Need to set containers!");
+                    AppaLog.Error("Need to set containers!");
                     DestroyImmediate(gameObject);                    
                 }
             }

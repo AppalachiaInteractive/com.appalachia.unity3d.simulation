@@ -2,6 +2,7 @@ using System;
 using Appalachia.Core.Attributes.Editing;
 using Appalachia.Core.Extensions;
 using Appalachia.Simulation.ReactionSystem.Base;
+using Appalachia.Utility.Logging;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
 using UnityEngine;
@@ -44,7 +45,7 @@ namespace Appalachia.Simulation.ReactionSystem.Cameras
             {
                 if (cameraName == null)
                 {
-                    Debug.LogError("Must define camera name.");
+                    AppaLog.Error("Must define camera name.");
                     return null;
                 }
 

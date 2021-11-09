@@ -589,7 +589,7 @@ namespace Appalachia.Simulation.Trees.UI.Graph
 
             if (!targetHierarchy.SupportsChildType(sourceHierarchy.type))
 
-                // Debug.Log("Drop target cannot have subGroups");
+                // AppaLog.Info("Drop target cannot have subGroups");
             {
                 return null;
             }
@@ -597,7 +597,7 @@ namespace Appalachia.Simulation.Trees.UI.Graph
             if (sourceHierarchy.parentHierarchyID == targetHierarchy.hierarchyID)
 
                 // No need to do anything
-                // Debug.Log("Drop target already parent of Drag node .. IGNORING");
+                // AppaLog.Info("Drop target already parent of Drag node .. IGNORING");
             {
                 return null;
             }
@@ -605,7 +605,7 @@ namespace Appalachia.Simulation.Trees.UI.Graph
             if (hierarchies.IsAncestor(sourceHierarchy, targetHierarchy))
 
                 // Would create cyclic-dependency
-                // Debug.Log("Drop target is a subGroup of Drag node");
+                // AppaLog.Info("Drop target is a subGroup of Drag node");
             {
                 return null;
             }
