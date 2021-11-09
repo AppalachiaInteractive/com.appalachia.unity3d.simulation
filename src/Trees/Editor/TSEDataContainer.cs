@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using Appalachia.CI.Integration.Assets;
 using Appalachia.Core.Types;
 using Appalachia.Simulation.Trees.Build.Cost;
@@ -124,7 +125,7 @@ namespace Appalachia.Simulation.Trees
 
         public abstract NameBasis GetNameBasis();
 
-        public override string ToString()
+        [DebuggerStepThrough] public override string ToString()
         {
             var basis = GetNameBasis();
 

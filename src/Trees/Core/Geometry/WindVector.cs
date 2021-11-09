@@ -1,11 +1,12 @@
 using System;
+using System.Diagnostics;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Core.Geometry
 {
     public struct WindVector : IEquatable<WindVector>
     {
-        public bool Equals(WindVector other)
+        [DebuggerStepThrough] public bool Equals(WindVector other)
         {
             return primaryRoll.Equals(other.primaryRoll) &&
                 primaryPivot.Equals(other.primaryPivot) && 
@@ -19,12 +20,12 @@ namespace Appalachia.Simulation.Trees.Core.Geometry
                 variation.Equals(other.variation);
         }
 
-        public override bool Equals(object obj)
+        [DebuggerStepThrough] public override bool Equals(object obj)
         {
             return obj is WindVector other && Equals(other);
         }
 
-        public override int GetHashCode()
+        [DebuggerStepThrough] public override int GetHashCode()
         {
             unchecked
             {
@@ -43,18 +44,18 @@ namespace Appalachia.Simulation.Trees.Core.Geometry
             }
         }
 
-        public static bool operator ==(WindVector left, WindVector right)
+        [DebuggerStepThrough] public static bool operator ==(WindVector left, WindVector right)
         {
             return left.Equals(right);
         }
 
-        public static bool operator !=(WindVector left, WindVector right)
+        [DebuggerStepThrough] public static bool operator !=(WindVector left, WindVector right)
         {
             return !left.Equals(right);
         }
 
         /*
-        public static WindVector operator *(WindVector left, Vector4 right)
+        [DebuggerStepThrough] public static WindVector operator *(WindVector left, Vector4 right)
         {
             return new WindVector()
             {
@@ -65,7 +66,7 @@ namespace Appalachia.Simulation.Trees.Core.Geometry
             };
         }
 
-        public static WindVector operator *(Vector4 left, WindVector right)
+        [DebuggerStepThrough] public static WindVector operator *(Vector4 left, WindVector right)
         {
             return right * left;
         }*/

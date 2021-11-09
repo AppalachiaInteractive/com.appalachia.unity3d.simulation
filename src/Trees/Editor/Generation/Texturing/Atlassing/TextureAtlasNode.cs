@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -33,7 +34,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Atlassing
                 ((a.atlasPackedRect.y + a.atlasPackedRect.height) < b.atlasPackedRect.y)));
         }
 
-        public int CompareTo(TextureAtlasNode b)
+        [DebuggerStepThrough] public int CompareTo(TextureAtlasNode b)
         {
             return -atlasPackedRect.height.CompareTo(b.atlasPackedRect.height);
         }

@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using UnityEditor;
 using UnityEngine;
 
@@ -45,7 +46,7 @@ namespace Appalachia.Simulation.Trees.UI.Utilities
             Menu.SetChecked(path, _current);
         }
         
-        public static implicit operator bool(CheckmarkMenuBoolean b) => b.value;
+        [DebuggerStepThrough] public static implicit operator bool(CheckmarkMenuBoolean b) => b.value;
     }
 
 }

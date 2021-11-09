@@ -1,6 +1,7 @@
 #region
 
 using System;
+using System.Diagnostics;
 using Appalachia.Simulation.Trees.Core.Shape;
 using UnityEngine;
 
@@ -26,7 +27,7 @@ namespace Appalachia.Simulation.Trees.Core.Geometry
 
         public TreeComponentType type;
 
-        public bool Equals(PrefabVertex other)
+        [DebuggerStepThrough] public bool Equals(PrefabVertex other)
         {
             if (ReferenceEquals(null, other))
             {
@@ -101,7 +102,7 @@ namespace Appalachia.Simulation.Trees.Core.Geometry
         }
         */
 
-        public override bool Equals(object obj)
+        [DebuggerStepThrough] public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj))
             {
@@ -121,7 +122,7 @@ namespace Appalachia.Simulation.Trees.Core.Geometry
             return Equals((PrefabVertex) obj);
         }
 
-        public override int GetHashCode()
+        [DebuggerStepThrough] public override int GetHashCode()
         {
             unchecked
             {
@@ -141,12 +142,12 @@ namespace Appalachia.Simulation.Trees.Core.Geometry
             }
         }
 
-        public static bool operator ==(PrefabVertex left, PrefabVertex right)
+        [DebuggerStepThrough] public static bool operator ==(PrefabVertex left, PrefabVertex right)
         {
             return Equals(left, right);
         }
 
-        public static bool operator !=(PrefabVertex left, PrefabVertex right)
+        [DebuggerStepThrough] public static bool operator !=(PrefabVertex left, PrefabVertex right)
         {
             return !Equals(left, right);
         }

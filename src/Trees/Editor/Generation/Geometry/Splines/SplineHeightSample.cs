@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 
 namespace Appalachia.Simulation.Trees.Generation.Geometry.Splines
 {
@@ -46,7 +47,7 @@ namespace Appalachia.Simulation.Trees.Generation.Geometry.Splines
             };
         }
 
-        public int CompareTo(SplineHeightSample other)
+        [DebuggerStepThrough] public int CompareTo(SplineHeightSample other)
         {
             var heightComparison = height.CompareTo(other.height);
             if (heightComparison != 0)
@@ -69,7 +70,7 @@ namespace Appalachia.Simulation.Trees.Generation.Geometry.Splines
             return ignored.CompareTo(other.ignored);
         }
 
-        public int CompareTo(object obj)
+        [DebuggerStepThrough] public int CompareTo(object obj)
         {
             if (ReferenceEquals(null, obj))
             {
@@ -79,27 +80,27 @@ namespace Appalachia.Simulation.Trees.Generation.Geometry.Splines
             return obj is SplineHeightSample other ? CompareTo(other) : throw new ArgumentException($"Object must be of type {nameof(SplineHeightSample)}");
         }
 
-        public static bool operator <(SplineHeightSample left, SplineHeightSample right)
+        [DebuggerStepThrough] public static bool operator <(SplineHeightSample left, SplineHeightSample right)
         {
             return left.CompareTo(right) < 0;
         }
 
-        public static bool operator >(SplineHeightSample left, SplineHeightSample right)
+        [DebuggerStepThrough] public static bool operator >(SplineHeightSample left, SplineHeightSample right)
         {
             return left.CompareTo(right) > 0;
         }
 
-        public static bool operator <=(SplineHeightSample left, SplineHeightSample right)
+        [DebuggerStepThrough] public static bool operator <=(SplineHeightSample left, SplineHeightSample right)
         {
             return left.CompareTo(right) <= 0;
         }
 
-        public static bool operator >=(SplineHeightSample left, SplineHeightSample right)
+        [DebuggerStepThrough] public static bool operator >=(SplineHeightSample left, SplineHeightSample right)
         {
             return left.CompareTo(right) >= 0;
         }
 
-        public override string ToString()
+        [DebuggerStepThrough] public override string ToString()
         {
             return $"{height:0.000}";
         }

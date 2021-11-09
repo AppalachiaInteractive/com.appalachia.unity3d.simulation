@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using Appalachia.Core.Attributes.Editing;
 using Sirenix.OdinInspector;
 using Unity.Burst;
@@ -499,7 +500,7 @@ namespace Appalachia.Simulation.Buoyancy.Data
 
 #region IEquatable
 
-        public bool Equals(WaterPhysicsCoefficentData other)
+        [DebuggerStepThrough] public bool Equals(WaterPhysicsCoefficentData other)
         {
             return maximumMaximum.Equals(other.maximumMaximum) &&
                    maximumDrag.Equals(other.maximumDrag) &&
@@ -551,12 +552,12 @@ namespace Appalachia.Simulation.Buoyancy.Data
                    suctionFalloffPower.Equals(other.suctionFalloffPower);
         }
 
-        public override bool Equals(object obj)
+        [DebuggerStepThrough] public override bool Equals(object obj)
         {
             return obj is WaterPhysicsCoefficentData other && Equals(other);
         }
 
-        public override int GetHashCode()
+        [DebuggerStepThrough] public override int GetHashCode()
         {
             unchecked
             {
@@ -609,14 +610,14 @@ namespace Appalachia.Simulation.Buoyancy.Data
             }
         }
 
-        public static bool operator ==(
+        [DebuggerStepThrough] public static bool operator ==(
             WaterPhysicsCoefficentData left,
             WaterPhysicsCoefficentData right)
         {
             return left.Equals(right);
         }
 
-        public static bool operator !=(
+        [DebuggerStepThrough] public static bool operator !=(
             WaterPhysicsCoefficentData left,
             WaterPhysicsCoefficentData right)
         {

@@ -2,6 +2,7 @@
 // No copyright is claimed, and you may use it for any purpose you like.
 // No warranty for any purpose is expressed or implied.
 
+using System.Diagnostics;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Physical.Solvers
@@ -63,12 +64,12 @@ namespace Appalachia.Simulation.Physical.Solvers
             return this;
         }
 
-        public static implicit operator Vector3(Spring s)
+        [DebuggerStepThrough] public static implicit operator Vector3(Spring s)
         {
             return s.position;
         }
 
-        public override string ToString()
+        [DebuggerStepThrough] public override string ToString()
         {
             return position.ToString();
         }

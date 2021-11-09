@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Appalachia.Simulation.Core.Metadata.Tree.Types;
 using Appalachia.Simulation.Trees.Build.Execution;
 using Appalachia.Simulation.Trees.Core;
@@ -1080,17 +1081,17 @@ namespace Appalachia.Simulation.Trees.Generation.VertexData
 
         private struct vkey : IEquatable<vkey>
         {
-            public bool Equals(vkey other)
+            [DebuggerStepThrough] public bool Equals(vkey other)
             {
                 return (x == other.x) && (y == other.y) && (z == other.z);
             }
 
-            public override bool Equals(object obj)
+            [DebuggerStepThrough] public override bool Equals(object obj)
             {
                 return obj is vkey other && Equals(other);
             }
 
-            public override int GetHashCode()
+            [DebuggerStepThrough] public override int GetHashCode()
             {
                 unchecked
                 {
@@ -1101,12 +1102,12 @@ namespace Appalachia.Simulation.Trees.Generation.VertexData
                 }
             }
 
-            public static bool operator ==(vkey left, vkey right)
+            [DebuggerStepThrough] public static bool operator ==(vkey left, vkey right)
             {
                 return left.Equals(right);
             }
 
-            public static bool operator !=(vkey left, vkey right)
+            [DebuggerStepThrough] public static bool operator !=(vkey left, vkey right)
             {
                 return !left.Equals(right);
             }

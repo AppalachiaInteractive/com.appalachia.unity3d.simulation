@@ -1,6 +1,7 @@
 #region
 
 using System;
+using System.Diagnostics;
 using Appalachia.Simulation.Trees.Core.Shape;
 using UnityEngine;
 
@@ -203,7 +204,7 @@ namespace Appalachia.Simulation.Trees.Core.Geometry
             );
 
 
-        public bool Equals(TreeVertex other)
+        [DebuggerStepThrough] public bool Equals(TreeVertex other)
         {
             return (initialized == other.initialized) && (visible == other.visible) && (billboard == other.billboard) && (uvScaleUpdated == other.uvScaleUpdated) && tangent.Equals(other.tangent) && ambientOcclusion.Equals(other.ambientOcclusion) && variation.Equals(other.variation) && noise.Equals(other.noise) && (hierarchyID == other.hierarchyID) && (shapeID == other.shapeID) && parentOffset.Equals(other.parentOffset) && heightOffset.Equals(other.heightOffset) && matrix.Equals(other.matrix) && normal.Equals(other.normal) && position.Equals(other.position) && (weldTo == other.weldTo) && (splineBreak == other.splineBreak) && (type == other.type) && raw_uv0.Equals(other.raw_uv0) && rect_uv0.Equals(other.rect_uv0) && uvScale.Equals(other.uvScale) && uvOffset.Equals(other.uvOffset) && uvRect.Equals(other.uvRect) && rawWind.Equals(other.rawWind) && wind.Equals(other.wind) && log.Equals(other.log) && billboardData.Equals(other.billboardData);
         }
@@ -266,12 +267,12 @@ namespace Appalachia.Simulation.Trees.Core.Geometry
 
 #region IEquatable
 
-        public override bool Equals(object obj)
+        [DebuggerStepThrough] public override bool Equals(object obj)
         {
             return obj is TreeVertex other && Equals(other);
         }
 
-        public override int GetHashCode()
+        [DebuggerStepThrough] public override int GetHashCode()
         {
             unchecked
             {
@@ -306,12 +307,12 @@ namespace Appalachia.Simulation.Trees.Core.Geometry
             }
         }
 
-        public static bool operator ==(TreeVertex left, TreeVertex right)
+        [DebuggerStepThrough] public static bool operator ==(TreeVertex left, TreeVertex right)
         {
             return left.Equals(right);
         }
 
-        public static bool operator !=(TreeVertex left, TreeVertex right)
+        [DebuggerStepThrough] public static bool operator !=(TreeVertex left, TreeVertex right)
         {
             return !left.Equals(right);
         }

@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Appalachia.Simulation.ReactionSystem.Base;
 using Unity.Profiling;
@@ -125,17 +126,17 @@ namespace Appalachia.Simulation.ReactionSystem.Cameras
 
 #region IEquatable
 
-        public bool Equals(SubsystemCameraShotSelector other)
+        [DebuggerStepThrough] public bool Equals(SubsystemCameraShotSelector other)
         {
             return (_initialized == other._initialized) && (currentIndex == other.currentIndex);
         }
 
-        public override bool Equals(object obj)
+        [DebuggerStepThrough] public override bool Equals(object obj)
         {
             return obj is SubsystemCameraShotSelector other && Equals(other);
         }
 
-        public override int GetHashCode()
+        [DebuggerStepThrough] public override int GetHashCode()
         {
             unchecked
             {
@@ -143,14 +144,14 @@ namespace Appalachia.Simulation.ReactionSystem.Cameras
             }
         }
 
-        public static bool operator ==(
+        [DebuggerStepThrough] public static bool operator ==(
             SubsystemCameraShotSelector left,
             SubsystemCameraShotSelector right)
         {
             return left.Equals(right);
         }
 
-        public static bool operator !=(
+        [DebuggerStepThrough] public static bool operator !=(
             SubsystemCameraShotSelector left,
             SubsystemCameraShotSelector right)
         {

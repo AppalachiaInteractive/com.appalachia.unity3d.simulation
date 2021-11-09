@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Appalachia.Simulation.Trees.Core.Shape;
 using UnityEngine;
 
@@ -121,17 +122,17 @@ namespace Appalachia.Simulation.Trees.Core.Geometry
         
         #region IEquatable
 
-        public bool Equals(TreeTriangle other)
+        [DebuggerStepThrough] public bool Equals(TreeTriangle other)
         {
             return (visible == other.visible) && (hierarchyID == other.hierarchyID) && (inputMaterialID == other.inputMaterialID) && (shapeID == other.shapeID) && (type == other.type) && (context == other.context) && Equals(v, other.v) && uvScale.Equals(other.uvScale);
         }
 
-        public override bool Equals(object obj)
+        [DebuggerStepThrough] public override bool Equals(object obj)
         {
             return obj is TreeTriangle other && Equals(other);
         }
 
-        public override int GetHashCode()
+        [DebuggerStepThrough] public override int GetHashCode()
         {
             unchecked
             {
@@ -147,12 +148,12 @@ namespace Appalachia.Simulation.Trees.Core.Geometry
             }
         }
 
-        public static bool operator ==(TreeTriangle left, TreeTriangle right)
+        [DebuggerStepThrough] public static bool operator ==(TreeTriangle left, TreeTriangle right)
         {
             return left.Equals(right);
         }
 
-        public static bool operator !=(TreeTriangle left, TreeTriangle right)
+        [DebuggerStepThrough] public static bool operator !=(TreeTriangle left, TreeTriangle right)
         {
             return !left.Equals(right);
         }

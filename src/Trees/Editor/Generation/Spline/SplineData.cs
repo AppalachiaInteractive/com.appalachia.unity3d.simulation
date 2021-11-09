@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Generation.Spline
@@ -38,7 +39,7 @@ namespace Appalachia.Simulation.Trees.Generation.Spline
             points.Clear();
         }
 
-        public override string ToString()
+        [DebuggerStepThrough] public override string ToString()
         {
             return
                 $"Spline | Points: {points.Count} | Length: {(points[points.Count - 1].point - points[0].point).magnitude}";

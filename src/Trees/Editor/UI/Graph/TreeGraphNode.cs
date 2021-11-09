@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Appalachia.Simulation.Trees.Hierarchy;
 using UnityEngine;
 
@@ -7,7 +8,7 @@ namespace Appalachia.Simulation.Trees.UI.Graph
 {
     public class TreeGraphNode : IEquatable<TreeGraphNode>
     {
-        public bool Equals(TreeGraphNode other)
+        [DebuggerStepThrough] public bool Equals(TreeGraphNode other)
         {
             if (ReferenceEquals(null, other))
             {
@@ -22,7 +23,7 @@ namespace Appalachia.Simulation.Trees.UI.Graph
             return Equals(data, other.data);
         }
 
-        public override bool Equals(object obj)
+        [DebuggerStepThrough] public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj))
             {
@@ -42,17 +43,17 @@ namespace Appalachia.Simulation.Trees.UI.Graph
             return Equals((TreeGraphNode) obj);
         }
 
-        public override int GetHashCode()
+        [DebuggerStepThrough] public override int GetHashCode()
         {
             return (data != null ? data.GetHashCode() : 0);
         }
 
-        public static bool operator ==(TreeGraphNode left, TreeGraphNode right)
+        [DebuggerStepThrough] public static bool operator ==(TreeGraphNode left, TreeGraphNode right)
         {
             return Equals(left, right);
         }
 
-        public static bool operator !=(TreeGraphNode left, TreeGraphNode right)
+        [DebuggerStepThrough] public static bool operator !=(TreeGraphNode left, TreeGraphNode right)
         {
             return !Equals(left, right);
         }

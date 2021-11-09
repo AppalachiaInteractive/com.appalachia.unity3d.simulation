@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Appalachia.Simulation.Trees.Core;
 using Appalachia.Simulation.Trees.Core.Shape;
 using Appalachia.Simulation.Trees.Hierarchy;
@@ -34,7 +35,7 @@ namespace Appalachia.Simulation.Trees.Recursion
             this.parentShape = parentShape;
         }
 
-        public override string ToString()
+        [DebuggerStepThrough] public override string ToString()
         {
             return
                 $"ShapeID: {shape.shapeID} | {shape.type} | HierarchyID: {hierarchy.hierarchyID}";

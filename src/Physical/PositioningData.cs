@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using Appalachia.Core.Attributes.Editing;
 using Unity.Mathematics;
 using UnityEngine;
@@ -21,17 +22,17 @@ namespace Appalachia.Simulation.Physical
 
 #region IEquatable
 
-        public bool Equals(PositioningData other)
+        [DebuggerStepThrough] public bool Equals(PositioningData other)
         {
             return current.Equals(other.current) && previous.Equals(other.previous);
         }
 
-        public override bool Equals(object obj)
+        [DebuggerStepThrough] public override bool Equals(object obj)
         {
             return obj is PositioningData other && Equals(other);
         }
 
-        public override int GetHashCode()
+        [DebuggerStepThrough] public override int GetHashCode()
         {
             unchecked
             {
@@ -39,12 +40,12 @@ namespace Appalachia.Simulation.Physical
             }
         }
 
-        public static bool operator ==(PositioningData left, PositioningData right)
+        [DebuggerStepThrough] public static bool operator ==(PositioningData left, PositioningData right)
         {
             return left.Equals(right);
         }
 
-        public static bool operator !=(PositioningData left, PositioningData right)
+        [DebuggerStepThrough] public static bool operator !=(PositioningData left, PositioningData right)
         {
             return !left.Equals(right);
         }

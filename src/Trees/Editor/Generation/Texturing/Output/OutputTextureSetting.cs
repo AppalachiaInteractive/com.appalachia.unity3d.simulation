@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using Appalachia.Core.Extensions;
 using Appalachia.Simulation.Trees.Build.Execution;
 using Appalachia.Simulation.Trees.Generation.Texturing.Specifications;
@@ -12,7 +13,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Output
     [Serializable]
     public class OutputTextureSetting : IEquatable<OutputTextureSetting>
     {
-        public bool Equals(OutputTextureSetting other)
+        [DebuggerStepThrough] public bool Equals(OutputTextureSetting other)
         {
             if (ReferenceEquals(null, other))
             {
@@ -27,7 +28,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Output
             return (type == other.type) && (sRGB == other.sRGB) && (inputTextureAlpha == other.inputTextureAlpha) && (alphaIsTransparency == other.alphaIsTransparency) && (mipmapEnabled == other.mipmapEnabled) && (mipmapsPreserveCoverage == other.mipmapsPreserveCoverage) && alphaTestReferenceValue.Equals(other.alphaTestReferenceValue) && (filterMode == other.filterMode) && (anisoLevel == other.anisoLevel) && (wrapModeU == other.wrapModeU) && (wrapModeV == other.wrapModeV);
         }
 
-        public override bool Equals(object obj)
+        [DebuggerStepThrough] public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj))
             {
@@ -47,7 +48,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Output
             return Equals((OutputTextureSetting) obj);
         }
 
-        public override int GetHashCode()
+        [DebuggerStepThrough] public override int GetHashCode()
         {
             unchecked
             {
@@ -66,12 +67,12 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Output
             }
         }
 
-        public static bool operator ==(OutputTextureSetting left, OutputTextureSetting right)
+        [DebuggerStepThrough] public static bool operator ==(OutputTextureSetting left, OutputTextureSetting right)
         {
             return Equals(left, right);
         }
 
-        public static bool operator !=(OutputTextureSetting left, OutputTextureSetting right)
+        [DebuggerStepThrough] public static bool operator !=(OutputTextureSetting left, OutputTextureSetting right)
         {
             return !Equals(left, right);
         }

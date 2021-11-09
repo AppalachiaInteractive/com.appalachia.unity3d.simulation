@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Appalachia.CI.Integration.Assets;
 using Appalachia.Core.Extensions;
@@ -235,7 +236,7 @@ namespace Appalachia.Simulation.Trees.UI.GUI
                     {
                     }
 
-                    public bool Equals(OptionsInstance other)
+                    [DebuggerStepThrough] public bool Equals(OptionsInstance other)
                     {
                         var loi1 = this;
                         OptionsInstance loi2;
@@ -267,7 +268,7 @@ namespace Appalachia.Simulation.Trees.UI.GUI
                         return guiLayoutOptionArray;
                     }
 
-                    public static implicit operator GUILayoutOption[](OptionsInstance options)
+                    [DebuggerStepThrough] public static implicit operator GUILayoutOption[](OptionsInstance options)
                     {
                         return options.GetCachedOptions();
                     }
@@ -404,7 +405,7 @@ namespace Appalachia.Simulation.Trees.UI.GUI
                         this.value = value ? 1f : 0.0f;
                     }
 
-                    public override int GetHashCode()
+                    [DebuggerStepThrough] public override int GetHashCode()
                     {
                         var num1 = 0;
                         var num2 = 17;

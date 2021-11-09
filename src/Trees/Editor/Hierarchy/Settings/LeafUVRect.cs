@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using Appalachia.Simulation.Trees.Generation.Texturing.Materials.Rects;
 using Sirenix.OdinInspector;
 
@@ -11,7 +12,7 @@ namespace Appalachia.Simulation.Trees.Hierarchy.Settings
 
         [PropertyRange(0f, 1f)] public float probability = 1.0f;
 
-        public override string ToString()
+        [DebuggerStepThrough] public override string ToString()
         {
             return 
             $"{100f*probability:F0}% | " + 

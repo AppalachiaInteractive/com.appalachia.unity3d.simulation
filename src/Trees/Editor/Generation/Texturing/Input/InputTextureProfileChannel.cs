@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using Appalachia.Simulation.Trees.Generation.Texturing.Specifications;
 using Sirenix.OdinInspector;
 
@@ -22,7 +23,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Input
         [HideLabel]
         public TextureChannelPacking packing;
 
-        public bool Equals(InputTextureProfileChannel other)
+        [DebuggerStepThrough] public bool Equals(InputTextureProfileChannel other)
         {
             if (ReferenceEquals(null, other))
             {
@@ -39,7 +40,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Input
                 (packing == other.packing);
         }
 
-        public override bool Equals(object obj)
+        [DebuggerStepThrough] public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj))
             {
@@ -59,7 +60,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Input
             return Equals((InputTextureProfileChannel) obj);
         }
 
-        public override int GetHashCode()
+        [DebuggerStepThrough] public override int GetHashCode()
         {
             unchecked
             {
@@ -70,7 +71,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Input
             }
         }
 
-        public static bool operator ==(TextureMapChannel left, InputTextureProfileChannel right)
+        [DebuggerStepThrough] public static bool operator ==(TextureMapChannel left, InputTextureProfileChannel right)
         {
             if (right == null)
             {
@@ -85,12 +86,12 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Input
             return left == right.mapChannel;
         }
 
-        public static bool operator !=(TextureMapChannel left, InputTextureProfileChannel right)
+        [DebuggerStepThrough] public static bool operator !=(TextureMapChannel left, InputTextureProfileChannel right)
         {
             return !(left == right);
         }
 
-        public static bool operator ==(InputTextureProfileChannel left, TextureMapChannel right)
+        [DebuggerStepThrough] public static bool operator ==(InputTextureProfileChannel left, TextureMapChannel right)
         {
             if (left == null)
             {
@@ -105,7 +106,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Input
             return left.mapChannel == right;
         }
 
-        public static bool operator !=(InputTextureProfileChannel left, TextureMapChannel right)
+        [DebuggerStepThrough] public static bool operator !=(InputTextureProfileChannel left, TextureMapChannel right)
         {
             return !(left == right);
         }

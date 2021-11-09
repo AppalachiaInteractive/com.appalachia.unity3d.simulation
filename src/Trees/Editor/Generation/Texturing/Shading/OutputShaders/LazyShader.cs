@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading.OutputShaders
@@ -33,6 +34,6 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading.OutputShaders
             }
         }
 
-        public static implicit operator Shader(LazyShader s) => s?.shader;
+        [DebuggerStepThrough] public static implicit operator Shader(LazyShader s) => s?.shader;
     }
 }

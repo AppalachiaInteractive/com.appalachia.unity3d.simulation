@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using Appalachia.Simulation.Trees.Hierarchy.Options;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -49,7 +50,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials
         }
 
 
-        public static implicit operator Vector2(UVScale uv) => new Vector2(uv.x, uv.y);
+        [DebuggerStepThrough] public static implicit operator Vector2(UVScale uv) => new Vector2(uv.x, uv.y);
         
         public UVScale Clone()
         {

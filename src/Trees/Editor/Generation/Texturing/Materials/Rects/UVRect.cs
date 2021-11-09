@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using Appalachia.Core.Extensions;
 using Appalachia.Simulation.Trees.Hierarchy.Options;
 using Appalachia.Utility.Extensions;
@@ -233,7 +234,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Rects
         public Vector2 min => new Vector2(xMin, yMin);
         public Vector2 max => new Vector2(xMax, yMax);
 
-        public override string ToString()
+        [DebuggerStepThrough] public override string ToString()
         {
             return $"{nameof(center).ToTitleCase()}: {center}, {nameof(coordinates).ToTitleCase()}: {coordinates}, {nameof(size).ToTitleCase()}: {size}";
         }

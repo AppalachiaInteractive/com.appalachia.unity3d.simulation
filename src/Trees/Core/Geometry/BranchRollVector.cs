@@ -1,21 +1,22 @@
 using System;
+using System.Diagnostics;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Core.Geometry
 {
     public struct BranchRollVector : IEquatable<BranchRollVector>
     {
-        public bool Equals(BranchRollVector other)
+        [DebuggerStepThrough] public bool Equals(BranchRollVector other)
         {
             return forward.Equals(other.forward) && verticality.Equals(other.verticality);
         }
 
-        public override bool Equals(object obj)
+        [DebuggerStepThrough] public override bool Equals(object obj)
         {
             return obj is BranchRollVector other && Equals(other);
         }
 
-        public override int GetHashCode()
+        [DebuggerStepThrough] public override int GetHashCode()
         {
             unchecked
             {
@@ -25,17 +26,17 @@ namespace Appalachia.Simulation.Trees.Core.Geometry
             }
         }
 
-        public static bool operator ==(BranchRollVector left, BranchRollVector right)
+        [DebuggerStepThrough] public static bool operator ==(BranchRollVector left, BranchRollVector right)
         {
             return left.Equals(right);
         }
 
-        public static bool operator !=(BranchRollVector left, BranchRollVector right)
+        [DebuggerStepThrough] public static bool operator !=(BranchRollVector left, BranchRollVector right)
         {
             return !left.Equals(right);
         }
 
-        public static BranchRollVector operator *(BranchRollVector left, Vector4 right)
+        [DebuggerStepThrough] public static BranchRollVector operator *(BranchRollVector left, Vector4 right)
         {
             var t = new BranchRollVector
             {
@@ -46,7 +47,7 @@ namespace Appalachia.Simulation.Trees.Core.Geometry
             return t;
         }
 
-        public static BranchRollVector operator *(Vector4 left, BranchRollVector right)
+        [DebuggerStepThrough] public static BranchRollVector operator *(Vector4 left, BranchRollVector right)
         {
             return right * left;
         }

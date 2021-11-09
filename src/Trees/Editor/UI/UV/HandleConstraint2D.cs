@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.UI.UV
@@ -30,28 +31,28 @@ namespace Appalachia.Simulation.Trees.UI.UV
             return v;
         }
 
-        public static bool operator ==(HandleConstraint2D a, HandleConstraint2D b)
+        [DebuggerStepThrough] public static bool operator ==(HandleConstraint2D a, HandleConstraint2D b)
         {
             return (a.x == b.x) && (a.y == b.y);
         }
 
-        public static bool operator !=(HandleConstraint2D a, HandleConstraint2D b)
+        [DebuggerStepThrough] public static bool operator !=(HandleConstraint2D a, HandleConstraint2D b)
         {
             return (a.x != b.x) || (a.y != b.y);
         }
 
-        public override int GetHashCode()
+        [DebuggerStepThrough] public override int GetHashCode()
         {
             // ReSharper disable once BaseObjectGetHashCodeCallInGetHashCode
             return base.GetHashCode();
         }
 
-        public override bool Equals(object o)
+        [DebuggerStepThrough] public override bool Equals(object o)
         {
             return o is HandleConstraint2D && (((HandleConstraint2D) o).x == x) && (((HandleConstraint2D) o).y == y);
         }
 
-        public override string ToString()
+        [DebuggerStepThrough] public override string ToString()
         {
             return "(" + x + ", " + y + ")";
         }

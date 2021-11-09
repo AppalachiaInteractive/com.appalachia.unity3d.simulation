@@ -1,21 +1,22 @@
 using System;
+using System.Diagnostics;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Core.Geometry
 {
     public struct LogVector : IEquatable<LogVector>
     {        
-        public bool Equals(LogVector other)
+        [DebuggerStepThrough] public bool Equals(LogVector other)
         {
             return bark.Equals(other.bark) && woodDarkening.Equals(other.woodDarkening) && noise1.Equals(other.noise1) && noise2.Equals(other.noise2);
         }
 
-        public override bool Equals(object obj)
+        [DebuggerStepThrough] public override bool Equals(object obj)
         {
             return obj is LogVector other && Equals(other);
         }
 
-        public override int GetHashCode()
+        [DebuggerStepThrough] public override int GetHashCode()
         {
             unchecked
             {
@@ -27,17 +28,17 @@ namespace Appalachia.Simulation.Trees.Core.Geometry
             }
         }
 
-        public static bool operator ==(LogVector left, LogVector right)
+        [DebuggerStepThrough] public static bool operator ==(LogVector left, LogVector right)
         {
             return left.Equals(right);
         }
 
-        public static bool operator !=(LogVector left, LogVector right)
+        [DebuggerStepThrough] public static bool operator !=(LogVector left, LogVector right)
         {
             return !left.Equals(right);
         }
 
-        public static LogVector operator *(LogVector left, Vector4 right)
+        [DebuggerStepThrough] public static LogVector operator *(LogVector left, Vector4 right)
         {
             return new LogVector
             {
@@ -48,7 +49,7 @@ namespace Appalachia.Simulation.Trees.Core.Geometry
             };
         }
 
-        public static LogVector operator *(Vector4 left, LogVector right)
+        [DebuggerStepThrough] public static LogVector operator *(Vector4 left, LogVector right)
         {
             return right * left;
         }

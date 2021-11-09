@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Appalachia.Simulation.Trees.Build.Execution;
 using Appalachia.Simulation.Trees.Generation.Texturing.Materials.Input;
@@ -20,7 +21,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Atlassing
         private Vector2 _size;
         public Vector2 size => _size;
 
-        public override int GetHashCode()
+        [DebuggerStepThrough] public override int GetHashCode()
         {
             var hash = 0;
             for (var i = 0; i < nodes.Count; i++)

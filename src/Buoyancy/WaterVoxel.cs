@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using Appalachia.Spatial.Octree;
 using Unity.Mathematics;
 using UnityEngine;
@@ -19,7 +20,7 @@ namespace Appalachia.Simulation.Buoyancy
 
 #region Operators
 
-        public static WaterVoxel operator *(WaterVoxel a, float b)
+        [DebuggerStepThrough] public static WaterVoxel operator *(WaterVoxel a, float b)
         {
             a.currentVector *= b;
             a.distanceToSurface *= b;
@@ -27,12 +28,12 @@ namespace Appalachia.Simulation.Buoyancy
             return a;
         }
 
-        public static WaterVoxel operator *(float a, WaterVoxel b)
+        [DebuggerStepThrough] public static WaterVoxel operator *(float a, WaterVoxel b)
         {
             return b * a;
         }
 
-        public static WaterVoxel operator +(WaterVoxel a, WaterVoxel b)
+        [DebuggerStepThrough] public static WaterVoxel operator +(WaterVoxel a, WaterVoxel b)
         {
             a.currentVector += b.currentVector;
             a.distanceToSurface += b.distanceToSurface;
@@ -40,7 +41,7 @@ namespace Appalachia.Simulation.Buoyancy
             return a;
         }
 
-        public static WaterVoxel operator -(WaterVoxel a, WaterVoxel b)
+        [DebuggerStepThrough] public static WaterVoxel operator -(WaterVoxel a, WaterVoxel b)
         {
             a.currentVector -= b.currentVector;
             a.distanceToSurface -= b.distanceToSurface;
@@ -48,7 +49,7 @@ namespace Appalachia.Simulation.Buoyancy
             return a;
         }
 
-        public static WaterVoxel operator /(WaterVoxel a, WaterVoxel b)
+        [DebuggerStepThrough] public static WaterVoxel operator /(WaterVoxel a, WaterVoxel b)
         {
             a.currentVector /= b.currentVector;
             a.distanceToSurface /= b.distanceToSurface;

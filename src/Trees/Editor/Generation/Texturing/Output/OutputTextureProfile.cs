@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Appalachia.Simulation.Trees.Generation.Texturing.Specifications;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -11,7 +12,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Output
     {
         private sealed class OutputTextureProfileEqualityComparer : IEqualityComparer<OutputTextureProfile>
         {
-            public bool Equals(OutputTextureProfile x, OutputTextureProfile y)
+            [DebuggerStepThrough] public bool Equals(OutputTextureProfile x, OutputTextureProfile y)
             {
                 if (ReferenceEquals(x, y))
                 {
@@ -36,7 +37,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Output
                 return (x._map == y._map) && x._color.Equals(y._color) && (x.propertyName == y.propertyName) && (x.fileNameSuffix == y.fileNameSuffix) && (x.red == y.red) && (x.green == y.green) && (x.blue == y.blue) && (x.alpha == y.alpha) && Equals(x.settings, y.settings);
             }
 
-            public int GetHashCode(OutputTextureProfile obj)
+            [DebuggerStepThrough] public int GetHashCode(OutputTextureProfile obj)
             {
                 unchecked
                 {

@@ -310,7 +310,7 @@ namespace Appalachia.Simulation.Trees.Generation.Geometry.Splines
                     if (density > 1.0f)
                     {
 
-                        var trunkIndices = heightSamples.BuildReverseIndexLookup();
+                        var trunkIndices = heightSamples.ToReverseIndexLookup();
                         
                         var relevantSamples = heightSamples.Where(h => h.height < flareEndTime).ToArray();
 

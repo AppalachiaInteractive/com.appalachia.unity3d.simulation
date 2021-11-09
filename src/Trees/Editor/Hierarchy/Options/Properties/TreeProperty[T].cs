@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using Appalachia.Simulation.Core.Metadata.Tree.Types;
 using Appalachia.Simulation.Trees.Core.Settings;
 using Sirenix.OdinInspector;
@@ -163,7 +164,7 @@ namespace Appalachia.Simulation.Trees.Hierarchy.Options.Properties
             defaultValue = v;
         }
 
-        public static implicit operator T(TreeProperty<T> t) => t.Value;
+        [DebuggerStepThrough] public static implicit operator T(TreeProperty<T> t) => t.Value;
 
         protected TreeProperty(T defaultValue) 
         {

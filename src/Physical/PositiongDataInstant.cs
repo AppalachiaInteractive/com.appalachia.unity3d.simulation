@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using Appalachia.Core.Attributes.Editing;
 using Appalachia.Core.Extensions;
 using Appalachia.Utility.Extensions;
@@ -35,7 +36,7 @@ namespace Appalachia.Simulation.Physical
 
 #region IEquatable
 
-        public bool Equals(PositiongDataInstant other)
+        [DebuggerStepThrough] public bool Equals(PositiongDataInstant other)
         {
             return time.Equals(other.time) &&
                    localToWorld.Equals(other.localToWorld) &&
@@ -48,12 +49,12 @@ namespace Appalachia.Simulation.Physical
                    mass.Equals(other.mass);
         }
 
-        public override bool Equals(object obj)
+        [DebuggerStepThrough] public override bool Equals(object obj)
         {
             return obj is PositiongDataInstant other && Equals(other);
         }
 
-        public override int GetHashCode()
+        [DebuggerStepThrough] public override int GetHashCode()
         {
             unchecked
             {
@@ -70,12 +71,12 @@ namespace Appalachia.Simulation.Physical
             }
         }
 
-        public static bool operator ==(PositiongDataInstant left, PositiongDataInstant right)
+        [DebuggerStepThrough] public static bool operator ==(PositiongDataInstant left, PositiongDataInstant right)
         {
             return left.Equals(right);
         }
 
-        public static bool operator !=(PositiongDataInstant left, PositiongDataInstant right)
+        [DebuggerStepThrough] public static bool operator !=(PositiongDataInstant left, PositiongDataInstant right)
         {
             return !left.Equals(right);
         }

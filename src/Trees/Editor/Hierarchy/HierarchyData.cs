@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using Appalachia.Simulation.Core.Metadata.Tree.Types;
 using Appalachia.Simulation.Trees.Build.RequestManagers;
 using Appalachia.Simulation.Trees.Core;
@@ -21,7 +22,7 @@ namespace Appalachia.Simulation.Trees.Hierarchy
     [Serializable]
     public abstract class HierarchyData : IIconProvider, IEquatable<HierarchyData>, IResponsive
     {
-        public bool Equals(HierarchyData other)
+        [DebuggerStepThrough] public bool Equals(HierarchyData other)
         {
             if (ReferenceEquals(null, other))
             {
@@ -36,7 +37,7 @@ namespace Appalachia.Simulation.Trees.Hierarchy
             return (hierarchyID == other.hierarchyID) && (parentHierarchyID == other.parentHierarchyID);
         }
         
-        public override bool Equals(object obj)
+        [DebuggerStepThrough] public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj))
             {
@@ -56,7 +57,7 @@ namespace Appalachia.Simulation.Trees.Hierarchy
             return Equals((HierarchyData) obj);
         }
 
-        public override int GetHashCode()
+        [DebuggerStepThrough] public override int GetHashCode()
         {
             unchecked
             {
@@ -69,12 +70,12 @@ namespace Appalachia.Simulation.Trees.Hierarchy
             this.HandleResponsiveUpdate(t);
         }
 
-        public static bool operator ==(HierarchyData left, HierarchyData right)
+        [DebuggerStepThrough] public static bool operator ==(HierarchyData left, HierarchyData right)
         {
             return Equals(left, right);
         }
 
-        public static bool operator !=(HierarchyData left, HierarchyData right)
+        [DebuggerStepThrough] public static bool operator !=(HierarchyData left, HierarchyData right)
         {
             return !Equals(left, right);
         }

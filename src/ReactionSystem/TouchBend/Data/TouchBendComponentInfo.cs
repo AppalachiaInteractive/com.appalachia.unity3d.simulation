@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using Appalachia.Core.Scriptables;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -24,7 +25,7 @@ namespace Appalachia.Simulation.ReactionSystem.TouchBend.Data
         [PropertyRange(0f, 1.0f)]
         public float maxOld = 1.0f;
 
-        public bool Equals(TouchBendComponentInfo other)
+        [DebuggerStepThrough] public bool Equals(TouchBendComponentInfo other)
         {
             if (ReferenceEquals(null, other))
             {
@@ -45,7 +46,7 @@ namespace Appalachia.Simulation.ReactionSystem.TouchBend.Data
                    maxOld.Equals(other.maxOld);
         }
 
-        public override bool Equals(object obj)
+        [DebuggerStepThrough] public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj))
             {
@@ -65,7 +66,7 @@ namespace Appalachia.Simulation.ReactionSystem.TouchBend.Data
             return Equals((TouchBendComponentInfo) obj);
         }
 
-        public override int GetHashCode()
+        [DebuggerStepThrough] public override int GetHashCode()
         {
             unchecked
             {
@@ -80,12 +81,12 @@ namespace Appalachia.Simulation.ReactionSystem.TouchBend.Data
             }
         }
 
-        public static bool operator ==(TouchBendComponentInfo left, TouchBendComponentInfo right)
+        [DebuggerStepThrough] public static bool operator ==(TouchBendComponentInfo left, TouchBendComponentInfo right)
         {
             return Equals(left, right);
         }
 
-        public static bool operator !=(TouchBendComponentInfo left, TouchBendComponentInfo right)
+        [DebuggerStepThrough] public static bool operator !=(TouchBendComponentInfo left, TouchBendComponentInfo right)
         {
             return !Equals(left, right);
         }

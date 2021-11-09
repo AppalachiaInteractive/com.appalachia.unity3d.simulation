@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.UI.UV
@@ -27,7 +28,7 @@ namespace Appalachia.Simulation.Trees.UI.UV
             set => m_Size = value;
         }
 
-        public override string ToString()
+        [DebuggerStepThrough] public override string ToString()
         {
             return "[cen: " + center + " size: " + size + "]";
         }
