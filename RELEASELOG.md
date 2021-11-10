@@ -15,6 +15,7 @@ C:/Users/Chris/com.appalachia/unity3d/appa/Assets/Appalachia.Simulation
 `0.2.0`
 | Hash | Date | Author | Changes |
 |------|------|--------|---------|
+| f4785f35137672818dcd9175395b0452d8ceec78 | 2021-11-09 | Chris Schubert | Updating changelog and releaselog |
 | 7839550501c59b222b1419f641fc1f47045f00cd | 2021-11-09 | Chris Schubert | Removing empty directories, adding some debugger passthroughs, and reformatting asmdefs |
 | 8449dd732a0f25dd95ce7ea8c88e29ad71dec929 | 2021-11-08 | Chris Schubert | Updating changelog and releaselog |
 | a8a8a72c18ce3fe9a295fa35a0140903714b057e | 2021-11-08 | Chris Schubert | Upgrading to new logging library |
