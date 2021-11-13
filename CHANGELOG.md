@@ -14,14 +14,10 @@ C:/Users/Chris/com.appalachia/unity3d/appa/Assets/Appalachia.Simulation
 ## Releasing
 | Hash | Date | Author | Changes |
 |------|------|--------|---------|
+| 796551bf6f6031b626613c3705930b7e26c2f9da | 2021-11-13 | Chris Schubert | Updating changelog and releaselog |
 | 7b18202d1581db868b8f8b22bf6319def842d220 | 2021-11-13 | Chris Schubert | EXR to gitlfs |
 | b1b54ab5ed5d97ab6b36a85ae4e86ca10bf7a7f9 | 2021-11-13 | Chris Schubert | Editor exclusions for runtime build and reorganizing assets |
 | a974e83d66c34ecec502127214e4057f6c21291d | 2021-11-13 | Chris Schubert | runtime build updates |
-
-
- ## Tag: `v0.2.0`
-| Hash | Date | Author | Changes |
-|------|------|--------|---------|
 | 8c232d4a3fac0fb9a5203d4c5b3cca3cd3c0015f | 2021-11-09 | Chris Schubert | Updating changelog and releaselog |
 | f4785f35137672818dcd9175395b0452d8ceec78 | 2021-11-09 | Chris Schubert | Updating changelog and releaselog |
 | 7839550501c59b222b1419f641fc1f47045f00cd | 2021-11-09 | Chris Schubert | Removing empty directories, adding some debugger passthroughs, and reformatting asmdefs |
