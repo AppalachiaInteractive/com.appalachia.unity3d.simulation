@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5055e54811e14323bac61ccf7ef3657b, type: 3}
+  m_Name: Plant
+  m_EditorClassIdentifier: 
+  _niceName: Plant
+  _cachedName: Plant
+  _category: Organic
+  material: {fileID: 13400000, guid: b536fa6be6ca71447923bfe590b3683e, type: 2}
+  defaultDensity: {fileID: 11400000, guid: 29e9cd9a35b3a614cba40f1e9e9c0741, type: 2}
+  wireColor: {r: 0.8833333, g: 1, b: 0, a: 1}
+  meshTransparency: 0.5
+  labelBackgroundColor: {r: 0.2264151, g: 0.2264151, b: 0.2264151, a: 1}
+  labelTextColor: {r: 1, g: 1, b: 1, a: 1}
+  surface: {fileID: 2100000, guid: a17265541f618194dba9128b1770ebef, type: 2}

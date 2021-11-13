@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27f402b5f299425b8811f4aa1879a37f, type: 3}
+  m_Name: rock_coal
+  m_EditorClassIdentifier: 
+  _niceName: 
+  _cachedName: 
+  id: 20
+  profileName: coal
+  _category: Rock
+  densityGramPerCubicCentimeter: 1.25
+  materialWrapper: {fileID: 11400000, guid: fe78f0df99c6faa4a9a75794b05770ee, type: 2}

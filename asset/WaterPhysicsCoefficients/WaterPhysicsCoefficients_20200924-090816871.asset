@@ -1,0 +1,61 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: faa3189d0c414aa5ae5f8bddb87f8510, type: 3}
+  m_Name: WaterPhysicsCoefficients_20200924-090816871
+  m_EditorClassIdentifier: 
+  _niceName: 
+  _cachedName: 
+  data:
+    maximumMaximum: 25000
+    maximumDrag: 10
+    maximumAngularDrag: 1
+    maximumScale: 5
+    maximumLimit: 10
+    minimumCoefficient: 0.5
+    maximumCoefficient: 1.5
+    minimumSlamCoefficient: 0.1
+    maximumSlamCoefficient: 25000
+    minimumDragCoefficient: 0.1
+    maximumDragCoefficient: 100
+    additionalDrag: 10
+    additionalAngularDrag: 1
+    disableGravity: 0
+    scale: 1
+    hydrostaticScale: 1
+    viscousWaterResistanceScale: 1
+    pressureDragScale: 1
+    airResistanceScale: 1
+    windResistanceScale: 1
+    waveDriftingScale: 1
+    slammingScale: 1
+    limit: 10
+    hydrostaticLimit: 2
+    viscousWaterResistanceLimit: 2
+    pressureDragLimit: 2
+    airResistanceLimit: 2
+    windResistanceLimit: 2
+    waveDriftingLimit: 2
+    slammingLimit: 4
+    Viscosity: 0.000001
+    CoefficientWindResistance: 0.75
+    CoefficientAirResistance: 1
+    CoefficientDragFlatPlatePerpendicularToFlow: 1
+    slamEntryCoefficient: 25000
+    slamExitCoefficient: 25000
+    slamEntryHorizontality: 0.25
+    slamExitHorizontality: 0.15
+    linearPressureDragCoefficient: 10
+    quadraticPressureDragCoefficient: 10
+    facingDotProductFalloffPower: 0.5
+    linearSuctionDragCoefficient: 10
+    quadraticSuctionDragCoefficient: 10
+    suctionFalloffPower: 0.5

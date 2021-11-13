@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b7fb4ad6979440faed4004ded9b7958, type: 3}
+  m_Name: BuoyancyDataDefaults_20201007-041749682
+  m_EditorClassIdentifier: 
+  _niceName: 
+  _cachedName: 
+  wetnessAccumulationSpeed: 0.008
+  wetnessDispersalSpeed: 0.0003
+  submergednessAccumulationSpeed: 0.01
+  submergednessDispersalSpeed: 0.0003
+  buoyancyType: 2
+  voxelPopulationStyle: 2
+  voxelResolution: 0.1
+  waterLevelOffset: 0
+  submersionEngageSmoothing: 1
+  submersionDisengageSmoothing: 1

@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 773aa34ad01d5be41af9e052481587f0, type: 3}
+  m_Name: birch-yellow
+  m_EditorClassIdentifier: 
+  id: 7
+  woodData: {fileID: 11400000, guid: 4b51a5cfaed595b45a378a4aa200ed9d, type: 2}
+  individuals:
+  - {fileID: 11400000, guid: 7ff3adf840336824b98ede963454e152, type: 2}
