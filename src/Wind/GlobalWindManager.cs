@@ -17,9 +17,7 @@ using Random = UnityEngine.Random;
 
 #endregion
 
-#if UNITY_EDITOR
 
-#endif
 
 namespace Appalachia.Simulation.Wind
 {

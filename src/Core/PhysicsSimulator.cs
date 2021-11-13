@@ -1,8 +1,9 @@
+#if UNITY_EDITOR
+
 #region
 
 using Appalachia.Utility.Constants;
 using Unity.Profiling;
-using UnityEditor;
 using UnityEngine;
 
 #endregion
@@ -15,21 +16,25 @@ namespace Appalachia.Simulation.Core
 
         private const string _PRF_PFX = nameof(PhysicsSimulator) + ".";
 
-        public static OnSimulationEnd onSimulationEnd;
-        public static OnSimulationStart onSimulationStart;
-        public static OnSimulationUpdate onSimulationUpdate;
-        private static bool s_Enabled;
-
         private static readonly ProfilerMarker _PRF_Update = new(_PRF_PFX + nameof(PhysicsSimulator_Update));
 
         #endregion
 
+        #region Constants and Static Readonly
+
         private const string MENU_TOGGLE = "Toggle Physics Simulation" + SHC.CTRL_ALT_SHFT_S;
+
+        #endregion
 
         static PhysicsSimulator()
         {
             s_Enabled = false;
         }
+
+        public static OnSimulationEnd onSimulationEnd;
+        public static OnSimulationStart onSimulationStart;
+        public static OnSimulationUpdate onSimulationUpdate;
+        private static bool s_Enabled;
 
         private static double _elapsed;
         private static int _frames;
@@ -46,7 +51,7 @@ namespace Appalachia.Simulation.Core
 
                 onSimulationStart?.Invoke();
 
-                EditorApplication.update += PhysicsSimulator_Update;
+                UnityEditor.EditorApplication.update += PhysicsSimulator_Update;
                 s_Enabled = true;
             }
             else if (!enabled && s_Enabled)
@@ -55,22 +60,9 @@ namespace Appalachia.Simulation.Core
 
                 onSimulationEnd?.Invoke();
 
-                EditorApplication.update -= PhysicsSimulator_Update;
+                UnityEditor.EditorApplication.update -= PhysicsSimulator_Update;
                 s_Enabled = false;
             }
-        }
-
-        [MenuItem(PKG.Menu.Appalachia.Tools.Base + MENU_TOGGLE, priority = PKG.Priority)]
-        public static void TogglePhysicsSimulation()
-        {
-            SetEnabled(!s_Enabled);
-        }
-
-        [MenuItem(PKG.Menu.Appalachia.Tools.Base + MENU_TOGGLE, true, priority = PKG.Priority)]
-        public static bool TogglePhysicsSimulationValidate()
-        {
-            Menu.SetChecked(MENU_TOGGLE, s_Enabled);
-            return true;
         }
 
         private static void PhysicsSimulator_Update()
@@ -98,5 +90,23 @@ namespace Appalachia.Simulation.Core
                 }
             }
         }
+
+        #region Menu Items
+
+        [UnityEditor.MenuItem(PKG.Menu.Appalachia.Tools.Base + MENU_TOGGLE, priority = PKG.Priority)]
+        public static void TogglePhysicsSimulation()
+        {
+            SetEnabled(!s_Enabled);
+        }
+
+        [UnityEditor.MenuItem(PKG.Menu.Appalachia.Tools.Base + MENU_TOGGLE, true, priority = PKG.Priority)]
+        public static bool TogglePhysicsSimulationValidate()
+        {
+            UnityEditor.Menu.SetChecked(MENU_TOGGLE, s_Enabled);
+            return true;
+        }
+
+        #endregion
     }
 }
+#endif

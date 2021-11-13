@@ -51,11 +51,12 @@ namespace Appalachia.Simulation.Core.Metadata.Materials
 
             if (defaultDensity == null)
             {
-                AppaLog.Warning($"Need default density for material {name}", this);
+                AppaLog.Warn($"Need default density for material {name}", this);
             }
 #endif
         }
 
+#if UNITY_EDITOR
         [Button]
         [EnableIf(nameof(CanSearch))]
         public void Search()
@@ -107,5 +108,6 @@ namespace Appalachia.Simulation.Core.Metadata.Materials
                 }
             }
         }
+#endif
     }
 }

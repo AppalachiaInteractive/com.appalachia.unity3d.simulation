@@ -36,7 +36,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
         {
             if (go.name != gameObject_baseName)
             {
-               AppaLog.Warning("Prefab update required: Wrong collider parent name.");
+               AppaLog.Warn("Prefab update required: Wrong collider parent name.");
                 return false;
             }
 
@@ -44,7 +44,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
 
             if (tc.Length > 0)
             {
-               AppaLog.Warning("Prefab update required: Extra mesh collider.");
+               AppaLog.Warn("Prefab update required: Extra mesh collider.");
                 return false;
             }
             
@@ -69,7 +69,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
 
             if (childCount != requiredChildCount)
             {
-               AppaLog.Warning("Prefab update required: Wrong mesh collider count.");
+               AppaLog.Warn("Prefab update required: Wrong mesh collider count.");
                 return false;
             }
 
@@ -77,7 +77,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
                 var child = go.transform.GetChild(0);
                 if (child.name != gameObject_woodName)
                 {
-                   AppaLog.Warning("Prefab update required: Wrong mesh collider child name.");
+                   AppaLog.Warn("Prefab update required: Wrong mesh collider child name.");
                     return false;
                 }
 
@@ -86,7 +86,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
 
                 if (colliders.Length != models.Count)
                 {
-                   AppaLog.Warning("Prefab update required: Wrong mesh collider count.");
+                   AppaLog.Warn("Prefab update required: Wrong mesh collider count.");
                    return false;
                 }                
 
@@ -98,7 +98,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
                     {
                         if (colliders[0].sharedMesh != collisionMesh)
                         {
-                           AppaLog.Warning("Prefab update required: Collision mesh not correct.");
+                           AppaLog.Warn("Prefab update required: Collision mesh not correct.");
                             return false;
                         }
                     }
@@ -106,26 +106,26 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
                     {
                         if (colliders[0].sharedMesh != decompositionMeshes[0])
                         {
-                           AppaLog.Warning("Prefab update required: Collision mesh not correct.");
+                           AppaLog.Warn("Prefab update required: Collision mesh not correct.");
                             return false;
                         }
                     }
 
                     if (colliders[0].cookingOptions != (MeshColliderCookingOptions) ~0)
                     {
-                       AppaLog.Warning("Prefab update required: Collision mesh cooking settings not correct.");
+                       AppaLog.Warn("Prefab update required: Collision mesh cooking settings not correct.");
                         return false;
                     }
                     if (colliders[0].convex != true) 
                     {
-                       AppaLog.Warning("Prefab update required: Mesh collider not convex.");
+                       AppaLog.Warn("Prefab update required: Mesh collider not convex.");
                         return false;
                         
                     }
 
                     if (colliders[0].sharedMaterial != globals.woodMaterial)
                     {
-                       AppaLog.Warning("Prefab update required: Wrong material on wood sphere.");
+                       AppaLog.Warn("Prefab update required: Wrong material on wood sphere.");
                         return false;
                     }
                 }
@@ -135,24 +135,24 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
                     {
                         if (colliders[i].cookingOptions != (MeshColliderCookingOptions) ~0)
                         {
-                           AppaLog.Warning("Prefab update required: Collision mesh cooking settings not correct.");
+                           AppaLog.Warn("Prefab update required: Collision mesh cooking settings not correct.");
                             return false;
                         }
 
                         if (colliders[i].sharedMesh != models[i])
                         {
-                           AppaLog.Warning("Prefab update required: Collision mesh not correct.");
+                           AppaLog.Warn("Prefab update required: Collision mesh not correct.");
                             return false;
                         }
                         if (colliders[i].convex != true)
                         {
-                           AppaLog.Warning("Prefab update required: Mesh collider not convex.");
+                           AppaLog.Warn("Prefab update required: Mesh collider not convex.");
                             return false;
                         }
 
                         if (colliders[i].sharedMaterial != globals.woodMaterial)
                         {
-                           AppaLog.Warning("Prefab update required: Wrong material on wood collider.");
+                           AppaLog.Warn("Prefab update required: Wrong material on wood collider.");
                             return false;
                         }
                     }
@@ -170,7 +170,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
 
                 if (colliders.Length != models.Count)
                 {
-                   AppaLog.Warning("Prefab update required: Wrong fruit sphere count.");
+                   AppaLog.Warn("Prefab update required: Wrong fruit sphere count.");
                     return false;
                 }
 
@@ -180,19 +180,19 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
                 {
                     if (colliders[i].center != models[i].center)
                     {
-                       AppaLog.Warning("Prefab update required: Bad center on fruit sphere.");
+                       AppaLog.Warn("Prefab update required: Bad center on fruit sphere.");
                         return false;
                     }
 
                     if (Math.Abs(colliders[i].radius - models[i].radius) > float.Epsilon)
                     {
-                       AppaLog.Warning("Prefab update required: Bad radius on fruit sphere.");
+                       AppaLog.Warn("Prefab update required: Bad radius on fruit sphere.");
                         return false;
                     }
 
                     if (colliders[i].sharedMaterial != globals.mushroomMaterial)
                     {
-                       AppaLog.Warning("Prefab update required: Wrong material on fungus sphere.");
+                       AppaLog.Warn("Prefab update required: Wrong material on fungus sphere.");
                         return false;
                     }
                 }
@@ -209,7 +209,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
 
                 if (colliders.Length != models.Count)
                 {
-                   AppaLog.Warning("Prefab update required: Wrong fruit sphere count.");
+                   AppaLog.Warn("Prefab update required: Wrong fruit sphere count.");
                     return false;
                 }
 
@@ -219,18 +219,18 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
                 {
                     if (colliders[i].center != models[i].center)
                     {
-                       AppaLog.Warning("Prefab update required: Bad center on fruit sphere.");
+                       AppaLog.Warn("Prefab update required: Bad center on fruit sphere.");
                         return false;
                     }
                     if (Math.Abs(colliders[i].radius - models[i].radius) > float.Epsilon)
                     {
-                       AppaLog.Warning("Prefab update required: Bad radius on fruit sphere.");
+                       AppaLog.Warn("Prefab update required: Bad radius on fruit sphere.");
                         return false;
                     }
 
                     if (colliders[i].sharedMaterial != globals.fruitMaterial)
                     {
-                       AppaLog.Warning("Prefab update required: Wrong material on fruit sphere.");
+                       AppaLog.Warn("Prefab update required: Wrong material on fruit sphere.");
                         return false;
                     }
                 }

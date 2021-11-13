@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Appalachia.Core.Behaviours;
 using Appalachia.Core.Debugging;
-using Appalachia.Editing.Debugging;
 using Appalachia.Editing.Debugging.Handle;
 using Unity.Profiling;
 using UnityEngine;
@@ -15,8 +14,10 @@ namespace Appalachia.Simulation.ReactionSystem.Base
     {
         private const string _PRF_PFX = nameof(ReactionSubsystemCenter) + ".";
 
+#if UNITY_EDITOR
         private static readonly ProfilerMarker _PRF_OnDrawGizmosSelected =
             new(_PRF_PFX + nameof(OnDrawGizmosSelected));
+#endif
 
         private static readonly ProfilerMarker _PRF_GetPosition =
             new(_PRF_PFX + nameof(GetPosition));

@@ -1,5 +1,5 @@
 using System;
-using Appalachia.Editing.Core.Windows;
+using Appalachia.Editor.Windows;
 using Appalachia.Simulation.Trees.Extensions;
 using Appalachia.Simulation.Trees.Generation.Texturing.Materials.Management;
 using Appalachia.Simulation.Trees.Generation.Texturing.Materials.Rects;

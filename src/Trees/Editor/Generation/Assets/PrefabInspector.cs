@@ -39,7 +39,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
             _builder.AppendLine($"[IsPartOfNonAssetPrefabInstance]:   {PrefabUtility.IsPartOfNonAssetPrefabInstance(go)}");
             _builder.AppendLine($"[IsPartOfPrefabThatCanBeAppliedTo]: {PrefabUtility.IsPartOfPrefabThatCanBeAppliedTo(go)}");
 
-           AppaLog.Warning(_builder.ToString());
+           AppaLog.Warn(_builder.ToString());
       
         }
 

@@ -4,13 +4,10 @@ using System;
 using Appalachia.Core.Attributes.Editing;
 using Appalachia.Simulation.Core.Metadata.Tree;
 using Sirenix.OdinInspector;
-using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-#if UNITY_EDITOR
 
-#endif
 
 #endregion
 
@@ -117,7 +114,7 @@ namespace Appalachia.Simulation.Trees.Core
         [DisableIf(nameof(_missingModel))]
         public void SelectModel()
         {
-            Selection.objects = new Object[] {_model.GameObject};
+            UnityEditor.Selection.objects = new Object[] {_model.GameObject};
         }
 
         private void Update()

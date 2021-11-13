@@ -73,7 +73,7 @@ namespace Appalachia.Simulation.Trees.Generation.Geometry
 
                     if (shape.matrix.isIdentity)
                     {
-                       AppaLog.Warning(
+                       AppaLog.Warn(
                             $"Default matrix present for shape {shape.shapeID} in hierarchy {shape.hierarchyID}"
                         );
                     }

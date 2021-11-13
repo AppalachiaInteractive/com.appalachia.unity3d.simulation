@@ -10,8 +10,6 @@ using Appalachia.Simulation.Trees.Core.Interfaces;
 using Appalachia.Simulation.Trees.Core.Shape;
 using Appalachia.Utility.Logging;
 using Sirenix.OdinInspector;
-using UnityEditor;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 
 #endregion
@@ -432,9 +430,9 @@ namespace Appalachia.Simulation.Trees.Core.Model
                     Frame(gameObject);
                 }
 
-                EditorSceneManager.MarkSceneDirty(gameObject.scene);
-                EditorApplication.QueuePlayerLoopUpdate();
-                SceneView.RepaintAll();
+                UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(gameObject.scene);
+                UnityEditor.EditorApplication.QueuePlayerLoopUpdate();
+                UnityEditor.SceneView.RepaintAll();
             }
         }
 
@@ -485,7 +483,7 @@ namespace Appalachia.Simulation.Trees.Core.Model
             return model;
         }
         
-        private static void Frame(GameObject go)
+        /*private static void Frame(GameObject go)
         {
             Bounds bounds = new Bounds();
             var first = true;
@@ -515,7 +513,7 @@ namespace Appalachia.Simulation.Trees.Core.Model
             var camera = view.camera;
 
             view.LookAt(target, camera.transform.rotation, bounds.size.y*1.25f);
-        }
+        }*/
 
         private void RecalculateLODBounds(LODGroup lodGroup)
         {

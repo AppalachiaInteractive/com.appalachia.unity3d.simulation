@@ -1,3 +1,5 @@
+#if UNITY_EDITOR
+
 #region
 
 using Appalachia.CI.Integration.Assets;
@@ -328,3 +330,5 @@ namespace Appalachia.Simulation.Trees.Build.Execution
         }
     }
 }
+
+#endif

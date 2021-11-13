@@ -5,6 +5,7 @@ using Appalachia.Core.Filtering;
 using Appalachia.Editing.Core.Behaviours;
 using Appalachia.Simulation.Core.Metadata.Density;
 using Appalachia.Simulation.Core.Metadata.Materials;
+using Appalachia.Utility.Extensions;
 using Appalachia.Utility.Logging;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
@@ -30,11 +31,11 @@ namespace Appalachia.Simulation.Physical.Integration
 #endif
         public DensityMetadata density;
 
-#if UNITY_EDITOR
 
         public override EditorOnlyExclusionStyle exclusionStyle =>
             EditorOnlyExclusionStyle.Component;
 
+#if UNITY_EDITOR
         private bool _canCreateDensity => density == null;
 
         private static readonly ProfilerMarker _PRF_CreateNewDensity =

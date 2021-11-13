@@ -11,7 +11,6 @@ using Appalachia.Core.Filtering;
 using Appalachia.Core.Math.Smoothing;
 using Appalachia.Core.Preferences.Globals;
 using Appalachia.Core.Shading;
-using Appalachia.Editing.Debugging.Handle;
 using Appalachia.Jobs;
 using Appalachia.Jobs.MeshData;
 using Appalachia.Simulation.Buoyancy.Data;
@@ -24,7 +23,6 @@ using Appalachia.Simulation.Physical.Integration;
 using Appalachia.Simulation.Physical.Sampling;
 using Appalachia.Simulation.Wind;
 using Appalachia.Spatial.Voxels;
-using Appalachia.Spatial.Voxels.Gizmos;
 using Appalachia.Utility.Constants;
 using Appalachia.Utility.Extensions;
 using Appalachia.Utility.Logging;
@@ -33,10 +31,10 @@ using Unity.Burst;
 using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Profiling;
-using UnityEditor;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Appalachia.Editing.Debugging.Handle;
+using Appalachia.Spatial.Voxels.Gizmos;
 
 #endregion
 
@@ -267,7 +265,9 @@ namespace Appalachia.Simulation.Buoyancy
             }
         }
 
+#if UNITY_EDITOR
         private bool _canDirectRegister => PhysicsSimulator.IsSimulationActive && (_water == null);
+#endif
 
         private void Update()
         {
@@ -305,8 +305,10 @@ namespace Appalachia.Simulation.Buoyancy
                     enabled = false;
                 }
 
+#if UNITY_EDITOR
                 PhysicsSimulator.onSimulationEnd -= Disable;
                 PhysicsSimulator.onSimulationEnd += Disable;
+#endif
 
                 if (body == null)
                 {
@@ -347,8 +349,8 @@ namespace Appalachia.Simulation.Buoyancy
             {
 #if UNITY_EDITOR
 
-                if (EditorApplication.isCompiling ||
-                    EditorApplication.isPlayingOrWillChangePlaymode)
+                if (UnityEditor.EditorApplication.isCompiling ||
+                    UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode)
                 {
                     CleanUp();
                 }
@@ -400,15 +402,15 @@ namespace Appalachia.Simulation.Buoyancy
 
                     buoyancyData.mesh = mesh;
 
-                    EditorUtility.SetDirty(buoyancyData);
-                    EditorSceneManager.MarkSceneDirty(gameObject.scene);
+                    UnityEditor.EditorUtility.SetDirty(buoyancyData);
+                    UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(gameObject.scene);
                 }
                 else if (buoyancyData.mesh == null)
                 {
                     buoyancyData.mesh = MeshObjectManager.GetCheapestMesh(gameObject);
 
-                    EditorUtility.SetDirty(buoyancyData);
-                    EditorSceneManager.MarkSceneDirty(gameObject.scene);
+                    UnityEditor.EditorUtility.SetDirty(buoyancyData);
+                    UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(gameObject.scene);
                 }
 #endif
 
@@ -738,7 +740,9 @@ namespace Appalachia.Simulation.Buoyancy
         {
             using (_PRF_CleanUp.Auto())
             {
+#if UNITY_EDITOR
                 PhysicsSimulator.onSimulationEnd -= Disable;
+#endif
 
                 jobHandle.Complete();
 
@@ -786,6 +790,7 @@ namespace Appalachia.Simulation.Buoyancy
             }
         }
 
+#if UNITY_EDITOR
         [ButtonGroup]
         [EnableIf(nameof(_canDirectRegister))]
         public void DirectRegister()
@@ -821,6 +826,7 @@ namespace Appalachia.Simulation.Buoyancy
             CleanUp();
             OnEnable();
         }
+#endif
 
         public void UpdateDrag(float submergedAmount)
         {
@@ -1118,8 +1124,8 @@ namespace Appalachia.Simulation.Buoyancy
                         _gizmo_waterLines[(i * 2) + 1] = water;
                     }
 
-                    Handles.color = ColorPrefs.Instance.Buoyancy_WaterLines.v;
-                    Handles.DrawLines(_gizmo_waterLines);
+                   UnityEditor.Handles.color = ColorPrefs.Instance.Buoyancy_WaterLines.v;
+                   UnityEditor.Handles.DrawLines(_gizmo_waterLines);
                 }
 
                 var drawSelected_cumulatv_ForceLines =
@@ -1342,50 +1348,50 @@ namespace Appalachia.Simulation.Buoyancy
 
                     if (drawSelected_cumulatv_ForceLines)
                     {
-                        Handles.color = ColorPrefs.Instance.Buoyancy_cumulatvForceLines.v;
-                        Handles.DrawLines(_gizmo_cumulatv_ForceLines);
+                       UnityEditor.Handles.color = ColorPrefs.Instance.Buoyancy_cumulatvForceLines.v;
+                       UnityEditor.Handles.DrawLines(_gizmo_cumulatv_ForceLines);
                     }
 
                     if (drawSelected_hydrosta_ForceLines)
                     {
-                        Handles.color = ColorPrefs.Instance.Buoyancy_hydrostaForceLines.v;
-                        Handles.DrawLines(_gizmo_hydrosta_ForceLines);
+                       UnityEditor.Handles.color = ColorPrefs.Instance.Buoyancy_hydrostaForceLines.v;
+                       UnityEditor.Handles.DrawLines(_gizmo_hydrosta_ForceLines);
                     }
 
                     if (drawSelected_viscosWR_ForceLines)
                     {
-                        Handles.color = ColorPrefs.Instance.Buoyancy_viscosWRForceLines.v;
-                        Handles.DrawLines(_gizmo_viscosWR_ForceLines);
+                       UnityEditor.Handles.color = ColorPrefs.Instance.Buoyancy_viscosWRForceLines.v;
+                       UnityEditor.Handles.DrawLines(_gizmo_viscosWR_ForceLines);
                     }
 
                     if (drawSelected_presrDrg_ForceLines)
                     {
-                        Handles.color = ColorPrefs.Instance.Buoyancy_presrDrgForceLines.v;
-                        Handles.DrawLines(_gizmo_presrDrg_ForceLines);
+                       UnityEditor.Handles.color = ColorPrefs.Instance.Buoyancy_presrDrgForceLines.v;
+                       UnityEditor.Handles.DrawLines(_gizmo_presrDrg_ForceLines);
                     }
 
                     if (drawSelected_airResis_ForceLines)
                     {
-                        Handles.color = ColorPrefs.Instance.Buoyancy_airResisForceLines.v;
-                        Handles.DrawLines(_gizmo_airResis_ForceLines);
+                       UnityEditor.Handles.color = ColorPrefs.Instance.Buoyancy_airResisForceLines.v;
+                       UnityEditor.Handles.DrawLines(_gizmo_airResis_ForceLines);
                     }
 
                     if (drawSelected_windResi_ForceLines)
                     {
-                        Handles.color = ColorPrefs.Instance.Buoyancy_windResiForceLines.v;
-                        Handles.DrawLines(_gizmo_windResi_ForceLines);
+                       UnityEditor.Handles.color = ColorPrefs.Instance.Buoyancy_windResiForceLines.v;
+                       UnityEditor.Handles.DrawLines(_gizmo_windResi_ForceLines);
                     }
 
                     if (drawSelected_waveDrft_ForceLines)
                     {
-                        Handles.color = ColorPrefs.Instance.Buoyancy_waveDrftForceLines.v;
-                        Handles.DrawLines(_gizmo_waveDrft_ForceLines);
+                       UnityEditor.Handles.color = ColorPrefs.Instance.Buoyancy_waveDrftForceLines.v;
+                       UnityEditor.Handles.DrawLines(_gizmo_waveDrft_ForceLines);
                     }
 
                     if (drawSelected_slamming_ForceLines)
                     {
-                        Handles.color = ColorPrefs.Instance.Buoyancy_slammingForceLines.v;
-                        Handles.DrawLines(_gizmo_slamming_ForceLines);
+                       UnityEditor.Handles.color = ColorPrefs.Instance.Buoyancy_slammingForceLines.v;
+                       UnityEditor.Handles.DrawLines(_gizmo_slamming_ForceLines);
                     }
                 }
             }

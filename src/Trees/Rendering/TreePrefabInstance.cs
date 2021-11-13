@@ -1,13 +1,10 @@
 #region
 
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-#if UNITY_EDITOR
 
-#endif
 
 #endregion
 
@@ -40,12 +37,14 @@ namespace Appalachia.Simulation.Trees.Rendering
                 {
                     r.lightProbeUsage = LightProbeUsage.BlendProbes;
                 }
+#if UNITY_EDITOR
 
-                GameObjectUtility.SetStaticEditorFlags(
+                UnityEditor.GameObjectUtility.SetStaticEditorFlags(
                     r.gameObject,
-                    StaticEditorFlags.ContributeGI
+                    UnityEditor.StaticEditorFlags.ContributeGI
                 );
                 r.receiveGI = ReceiveGI.LightProbes;
+#endif
             }
         }
     }

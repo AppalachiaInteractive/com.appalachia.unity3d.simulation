@@ -61,37 +61,37 @@ namespace Appalachia.Simulation.Trees.Generation.Impostors
 
             if (impostor == null)
             {
-               AppaLog.Warning("Prefab update required: Missing impostor.");
+               AppaLog.Warn("Prefab update required: Missing impostor.");
                 return true;
             }
 
             if (stage.asset.impostor == null)
             {
-               AppaLog.Warning("Prefab update required: Missing impostor asset.");
+               AppaLog.Warn("Prefab update required: Missing impostor asset.");
                 return true;
             }
 
             if (impostor.Data == null)
             {
-               AppaLog.Warning("Prefab update required: Impostor asset not assigned.");
+               AppaLog.Warn("Prefab update required: Impostor asset not assigned.");
                 return true;
             }
 
             if ((impostor.Renderers == null) || (impostor.Renderers.Length != 1))
             {
-               AppaLog.Warning("Prefab update required: Impostor renderers not set up.");
+               AppaLog.Warn("Prefab update required: Impostor renderers not set up.");
                 return true;
             }
 
             if (impostor.LodGroup == null)
             {
-               AppaLog.Warning("Prefab update required: Impostor LOD group not assigned.");
+               AppaLog.Warn("Prefab update required: Impostor LOD group not assigned.");
                 return true;
             }
 
             if (impostor.RootTransform == null)
             {
-               AppaLog.Warning("Prefab update required: Impostor root transform not assigned.");
+               AppaLog.Warn("Prefab update required: Impostor root transform not assigned.");
                 return true;
             }
 
@@ -101,20 +101,20 @@ namespace Appalachia.Simulation.Trees.Generation.Impostors
 
             if (impostorLOD.renderers.Length != 1)
             {
-               AppaLog.Warning("Prefab update required: Incorrect impostor renderer count.");
+               AppaLog.Warn("Prefab update required: Incorrect impostor renderer count.");
                 return true;
             }
 
             if (impostorLOD.renderers[0].sharedMaterial != impostor.Data.Material)
             {
-               AppaLog.Warning("Prefab update required: Incorrect impostor material.");
+               AppaLog.Warn("Prefab update required: Incorrect impostor material.");
                 return true;
             }
 
             var mf = impostorLOD.renderers[0].GetComponent<MeshFilter>();
             if (mf.sharedMesh != impostor.Data.Mesh)
             {
-               AppaLog.Warning("Prefab update required: Incorrect impostor mesh.");
+               AppaLog.Warn("Prefab update required: Incorrect impostor mesh.");
                 return true;
             }
 

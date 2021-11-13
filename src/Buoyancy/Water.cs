@@ -21,7 +21,6 @@ using Sirenix.OdinInspector;
 using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Profiling;
-using UnityEditor;
 using UnityEngine;
 
 #endregion
@@ -417,10 +416,12 @@ namespace Appalachia.Simulation.Buoyancy
                 _hasCurrentChanged = default;
                 _index = default;
 
+#if UNITY_EDITOR
                 if (!Application.isPlaying)
                 {
                     PhysicsSimulator.onSimulationUpdate -= FixedUpdate;
                 }
+#endif
             }
         }
 
@@ -658,20 +659,20 @@ namespace Appalachia.Simulation.Buoyancy
             }
         }
 
-#if UNITY_EDITOR
 
         private void OnDisable()
         {
+#if UNITY_EDITOR
             using (_PRF_OnDisable.Auto())
             {
-                if (EditorApplication.isCompiling ||
-                    EditorApplication.isPlayingOrWillChangePlaymode)
+                if (UnityEditor.EditorApplication.isCompiling ||
+                    UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode)
                 {
                     CleanUp();
                 }
             }
-        }
 #endif
+        }
 
 #if UNITY_EDITOR
 

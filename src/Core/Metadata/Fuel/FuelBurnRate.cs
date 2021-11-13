@@ -9,10 +9,12 @@ namespace Appalachia.Simulation.Core.Metadata.Fuel
         public float kgBurnPerHour = 1f;
         public float ignitionRate = 0.05f;
 
+#if UNITY_EDITOR
         [UnityEditor.MenuItem(PKG.Menu.Assets.Base + nameof(FuelBurnRate), priority = PKG.Menu.Assets.Priority)]
         public static void CreateAsset()
         {
             CreateNew();
         }
+#endif
     }
 }

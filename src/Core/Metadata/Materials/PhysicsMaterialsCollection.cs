@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Appalachia.Core.Comparisons;
 using Appalachia.Core.Scriptables;
+using Appalachia.Simulation.Core.Metadata.Collections;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -11,12 +12,13 @@ using UnityEngine;
 
 namespace Appalachia.Simulation.Core.Metadata.Materials
 {
-    public class PhysicsMaterialsCollection : AppalachiaMetadataCollection<PhysicsMaterialsCollection, PhysicMaterialWrapper>
+    public class PhysicsMaterialsCollection : AppalachiaMetadataCollection<PhysicsMaterialsCollection, PhysicMaterialWrapper, AppaList_PhysicMaterialWrapper>
     {
         [FoldoutGroup("Misc")] public Material physicsVisualizationMaterial;
 
         private Dictionary<PhysicMaterial, PhysicMaterialWrapper> _lookup;
 
+#if UNITY_EDITOR
         [Button]
         public void SearchAll()
         {
@@ -34,6 +36,7 @@ namespace Appalachia.Simulation.Core.Metadata.Materials
                 }
             }
         }
+#endif
 
         public PhysicMaterialWrapper Lookup(PhysicMaterial m)
         {

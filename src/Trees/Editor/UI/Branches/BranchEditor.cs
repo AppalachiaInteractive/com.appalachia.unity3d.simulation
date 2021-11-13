@@ -94,7 +94,7 @@ namespace Appalachia.Simulation.Trees.UI.Branches
         {
             if (_previewRenderUtility != null)
             {
-               //AppaLog.Warning($"Cleaning up preview utility {_previewRenderUtilityID} from branch editor.");
+               //AppaLog.Warn($"Cleaning up preview utility {_previewRenderUtilityID} from branch editor.");
                 _previewRenderUtility.Cleanup();
                 _previewRenderUtility = null;
             }
@@ -124,7 +124,7 @@ namespace Appalachia.Simulation.Trees.UI.Branches
         {
             if (_previewRenderUtility != null)
             {
-                //AppaLog.Warning($"Cleaning up preview utility {_previewRenderUtilityID} from branch editor.");
+                //AppaLog.Warn($"Cleaning up preview utility {_previewRenderUtilityID} from branch editor.");
                 _previewRenderUtility.Cleanup();
                 _previewRenderUtility = null;
             }
@@ -198,7 +198,7 @@ namespace Appalachia.Simulation.Trees.UI.Branches
                 {
                     _previewRenderUtilityCount += 1;
                     _previewRenderUtilityID = _previewRenderUtilityCount;
-                    //AppaLog.Warning($"Creating new preview utility {_previewRenderUtilityID} for branch editor.");
+                    //AppaLog.Warn($"Creating new preview utility {_previewRenderUtilityID} for branch editor.");
                     _previewRenderUtility = new PreviewRenderUtility();
                 }
 

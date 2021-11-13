@@ -2,7 +2,6 @@
 
 #region
 
-#if UNITY_EDITOR
 using System;
 using Appalachia.CI.Integration.Assets;
 using Appalachia.Core.Math.Geometry;
@@ -13,11 +12,8 @@ using Appalachia.Simulation.Trees.Core.Interfaces;
 using Appalachia.Simulation.Trees.Core.Shape;
 using Appalachia.Utility.Logging;
 using Sirenix.OdinInspector;
-using UnityEditor;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 
-#endif
 
 #endregion
 
@@ -502,9 +498,9 @@ namespace Appalachia.Simulation.Trees.Core.Model
                     Frame(true);
                 }
 
-                EditorSceneManager.MarkSceneDirty(gameObject.scene);
-                EditorApplication.QueuePlayerLoopUpdate();
-                SceneView.RepaintAll();
+                UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(gameObject.scene);
+                UnityEditor.EditorApplication.QueuePlayerLoopUpdate();
+                UnityEditor.SceneView.RepaintAll();
             }
         }
 

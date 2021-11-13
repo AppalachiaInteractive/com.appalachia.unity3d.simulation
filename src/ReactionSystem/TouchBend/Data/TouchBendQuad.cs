@@ -11,13 +11,8 @@ using Appalachia.Jobs.TextureJobs.Jobs;
 using Appalachia.Jobs.TextureJobs.Structures;
 using Sirenix.OdinInspector;
 using Unity.Jobs;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
-
-#if UNITY_EDITOR
-
-#endif
 
 namespace Appalachia.Simulation.ReactionSystem.TouchBend.Data
 {
@@ -933,7 +928,7 @@ namespace Appalachia.Simulation.ReactionSystem.TouchBend.Data
                 return;
             }
 
-            var importer = AssetImporter.GetAtPath(path) as TextureImporter;
+            var importer = UnityEditor.AssetImporter.GetAtPath(path) as UnityEditor.TextureImporter;
 
             importer.isReadable = true;
             importer.SaveAndReimport();

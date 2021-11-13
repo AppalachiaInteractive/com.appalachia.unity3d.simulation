@@ -11,6 +11,7 @@ using Appalachia.Simulation.Trees.Core;
 using Appalachia.Simulation.Trees.Definition;
 using Appalachia.Simulation.Trees.Generation.Impostors;
 using Appalachia.Simulation.Trees.Settings;
+using Appalachia.Utility.Extensions;
 using Appalachia.Utility.Logging;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -433,7 +434,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
 
                 if (expectedChildCount != realChildCount)
                 {
-                   AppaLog.Warning($"Prefab [{asset.prefab.name}] update required: Wrong child count.");
+                   AppaLog.Warn($"Prefab [{asset.prefab.name}] update required: Wrong child count.");
                     return true;
                 }
 
@@ -446,19 +447,19 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
 
                 if (lodGroup == null)
                 {
-                   AppaLog.Warning($"Prefab [{asset.prefab.name}] update required: Missing LODGroup.");
+                   AppaLog.Warn($"Prefab [{asset.prefab.name}] update required: Missing LODGroup.");
                     return true;
                 }
                 
                 if (!lodGroup.enabled)
                 {
-                   AppaLog.Warning($"Prefab [{asset.prefab.name}] update required: LODGroup disabled.");
+                   AppaLog.Warn($"Prefab [{asset.prefab.name}] update required: LODGroup disabled.");
                     return true;
                 }
                 
                 if (lodGroup.fadeMode != LODFadeMode.CrossFade)
                 {
-                   AppaLog.Warning($"Prefab [{asset.prefab.name}] update required: Incorrect fade settings.");
+                   AppaLog.Warn($"Prefab [{asset.prefab.name}] update required: Incorrect fade settings.");
                     return true;
                 }
 
@@ -466,7 +467,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
 
                 if (lods.Length != lodCount)
                 {
-                   AppaLog.Warning($"Prefab [{asset.prefab.name}] update required: Wrong LOD count.");
+                   AppaLog.Warn($"Prefab [{asset.prefab.name}] update required: Wrong LOD count.");
                     return true;
                 }
 
@@ -474,7 +475,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
 
                 if (rendererGO == null)
                 {
-                   AppaLog.Warning($"Prefab [{asset.prefab.name}] update required: Missing renderer GO.");
+                   AppaLog.Warn($"Prefab [{asset.prefab.name}] update required: Missing renderer GO.");
                     return true;
                 }
 
@@ -482,7 +483,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
 
                 if (rendererChildren != lods.Length)
                 {
-                   AppaLog.Warning($"Prefab [{asset.prefab.name}] update required: Wrong LOD count.");
+                   AppaLog.Warn($"Prefab [{asset.prefab.name}] update required: Wrong LOD count.");
                     return true;
                 }
 
@@ -494,7 +495,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
 
                     if (Math.Abs(lod.fadeTransitionWidth - (previewMode ? 0.0f : lodSettings.fadeTransitionWidth)) > float.Epsilon)
                     {
-                       AppaLog.Warning($"Prefab [{asset.prefab.name}] update required: Wrong LOD {i} transition width.");
+                       AppaLog.Warn($"Prefab [{asset.prefab.name}] update required: Wrong LOD {i} transition width.");
                         return true;
                     }
                     
@@ -502,7 +503,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
                     
                     if (lod.renderers.Length != rendererLength)
                     {
-                       AppaLog.Warning($"Prefab [{asset.prefab.name}] update required: Wrong LOD renderer count.");
+                       AppaLog.Warn($"Prefab [{asset.prefab.name}] update required: Wrong LOD renderer count.");
                         return true;
                     }
 
@@ -510,7 +511,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
 
                     if (mf.sharedMesh != asset.levels[i].mesh)
                     {
-                       AppaLog.Warning($"Prefab [{asset.prefab.name}] update required: Wrong LOD {i} mesh assigned.");
+                       AppaLog.Warn($"Prefab [{asset.prefab.name}] update required: Wrong LOD {i} mesh assigned.");
                         return true;
                     }
                         
@@ -520,7 +521,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
                         
                         if (mf.sharedMesh != asset.shadowCasterMesh)
                         {
-                           AppaLog.Warning($"Prefab [{asset.prefab.name}] update required: Wrong LOD {i} shadowcaster assigned.");
+                           AppaLog.Warn($"Prefab [{asset.prefab.name}] update required: Wrong LOD {i} shadowcaster assigned.");
                             return true;
                         }
                     }
@@ -530,13 +531,13 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
 
                 if (renderers.name != "RENDERERS")
                 {
-                   AppaLog.Warning($"Prefab [{asset.prefab.name}] update required: Wrong LOD name.");
+                   AppaLog.Warn($"Prefab [{asset.prefab.name}] update required: Wrong LOD name.");
                     return true;
                 }
 
                 if (!renderers.gameObject.activeSelf)
                 {
-                   AppaLog.Warning($"Prefab [{asset.prefab.name}] update required: Incorrect game object active status.");
+                   AppaLog.Warn($"Prefab [{asset.prefab.name}] update required: Incorrect game object active status.");
                     return true;
                 }
 
@@ -544,7 +545,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
 
                 if (dmr.Length > 0)
                 {                        
-                   AppaLog.Warning($"Prefab [{asset.prefab.name}] update required: Extra mesh renderers.");
+                   AppaLog.Warn($"Prefab [{asset.prefab.name}] update required: Extra mesh renderers.");
                     return true;
                 }
 
@@ -552,7 +553,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
 
                 if (dmf.Length > 0)
                 {                        
-                   AppaLog.Warning($"Prefab [{asset.prefab.name}] update required: Extra mesh filters.");
+                   AppaLog.Warn($"Prefab [{asset.prefab.name}] update required: Extra mesh filters.");
                     return true;
                 }
 
@@ -562,7 +563,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
 
                     if (!child.gameObject.activeSelf)
                     {
-                       AppaLog.Warning($"Prefab [{asset.prefab.name}] update required: Incorrect game object active status.");
+                       AppaLog.Warn($"Prefab [{asset.prefab.name}] update required: Incorrect game object active status.");
                         return true;
                     }
 
@@ -570,7 +571,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
 
                     if (child.name != expectedName)
                     {
-                       AppaLog.Warning($"Prefab [{asset.prefab.name}] update required: Wrong child name.");
+                       AppaLog.Warn($"Prefab [{asset.prefab.name}] update required: Wrong child name.");
                         return true;
                     }
 
@@ -578,7 +579,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
 
                     if (c != null)
                     {
-                       AppaLog.Warning($"Prefab [{asset.prefab.name}] update required: Extra MeshCollider.");
+                       AppaLog.Warn($"Prefab [{asset.prefab.name}] update required: Extra MeshCollider.");
                         return true;
                     }
 
@@ -586,7 +587,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
 
                     if (mf == null)
                     {
-                       AppaLog.Warning($"Prefab [{asset.prefab.name}] update required: Missing MeshFilter.");
+                       AppaLog.Warn($"Prefab [{asset.prefab.name}] update required: Missing MeshFilter.");
                         return true;
                     }
 
@@ -594,31 +595,31 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
 
                     if (mr == null)
                     {
-                       AppaLog.Warning($"Prefab [{asset.prefab.name}] update required: Missing MeshRenderer.");
+                       AppaLog.Warn($"Prefab [{asset.prefab.name}] update required: Missing MeshRenderer.");
                         return true;
                     }
 
                     if (!mr.enabled)
                     {
-                       AppaLog.Warning($"Prefab [{asset.prefab.name}] update required: Renderer disabled.");
+                       AppaLog.Warn($"Prefab [{asset.prefab.name}] update required: Renderer disabled.");
                         return true;
                     }
 
                     if (lods[i].renderers.Length < 1)
                     {
-                       AppaLog.Warning($"Prefab [{asset.prefab.name}] update required: Wrong renderer length.");
+                       AppaLog.Warn($"Prefab [{asset.prefab.name}] update required: Wrong renderer length.");
                         return true;
                     }
 
                     if (mf.sharedMesh != stage.asset.levels[i].mesh)
                     {
-                       AppaLog.Warning($"Prefab [{asset.prefab.name}] update required: Wrong mesh.");
+                       AppaLog.Warn($"Prefab [{asset.prefab.name}] update required: Wrong mesh.");
                         return true;
                     }
 
                     if (mr.sharedMaterials.Length != stage.asset.levels[i].materials.Length)
                     {
-                       AppaLog.Warning($"Prefab [{asset.prefab.name}] update required: Wrong material count.");
+                       AppaLog.Warn($"Prefab [{asset.prefab.name}] update required: Wrong material count.");
                         return true;
                     }
 
@@ -626,7 +627,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
                     {
                         if (mr.sharedMaterials[j] != stage.asset.levels[i].materials[j])
                         {
-                           AppaLog.Warning($"Prefab [{asset.prefab.name}] update required: Wrong material.");
+                           AppaLog.Warn($"Prefab [{asset.prefab.name}] update required: Wrong material.");
                             return true;
                         }
                     }
@@ -638,7 +639,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
 
                     if (shadow.name != "SHADOWS")
                     {                        
-                       AppaLog.Warning($"Prefab [{asset.prefab.name}] update required: Incorrect shadow game object name.");
+                       AppaLog.Warn($"Prefab [{asset.prefab.name}] update required: Incorrect shadow game object name.");
                         return true;
                     }
 
@@ -646,7 +647,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
 
                     if (dmr.Length > 0)
                     {                        
-                       AppaLog.Warning($"Prefab [{asset.prefab.name}] update required: Extra shadow mesh renderers.");
+                       AppaLog.Warn($"Prefab [{asset.prefab.name}] update required: Extra shadow mesh renderers.");
                         return true;
                     }
 
@@ -654,7 +655,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
 
                     if (dmf.Length > 0)
                     {                        
-                       AppaLog.Warning($"Prefab [{asset.prefab.name}] update required: Extra shadow mesh filters.");
+                       AppaLog.Warn($"Prefab [{asset.prefab.name}] update required: Extra shadow mesh filters.");
                         return true;
                     }
 
@@ -670,7 +671,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
 
                         if (!child.gameObject.activeSelf)
                         {
-                           AppaLog.Warning($"Prefab [{asset.prefab.name}] update required: Incorrect game object active status.");
+                           AppaLog.Warn($"Prefab [{asset.prefab.name}] update required: Incorrect game object active status.");
                             return true;
                         }
 
@@ -678,7 +679,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
 
                         if (child.name != expectedName)
                         {
-                           AppaLog.Warning($"Prefab [{asset.prefab.name}] update required: Wrong shadow name.");
+                           AppaLog.Warn($"Prefab [{asset.prefab.name}] update required: Wrong shadow name.");
                             return true;
                         }
 
@@ -686,7 +687,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
 
                         if (mf == null)
                         {
-                           AppaLog.Warning($"Prefab [{asset.prefab.name}] update required: Missing shadow MeshFilter.");
+                           AppaLog.Warn($"Prefab [{asset.prefab.name}] update required: Missing shadow MeshFilter.");
                             return true;
                         }
 
@@ -694,31 +695,31 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
 
                         if (mr == null)
                         {
-                           AppaLog.Warning($"Prefab [{asset.prefab.name}] update required: Missing shadow MeshRenderer.");
+                           AppaLog.Warn($"Prefab [{asset.prefab.name}] update required: Missing shadow MeshRenderer.");
                             return true;
                         }
 
                         if (!mr.enabled)
                         {
-                           AppaLog.Warning($"Prefab [{asset.prefab.name}] update required: Shadow renderer disabled.");
+                           AppaLog.Warn($"Prefab [{asset.prefab.name}] update required: Shadow renderer disabled.");
                             return true;
                         }
 
                         if (mf.sharedMesh != stage.asset.shadowCasterMesh)
                         {
-                           AppaLog.Warning($"Prefab [{asset.prefab.name}] update required: Wrong shadow mesh.");
+                           AppaLog.Warn($"Prefab [{asset.prefab.name}] update required: Wrong shadow mesh.");
                             return true;
                         }
 
                         if (mr.sharedMaterials.Length != 1)
                         {
-                           AppaLog.Warning($"Prefab [{asset.prefab.name}] update required: Wrong shadow material count.");
+                           AppaLog.Warn($"Prefab [{asset.prefab.name}] update required: Wrong shadow material count.");
                             return true;
                         }
 
                         if (mr.sharedMaterials[0] != material.asset)
                         {
-                           AppaLog.Warning($"Prefab [{asset.prefab.name}] update required: Wrong shadow material.");
+                           AppaLog.Warn($"Prefab [{asset.prefab.name}] update required: Wrong shadow material.");
                             return true;
                         }
                     }
@@ -732,7 +733,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
 
                     if (dmr.Length > 0)
                     {                        
-                       AppaLog.Warning($"Prefab [{asset.prefab.name}] update required: Extra collider mesh renderers.");
+                       AppaLog.Warn($"Prefab [{asset.prefab.name}] update required: Extra collider mesh renderers.");
                         return true;
                     }
 
@@ -740,7 +741,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
 
                     if (dmf.Length > 0)
                     {                        
-                       AppaLog.Warning($"Prefab [{asset.prefab.name}] update required: Extra collider mesh filters.");
+                       AppaLog.Warn($"Prefab [{asset.prefab.name}] update required: Extra collider mesh filters.");
                         return true;
                     }
                     
@@ -748,7 +749,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
 
                     if (dmr.Length > 0)
                     {                        
-                       AppaLog.Warning($"Prefab [{asset.prefab.name}] update required: Extra collider mesh renderers.");
+                       AppaLog.Warn($"Prefab [{asset.prefab.name}] update required: Extra collider mesh renderers.");
                         return true;
                     }
 
@@ -756,7 +757,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
 
                     if (dmf.Length > 0)
                     {                        
-                       AppaLog.Warning($"Prefab [{asset.prefab.name}] update required: Extra collider mesh filters.");
+                       AppaLog.Warn($"Prefab [{asset.prefab.name}] update required: Extra collider mesh filters.");
                         return true;
                     }
                     
@@ -772,7 +773,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
 
                     if (!string.Equals(occlusionMesh.name, "OCCLUSION"))
                     {
-                       AppaLog.Warning($"Prefab [{asset.prefab.name}] update required: Wrong occlusion GO name.");
+                       AppaLog.Warn($"Prefab [{asset.prefab.name}] update required: Wrong occlusion GO name.");
                         return true;
                     }
                     
@@ -780,7 +781,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
 
                     if (omc == null)
                     {                        
-                       AppaLog.Warning($"Prefab [{asset.prefab.name}] update required: Missing occlusion mesh collider.");
+                       AppaLog.Warn($"Prefab [{asset.prefab.name}] update required: Missing occlusion mesh collider.");
                         return true;
                     }
 
@@ -788,25 +789,25 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
 
                     if (osc != null)
                     {                        
-                       AppaLog.Warning($"Prefab [{asset.prefab.name}] update required: Extraneous occlusion collider.");
+                       AppaLog.Warn($"Prefab [{asset.prefab.name}] update required: Extraneous occlusion collider.");
                         return true;
                     }
 
                     if (!omc.sharedMesh == asset.levels[0].mesh)
                     {       
-                       AppaLog.Warning($"Prefab [{asset.prefab.name}] update required: Wrong occlusion mesh collider.");
+                       AppaLog.Warn($"Prefab [{asset.prefab.name}] update required: Wrong occlusion mesh collider.");
                         return true;
                     }
 
                     if (!omc.CompareTag(TAGS.OcclusionBake))
                     {       
-                       AppaLog.Warning($"Prefab [{asset.prefab.name}] update required: Wrong occlusion tag.");
+                       AppaLog.Warn($"Prefab [{asset.prefab.name}] update required: Wrong occlusion tag.");
                         return true;
                     }
 
                     if (omc.enabled)
                     {
-                       AppaLog.Warning($"Prefab [{asset.prefab.name}] update required: Occlusion mesh collider shouold be disabled.");
+                       AppaLog.Warn($"Prefab [{asset.prefab.name}] update required: Occlusion mesh collider shouold be disabled.");
                         return true;
                     }
                 }
@@ -819,7 +820,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
 
                     if (dmr.Length > 0)
                     {                        
-                       AppaLog.Warning($"Prefab [{asset.prefab.name}] update required: Extra points mesh renderers.");
+                       AppaLog.Warn($"Prefab [{asset.prefab.name}] update required: Extra points mesh renderers.");
                         return true;
                     }
 
@@ -827,7 +828,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
 
                     if (dmf.Length > 0)
                     {                        
-                       AppaLog.Warning($"Prefab [{asset.prefab.name}] update required: Extra points mesh filters.");
+                       AppaLog.Warn($"Prefab [{asset.prefab.name}] update required: Extra points mesh filters.");
                         return true;
                     }
                     
@@ -1318,19 +1319,19 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
                     if (expectedChildCount != realChildCount)
                     {
                         
-                       AppaLog.Warning($"Prefab [{instance.asset.prefab.name}] update required: Wrong child count.");
+                       AppaLog.Warn($"Prefab [{instance.asset.prefab.name}] update required: Wrong child count.");
                         return true;
                     }
 
                 if (runtime == null)
                 {
-                   AppaLog.Warning($"Prefab [{instance.asset.prefab.name}] update required: Missing LogRuntimeInstance.");
+                   AppaLog.Warn($"Prefab [{instance.asset.prefab.name}] update required: Missing LogRuntimeInstance.");
                     return true;
                 }
 
                 if (instance.RequiresUpdate(runtime))
                 {                    
-                   AppaLog.Warning($"Prefab [{instance.asset.prefab.name}] update required: Wrong log runtime parameters.");
+                   AppaLog.Warn($"Prefab [{instance.asset.prefab.name}] update required: Wrong log runtime parameters.");
                     return true;
                 }
 
@@ -1338,19 +1339,19 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
 
                 if (lodGroup == null)
                 {
-                   AppaLog.Warning($"Prefab [{instance.asset.prefab.name}] update required: Missing LODGroup.");
+                   AppaLog.Warn($"Prefab [{instance.asset.prefab.name}] update required: Missing LODGroup.");
                     return true;
                 }
                 
                 if (!lodGroup.enabled)
                 {
-                   AppaLog.Warning($"Prefab [{instance.asset.prefab.name}] update required: LODGroup disabled.");
+                   AppaLog.Warn($"Prefab [{instance.asset.prefab.name}] update required: LODGroup disabled.");
                     return true;
                 }
                 
                 if (lodGroup.fadeMode != LODFadeMode.CrossFade)
                 {
-                   AppaLog.Warning($"Prefab [{instance.asset.prefab.name}] update required: Incorrect fade settings.");
+                   AppaLog.Warn($"Prefab [{instance.asset.prefab.name}] update required: Incorrect fade settings.");
                     return true;
                 }
 
@@ -1358,7 +1359,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
 
                 if (lods.Length != instance.asset.levels.Count)
                 {
-                   AppaLog.Warning($"Prefab [{instance.asset.prefab.name}] update required: Wrong LOD count.");
+                   AppaLog.Warn($"Prefab [{instance.asset.prefab.name}] update required: Wrong LOD count.");
                     return true;
                 }
                 
@@ -1366,13 +1367,13 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
 
                 if (rigidbodies.Length == 0)
                 {
-                   AppaLog.Warning($"Prefab [{instance.asset.prefab.name}] update required: Missing rigidbody.");
+                   AppaLog.Warn($"Prefab [{instance.asset.prefab.name}] update required: Missing rigidbody.");
                     return true;
                 }
 
                 if (rigidbodies.Length > 1)
                 {
-                   AppaLog.Warning($"Prefab [{instance.asset.prefab.name}] update required: Wrong rigidbody count.");
+                   AppaLog.Warn($"Prefab [{instance.asset.prefab.name}] update required: Wrong rigidbody count.");
                     return true;
                 }
 
@@ -1380,19 +1381,19 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
                 
                 if (Math.Abs(rigidbody.mass - runtime.mass) > float.Epsilon) 
                 {
-                   AppaLog.Warning($"Prefab [{instance.asset.prefab.name}] update required: Wrong rigidbody mass.");
+                   AppaLog.Warn($"Prefab [{instance.asset.prefab.name}] update required: Wrong rigidbody mass.");
                     return true;
                 }
                 
                 if (rigidbody.centerOfMass != runtime.centerOfMass) 
                 {
-                   AppaLog.Warning($"Prefab [{instance.asset.prefab.name}] update required: Wrong rigidbody center of mass.");
+                   AppaLog.Warn($"Prefab [{instance.asset.prefab.name}] update required: Wrong rigidbody center of mass.");
                     return true;
                 }
                 
                 if (!rigidbody.useGravity) 
                 {
-                   AppaLog.Warning($"Prefab [{instance.asset.prefab.name}] update required: Wrong gravity setting.");
+                   AppaLog.Warn($"Prefab [{instance.asset.prefab.name}] update required: Wrong gravity setting.");
                     return true;
                 }
                 
@@ -1401,7 +1402,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
 
                 if (rigidbodies.Length > 0)
                 {
-                   AppaLog.Warning($"Prefab [{instance.asset.prefab.name}] update required: Wrong child rigidbody count.");
+                   AppaLog.Warn($"Prefab [{instance.asset.prefab.name}] update required: Wrong child rigidbody count.");
                     return true;
                 }
 
@@ -1417,7 +1418,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
                     {
                         if (child.name != expectedName)
                         {
-                           AppaLog.Warning($"Prefab [{instance.asset.prefab.name}] update required: Wrong child name.");
+                           AppaLog.Warn($"Prefab [{instance.asset.prefab.name}] update required: Wrong child name.");
                             return true;
                         }
                     }
@@ -1426,7 +1427,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
                     {
                         if (!instance.asset.collisionMeshes.IsCorrectlyApplied(child.gameObject, TreeGlobalSettings.instance))
                         {
-                           AppaLog.Warning($"Prefab [{instance.asset.prefab.name}] update required: Incorrect collider setup.");
+                           AppaLog.Warn($"Prefab [{instance.asset.prefab.name}] update required: Incorrect collider setup.");
                             return true;
                         }
                     }
@@ -1436,7 +1437,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
                         
                         if (c != null)
                         {
-                           AppaLog.Warning($"Prefab [{instance.asset.prefab.name}] update required: Extra MeshCollider.");
+                           AppaLog.Warn($"Prefab [{instance.asset.prefab.name}] update required: Extra MeshCollider.");
                             return true;
                         }
                         
@@ -1444,7 +1445,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
 
                         if (mf == null)
                         {
-                           AppaLog.Warning($"Prefab [{instance.asset.prefab.name}] update required: Missing MeshFilter.");
+                           AppaLog.Warn($"Prefab [{instance.asset.prefab.name}] update required: Missing MeshFilter.");
                             return true;
                         }
                     
@@ -1452,25 +1453,25 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
                         
                         if (mr == null)
                         {
-                           AppaLog.Warning($"Prefab [{instance.asset.prefab.name}] update required: Missing MeshRenderer.");
+                           AppaLog.Warn($"Prefab [{instance.asset.prefab.name}] update required: Missing MeshRenderer.");
                             return true;
                         }
 
                         if (lods[i].renderers.Length < 1)
                         {
-                           AppaLog.Warning($"Prefab [{instance.asset.prefab.name}] update required: Wrong renderer length.");
+                           AppaLog.Warn($"Prefab [{instance.asset.prefab.name}] update required: Wrong renderer length.");
                             return true;
                         }
 
                         if (mf.sharedMesh != instance.asset.levels[i].mesh)
                         {
-                           AppaLog.Warning($"Prefab [{instance.asset.prefab.name}] update required: Wrong mesh.");
+                           AppaLog.Warn($"Prefab [{instance.asset.prefab.name}] update required: Wrong mesh.");
                             return true;
                         }
 
                         if (mr.sharedMaterials.Length != instance.asset.levels[i].materials.Length)
                         {
-                           AppaLog.Warning($"Prefab [{instance.asset.prefab.name}] update required: Wrong material count.");
+                           AppaLog.Warn($"Prefab [{instance.asset.prefab.name}] update required: Wrong material count.");
                             return true;
                         }
 
@@ -1478,7 +1479,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
                         {
                             if (mr.sharedMaterials[j] != instance.asset.levels[i].materials[j])
                             {
-                               AppaLog.Warning($"Prefab [{instance.asset.prefab.name}] update required: Wrong material.");
+                               AppaLog.Warn($"Prefab [{instance.asset.prefab.name}] update required: Wrong material.");
                                 return true;
                             }
                         }

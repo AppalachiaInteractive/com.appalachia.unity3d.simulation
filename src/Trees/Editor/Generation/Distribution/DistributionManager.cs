@@ -51,7 +51,7 @@ namespace Appalachia.Simulation.Trees.Generation.Distribution
 
                     if (parentScale == 0f)
                     {
-                       AppaLog.Warning(
+                       AppaLog.Warn(
                             $"Not building shapes for hierarchy {hierarchy.hierarchyID} [{hierarchy.type}] because of parent scale."
                         );
                     }

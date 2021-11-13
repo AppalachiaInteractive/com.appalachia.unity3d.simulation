@@ -1,5 +1,6 @@
 #region
 
+using System;
 using Appalachia.Core.Behaviours;
 using Appalachia.Core.Extensions;
 using Appalachia.Core.Shading;
@@ -8,13 +9,9 @@ using Appalachia.Simulation.Physical.Integration;
 using Appalachia.Utility.Extensions;
 using Appalachia.Utility.Logging;
 using Sirenix.OdinInspector;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
-
-#if UNITY_EDITOR
-
-#endif
+using Object = UnityEngine.Object;
 
 #endregion
 
@@ -102,10 +99,10 @@ namespace Appalachia.Simulation.Trees.Core
                 var errorMessage = $"Need to assign wood to this log [{name}]!";
 
 #if UNITY_EDITOR
-               AppaLog.Warning(errorMessage, this);
+                AppaLog.Warn(errorMessage, this);
                 return;
 #else
-                throw new NotSupportedException(errorMessage. this);
+                throw new NotSupportedException(errorMessage);
 #endif
             }
 
@@ -116,10 +113,10 @@ namespace Appalachia.Simulation.Trees.Core
                 var errorMessage = $"Need to assign density to this wood [{wood.name}]!";
 
 #if UNITY_EDITOR
-               AppaLog.Warning(errorMessage, this);
+               AppaLog.Warn(errorMessage, this);
                 return;
 #else
-                throw new NotSupportedException(errorMessage. this);
+                throw new NotSupportedException(errorMessage);
 #endif
             }
 
@@ -149,7 +146,9 @@ namespace Appalachia.Simulation.Trees.Core
         }
 
         [Button]
+#if UNITY_EDITOR
         [EnableIf(nameof(_missingModel))]
+#endif
         public void InitializeWithoutModel()
         {
             logName = name;
@@ -183,7 +182,7 @@ namespace Appalachia.Simulation.Trees.Core
         [DisableIf(nameof(_missingModel))]
         public void SelectModel()
         {
-            Selection.objects = new Object[] {_model.GameObject};
+            UnityEditor.Selection.objects = new Object[] {_model.GameObject};
         }
 
         private void Update()

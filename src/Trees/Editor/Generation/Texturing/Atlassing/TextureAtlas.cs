@@ -160,7 +160,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Atlassing
 
             if ((padding % 2) != 0)
             {
-               AppaLog.Warning("Padding not an even number");
+               AppaLog.Warn("Padding not an even number");
                 padding += 1;
             }
 

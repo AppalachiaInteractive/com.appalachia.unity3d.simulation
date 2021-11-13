@@ -34,7 +34,7 @@ namespace Appalachia.Simulation.Buoyancy.Jobs
         [BurstDiscard]
         public static void LogCheckForce(ForceType forceType)
         {
-           AppaLog.Warning($"{forceType} force is NaN!");
+           AppaLog.Warn($"{forceType} force is NaN!");
         }
     }
 }
