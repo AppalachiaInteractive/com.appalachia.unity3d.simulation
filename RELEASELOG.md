@@ -1,6 +1,6 @@
 ```
 C:/Users/Chris/com.appalachia/unity3d/appa/Assets/Appalachia.Simulation
- Let's go!  
+Let's go!  
  ______   ______   __       ______   ______   ______   ______    
 /\  == \ /\  ___\ /\ \     /\  ___\ /\  __ \ /\  ___\ /\  ___\   
 \ \  __< \ \  __\ \ \ \____\ \  __\ \ \  __ \\ \___  \\ \  __\   
@@ -15,6 +15,7 @@ C:/Users/Chris/com.appalachia/unity3d/appa/Assets/Appalachia.Simulation
 `0.2.0`
 | Hash | Date | Author | Changes |
 |------|------|--------|---------|
+| b095cb41e4ec4c0f253e1ea2dab88fc966a880cb | 2021-11-13 | Chris Schubert | Updating changelog and releaselog |
 | 796551bf6f6031b626613c3705930b7e26c2f9da | 2021-11-13 | Chris Schubert | Updating changelog and releaselog |
 | 7b18202d1581db868b8f8b22bf6319def842d220 | 2021-11-13 | Chris Schubert | EXR to gitlfs |
 | b1b54ab5ed5d97ab6b36a85ae4e86ca10bf7a7f9 | 2021-11-13 | Chris Schubert | Editor exclusions for runtime build and reorganizing assets |
