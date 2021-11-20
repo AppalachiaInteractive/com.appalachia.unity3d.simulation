@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using UnityEngine;
 
@@ -6,9 +7,10 @@ namespace Appalachia.Simulation.Trees.UI.UV
     /// <summary>
     ///     Internal bounds class.
     /// </summary>
+    [Serializable]
     internal sealed class Bounds2D
     {
-        public Vector2 center = Vector2.zero;
+        [SerializeField] public Vector2 center = Vector2.zero;
         [SerializeField] private Vector2 m_Size = Vector2.zero;
 
         public Bounds2D()

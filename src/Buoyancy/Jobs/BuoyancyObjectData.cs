@@ -4,6 +4,7 @@ using Appalachia.Core.Collections.Native.Pointers;
 using Appalachia.Spatial.Voxels.VoxelTypes;
 using Unity.Collections;
 using UnityEngine;
+// ReSharper disable Unity.RedundantSerializeFieldAttribute
 
 namespace Appalachia.Simulation.Buoyancy.Jobs
 {
