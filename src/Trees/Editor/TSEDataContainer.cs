@@ -83,10 +83,11 @@ namespace Appalachia.Simulation.Trees
 
         #region Event Functions
 
-        private void OnEnable()
+        protected override void OnEnable()
         {
             using (_PRF_OnEnable.Auto())
             {
+                base.OnEnable();
                 UpdateSettingsType(settingsType);
             }
         }

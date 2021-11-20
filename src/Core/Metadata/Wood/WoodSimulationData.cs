@@ -53,8 +53,9 @@ namespace Appalachia.Simulation.Core.Metadata.Wood
             (densityMetadata == null ? 650f : densityMetadata.densityKGPerCubicMeter) / 1250f;
 
 #if UNITY_EDITOR
-        private void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
             AssignBestDensity();
         }
 

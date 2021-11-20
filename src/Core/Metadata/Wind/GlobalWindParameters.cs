@@ -129,8 +129,9 @@ namespace Appalachia.Simulation.Core.Metadata.Wind
         [SmartLabel]
         public DensityMetadata airDensity => DensityMetadataCollection.instance.air;
 
-        private void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
             if (maximumWindSpeed == 0f)
             {
                 maximumWindSpeed = 25f;

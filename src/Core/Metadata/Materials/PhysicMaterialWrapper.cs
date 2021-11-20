@@ -42,8 +42,9 @@ namespace Appalachia.Simulation.Core.Metadata.Materials
 
         #region Event Functions
 
-        private void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
 #if UNITY_EDITOR
             if (defaultDensity == null)
             {

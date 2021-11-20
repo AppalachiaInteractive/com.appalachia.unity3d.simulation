@@ -100,8 +100,9 @@ namespace Appalachia.Simulation.Trees
 
         #region Event Functions
 
-        private void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
             if (HasAssetPath(out _))
             {
                 if (HasSubAssets(out var subAssets))
