@@ -1,6 +1,6 @@
 ```
 C:/Users/Chris/com.appalachia/unity3d/appa/Assets/Appalachia.Simulation
-Let's go!  
+Development environment loaded!  
  ________   ___  ___   ________   ________    ________   _______    ________      
 |\   ____\ |\  \|\  \ |\   __  \ |\   ___  \ |\   ____\ |\  ___ \  |\   ____\     
 \ \  \___| \ \  \\\  \\ \  \|\  \\ \  \\ \  \\ \  \___| \ \   __/| \ \  \___|_    
@@ -14,6 +14,8 @@ Let's go!
 ## Releasing
 | Hash | Date | Author | Changes |
 |------|------|--------|---------|
+| 1d766b645b87a1cb1778a469fbc0ea7fcde38ca9 | 2021-11-20 | Chris Schubert | Packaging updates and formatting for titles |
+| 4d72dce48bbd35ffab65554eec466018f7f8a4c1 | 2021-11-20 | Chris Schubert | Updating changelog and releaselog |
 | 0ade0f95e3a73a5eccbb9fea6dc6d63585237b99 | 2021-11-20 | Chris Schubert | Code cleanup and base class refactoring |
 | 5eb5b80288b11e16e2c53a3e274a5aacc9b9c808 | 2021-11-14 | Chris Schubert | Updating changelog and releaselog |
 | b095cb41e4ec4c0f253e1ea2dab88fc966a880cb | 2021-11-13 | Chris Schubert | Updating changelog and releaselog |
