@@ -17,8 +17,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Management
     public abstract class MaterialCollection<T> : TypeBasedSettings<T>
         where T : TypeBasedSettings<T>
     {
-        [HideInInspector] public string hash;
-        [HideInInspector] public ResponsiveSettingsType settingsType;
+        #region Fields and Autoproperties
 
         [InlineProperty, HideLabel]
         [TabGroup("Input Materials", Paddingless = true)]
@@ -28,16 +27,13 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Management
         [TabGroup("Output Materials", Paddingless = true)]
         public OutputMaterialCache outputMaterialCache;
 
+        [HideInInspector] public ResponsiveSettingsType settingsType;
+        [HideInInspector] public string hash;
+
         [SerializeField, HideInInspector]
         protected IDIncrementer _ids;
-        
-        protected void Initialize(ResponsiveSettingsType type)
-        {
-            _ids = new IDIncrementer(true);
-            inputMaterialCache = new InputMaterialCache();
-            outputMaterialCache = new OutputMaterialCache(_ids, type);
-            settingsType = type;
-        }
+
+        #endregion
 
         public string CalculateHash()
         {
@@ -45,6 +41,31 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Management
             {
                 return inputMaterialCache.CalculateHash() + outputMaterialCache.CalculateHash();
             }
+        }
+
+        public InputMaterial FindInputMaterialForOutputMaterial(TiledOutputMaterial m)
+        {
+            return inputMaterialCache.GetByMaterialID(m.inputMaterialID);
+        }
+
+        public OutputMaterial GetOutputMaterialByInputID(int materialID)
+        {
+            var mat = inputMaterialCache.GetByMaterialID(materialID);
+
+            if (mat.MaterialContext == MaterialContext.AtlasInputMaterial)
+            {
+                return outputMaterialCache.atlasOutputMaterial;
+            }
+
+            foreach (var output in outputMaterialCache.tiledOutputMaterials)
+            {
+                if (output.inputMaterialID == materialID)
+                {
+                    return output;
+                }
+            }
+
+            return null;
         }
 
         public bool RequiresUpdate(MaterialSettings settings, out string currentHash)
@@ -99,35 +120,10 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Management
             }
         }
 
-        public OutputMaterial GetOutputMaterialByInputID(int materialID)
-        {
-            var mat = inputMaterialCache.GetByMaterialID(materialID);
-
-            if (mat.MaterialContext == MaterialContext.AtlasInputMaterial)
-            {
-                return outputMaterialCache.atlasOutputMaterial;
-            }
-
-            foreach (var output in outputMaterialCache.tiledOutputMaterials)
-            {
-                if (output.inputMaterialID == materialID)
-                {
-                    return output;
-                }
-            }
-
-            return null;
-        }
-
-        public InputMaterial FindInputMaterialForOutputMaterial(TiledOutputMaterial m)
-        {
-            return inputMaterialCache.GetByMaterialID(m.inputMaterialID);
-        }
-        
         public void UpdateMaterialNames(NameBasis nameBasis)
         {
             var count = 0;
-            
+
             foreach (var material in outputMaterialCache.tiledOutputMaterials)
             {
                 var inputMaterial = inputMaterialCache.GetByMaterialID(material.inputMaterialID);
@@ -139,7 +135,6 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Management
                     mat.asset.name = $"{nameBasis.safeName}_tiled_{inputMaterial.material.name}_LOD{count}";
                     count += 1;
                 }
-                
             }
 
             count = 0;
@@ -158,7 +153,14 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Management
                     count += 1;
                 }
             }
+        }
 
+        protected void Initialize(ResponsiveSettingsType type)
+        {
+            _ids = new IDIncrementer(true);
+            inputMaterialCache = new InputMaterialCache();
+            outputMaterialCache = new OutputMaterialCache(_ids, type);
+            settingsType = type;
         }
     }
 }

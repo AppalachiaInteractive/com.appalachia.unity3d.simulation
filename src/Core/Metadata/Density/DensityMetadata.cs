@@ -10,8 +10,7 @@ using UnityEngine;
 
 namespace Appalachia.Simulation.Core.Metadata.Density
 {
-    public class DensityMetadata : CategorizableAutonamedIdentifiableAppalachiaObject<
-        DensityMetadata>
+    public class DensityMetadata : CategorizableAutonamedIdentifiableAppalachiaObject
     {
         [SerializeField]
         [SmartLabel]

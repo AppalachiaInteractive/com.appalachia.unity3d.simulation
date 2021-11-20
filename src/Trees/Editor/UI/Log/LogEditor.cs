@@ -191,12 +191,12 @@ namespace Appalachia.Simulation.Trees.UI.Log
                 
                 if (_log.log.nameBasis == null)
                 {
-                    _log.log.nameBasis = NameBasis.CreateNested(_log);
+                    _log.log.nameBasis = NameBasis.CreateNested<NameBasis>(_log);
                 }
 
                 if (_log.subfolders == null)
                 {
-                    _log.subfolders = TreeAssetSubfolders.CreateNested(_log);
+                    _log.subfolders = TreeAssetSubfolders.CreateNested<TreeAssetSubfolders>(_log);
                 }
 
                 if (_logModel == null)

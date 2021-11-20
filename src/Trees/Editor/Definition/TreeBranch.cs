@@ -20,38 +20,57 @@ namespace Appalachia.Simulation.Trees.Definition
     [Serializable]
     public sealed class TreeBranch : TypeBasedSettings<TreeBranch>, IBranch
     {
+        #region Fields and Autoproperties
+
+        [HideInInspector] public BranchHierarchies hierarchies;
+
+        public BranchShapes shapes;
+
+        [PropertyOrder(1), InlineProperty, HideLabel]
+        [OnValueChanged(nameof(DistributionSettingsChanged), true)]
+        public ExternalSeed seed = new ExternalSeed(0, 0);
+
+        public LODGenerationOutput output;
+
         [PropertySpace]
         [TitleGroup("Branch Information", Alignment = TitleAlignments.Centered)]
         [LabelText("Branch Name")]
         [PropertyOrder(0), LabelWidth(100), InlineProperty, HideReferenceObjectPicker]
         public NameBasis nameBasis;
 
-        [PropertyOrder(1), InlineProperty, HideLabel]
-        [OnValueChanged(nameof(DistributionSettingsChanged), true)]
-        public ExternalSeed seed = new ExternalSeed(0, 0);
+        #endregion
 
         public ExternalSeed Seed
         {
-            get { return seed; }
-            set { seed = value; }
+            get => seed;
+            set => seed = value;
         }
 
-        [HideInInspector]
-        public BranchHierarchies hierarchies;
-      
         public static TreeBranch Create(string folder, NameBasis nameBasis)
         {
             var assetName = nameBasis.FileNameSO("branch");
-            var instance = LoadOrCreateNew(folder, assetName);
-            
+            var instance = LoadOrCreateNew<TreeBranch>(folder, assetName);
+
             instance.nameBasis = nameBasis;
             instance.hierarchies = new BranchHierarchies();
             instance.shapes = new BranchShapes();
             instance.output = new LODGenerationOutput(0);
-            
+
             return instance;
         }
-        
+
+        public TreeIcon GetMenuIcon()
+        {
+            return TreeIcons.branch2;
+        }
+
+        private void DistributionSettingsChanged()
+        {
+            BranchBuildRequestManager.SettingsChanged(SettingsUpdateTarget.Distribution);
+        }
+
+        #region IBranch Members
+
         public IEnumerator<HierarchyData> GetEnumerator()
         {
             return hierarchies.GetEnumerator();
@@ -69,18 +88,7 @@ namespace Appalachia.Simulation.Trees.Definition
         public List<LeafHierarchyData> Leaves => hierarchies.leaves;
 
         public List<FruitHierarchyData> Fruits => hierarchies.fruits;
-        
-        public BranchShapes shapes;
 
-        public LODGenerationOutput output;
-        
-        public TreeIcon GetMenuIcon()
-        {
-            return TreeIcons.branch2;
-        }
-        private void DistributionSettingsChanged()
-        {
-            BranchBuildRequestManager.SettingsChanged(SettingsUpdateTarget.Distribution);
-        }
+        #endregion
     }
 }

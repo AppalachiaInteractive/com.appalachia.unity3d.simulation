@@ -8,7 +8,7 @@ MonoImporter:
   - renderMaterial: {instanceID: 0}
   - quadMesh: {fileID: 4300000, guid: 09a6273c1fede8849b3f788ba34e1329, type: 3}
   executionOrder: 0
-  icon: {instanceID: 0}
+  icon: {fileID: -8204150473280056172, guid: 0000000000000000d000000000000000, type: 0}
   userData: 
   assetBundleName: 
   assetBundleVariant: 

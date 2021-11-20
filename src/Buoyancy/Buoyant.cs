@@ -296,10 +296,12 @@ namespace Appalachia.Simulation.Buoyancy
             }
         }
 
-        private void OnEnable()
+        protected override void OnEnable()
         {
             using (_PRF_OnEnable.Auto())
             {
+                base.OnEnable();
+                
                 if (_water == null)
                 {
                     enabled = false;
@@ -343,10 +345,12 @@ namespace Appalachia.Simulation.Buoyancy
             }
         }
 
-        private void OnDisable()
+        protected override void OnDisable()
         {
             using (_PRF_OnDisable.Auto())
             {
+                base.OnDisable();
+                
 #if UNITY_EDITOR
 
                 if (UnityEditor.EditorApplication.isCompiling ||
@@ -364,10 +368,12 @@ namespace Appalachia.Simulation.Buoyancy
             }
         }
 
-        private void OnDestroy()
+        protected override void OnDestroy()
         {
             using (_PRF_OnDestroy.Auto())
             {
+                base.OnDestroy();
+                
                 CleanUp();
             }
         }
@@ -378,7 +384,7 @@ namespace Appalachia.Simulation.Buoyancy
             enabled = true;
         }
 
-        public void Initialize()
+        public override void Initialize()
         {
             using (_PRF_Initialize.Auto())
             {
@@ -386,6 +392,8 @@ namespace Appalachia.Simulation.Buoyancy
                 {
                     return;
                 }
+                
+                base.Initialize();
 
 #if UNITY_EDITOR
                 if (buoyancyData == null)

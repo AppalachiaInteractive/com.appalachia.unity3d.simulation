@@ -246,7 +246,7 @@ namespace Appalachia.Simulation.Trees
         [Button]
         [HideIf(nameof(initialized))]
         [EnableIf(nameof(canInitialize))]
-        public void Initialize()
+        public override void Initialize()
         {
             try
             {
@@ -254,15 +254,17 @@ namespace Appalachia.Simulation.Trees
                 {
                     return;
                 }
+                
+                base.Initialize();
 
                 ResetInitialization();
 
-                var basis = NameBasis.CreateNested(this);
+                var basis = NameBasis.CreateNested<NameBasis>(this);
                 basis.nameBasis = initializationSettings.name.ToSafe().TrimEnd(',', '.', '_', '-');
 
                 UpdateNameAndMove(basis.nameBasis);
 
-                subfolders = TreeAssetSubfolders.CreateNested(this, false);
+                subfolders = TreeAssetSubfolders.CreateNested<TreeAssetSubfolders>(this, false);
 
                 subfolders.nameBasis = basis;
                 subfolders.Initialize(this);
@@ -624,7 +626,7 @@ namespace Appalachia.Simulation.Trees
         )]
         public static void CreateAsset()
         {
-            CreateNew();
+            CreateNew<LogDataContainer>();
         }
     }
 }

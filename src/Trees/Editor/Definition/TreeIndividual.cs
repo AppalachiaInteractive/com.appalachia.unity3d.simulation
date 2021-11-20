@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Appalachia.Core.Scriptables;
 using Appalachia.Simulation.Core.Metadata.POI;
 using Appalachia.Simulation.Core.Metadata.Tree.Types;
 using Appalachia.Simulation.Trees.Build;
@@ -138,7 +139,7 @@ namespace Appalachia.Simulation.Trees.Definition
         public static TreeIndividual Create(string folder, NameBasis nameBasis, int individualID, TreeAsset asset)
         {
             var assetName = nameBasis.FileNameIndividualSO(individualID);
-            var instance = LoadOrCreateNew(folder, assetName);
+            var instance = LoadOrCreateNew<TreeIndividual>(folder, assetName);
             
             instance.individualID = individualID;
 
@@ -194,7 +195,7 @@ namespace Appalachia.Simulation.Trees.Definition
                     if (stage.runtimeMetadata == null)
                     {
                         stage.runtimeMetadata =
-                            TreeRuntimeInstanceMetadata.LoadOrCreateNew(stage.DirectoryPath, $"runtime_{stage.name}");
+                            AppalachiaObject.LoadOrCreateNew<TreeRuntimeInstanceMetadata>(stage.DirectoryPath, $"runtime_{stage.name}");
                         
                         EditorUtility.SetDirty(stage.runtimeMetadata);
                     }

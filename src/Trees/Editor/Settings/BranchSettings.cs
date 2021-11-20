@@ -7,37 +7,39 @@ using UnityEngine;
 namespace Appalachia.Simulation.Trees.Settings
 {
     [Serializable]
-    [Title("Settings", "Controls the generation of the branch.", titleAlignment: TitleAlignments.Split)]
+    [Title("Settings", "Controls the generation of the branch.", TitleAlignments.Split)]
     public class BranchSettings : TypeBasedSettings<BranchSettings>
     {
-        [HideInInspector] public QualityMode qualityMode = QualityMode.Working;
+        private BranchSettings()
+        {
+        }
+
+        #region Fields and Autoproperties
 
         [TabGroup("Settings", "Occlusion", Paddingless = true)]
         [InlineProperty, HideLabel]
         public AmbientOcclusionSettings ao;
 
-        [TabGroup("Settings", "Materials", Paddingless = true), InlineProperty, HideLabel]
-        public MaterialSettings material;
-
-        [TabGroup("Settings", "Textures", Paddingless = true), InlineProperty, HideLabel]
-        public TextureSettings texture;
-
         [TabGroup("Settings", "LOD", Paddingless = true), InlineProperty, HideLabel]
         public LevelOfDetailSettings lod;
+
+        [TabGroup("Settings", "Materials", Paddingless = true), InlineProperty, HideLabel]
+        public MaterialSettings material;
 
         [TabGroup("Settings", "Mesh", Paddingless = true), InlineProperty, HideLabel]
         public MeshSettings mesh;
 
+        [HideInInspector] public QualityMode qualityMode = QualityMode.Working;
 
-        private BranchSettings()
-        {
+        [TabGroup("Settings", "Textures", Paddingless = true), InlineProperty, HideLabel]
+        public TextureSettings texture;
 
-        }
+        #endregion
 
         public static BranchSettings Create(string folder, NameBasis nameBasis)
         {
             var assetName = nameBasis.FileNameSO("branch-settings");
-            var instance = LoadOrCreateNew(folder, assetName);
+            var instance = LoadOrCreateNew<BranchSettings>(folder, assetName);
 
             instance.ao = new AmbientOcclusionSettings(ResponsiveSettingsType.Branch);
             instance.material = new MaterialSettings(ResponsiveSettingsType.Branch);

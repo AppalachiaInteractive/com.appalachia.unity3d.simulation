@@ -1,7 +1,7 @@
 using System;
 using Appalachia.Core.Attributes.Editing;
-using Appalachia.Core.Extensions;
 using Appalachia.Core.Filtering;
+using Appalachia.Core.Scriptables;
 using Appalachia.Editing.Core.Behaviours;
 using Appalachia.Simulation.Core.Metadata.Density;
 using Appalachia.Simulation.Core.Metadata.Materials;
@@ -31,9 +31,7 @@ namespace Appalachia.Simulation.Physical.Integration
 #endif
         public DensityMetadata density;
 
-
-        public override EditorOnlyExclusionStyle exclusionStyle =>
-            EditorOnlyExclusionStyle.Component;
+        public override EditorOnlyExclusionStyle exclusionStyle => EditorOnlyExclusionStyle.Component;
 
 #if UNITY_EDITOR
         private bool _canCreateDensity => density == null;
@@ -48,7 +46,7 @@ namespace Appalachia.Simulation.Physical.Integration
         {
             using (_PRF_CreateNewDensity.Auto())
             {
-                density = DensityMetadata.LoadOrCreateNew(gameObject.name);
+                density = AppalachiaObject.LoadOrCreateNew<DensityMetadata>(gameObject.name);
             }
         }
 #endif
@@ -96,8 +94,7 @@ namespace Appalachia.Simulation.Physical.Integration
         [ShowInInspector]
         public float mass => rb.mass;
 
-        private static readonly ProfilerMarker _PRF_Internal_Awake =
-            new(_PRF_PFX + nameof(Internal_Awake));
+        private static readonly ProfilerMarker _PRF_Internal_Awake = new(_PRF_PFX + nameof(Internal_Awake));
 
         protected override void Internal_Awake()
         {
@@ -121,10 +118,12 @@ namespace Appalachia.Simulation.Physical.Integration
         private static readonly ProfilerMarker _PRF_Initialize = new(_PRF_PFX + nameof(Initialize));
 
         [Button]
-        public void Initialize()
+        public override void Initialize()
         {
             using (_PRF_Initialize.Auto())
             {
+                base.Initialize();
+                
                 if (rb == null)
                 {
                     rb = GetComponent<Rigidbody>();
@@ -191,9 +190,7 @@ namespace Appalachia.Simulation.Physical.Integration
 
                 if (densityManager.density == null)
                 {
-                    var colliders = go.FilterComponentsFromChildren<Collider>()
-                                      .NoTriggers()
-                                      .RunFilter();
+                    var colliders = go.FilterComponentsFromChildren<Collider>().NoTriggers().RunFilter();
 
                     if (colliders.Length == 0)
                     {

@@ -29,33 +29,66 @@ namespace Appalachia.Simulation.Trees.Definition
     [Serializable]
     public class TreeStage : TypeBasedSettings<TreeStage>, IMenuItemProvider
     {
+        #region Fields and Autoproperties
+
         public AgeType ageType;
 
-        public TreeAsset asset;
+        public bool active;
 
         public int individualID;
 
-        public TreeShapes shapes;
+        public List<LODGenerationOutput> lods;
+
+        public StageBuildRequests buildRequest;
 
         public StageType stageType;
 
-        public bool active;
-        
-        public StageBuildRequests buildRequest;
-        
-        public List<LODGenerationOutput> lods;
+        public TreeAsset asset;
 
         public TreeRuntimeInstanceMetadata runtimeMetadata;
-        
+
+        public TreeShapes shapes;
+
+        #endregion
+
+        public bool CanBeCut => (stageType == StageType.Normal) || (stageType == StageType.Dead);
+
+        public bool RequiresRigidbody
+        {
+            get
+            {
+                switch (stageType)
+                {
+                    case StageType.Normal:
+                    case StageType.Stump:
+                    case StageType.StumpRotted:
+                    case StageType.Dead:
+                        return false;
+                    case StageType.Felled:
+                    case StageType.FelledBare:
+                    case StageType.FelledBareRotted:
+                    case StageType.DeadFelled:
+                    case StageType.DeadFelledRotted:
+                        return true;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+        }
+
         public LODGenerationOutput LOD0 => lods[0];
 
         public static TreeStage Create(
-            string folder, NameBasis nameBasis, int individualID,
-             AgeType ageType, StageType stageType, TreeAsset asset)
+            string folder,
+            NameBasis nameBasis,
+            int individualID,
+            AgeType ageType,
+            StageType stageType,
+            TreeAsset asset)
         {
             var assetName = nameBasis.FileNameStageSO(individualID, ageType, stageType);
-            var instance = LoadOrCreateNew(folder, assetName);
-            
+            var instance = LoadOrCreateNew<TreeStage>(folder, assetName);
+
             instance.ageType = ageType;
             instance.asset = asset;
             instance.individualID = individualID;
@@ -67,99 +100,6 @@ namespace Appalachia.Simulation.Trees.Definition
             return instance;
         }
 
-
-        public BuildRequestLevel GetRequestLevel(BuildState buildState)
-        {
-            var rl = buildRequest.requestLevel;
-
-            if (rl == BuildRequestLevel.InitialPass) return rl;
-
-            if (buildRequest == null)
-            {
-                buildRequest = new StageBuildRequests();
-            }
-            
-            if (active || (buildState > BuildState.Full))
-            {
-                rl = rl.Max(buildRequest.requestLevel);
-                
-                if (rl == BuildRequestLevel.InitialPass)
-                {
-                    return rl;
-                }
-            }
-
-            return rl;
-        }
-
-        protected void UpdateFungusVisibility(
-            IHierarchyRead hierarchyRead,
-            TreeVariantSettings settings,
-            BaseSeed baseSeed
-            )
-        {
-            var likelihood = settings.liveLikelihood;
-            
-            if ((stageType == StageType.Dead) || (stageType == StageType.DeadFelled))
-            {
-                likelihood = settings.deadLikelihood;
-            }
-            else if ((stageType == StageType.StumpRotted) ||
-                (stageType == StageType.DeadFelledRotted) ||
-                (stageType == StageType.FelledBareRotted))
-            {
-                likelihood = settings.rottedLikelihood;
-            }
-                
-            var heightRange = settings.liveHeightRange.Value;
-
-            if ((stageType == StageType.Dead) || (stageType == StageType.DeadFelled))
-            {
-                heightRange = settings.deadHeightRange;
-            }
-            else if ((stageType == StageType.StumpRotted) ||
-                (stageType == StageType.DeadFelledRotted) ||
-                (stageType == StageType.FelledBareRotted))
-            {
-                heightRange = settings.rottedHeightRange;
-            }
-            
-            foreach (var fungus in shapes.fungusShapes)
-            {
-                var h = hierarchyRead.GetHierarchyData(fungus.hierarchyID) as FungusHierarchyData;
-                    
-                var seed = new VirtualSeed(baseSeed, h.seed);
-
-                if (seed.RandomValue() > likelihood)
-                {
-                    fungus.forcedInvisible = true;
-                }
-                else
-                {
-                    fungus.forcedInvisible = false;
-                }
-
-                var fHeight = fungus.matrix.MultiplyPoint(Vector3.zero).y;
-
-                if (
-                    (fHeight < heightRange.x) || (fHeight > heightRange.y))
-                {
-                    fungus.forcedInvisible = true;
-                }
-            }
-        }
-        
-        public bool ShouldRebuildGeometry(BuildRequestLevel level)
-        {
-            return buildRequest.ShouldBuild(BuildCategory.HighQualityGeometry, level) ||
-                buildRequest.ShouldBuild(BuildCategory.LowQualityGeometry, level);
-        }
-
-        public string GetMenuString()
-        {
-            return GetMenuString(stageType);
-        }
-        
         public static string GetMenuString(StageType stage)
         {
             switch (stage)
@@ -187,93 +127,21 @@ namespace Appalachia.Simulation.Trees.Definition
             }
         }
 
-        public TreeIcon GetIcon(bool enabled)
+        public void ClearGeometry(LevelOfDetailSettingsCollection lodSettings)
         {
-            switch (stageType)
+            using (BUILD_TIME.INDV_STG_GEN_CXT.ClearGeometry.Auto())
             {
-                case StageType.Normal:
-                    return enabled ? TreeIcons.tree : TreeIcons.disabledTree;
-                case StageType.Stump:
-                    return enabled ? TreeIcons.stump : TreeIcons.disabledStump;
-                case StageType.StumpRotted:
-                    return enabled ? TreeIcons.stumpRotted : TreeIcons.disabledStumpRotted;
-                case StageType.Dead:
-                    return enabled ? TreeIcons.dead : TreeIcons.disabledDead;
-                case StageType.DeadFelled:
-                    return enabled ? TreeIcons.deadFelled : TreeIcons.disabledDeadFelled;
-                case StageType.DeadFelledRotted:
-                    return enabled ? TreeIcons.deadFelledRotted : TreeIcons.disabledDeadFelledRotted;
-                case StageType.Felled:
-                    return enabled ? TreeIcons.felled : TreeIcons.disabledFelled;
-                case StageType.FelledBare:
-                    return enabled ? TreeIcons.felledBare : TreeIcons.disabledFelledBare;
-                case StageType.FelledBareRotted:
-                    return enabled ? TreeIcons.felledBareRotted : TreeIcons.disabledFelledBareRotted;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
-
-        private string GetFileStateString()
-        {
-            var pretty = GetPrettyStateString();
-            return pretty.Replace(" ", "").Replace(",", "-");
-        }
-
-        private string GetPrettyStateString()
-        {
-            switch (stageType)
-            {
-                case StageType.Normal:
-                    return "Normal";
-                case StageType.Stump:
-                    return "Stump";
-                case StageType.StumpRotted:
-                    return "Stump, Rotted";
-                case StageType.Dead:
-                    return "Dead";
-                case StageType.DeadFelled:
-                    return "Dead, Felled, Bare";
-                case StageType.DeadFelledRotted:
-                    return "Dead, Felled, Rotted";
-                case StageType.Felled:
-                    return "Felled";
-                case StageType.FelledBare:
-                    return "Felled, Bare";
-                case StageType.FelledBareRotted:
-                    return "Felled, Bare, Rotted";
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
-
-        public void FinalizeStageShapes(
-            TreeStage model,
-            IHierarchyRead hierarchyRead,
-            TreeVariantSettings settings,
-            InputMaterialCache inputMaterials,
-            BaseSeed baseSeed)
-        {
-            using (BUILD_TIME.TREE_IDV_STG_VAR.UpdateShapes.Auto())
-            {
-                if (shapes == null)
+                if (lods.Count > lodSettings.levels)
                 {
-                    shapes = new TreeShapes();
+                    for (var i = lods.Count - 1; i >= 0; i--)
+                    {
+                        RemoveLOD(i);
+                    }
                 }
 
-                if (model != null)
-                {                
-                    shapes.Clear();
-                    
-                    model.shapes.CopyPropertiesToClone(shapes);
-                    shapes.Rebuild();
-                }
-
-                CreateShapeVariations(hierarchyRead, settings, inputMaterials, baseSeed);
-
-                foreach (var shape in shapes)
+                foreach (var lod in lods)
                 {
-                    shape.stageType = stageType;
+                    lod.Clear();
                 }
             }
         }
@@ -287,8 +155,9 @@ namespace Appalachia.Simulation.Trees.Definition
             using (BUILD_TIME.TREE_IDV_STG_VAR.CreateShapeVariations.Auto())
             {
                 var hierarchyMaterials = new Dictionary<int, AtlasInputMaterial>();
-            
-                foreach (var h in hierarchyRead.GetHierarchies(TreeComponentType.Leaf).Cast<LeafHierarchyData>())
+
+                foreach (var h in hierarchyRead.GetHierarchies(TreeComponentType.Leaf)
+                                               .Cast<LeafHierarchyData>())
                 {
                     if (!hierarchyMaterials.ContainsKey(h.hierarchyID))
                     {
@@ -299,14 +168,14 @@ namespace Appalachia.Simulation.Trees.Definition
                         hierarchyMaterials.Add(h.hierarchyID, mat as AtlasInputMaterial);
                     }
                 }
-                
+
                 foreach (var leafShape in shapes.leafShapes)
                 {
                     var mat = hierarchyMaterials[leafShape.hierarchyID];
 
                     leafShape.forcedInvisible = !mat.eligibleForLiveTrees;
                 }
-                
+
                 UpdateFungusVisibility(hierarchyRead, settings, baseSeed);
 
                 // stump
@@ -385,89 +254,206 @@ namespace Appalachia.Simulation.Trees.Definition
             }
         }
 
-        private void Stump(
-            IHierarchyRead readStructure,
-            TreeVariantSettings settings)
+        public void FinalizeStageShapes(
+            TreeStage model,
+            IHierarchyRead hierarchyRead,
+            TreeVariantSettings settings,
+            InputMaterialCache inputMaterials,
+            BaseSeed baseSeed)
         {
-            var groundOffset = readStructure.GetVerticalOffset();
-
-            var visibleHierarchies = new HashSet<int>();
-            
-            shapes.RecurseShapes(
-                readStructure,
-                data =>
+            using (BUILD_TIME.TREE_IDV_STG_VAR.UpdateShapes.Auto())
+            {
+                if (shapes == null)
                 {
-                    if (data.shape.type == TreeComponentType.Root)
-                    {
-                    }
-                    else if (data.shape.type == TreeComponentType.Trunk)
-                    {
-                        var barkShape = data.shape as BarkShapeData;
-
-                        var trunkLength = SplineModeler.GetApproximateLength(barkShape.spline);
-
-                        var cutTime = (groundOffset + settings.trunkCutHeight) / trunkLength;
-
-                        barkShape.breakOffset = cutTime;
-
-                        visibleHierarchies.Add(data.hierarchy.hierarchyID);
-                    }
-                    else if (data.parentShape.type == TreeComponentType.Trunk)
-                    {
-                        var parentTrunk = data.parentShape as BarkShapeData;
-
-                        if (data.shape.offset < (parentTrunk.breakOffset - settings.trunkCutDeadZone))
-                        {
-                            visibleHierarchies.Add(data.hierarchy.hierarchyID);
-                            
-                            return;
-                        }
-
-                        data.shape.forcedInvisible = true;
-                    }
-                    else if (visibleHierarchies.Contains(data.hierarchy.parentHierarchyID))
-                    {
-                        
-                    }
-                    else if (data.shape.type != TreeComponentType.Fungus)
-                    {
-                        data.shape.forcedInvisible = true;
-                    }
+                    shapes = new TreeShapes();
                 }
-            );
+
+                if (model != null)
+                {
+                    shapes.Clear();
+
+                    model.shapes.CopyPropertiesToClone(shapes);
+                    shapes.Rebuild();
+                }
+
+                CreateShapeVariations(hierarchyRead, settings, inputMaterials, baseSeed);
+
+                foreach (var shape in shapes)
+                {
+                    shape.stageType = stageType;
+                }
+            }
         }
 
-        private void Felled(
-            IHierarchyRead readStructure,
-            TreeVariantSettings settings)
+        public IEnumerable<BuildCost> GetBuildCosts(BuildRequestLevel level)
         {
-            Stump(readStructure, settings);
+            return buildRequest.GetBuildCosts(level);
+        }
 
-            shapes.RecurseShapes(
-                readStructure,
-                data =>
+        public string GetMenuString()
+        {
+            return GetMenuString(stageType);
+        }
+
+        public BuildRequestLevel GetRequestLevel(BuildState buildState)
+        {
+            var rl = buildRequest.requestLevel;
+
+            if (rl == BuildRequestLevel.InitialPass)
+            {
+                return rl;
+            }
+
+            if (buildRequest == null)
+            {
+                buildRequest = new StageBuildRequests();
+            }
+
+            if (active || (buildState > BuildState.Full))
+            {
+                rl = rl.Max(buildRequest.requestLevel);
+
+                if (rl == BuildRequestLevel.InitialPass)
                 {
-                    if (data.type == TreeComponentType.Trunk)
-                    {
-                        var b = data.shape as BarkShapeData;
-                        b.breakInverted = true;
-                    }
-                    else
-                    {
-                        data.shape.forcedInvisible = !data.shape.forcedInvisible;
-                    }
-
-                    if ((data.parentShape != null) && (data.parentShape.type == TreeComponentType.Trunk))
-                    {
-                        var parentTrunk = data.parentShape as BarkShapeData;
-
-                        if (data.shape.offset < (parentTrunk.breakOffset + settings.trunkCutDeadZone))
-                        {
-                            data.shape.forcedInvisible = true;
-                        }
-                    }
+                    return rl;
                 }
-            );
+            }
+
+            return rl;
+        }
+
+        public void Rebuild()
+        {
+            shapes.Rebuild();
+        }
+
+        public void RecreateMesh(int level)
+        {
+            asset.levels[level].CreateMesh(asset.GetMeshName(level));
+        }
+
+        public void Refresh(TreeSettings settings, IHierarchyRead hierarchies)
+        {
+            using (BUILD_TIME.INDV_STG_GEN_CXT.Refresh.Auto())
+            {
+                shapes.RemoveOrphanedShapes(hierarchies);
+                shapes.Rebuild();
+                asset.Refresh(settings);
+
+                if (lods == null)
+                {
+                    lods = new List<LODGenerationOutput>();
+                }
+
+                var current = lods;
+                lods = new List<LODGenerationOutput>();
+
+                for (var i = 0; i < settings.lod.levels; i++)
+                {
+                    var match = current.FirstOrDefault(s => s.lodLevel == i);
+
+                    if (match == null)
+                    {
+                        match = new LODGenerationOutput(i);
+                    }
+
+                    lods.Add(match);
+                }
+            }
+        }
+
+        public void SetMaterials(int level, Material[] materials)
+        {
+            if (materials.Length == 0)
+            {
+                asset.levels[level].materials = new[] {DefaultMaterialResource.instance.material};
+            }
+            else
+            {
+                asset.levels[level].materials = materials;
+            }
+        }
+
+        public bool ShouldRebuildGeometry(BuildRequestLevel level)
+        {
+            return buildRequest.ShouldBuild(BuildCategory.HighQualityGeometry, level) ||
+                   buildRequest.ShouldBuild(BuildCategory.LowQualityGeometry,  level);
+        }
+
+        protected void UpdateFungusVisibility(
+            IHierarchyRead hierarchyRead,
+            TreeVariantSettings settings,
+            BaseSeed baseSeed)
+        {
+            var likelihood = settings.liveLikelihood;
+
+            if ((stageType == StageType.Dead) || (stageType == StageType.DeadFelled))
+            {
+                likelihood = settings.deadLikelihood;
+            }
+            else if ((stageType == StageType.StumpRotted) ||
+                     (stageType == StageType.DeadFelledRotted) ||
+                     (stageType == StageType.FelledBareRotted))
+            {
+                likelihood = settings.rottedLikelihood;
+            }
+
+            var heightRange = settings.liveHeightRange.Value;
+
+            if ((stageType == StageType.Dead) || (stageType == StageType.DeadFelled))
+            {
+                heightRange = settings.deadHeightRange;
+            }
+            else if ((stageType == StageType.StumpRotted) ||
+                     (stageType == StageType.DeadFelledRotted) ||
+                     (stageType == StageType.FelledBareRotted))
+            {
+                heightRange = settings.rottedHeightRange;
+            }
+
+            foreach (var fungus in shapes.fungusShapes)
+            {
+                var h = hierarchyRead.GetHierarchyData(fungus.hierarchyID) as FungusHierarchyData;
+
+                var seed = new VirtualSeed(baseSeed, h.seed);
+
+                if (seed.RandomValue() > likelihood)
+                {
+                    fungus.forcedInvisible = true;
+                }
+                else
+                {
+                    fungus.forcedInvisible = false;
+                }
+
+                var fHeight = fungus.matrix.MultiplyPoint(Vector3.zero).y;
+
+                if ((fHeight < heightRange.x) || (fHeight > heightRange.y))
+                {
+                    fungus.forcedInvisible = true;
+                }
+            }
+        }
+
+        private void Bare(
+            IHierarchyRead readStructure,
+            TreeVariantSettings settings,
+            Dictionary<int, AtlasInputMaterial> inputMaterials)
+        {
+            foreach (var leafShape in shapes.leafShapes)
+            {
+                var mat = inputMaterials[leafShape.hierarchyID];
+
+                if (!mat.eligibleForDeadTrees)
+                {
+                    leafShape.forcedInvisible = true;
+                }
+            }
+
+            foreach (var fruit in shapes.fruitShapes)
+            {
+                fruit.forcedInvisible = true;
+            }
         }
 
         private void Dead(
@@ -484,11 +470,13 @@ namespace Appalachia.Simulation.Trees.Definition
 
                 if (parentHierarchy is BranchHierarchyData)
                 {
-                    var doubleParentHierarachy = readStructure.GetHierarchyData(parentHierarchy.parentHierarchyID);
+                    var doubleParentHierarachy =
+                        readStructure.GetHierarchyData(parentHierarchy.parentHierarchyID);
 
                     if (doubleParentHierarachy is BranchHierarchyData)
                     {
-                        var tripleParentHierarchy = readStructure.GetHierarchyData(parentHierarchy.parentHierarchyID);
+                        var tripleParentHierarchy =
+                            readStructure.GetHierarchyData(parentHierarchy.parentHierarchyID);
 
                         if (tripleParentHierarchy is BranchHierarchyData)
                         {
@@ -555,19 +543,18 @@ namespace Appalachia.Simulation.Trees.Definition
                 readStructure,
                 data =>
                 {
-                    if ((data.barkParentShape != null) && (data.barkParentShape.breakOffset >= data.shape.offset))
+                    if ((data.barkParentShape != null) &&
+                        (data.barkParentShape.breakOffset >= data.shape.offset))
                     {
                         data.shape.forcedInvisible = true;
                     }
                 }
             );
-            
+
             shapes.RecurseShapes(
                 readStructure,
                 data =>
                 {
-                    
-                    
                     if (data.shape.type == TreeComponentType.Fruit)
                     {
                         data.shape.forcedInvisible = true;
@@ -591,142 +578,160 @@ namespace Appalachia.Simulation.Trees.Definition
             );
         }
 
-        private void Bare(
-            IHierarchyRead readStructure,
-            TreeVariantSettings settings,
-            Dictionary<int, AtlasInputMaterial> inputMaterials)
+        private void Felled(IHierarchyRead readStructure, TreeVariantSettings settings)
         {
-            foreach (var leafShape in shapes.leafShapes)
-            {
-                var mat = inputMaterials[leafShape.hierarchyID];
-                
-                if (!mat.eligibleForDeadTrees)
+            Stump(readStructure, settings);
+
+            shapes.RecurseShapes(
+                readStructure,
+                data =>
                 {
-                    leafShape.forcedInvisible = true;
+                    if (data.type == TreeComponentType.Trunk)
+                    {
+                        var b = data.shape as BarkShapeData;
+                        b.breakInverted = true;
+                    }
+                    else
+                    {
+                        data.shape.forcedInvisible = !data.shape.forcedInvisible;
+                    }
 
+                    if ((data.parentShape != null) && (data.parentShape.type == TreeComponentType.Trunk))
+                    {
+                        var parentTrunk = data.parentShape as BarkShapeData;
+
+                        if (data.shape.offset < (parentTrunk.breakOffset + settings.trunkCutDeadZone))
+                        {
+                            data.shape.forcedInvisible = true;
+                        }
+                    }
                 }
-            }
-            
-            foreach (var fruit in shapes.fruitShapes)
-            {
-                fruit.forcedInvisible = true;
+            );
+        }
 
+        private string GetFileStateString()
+        {
+            var pretty = GetPrettyStateString();
+            return pretty.Replace(" ", "").Replace(",", "-");
+        }
+
+        private string GetPrettyStateString()
+        {
+            switch (stageType)
+            {
+                case StageType.Normal:
+                    return "Normal";
+                case StageType.Stump:
+                    return "Stump";
+                case StageType.StumpRotted:
+                    return "Stump, Rotted";
+                case StageType.Dead:
+                    return "Dead";
+                case StageType.DeadFelled:
+                    return "Dead, Felled, Bare";
+                case StageType.DeadFelledRotted:
+                    return "Dead, Felled, Rotted";
+                case StageType.Felled:
+                    return "Felled";
+                case StageType.FelledBare:
+                    return "Felled, Bare";
+                case StageType.FelledBareRotted:
+                    return "Felled, Bare, Rotted";
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
-        
-        
+
         /*public OdinMenuItem GetMenuItem(OdinMenuTree tree)
         {
             var item = new OdinMenuItem(tree, GetMenuString(), this) {Icon = GetIcon(true).icon};
 
             return item;
         }*/
-        
+
         private void RemoveLOD(int i)
         {
             lods.RemoveAt(i);
         }
 
-        public void RecreateMesh(int level)
+        private void Stump(IHierarchyRead readStructure, TreeVariantSettings settings)
         {
-            asset.levels[level].CreateMesh(asset.GetMeshName(level));
-        }
+            var groundOffset = readStructure.GetVerticalOffset();
 
-        public void SetMaterials(int level, Material[] materials)
-        {
-            if (materials.Length == 0)
-            {
-                asset.levels[level].materials = new[] {DefaultMaterialResource.instance.material};
-            }
-            else
-            {
-                asset.levels[level].materials = materials;                
-            }
-        }
+            var visibleHierarchies = new HashSet<int>();
 
-        public void ClearGeometry(LevelOfDetailSettingsCollection lodSettings)
-        {
-            using (BUILD_TIME.INDV_STG_GEN_CXT.ClearGeometry.Auto())
-            {
-                if (lods.Count > lodSettings.levels)
+            shapes.RecurseShapes(
+                readStructure,
+                data =>
                 {
-                    for (var i = lods.Count - 1; i >= 0; i--)
+                    if (data.shape.type == TreeComponentType.Root)
                     {
-                        RemoveLOD(i);
+                    }
+                    else if (data.shape.type == TreeComponentType.Trunk)
+                    {
+                        var barkShape = data.shape as BarkShapeData;
+
+                        var trunkLength = SplineModeler.GetApproximateLength(barkShape.spline);
+
+                        var cutTime = (groundOffset + settings.trunkCutHeight) / trunkLength;
+
+                        barkShape.breakOffset = cutTime;
+
+                        visibleHierarchies.Add(data.hierarchy.hierarchyID);
+                    }
+                    else if (data.parentShape.type == TreeComponentType.Trunk)
+                    {
+                        var parentTrunk = data.parentShape as BarkShapeData;
+
+                        if (data.shape.offset < (parentTrunk.breakOffset - settings.trunkCutDeadZone))
+                        {
+                            visibleHierarchies.Add(data.hierarchy.hierarchyID);
+
+                            return;
+                        }
+
+                        data.shape.forcedInvisible = true;
+                    }
+                    else if (visibleHierarchies.Contains(data.hierarchy.parentHierarchyID))
+                    {
+                    }
+                    else if (data.shape.type != TreeComponentType.Fungus)
+                    {
+                        data.shape.forcedInvisible = true;
                     }
                 }
-
-                foreach (var lod in lods)
-                {
-                    lod.Clear();
-                }
-            }
+            );
         }
 
-        public void Rebuild()
+        #region IMenuItemProvider Members
+
+        public TreeIcon GetIcon(bool enabled)
         {
-            shapes.Rebuild();
-        }
-        
-        public void Refresh(TreeSettings settings, IHierarchyRead hierarchies)
-        {
-            using (BUILD_TIME.INDV_STG_GEN_CXT.Refresh.Auto())
+            switch (stageType)
             {
-                shapes.RemoveOrphanedShapes(hierarchies);
-                shapes.Rebuild();
-                asset.Refresh(settings);
-
-                if (lods == null)
-                {
-                    lods = new List<LODGenerationOutput>();
-                }
-                
-                var current = lods;
-                lods = new List<LODGenerationOutput>();
-
-                for (var i = 0; i < settings.lod.levels; i++)
-                {
-                    var match = current.FirstOrDefault(s => s.lodLevel == i);
-
-                    if (match == null)
-                    {
-                        match = new LODGenerationOutput(i);
-                    }
-
-                    lods.Add(match);
-                }
-            }
-        }
-        
-        
-        public IEnumerable<BuildCost> GetBuildCosts(BuildRequestLevel level)
-        {
-            return buildRequest.GetBuildCosts(level);
-        }
-
-        public bool RequiresRigidbody
-        {
-            get
-            {
-                switch (stageType)
-                {
-                    case StageType.Normal:
-                    case StageType.Stump:
-                    case StageType.StumpRotted:
-                    case StageType.Dead:
-                        return false;
-                    case StageType.Felled:
-                    case StageType.FelledBare:
-                    case StageType.FelledBareRotted:
-                    case StageType.DeadFelled:
-                    case StageType.DeadFelledRotted:
-                        return true;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
+                case StageType.Normal:
+                    return enabled ? TreeIcons.tree : TreeIcons.disabledTree;
+                case StageType.Stump:
+                    return enabled ? TreeIcons.stump : TreeIcons.disabledStump;
+                case StageType.StumpRotted:
+                    return enabled ? TreeIcons.stumpRotted : TreeIcons.disabledStumpRotted;
+                case StageType.Dead:
+                    return enabled ? TreeIcons.dead : TreeIcons.disabledDead;
+                case StageType.DeadFelled:
+                    return enabled ? TreeIcons.deadFelled : TreeIcons.disabledDeadFelled;
+                case StageType.DeadFelledRotted:
+                    return enabled ? TreeIcons.deadFelledRotted : TreeIcons.disabledDeadFelledRotted;
+                case StageType.Felled:
+                    return enabled ? TreeIcons.felled : TreeIcons.disabledFelled;
+                case StageType.FelledBare:
+                    return enabled ? TreeIcons.felledBare : TreeIcons.disabledFelledBare;
+                case StageType.FelledBareRotted:
+                    return enabled ? TreeIcons.felledBareRotted : TreeIcons.disabledFelledBareRotted;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
 
-        public bool CanBeCut => (stageType == StageType.Normal) || (stageType == StageType.Dead);
+        #endregion
     }
 }

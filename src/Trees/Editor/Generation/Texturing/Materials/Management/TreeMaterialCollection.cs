@@ -15,21 +15,28 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Management
     [Serializable]
     public class TreeMaterialCollection : MaterialCollection<TreeMaterialCollection>
     {
+        #region Fields and Autoproperties
+
         [TabGroup("Transmission", Paddingless = true)]
         [InlineProperty, HideLabel]
         public MaterialTransmissionValues transmission;
-        
+
+        #endregion
+
         public static TreeMaterialCollection Create(string folder, NameBasis nameBasis)
         {
             var assetName = nameBasis.FileNameSO("materials");
-            var instance = LoadOrCreateNew(folder, assetName);
+            var instance = LoadOrCreateNew<TreeMaterialCollection>(folder, assetName);
             instance.transmission = new MaterialTransmissionValues();
             instance.Initialize(ResponsiveSettingsType.Tree);
             return instance;
         }
 
-        
-        public void UpdateMaterials(TreeSpecies species, TreePrefabCollection prefabs, int lodCount, bool shadowCaster)
+        public void UpdateMaterials(
+            TreeSpecies species,
+            TreePrefabCollection prefabs,
+            int lodCount,
+            bool shadowCaster)
         {
             inputMaterialCache.Update(species, prefabs, _ids);
             outputMaterialCache.Update(_ids, inputMaterialCache, settingsType, lodCount, shadowCaster);

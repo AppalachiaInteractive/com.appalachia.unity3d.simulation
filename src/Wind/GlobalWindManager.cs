@@ -5,6 +5,7 @@ using Appalachia.Audio;
 using Appalachia.Audio.Components;
 using Appalachia.Core.Attributes.Editing;
 using Appalachia.Core.Behaviours;
+using Appalachia.Core.Scriptables;
 using Appalachia.Core.Shading;
 using Appalachia.Globals.Shading;
 using Appalachia.Simulation.Core.Metadata.Wind;
@@ -331,10 +332,12 @@ namespace Appalachia.Simulation.Wind
             }
         }
 
-        private void Initialize()
+        public override void Initialize()
         {
             using (_PRF_Initialize.Auto())
             {
+                base.Initialize();
+                
                 _initialized = true;
 
                 gameObject.name = "Global Wind Manager";
@@ -389,7 +392,7 @@ namespace Appalachia.Simulation.Wind
 
             if (debugParameters == null)
             {
-                debugParameters = GlobalWindParameters.LoadOrCreateNew(
+                debugParameters = AppalachiaObject.LoadOrCreateNew<GlobalWindParameters>(
                     "GLOBAL-WIND-PARAMS_DEBUG",
                     false,
                     false
@@ -398,7 +401,7 @@ namespace Appalachia.Simulation.Wind
 
             if (parameters == null)
             {
-                parameters = GlobalWindParameters.LoadOrCreateNew(
+                parameters = AppalachiaObject.LoadOrCreateNew<GlobalWindParameters>(
                     "GLOBAL-WIND-PARAMS",
                     false,
                     false

@@ -47,74 +47,29 @@ namespace Appalachia.Simulation.Trees.Build.Execution
 {
     public static class TreeBuildManager
     {
-        private static TreeDataContainer CTX => TreeSpeciesEditorSelection.instance.tree.selection.selected;
-        public static EditorCoroutine _coroutine;
-        public static bool _executing;
+        #region Static Fields and Autoproperties
+
         public static bool _autobuilding;
         public static bool _enabled;
-        private const string _PRF_PFX = nameof(TreeBuildManager) + ".";
+        public static bool _executing;
+        public static EditorCoroutine _coroutine;
 
-        private static readonly ProfilerMarker _PRF_Update = new ProfilerMarker(_PRF_PFX + nameof(Update));
-        internal static void Update()
-        {
-            using (_PRF_Update.Auto())
-            {
-                try
-                {
-                    if ((CTX != null) && (CTX.progressTracker != null) && (CTX.progressTracker.timeSinceBuildComplete > 600) &&
-                        !CTX.progressTracker.buildActive)
-                    {
-                        _autobuilding = false;
-                        _executing = false;
-                    }
+        #endregion
 
-                    if (!_enabled)
-                    {
-                        EditorApplication.update -= Update;
-                        return;
-                    }
+        private static TreeDataContainer CTX => TreeSpeciesEditorSelection.instance.tree.selection.selected;
 
-                    if (_executing || 
-                        _autobuilding ||
-                        EditorApplication.isCompiling ||
-                        EditorApplication.isPlayingOrWillChangePlaymode ||
-                        (CTX == null) ||
-                        !CTX.initialized ||
-                        (CTX.dataState == TSEDataContainer.DataState.Normal) || 
-                        (CTX.buildState == BuildState.Disabled) ||
-                        (CTX.buildState == BuildState.Cancelled) ||
-                        CTX.progressTracker.buildActive ||
-                        (CTX.requestLevel == BuildRequestLevel.None)
-                    )
-                    {
-                        if ((CTX != null) && (CTX.progressTracker != null))
-                        {
-                            CTX.progressTracker.Validate();
-                        }
-                    
-                        return;
-                    }
-                
-                    _executing = true;
-                    _coroutine = EditorCoroutineUtility.StartCoroutineOwnerless(ExecutePendingBuild());
-                }
-                catch (Exception ex)
-                {
-                    AppaLog.Error(ex);
-                }
-            }
-        }
-        
-        public static IEnumerator ExecuteAllBuildsEnumerator(QualityMode quality, Action buildAction,
-                                                              string searchString)
+        public static IEnumerator ExecuteAllBuildsEnumerator(
+            QualityMode quality,
+            Action buildAction,
+            string searchString)
         {
             var trees = AssetDatabaseManager.FindAssets<TreeDataContainer>(searchString);
 
             return ExecuteAllBuildsEnumerator(quality, buildAction, trees);
         }
-        
+
         public static IEnumerator ExecuteAllBuildsEnumerator(
-            QualityMode quality, 
+            QualityMode quality,
             Action buildAction,
             IEnumerable<TreeDataContainer> trees)
         {
@@ -129,18 +84,18 @@ namespace Appalachia.Simulation.Trees.Build.Execution
                 foreach (var tree in trees)
                 {
                     tree.settings.qualityMode = quality;
-                    
+
                     TreeSpeciesEditorSelection.instance.tree.selection.Set(tree);
 
                     buildAction();
-                    
+
                     var build = ExecutePendingBuild(true);
 
                     while (build.MoveNext())
                     {
                         yield return build.Current;
                     }
-                    
+
                     tree.Save();
                 }
             }
@@ -153,627 +108,481 @@ namespace Appalachia.Simulation.Trees.Build.Execution
             }
         }
 
+        internal static void Update()
+        {
+            using (_PRF_Update.Auto())
+            {
+                try
+                {
+                    if ((CTX != null) &&
+                        (CTX.progressTracker != null) &&
+                        (CTX.progressTracker.timeSinceBuildComplete > 600) &&
+                        !CTX.progressTracker.buildActive)
+                    {
+                        _autobuilding = false;
+                        _executing = false;
+                    }
+
+                    if (!_enabled)
+                    {
+                        EditorApplication.update -= Update;
+                        return;
+                    }
+
+                    if (_executing ||
+                        _autobuilding ||
+                        EditorApplication.isCompiling ||
+                        EditorApplication.isPlayingOrWillChangePlaymode ||
+                        (CTX == null) ||
+                        !CTX.initialized ||
+                        (CTX.dataState == TSEDataContainer.DataState.Normal) ||
+                        (CTX.buildState == BuildState.Disabled) ||
+                        (CTX.buildState == BuildState.Cancelled) ||
+                        CTX.progressTracker.buildActive ||
+                        (CTX.requestLevel == BuildRequestLevel.None))
+                    {
+                        if ((CTX != null) && (CTX.progressTracker != null))
+                        {
+                            CTX.progressTracker.Validate();
+                        }
+
+                        return;
+                    }
+
+                    _executing = true;
+                    _coroutine = EditorCoroutineUtility.StartCoroutineOwnerless(ExecutePendingBuild());
+                }
+                catch (Exception ex)
+                {
+                    AppaLog.Error(ex);
+                }
+            }
+        }
+
         private static IEnumerator ExecutePendingBuild(bool automatic = false)
         {
             //using (BUILD_TIME.TREE_BUILD_MGR.ExecutePendingBuild.Auto())
             //{
-                var completed = false;
+            var completed = false;
 
-                var tree = CTX;
-                tree.dataState = TSEDataContainer.DataState.Normal;
-                    
-                try
+            var tree = CTX;
+            tree.dataState = TSEDataContainer.DataState.Normal;
+
+            try
+            {
+                if (EditorApplication.isCompiling || EditorApplication.isPlayingOrWillChangePlaymode)
                 {
-                    if (EditorApplication.isCompiling || EditorApplication.isPlayingOrWillChangePlaymode)
+                    EditorCoroutineUtility.StopCoroutine(_coroutine);
+                    completed = true;
+                    yield break; // ========================================================== BREAK
+                }
+
+                if ((tree.buildState == BuildState.Cancelled) ||
+                    (tree.buildState == BuildState.Disabled) ||
+                    (tree.requestLevel == BuildRequestLevel.None))
+                {
+                    EditorCoroutineUtility.StopCoroutine(_coroutine);
+                    completed = true;
+                    yield break; // ========================================================== BREAK
+                }
+
+                if (tree.buildState == BuildState.ForceFull)
+                {
+                    if (tree.dataState == TSEDataContainer.DataState.PendingSave)
                     {
-                        EditorCoroutineUtility.StopCoroutine(_coroutine);
-                        completed = true;
-                        yield break; // ========================================================== BREAK
+                        tree.Save();
                     }
 
-                    if ((tree.buildState == BuildState.Cancelled) || (tree.buildState == BuildState.Disabled) || (tree.requestLevel == BuildRequestLevel.None))
-                    {
-                        EditorCoroutineUtility.StopCoroutine(_coroutine);
-                        completed = true;
-                        yield break; // ========================================================== BREAK
-                    }
+                    tree.hierarchyPrefabs.ResetPrefabs();
+                    tree.materials.hash = null;
+                }
 
-                    if (tree.buildState == BuildState.ForceFull)
+                tree.settings.Check();
+
+                tree.RebuildStructures();
+
+                tree.progressTracker.InitializeBuildBatch();
+
+                if (tree.subfolders == null)
+                {
+                    tree.subfolders = TreeAssetSubfolders.CreateNested<TreeAssetSubfolders>(tree);
+                }
+
+                tree.subfolders.CreateFolders();
+
+                if (tree.settings.lod.impostor.impostorAfterLastLevel)
+                {
+                    tree.subfolders.CreateImpostorFolder();
+                }
+
+                SeedManager.UpdateSeeds(tree.species, tree.individuals);
+
+                tree.hierarchyPrefabs.UpdatePrefabs(tree.species);
+                tree.hierarchyPrefabs.UpdatePrefabAvailability(tree.species);
+
+                tree.materials.UpdateMaterials(
+                    tree.species,
+                    tree.hierarchyPrefabs,
+                    tree.settings.lod.levels,
+                    tree.settings.lod.shadowCaster
+                );
+                tree.materials.inputMaterialCache.SetDefaultMaterials(
+                    tree.settings.material.defaultMaterials
+                );
+
+                tree.materials.inputMaterialCache.UpdateDefaultMaterials();
+
+                var buildAll = tree.buildState >= BuildState.Full;
+
+                while (tree.requestLevel > BuildRequestLevel.None)
+                {
+                    var requestLevel = tree.requestLevel;
+
+                    tree.progressTracker.InitializeBuild(requestLevel, tree.GetBuildCosts(requestLevel));
+
+                    foreach (var individual in tree.individuals)
                     {
-                        if (tree.dataState == TSEDataContainer.DataState.PendingSave)
+                        if (!buildAll && !individual.active)
                         {
-                            tree.Save();
+                            continue;
                         }
-                        
-                        tree.hierarchyPrefabs.ResetPrefabs();
-                        tree.materials.hash = null;
-                    }
 
-
-                    tree.settings.Check();
-                    
-                    tree.RebuildStructures();
-
-                    tree.progressTracker.InitializeBuildBatch();
-
-                    if (tree.subfolders == null)
-                    {
-                        tree.subfolders = TreeAssetSubfolders.CreateNested(tree);
-                    }
-
-                    tree.subfolders.CreateFolders();
-
-                    if (tree.settings.lod.impostor.impostorAfterLastLevel)
-                    {
-                        tree.subfolders.CreateImpostorFolder();
-                    }
-
-                    SeedManager.UpdateSeeds(
-                        tree.species,
-                        tree.individuals
-                    );
-
-                    tree.hierarchyPrefabs.UpdatePrefabs(tree.species);
-                    tree.hierarchyPrefabs.UpdatePrefabAvailability(tree.species);
-
-                    tree.materials.UpdateMaterials(tree.species, tree.hierarchyPrefabs, tree.settings.lod.levels, tree.settings.lod.shadowCaster);
-                    tree.materials.inputMaterialCache.SetDefaultMaterials(tree.settings.material.defaultMaterials);
-
-                    tree.materials.inputMaterialCache.UpdateDefaultMaterials();
-
-                    var buildAll = tree.buildState >= BuildState.Full;
-
-                    while (tree.requestLevel > BuildRequestLevel.None)
-                    {
-                        var requestLevel = tree.requestLevel;
-
-                        tree.progressTracker.InitializeBuild(requestLevel, tree.GetBuildCosts(requestLevel));
-
-                        foreach (var individual in tree.individuals)
+                        if (individual.GetRequestLevel(tree.buildState) < requestLevel)
                         {
-                            if (!buildAll && !individual.active)
-                            {
-                                continue;
-                            }
+                            continue;
+                        }
 
-                            if (individual.GetRequestLevel(tree.buildState) < requestLevel)
-                            {
-                                continue;
-                            }
+                        for (var i = 0; i < individual.ages.Count; i++)
+                        {
+                            var age = individual.ages[i];
 
-                            for (var i = 0; i < individual.ages.Count; i++)
+                            if (age.stages.All(s => s.shapes.TotalShapeCount() > 0))
                             {
-                                var age = individual.ages[i];
-                            
-                                if (age.stages.All(s => s.shapes.TotalShapeCount() > 0))
+                                if (!buildAll && !age.active)
                                 {
-                                    if (!buildAll && !age.active)
+                                    continue;
+                                }
+
+                                if (age.GetRequestLevel(tree.buildState) < requestLevel)
+                                {
+                                    continue;
+                                }
+                            }
+
+                            TreeProperty.SetActiveGenerationAge(age.ageType);
+
+                            if (age.ShouldRebuildDistribution(requestLevel))
+                            {
+                                GenerateAgeDistribution(tree, individual.seed, requestLevel, age);
+
+                                yield return null;
+                            }
+
+                            var builtNormal = false;
+
+                            foreach (var stage in age.stages)
+                            {
+                                #region BREAK / CONTINUE
+
+                                if (tree.requestLevel != requestLevel)
+                                {
+                                    EditorCoroutineUtility.StopCoroutine(_coroutine);
+                                    completed = true;
+                                    yield break; // ========================================== BREAK
+                                }
+
+                                #endregion
+
+                                if (stage.shapes.TotalShapeCount() > 0)
+                                {
+                                    if (!buildAll && !stage.active)
                                     {
                                         continue;
                                     }
 
-                                    if (age.GetRequestLevel(tree.buildState) < requestLevel)
+                                    if (stage.GetRequestLevel(tree.buildState) < requestLevel)
                                     {
                                         continue;
                                     }
                                 }
-                                
-                                TreeProperty.SetActiveGenerationAge(age.ageType);
 
-                                if (age.ShouldRebuildDistribution(requestLevel))
+                                individual.seed.Reset();
+
+                                if (stage.ShouldRebuildGeometry(requestLevel))
                                 {
-                                    GenerateAgeDistribution(tree, individual.seed, requestLevel, age);
-
-                                    yield return null;
-                                }
-
-                                var builtNormal = false;
-                                
-                                foreach (var stage in age.stages)
-                                {
-                                    
-                                    #region BREAK / CONTINUE
-
-                                    if (tree.requestLevel != requestLevel)
+                                    if (!builtNormal && (stage.stageType != StageType.Normal))
                                     {
-                                        EditorCoroutineUtility.StopCoroutine(_coroutine);
-                                        completed = true;
-                                        yield break; // ========================================== BREAK
-                                    }
-
-                                    #endregion
-
-                                    if (stage.shapes.TotalShapeCount() > 0 )
-                                    {                                        
-                                        if (!buildAll && !stage.active)
-                                        {
-                                            continue;
-                                        }
-
-                                        if (stage.GetRequestLevel(tree.buildState) < requestLevel)
-                                        {
-                                            continue;
-                                        }
-                                    }
-
-                                    individual.seed.Reset();
-
-                                    if (stage.ShouldRebuildGeometry(requestLevel))
-                                    {
-                                        if (!builtNormal && (stage.stageType != StageType.Normal))
-                                        {
-                                            GenerateIndividualStageGeometry(
-                                                requestLevel,
-                                                tree,
-                                                individual,
-                                                age.normalStage,
-                                                age.samplePoints,
-                                                null,
-                                                true
-                                            );
-                                            
-                                            individual.seed.Reset();
-                                            builtNormal = true;
-                                        }
-
                                         GenerateIndividualStageGeometry(
                                             requestLevel,
                                             tree,
                                             individual,
-                                            stage,
-                                            age.samplePoints,
                                             age.normalStage,
-                                            false
+                                            age.samplePoints,
+                                            null,
+                                            true
                                         );
 
-                                        if (requestLevel <= BuildRequestLevel.FinalPass)
-                                        {
-                                            yield return null;
-                                        }
+                                        individual.seed.Reset();
+                                        builtNormal = true;
                                     }
-                                }
-                            }
-                        }
 
-                        #region BREAK
+                                    GenerateIndividualStageGeometry(
+                                        requestLevel,
+                                        tree,
+                                        individual,
+                                        stage,
+                                        age.samplePoints,
+                                        age.normalStage,
+                                        false
+                                    );
 
-                        if (tree.requestLevel != requestLevel)
-                        {
-                            EditorCoroutineUtility.StopCoroutine(_coroutine);
-                            completed = true;
-                            yield break; // ====================================================== BREAK
-                        }
-
-                        #endregion
-
-
-                        yield return null;
-
-                        GenerateSpeciesMaterials(requestLevel, tree, ref completed);
-
-                        yield return null;
-                        
-                        #region BREAK
-
-                        if (tree.requestLevel != requestLevel)
-                        {
-                            completed = true;
-                            EditorCoroutineUtility.StopCoroutine(_coroutine);
-                            yield break; // ====================================================== BREAK
-                        }
-
-                        #endregion
-
-                        if (tree.buildRequest.ShouldBuild(BuildCategory.MaterialProperties, requestLevel))
-                        {
-                            foreach (var individual in tree.individuals)
-                            {
-                                foreach (var age in individual.ages)
-                                {
-                                    foreach (var stage in age.stages)
+                                    if (requestLevel <= BuildRequestLevel.FinalPass)
                                     {
-                                        UpdateStageSpecificMaterials(
-                                            stage,
-                                            tree.materials.transmission,
-                                            tree.settings.lod.impostor
-                                        );
-
                                         yield return null;
                                     }
                                 }
                             }
                         }
-                        
-                        #region BREAK
+                    }
 
-                        if (tree.requestLevel != requestLevel)
-                        {
-                            completed = true;
-                            EditorCoroutineUtility.StopCoroutine(_coroutine);
-                            yield break; // ====================================================== BREAK
-                        }
+                    #region BREAK
 
-                        #endregion
+                    if (tree.requestLevel != requestLevel)
+                    {
+                        EditorCoroutineUtility.StopCoroutine(_coroutine);
+                        completed = true;
+                        yield break; // ====================================================== BREAK
+                    }
 
-                        foreach (var individual in tree.individuals)
-                        {
-                            if (!buildAll && !individual.active)
-                            {
-                                continue;
-                            }
+                    #endregion
 
-                            if (individual.GetRequestLevel(tree.buildState) < requestLevel)
-                            {
-                                continue;
-                            }
+                    yield return null;
 
-                            for (var i = 0; i < individual.ages.Count; i++)
-                            {
-                                var age = individual.ages[i];
-                                /*}
-                                foreach (var age in individual.ages)
-                                {*/
-                                
-                                if (age.stages.All(s => s.asset.levels.All(l => (l.mesh != null) && (l.mesh.vertexCount > 0))))
-                                {
-                                    if (!buildAll && !age.active)
-                                    {
-                                        continue;
-                                    }
+                    GenerateSpeciesMaterials(requestLevel, tree, ref completed);
 
-                                    if (age.GetRequestLevel(tree.buildState) < requestLevel)
-                                    {
-                                        continue;
-                                    }
-                                }
-                                
-                                TreeProperty.SetActiveGenerationAge(age.ageType);
+                    yield return null;
 
-                                foreach (var stage in age.stages)
-                                {
-                                    if (stage.asset.levels.All(l => (l.mesh != null) && (l.mesh.vertexCount > 0)))
-                                    {                                        
-                                        if (!buildAll && !stage.active)
-                                        {
-                                            continue;
-                                        }
+                    #region BREAK
 
-                                        if (stage.GetRequestLevel(tree.buildState) < requestLevel)
-                                        {
-                                            continue;
-                                        }
-                                    }
+                    if (tree.requestLevel != requestLevel)
+                    {
+                        completed = true;
+                        EditorCoroutineUtility.StopCoroutine(_coroutine);
+                        yield break; // ====================================================== BREAK
+                    }
 
-                                    #region BREAK / CONTINUE / YIELD
+                    #endregion
 
-                                    if (tree.requestLevel != requestLevel)
-                                    {
-                                        completed = true;
-                                        EditorCoroutineUtility.StopCoroutine(_coroutine);
-                                        yield break; // ===========================================BREAK
-                                    }
-
-                                    #endregion
-
-                                    individual.seed.Reset();
-
-                                    GenerateIndividualStageEnhancements(requestLevel, tree, individual, stage);
-
-                                    yield return null;
-
-                                }
-                            }
-                        }
-
-                        /*if (tree.buildRequest.ShouldBuild(BuildCategory.PrefabCreation, requestLevel))
-                        {
-                            AssetManager.SaveAllAssets(tree);
-                        }*/
-
+                    if (tree.buildRequest.ShouldBuild(BuildCategory.MaterialProperties, requestLevel))
+                    {
                         foreach (var individual in tree.individuals)
                         {
                             foreach (var age in individual.ages)
                             {
+                                foreach (var stage in age.stages)
+                                {
+                                    UpdateStageSpecificMaterials(
+                                        stage,
+                                        tree.materials.transmission,
+                                        tree.settings.lod.impostor
+                                    );
+
+                                    yield return null;
+                                }
+                            }
+                        }
+                    }
+
+                    #region BREAK
+
+                    if (tree.requestLevel != requestLevel)
+                    {
+                        completed = true;
+                        EditorCoroutineUtility.StopCoroutine(_coroutine);
+                        yield break; // ====================================================== BREAK
+                    }
+
+                    #endregion
+
+                    foreach (var individual in tree.individuals)
+                    {
+                        if (!buildAll && !individual.active)
+                        {
+                            continue;
+                        }
+
+                        if (individual.GetRequestLevel(tree.buildState) < requestLevel)
+                        {
+                            continue;
+                        }
+
+                        for (var i = 0; i < individual.ages.Count; i++)
+                        {
+                            var age = individual.ages[i];
+                            /*}
+                            foreach (var age in individual.ages)
+                            {*/
+
+                            if (age.stages.All(
+                                s => s.asset.levels.All(l => (l.mesh != null) && (l.mesh.vertexCount > 0))
+                            ))
+                            {
                                 if (!buildAll && !age.active)
                                 {
-                                    age.buildRequest.CollapseDelayedBuildLevel();
-                                }
-                                else
-                                {
-                                    age.buildRequest.DecreaseBuildLevel(requestLevel);
+                                    continue;
                                 }
 
-                                TreeProperty.SetActiveGenerationAge(age.ageType);
-                                
-                                foreach (var stage in age.stages)
+                                if (age.GetRequestLevel(tree.buildState) < requestLevel)
+                                {
+                                    continue;
+                                }
+                            }
+
+                            TreeProperty.SetActiveGenerationAge(age.ageType);
+
+                            foreach (var stage in age.stages)
+                            {
+                                if (stage.asset.levels.All(l => (l.mesh != null) && (l.mesh.vertexCount > 0)))
                                 {
                                     if (!buildAll && !stage.active)
                                     {
-                                        stage.buildRequest.CollapseDelayedBuildLevel();
+                                        continue;
                                     }
-                                    else
+
+                                    if (stage.GetRequestLevel(tree.buildState) < requestLevel)
                                     {
-                                        var buildCollisions = stage.buildRequest.ShouldBuild(
-                                            BuildCategory.Collision,
-                                            requestLevel
-                                        );
-                                        var buildImpostor = stage.buildRequest.ShouldBuild(
-                                            BuildCategory.Impostor,
-                                            requestLevel
-                                        );
-
-                                        if (buildImpostor)
-                                        {
-                                            tree.progressTracker.Update(BuildCategory.Impostor);
-                                        }
-                                        
-                                        if (buildImpostor || buildCollisions)
-                                        {
-                                            AssetManager.SaveAsset(tree, individual, stage, buildImpostor);
-                                        }
-                                        
-                                        stage.buildRequest.DecreaseBuildLevel(requestLevel);
+                                        continue;
                                     }
                                 }
+
+                                #region BREAK / CONTINUE / YIELD
+
+                                if (tree.requestLevel != requestLevel)
+                                {
+                                    completed = true;
+                                    EditorCoroutineUtility.StopCoroutine(_coroutine);
+                                    yield break; // ===========================================BREAK
+                                }
+
+                                #endregion
+
+                                individual.seed.Reset();
+
+                                GenerateIndividualStageEnhancements(requestLevel, tree, individual, stage);
+
+                                yield return null;
                             }
                         }
-
-                        tree.buildRequest.DecreaseBuildLevel(requestLevel);
-
-                        tree.progressTracker.CompleteBuild();
                     }
 
-                    completed = true;
-                }
-                finally
-                {
-                    using (BUILD_TIME.TREE_BUILD_MGR.FinalizeBuild.Auto())
+                    /*if (tree.buildRequest.ShouldBuild(BuildCategory.PrefabCreation, requestLevel))
                     {
-                        if (!completed)
-                        {
-                            using (BUILD_TIME.TREE_BUILD_MGR.HandleBuildError.Auto())
-                            {
-                                AppaLog.Error("Tree build failed.");
+                        AssetManager.SaveAllAssets(tree);
+                    }*/
 
-                                if (tree != null)
+                    foreach (var individual in tree.individuals)
+                    {
+                        foreach (var age in individual.ages)
+                        {
+                            if (!buildAll && !age.active)
+                            {
+                                age.buildRequest.CollapseDelayedBuildLevel();
+                            }
+                            else
+                            {
+                                age.buildRequest.DecreaseBuildLevel(requestLevel);
+                            }
+
+                            TreeProperty.SetActiveGenerationAge(age.ageType);
+
+                            foreach (var stage in age.stages)
+                            {
+                                if (!buildAll && !stage.active)
                                 {
-                                    tree.PushBuildRequestLevelAll(BuildRequestLevel.None);
+                                    stage.buildRequest.CollapseDelayedBuildLevel();
+                                }
+                                else
+                                {
+                                    var buildCollisions = stage.buildRequest.ShouldBuild(
+                                        BuildCategory.Collision,
+                                        requestLevel
+                                    );
+                                    var buildImpostor = stage.buildRequest.ShouldBuild(
+                                        BuildCategory.Impostor,
+                                        requestLevel
+                                    );
+
+                                    if (buildImpostor)
+                                    {
+                                        tree.progressTracker.Update(BuildCategory.Impostor);
+                                    }
+
+                                    if (buildImpostor || buildCollisions)
+                                    {
+                                        AssetManager.SaveAsset(tree, individual, stage, buildImpostor);
+                                    }
+
+                                    stage.buildRequest.DecreaseBuildLevel(requestLevel);
                                 }
                             }
                         }
+                    }
 
-                        
-                        if (tree.progressTracker.buildActive)
+                    tree.buildRequest.DecreaseBuildLevel(requestLevel);
+
+                    tree.progressTracker.CompleteBuild();
+                }
+
+                completed = true;
+            }
+            finally
+            {
+                using (BUILD_TIME.TREE_BUILD_MGR.FinalizeBuild.Auto())
+                {
+                    if (!completed)
+                    {
+                        using (BUILD_TIME.TREE_BUILD_MGR.HandleBuildError.Auto())
                         {
-                            /*if (saveAssets)
+                            AppaLog.Error("Tree build failed.");
+
+                            if (tree != null)
                             {
-                                using (BUILD_TIME.TREE_BUILD_MGR.SaveBuildAssets.Auto())
-                                {
-                                    AssetDatabaseManager.SaveAssets();
-                                }
-                            }*/
-
-                            tree.dataState = TSEDataContainer.DataState.PendingSave;
-                            
-                            tree.progressTracker.CompleteBuildBatch(completed);
-                        }
-                        
-
-                        if (tree.buildState == BuildState.Cancelled)
-                        {
-                            tree.buildState = BuildState.Default;
-                        }
-
-                        if (!automatic)
-                        {
-                            _executing = false;
-                            TreeMaterialUsageTracker.Refresh();
-                            EditorCoroutineUtility.StopCoroutine(_coroutine);
-                            
+                                tree.PushBuildRequestLevelAll(BuildRequestLevel.None);
+                            }
                         }
                     }
+
+                    if (tree.progressTracker.buildActive)
+                    {
+                        /*if (saveAssets)
+                        {
+                            using (BUILD_TIME.TREE_BUILD_MGR.SaveBuildAssets.Auto())
+                            {
+                                AssetDatabaseManager.SaveAssets();
+                            }
+                        }*/
+
+                        tree.dataState = TSEDataContainer.DataState.PendingSave;
+
+                        tree.progressTracker.CompleteBuildBatch(completed);
+                    }
+
+                    if (tree.buildState == BuildState.Cancelled)
+                    {
+                        tree.buildState = BuildState.Default;
+                    }
+
+                    if (!automatic)
+                    {
+                        _executing = false;
+                        TreeMaterialUsageTracker.Refresh();
+                        EditorCoroutineUtility.StopCoroutine(_coroutine);
+                    }
                 }
+            }
+
             //}
         }
-
-        private static void GenerateSpeciesMaterials(
-            BuildRequestLevel requestLevel,
-            TreeDataContainer tree,
-            ref bool completed)
-        {
-            using (BUILD_TIME.TREE_BUILD_MGR.GenerateSpeciesMaterials.Auto())
-            {
-                var doMaterialGeneration = tree.buildRequest.ShouldBuild(
-                    BuildCategory.MaterialGeneration,
-                    requestLevel
-                );
-
-                var doMaterialProperties = tree.buildRequest.ShouldBuild(
-                    BuildCategory.MaterialProperties,
-                    requestLevel
-                );
-
-                if (!doMaterialGeneration && !doMaterialProperties)
-                {
-                    return;
-                }
-                
-                if (doMaterialGeneration)
-                {
-                    tree.progressTracker.Update(BuildCategory.MaterialGeneration);
-
-                    tree.dataState = TSEDataContainer.DataState.PendingSave;
-
-                    if (tree.materials.RequiresUpdate(tree.settings.material, out var hash))
-                    {
-                        /*if (!tree.settings.material.doNotUnsetForceRegenerateMaterials)
-                        {
-                            tree.settings.material.forceRegenerateMaterials = false;
-                        }*/
-                        
-                        if (tree.settings.material.imageAtlasIsProportionalToArea)
-                        {
-                            var materialModel = tree.individuals.SelectMany(i => i.ages.SelectMany(a => a.stages.Select(s => s.LOD0)))
-                                .FirstOrDefault();
-
-                            MaterialPropertyManager.SetMaterialProportionalAreas(
-                                tree.materials.inputMaterialCache,
-                                materialModel
-                            );
-                        }
-                        else
-                        {
-                            MaterialPropertyManager.SetMaterialNonProportionalAreas(tree.materials.inputMaterialCache);
-                        }
-
-                        if (tree.requestLevel != requestLevel)
-                        {
-                            EditorCoroutineUtility.StopCoroutine(_coroutine);
-                            completed = true;
-                            return;
-                        }
-
-                        tree.progressTracker.Update(BuildCategory.MaterialGeneration);
-
-                        var combinedInputMaterials = tree.materials.inputMaterialCache.atlasInputMaterials
-                            .Concat<InputMaterial>(tree.materials.inputMaterialCache.tiledInputMaterials)
-                            .ToArray();
-                            
-                        tree.materials.UpdateMaterialNames(tree.species.nameBasis);
-
-                        var textureOutputCollection = new Dictionary<OutputMaterial, List<OutputTexture>>();
-
-                        combinedInputMaterials.ActivateProcessingTextureImporterSettings(
-                            tree.settings.texture.atlasTextureSize
-                        );
-
-                        var adjustedTextuerSize = tree.settings.texture.textureSizeV2;
-                        if (tree.settings.qualityMode == QualityMode.Preview)
-                        {
-                            adjustedTextuerSize *= .25f;
-                        }
-                        else if (tree.settings.qualityMode == QualityMode.Working)
-                        {
-                            adjustedTextuerSize *= .125f;
-                        }
-
-                        var imc = tree.materials.inputMaterialCache;
-                        var omc = tree.materials.outputMaterialCache;
-                        
-                        var aim = imc.atlasInputMaterials;
-                        var aom = omc.atlasOutputMaterial;
-                        
-                        var textureSettings = tree.settings.texture;
-
-                        aom.EnsureCreated(tree.settings.lod.levels);
-
-                        var outputTextures = TextureCombiner.DrawAtlasTextures(
-                            aim,
-                            aom,
-                            adjustedTextuerSize,
-                            textureSettings.debugCombinationOutputs
-                        );
-
-                        textureOutputCollection.Add(aom, outputTextures);
-
-                        tree.progressTracker.Update(BuildCategory.MaterialGeneration);
-
-                        foreach (var tiledMaterial in omc.tiledOutputMaterials)
-                        {
-                            var match = imc.tiledInputMaterials.FirstOrDefault(
-                                tim => tiledMaterial.inputMaterialID == tim.materialID
-                            );
-
-                            tiledMaterial.EnsureCreated(tree.settings.lod.levels);
-
-                            var ot = TextureCombiner.DrawTiledTextures(
-                                match, tiledMaterial, adjustedTextuerSize,
-                                textureSettings.tiledMaterialsKeepOriginalSize,
-                                textureSettings.debugCombinationOutputs);
-
-                            textureOutputCollection.Add(tiledMaterial, ot);
-                        }
-
-                        if (tree.requestLevel != requestLevel)
-                        {
-                            EditorCoroutineUtility.StopCoroutine(_coroutine);
-                            completed = true;
-                            return;
-                        }
-
-                        tree.progressTracker.Update(BuildCategory.SavingTextures);
-
-                        if (tree.settings.lod.shadowCaster)
-                        {
-                            textureOutputCollection.Add(omc.shadowCasterOutputMaterial, new List<OutputTexture>());
-                        }
-
-                        var filePaths = textureOutputCollection.SaveTextures(tree.subfolders, 1);
-
-                        textureOutputCollection.ReimportTextures(
-                            tree.subfolders,
-                            textureSettings.atlasTextureSize,
-                            tree.settings.qualityMode,
-                            filePaths,
-                            1
-                        );
-
-
-                        foreach (var tiledOutputMaterial in tree.materials.outputMaterialCache.tiledOutputMaterials)
-                        {
-                            tiledOutputMaterial.FinalizeMaterial();
-                        }
-                        
-                        tree.materials.outputMaterialCache.atlasOutputMaterial.FinalizeMaterial();
-
-                        if (tree.settings.qualityMode == QualityMode.Finalized)
-                        {
-                            combinedInputMaterials.RestoreOriginalTextureImporterSettings();
-                        }
-
-                        if (tree.requestLevel != requestLevel)
-                        {
-                            EditorCoroutineUtility.StopCoroutine(_coroutine);
-                            completed = true;
-                            return;
-                        }
-                    }
-                }
-
-                if (doMaterialProperties)
-                {
-                    tree.progressTracker.Update(BuildCategory.MaterialProperties);
-                    
-                    MaterialPropertyManager.AssignTransmissionMaterialProperties(tree.settings.transmission,
-                        tree.materials.transmission,
-                        tree.materials.inputMaterialCache,
-                        tree.materials.outputMaterialCache,
-                        tree.settings.material
-                    );
-                    
-                    MaterialPropertyManager.CopyLODMaterialSettings(tree.materials.outputMaterialCache);
-
-                }
-
-                tree.materials.hash = tree.materials.CalculateHash();
-            }
-        }
-
-        private static void UpdateStageSpecificMaterials(
-            TreeStage stage,
-            MaterialTransmissionValues transmission,
-            ImpostorSettings impostor)
-        {
-            using (BUILD_TIME.TREE_BUILD_MGR.UpdateStageSpecificMaterials.Auto())
-            {
-                if (stage.asset.impostor == null) return;
-                if (stage.asset.impostor.Material == null) return;
-
-                ImpostorGenerator.UpdateImpostorMaterialProperties(stage.asset.impostor, impostor, transmission);
-                
-            }
-        }
-        
 
         private static void GenerateAgeDistribution(
             TreeDataContainer tree,
@@ -787,18 +596,17 @@ namespace Appalachia.Simulation.Trees.Build.Execution
                 {
                     return;
                 }
-                
+
                 TreeProperty.SetActiveGenerationAge(age.ageType);
 
-                var regenerateAOSampling = 
-                    tree.settings.ao.generateAmbientOcclusion &&
-                    (tree.settings.qualityMode >= QualityMode.Preview) &&
-                    ((age.samplePoints == null) ||
-                    (age.samplePoints.NodeCount == 0) || 
-                    (
-                        age.CheckAnyStageSetting(
-                            s => (s.highQualityGeometry == requestLevel) || (s.ambientOcclusion == requestLevel)
-                        )));
+                var regenerateAOSampling = tree.settings.ao.generateAmbientOcclusion &&
+                                           (tree.settings.qualityMode >= QualityMode.Preview) &&
+                                           ((age.samplePoints == null) ||
+                                            (age.samplePoints.NodeCount == 0) ||
+                                            age.CheckAnyStageSetting(
+                                                s => (s.highQualityGeometry == requestLevel) ||
+                                                     (s.ambientOcclusion == requestLevel)
+                                            ));
 
                 if (age.buildRequest.distribution == requestLevel)
                 {
@@ -812,7 +620,7 @@ namespace Appalachia.Simulation.Trees.Build.Execution
                         tree.species.hierarchies,
                         tree.settings.variants,
                         age.ageType
-                        );
+                    );
 
                     age.normalStage.Rebuild();
                 }
@@ -834,6 +642,310 @@ namespace Appalachia.Simulation.Trees.Build.Execution
             }
         }
 
+        private static void GenerateIndividualStageEnhancements(
+            BuildRequestLevel requestLevel,
+            TreeDataContainer tree,
+            TreeIndividual individual,
+            TreeStage stage)
+        {
+            using (BUILD_TIME.TREE_BUILD_MGR.GenerateIndividualStageEnhancements.Auto())
+            {
+                var buildVertexData = stage.buildRequest.ShouldBuild(BuildCategory.VertexData, requestLevel);
+                var buildMesh = stage.buildRequest.ShouldBuildMesh(requestLevel);
+                var buildUV = stage.buildRequest.ShouldBuild(BuildCategory.UV, requestLevel);
+                var buildCollision = tree.settings.collision.generateColliders &&
+                                     (tree.settings.qualityMode > QualityMode.Preview) &&
+                                     stage.buildRequest.ShouldBuild(BuildCategory.Collision, requestLevel);
+
+                var buildShadowCaster = tree.settings.lod.shadowCaster;
+
+                //var lowQuality = !stage.buildRequest.ShouldBuild(BuildCategory.HighQualityGeometry, requestLevel);
+                //var buildLOD = stage.buildRequest.ShouldBuild(BuildCategory.LevelsOfDetail, requestLevel);
+
+                /*if (lowQuality)
+                {
+                    buildLOD = false;
+                }*/
+
+                var geometryIndex = -1;
+
+                foreach (var output in stage.lods)
+                {
+                    geometryIndex += 1;
+
+                    /*if (!buildLOD && (output.lodLevel > 0))
+                    {
+                        break;
+                    }*/
+
+                    if (buildVertexData)
+                    {
+                        if (tree.settings.wind.generateWind)
+                        {
+                            if (output.lodLevel == 0)
+                            {
+                                tree.progressTracker.Update(BuildCategory.VertexData);
+                            }
+
+                            WindGenerator.ApplyMeshWindData(
+                                stage.shapes,
+                                tree.species.hierarchies,
+                                output,
+                                geometryIndex,
+                                tree.settings.wind,
+                                stage.stageType,
+                                individual.seed
+                            );
+                        }
+                    }
+                }
+
+                if (buildVertexData)
+                {
+                    foreach (var shape in stage.shapes)
+                    {
+                        for (var i = 1; i < stage.lods.Count; i++)
+                        {
+                            var model = shape.geometry[0];
+                            var target = shape.geometry[i];
+                            var modelVertex = stage.lods[0].vertices[model.modelVertexStart];
+
+                            for (var v = target.modelVertexStart; v < target.modelVertexEnd; v++)
+                            {
+                                var vertex = stage.lods[i].vertices[v];
+
+                                vertex.wind.phase = modelVertex.wind.phase;
+                                vertex.wind.variation = modelVertex.wind.variation;
+                                vertex.wind.primaryPivot = modelVertex.wind.primaryPivot;
+                                vertex.wind.secondaryPivot = modelVertex.wind.secondaryPivot;
+                            }
+                        }
+                    }
+                }
+
+                geometryIndex = -1;
+
+                foreach (var output in stage.lods)
+                {
+                    geometryIndex += 1;
+
+                    /*if (!buildLOD && (output.lodLevel > 0))
+                    {
+                        break;
+                    }*/
+
+                    if (buildUV)
+                    {
+                        if (output.lodLevel == 0)
+                        {
+                            tree.progressTracker.Update(BuildCategory.UV);
+                        }
+
+                        UVManager.RemapUVCoordinates(output, tree.materials, tree.settings.variants);
+
+                        UVManager.ApplyLeafRects(
+                            tree.species.hierarchies,
+                            stage.shapes,
+                            tree.materials.inputMaterialCache,
+                            output,
+                            individual.seed
+                        );
+                    }
+                }
+
+                if (buildMesh)
+                {
+                    for (var i = 0; i < stage.lods.Count; i++)
+                    {
+                        var vertices = stage.lods[i].vertices;
+                        foreach (var shape in stage.shapes)
+                        {
+                            if (shape is BarkShapeData bsd)
+                            {
+                                var rings = bsd.branchRings[i];
+
+                                for (var ri = 0; ri < rings.Count; ri++)
+                                {
+                                    var ring = rings[ri];
+
+                                    var vertexOne = vertices[ring.vertexStart];
+                                    var vertexTwo = vertices[ring.vertexEnd - 1];
+
+                                    vertexTwo.position = vertexOne.position;
+                                    vertexTwo.normal = vertexOne.normal;
+                                    vertexTwo.tangent = vertexOne.tangent;
+
+                                    vertexTwo.weldTo = ring.vertexStart;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                geometryIndex = -1;
+
+                foreach (var output in stage.lods)
+                {
+                    geometryIndex += 1;
+
+                    /*if (!buildLOD && (output.lodLevel > 0))
+                    {
+                        break;
+                    }*/
+
+                    if (buildMesh)
+                    {
+                        var asset = stage.asset.levels[output.lodLevel];
+
+                        if (output.lodLevel == 0)
+                        {
+                            tree.progressTracker.Update(BuildCategory.Mesh);
+                        }
+
+                        if (asset.mesh == null)
+                        {
+                            stage.RecreateMesh(output.lodLevel);
+                        }
+
+                        var origMaterialIDs = output.materialIDs;
+
+                        var materials = new HashSet<OutputMaterial>();
+
+                        foreach (var materialID in origMaterialIDs)
+                        {
+                            if (materialID == -1)
+                            {
+                                continue;
+                            }
+
+                            var m = tree.materials.GetOutputMaterialByInputID(materialID);
+
+                            materials.Add(m);
+                        }
+
+                        var mats = materials.ToList();
+
+                        mats.Sort(
+                            (a, b) =>
+                            {
+                                if ((a.MaterialContext == MaterialContext.AtlasOutputMaterial) &&
+                                    (b.MaterialContext != MaterialContext.AtlasOutputMaterial))
+                                {
+                                    return -1;
+                                }
+
+                                if ((a.MaterialContext != MaterialContext.AtlasOutputMaterial) &&
+                                    (b.MaterialContext == MaterialContext.AtlasOutputMaterial))
+                                {
+                                    return 1;
+                                }
+
+                                return a.materialID.CompareTo(b.materialID);
+                            }
+                        );
+
+                        Func<TreeVertex, Color> colorFunction;
+
+                        if (tree.settings.wind.generateWind)
+                        {
+                            if (tree.settings.wind.normalizeWind)
+                            {
+                                colorFunction = v => v.TreeVertexColor;
+                            }
+                            else
+                            {
+                                colorFunction = v => v.TreeVertexColorUnclamped;
+                            }
+                        }
+                        else
+                        {
+                            colorFunction = v => Color.black;
+                        }
+
+                        foreach (var shape in stage.shapes.trunkShapes)
+                        {
+                            var baseRing = shape.branchRings[output.lodLevel][0];
+
+                            for (var i = baseRing.vertexStart; i < baseRing.vertexEnd; i++)
+                            {
+                                var outputVertex = output.vertices[i];
+                                var position = outputVertex.position;
+
+                                if (position.y >= 0)
+                                {
+                                    break;
+                                }
+
+                                position.y *= 2;
+
+                                outputVertex.position = position;
+                                output.vertices[i] = outputVertex;
+                            }
+                        }
+
+                        var runtimeMaterials = MeshGenerator.GenerateMeshes(
+                            output,
+                            stage.shapes.byID,
+                            tree.materials.inputMaterialCache,
+                            mats,
+                            tree.settings.mesh,
+                            asset.mesh,
+                            colorFunction,
+                            false,
+                            true,
+                            default
+                        );
+
+                        stage.SetMaterials(output.lodLevel, runtimeMaterials.ToArray());
+                    }
+                }
+
+                if (buildShadowCaster)
+                {
+                    var cache = tree.materials.outputMaterialCache;
+
+                    cache.shadowCasterOutputMaterial.EnsureCreated(tree.settings.lod.levels);
+                    cache.shadowCasterOutputMaterial.textureSet.Set(
+                        cache.atlasOutputMaterial.textureSet.outputTextures
+                    );
+
+                    cache.shadowCasterOutputMaterial.FinalizeMaterial();
+
+                    ShadowCasterGenerator.GenerateShadowCaster(
+                        tree,
+                        individual,
+                        stage,
+                        tree.species.hierarchies,
+                        stage.shapes,
+                        tree.materials.inputMaterialCache,
+                        tree.hierarchyPrefabs,
+                        tree.settings,
+                        true,
+                        individual.seed,
+                        stage.shapes.byID
+                    );
+                }
+
+                if (buildCollision)
+                {
+                    tree.progressTracker.Update(BuildCategory.Collision);
+
+                    stage.asset.collisionMeshes.CreateCollisionMeshes(stage.asset.CleanName);
+
+                    ColliderGenerator.GenerateCollider(
+                        stage.stageType,
+                        tree.species.hierarchies,
+                        stage.shapes,
+                        tree.materials.inputMaterialCache,
+                        tree.hierarchyPrefabs,
+                        tree.settings,
+                        stage.shapes.byID,
+                        stage.asset.collisionMeshes
+                    );
+                }
+            }
+        }
+
         private static void GenerateIndividualStageGeometry(
             BuildRequestLevel requestLevel,
             TreeDataContainer tree,
@@ -845,7 +957,8 @@ namespace Appalachia.Simulation.Trees.Build.Execution
         {
             using (BUILD_TIME.TREE_BUILD_MGR.GenerateIndividualStageGeometry.Auto())
             {
-                var buildHQGeometry = (stage.buildRequest.highQualityGeometry == requestLevel) || forceBuildGeometry;
+                var buildHQGeometry = (stage.buildRequest.highQualityGeometry == requestLevel) ||
+                                      forceBuildGeometry;
                 var buildLQGeometry = stage.buildRequest.lowQualityGeometry == requestLevel;
                 var buildAO = stage.buildRequest.ambientOcclusion == requestLevel;
 
@@ -859,7 +972,7 @@ namespace Appalachia.Simulation.Trees.Build.Execution
                     tree.progressTracker.Update(
                         buildHQGeometry ? BuildCategory.HighQualityGeometry : BuildCategory.LowQualityGeometry
                     );
-                    
+
                     stage.Rebuild();
 
                     var baseSeed = individual.seed;
@@ -958,311 +1071,234 @@ namespace Appalachia.Simulation.Trees.Build.Execution
                 }
             }
         }
-        
 
-        private static void GenerateIndividualStageEnhancements(
+        private static void GenerateSpeciesMaterials(
             BuildRequestLevel requestLevel,
             TreeDataContainer tree,
-            TreeIndividual individual,
-            TreeStage stage)
+            ref bool completed)
         {
-            using (BUILD_TIME.TREE_BUILD_MGR.GenerateIndividualStageEnhancements.Auto())
+            using (BUILD_TIME.TREE_BUILD_MGR.GenerateSpeciesMaterials.Auto())
             {
-                var buildVertexData = stage.buildRequest.ShouldBuild(BuildCategory.VertexData, requestLevel);
-                var buildMesh = stage.buildRequest.ShouldBuildMesh(requestLevel);
-                var buildUV = stage.buildRequest.ShouldBuild(BuildCategory.UV, requestLevel);
-                var buildCollision = tree.settings.collision.generateColliders &&
-                    (tree.settings.qualityMode > QualityMode.Preview) &&
-                    stage.buildRequest.ShouldBuild(BuildCategory.Collision, requestLevel);
-                
-                var buildShadowCaster = tree.settings.lod.shadowCaster;
-                
-                //var lowQuality = !stage.buildRequest.ShouldBuild(BuildCategory.HighQualityGeometry, requestLevel);
-                //var buildLOD = stage.buildRequest.ShouldBuild(BuildCategory.LevelsOfDetail, requestLevel);
+                var doMaterialGeneration = tree.buildRequest.ShouldBuild(
+                    BuildCategory.MaterialGeneration,
+                    requestLevel
+                );
 
-                /*if (lowQuality)
+                var doMaterialProperties = tree.buildRequest.ShouldBuild(
+                    BuildCategory.MaterialProperties,
+                    requestLevel
+                );
+
+                if (!doMaterialGeneration && !doMaterialProperties)
                 {
-                    buildLOD = false;
-                }*/
+                    return;
+                }
 
-                var geometryIndex = -1;
-
-                foreach (var output in stage.lods)
+                if (doMaterialGeneration)
                 {
-                    geometryIndex += 1;
+                    tree.progressTracker.Update(BuildCategory.MaterialGeneration);
 
-                    /*if (!buildLOD && (output.lodLevel > 0))
-                    {
-                        break;
-                    }*/
+                    tree.dataState = TSEDataContainer.DataState.PendingSave;
 
-                    if (buildVertexData)
+                    if (tree.materials.RequiresUpdate(tree.settings.material, out var hash))
                     {
-                        if (tree.settings.wind.generateWind)
+                        /*if (!tree.settings.material.doNotUnsetForceRegenerateMaterials)
                         {
-                            if (output.lodLevel == 0)
-                            {
-                                tree.progressTracker.Update(BuildCategory.VertexData);
-                            }
+                            tree.settings.material.forceRegenerateMaterials = false;
+                        }*/
 
-                            WindGenerator.ApplyMeshWindData(
-                                stage.shapes,
-                                tree.species.hierarchies,
-                                output,
-                                geometryIndex,
-                                tree.settings.wind,
-                                stage.stageType,
-                                individual.seed
+                        if (tree.settings.material.imageAtlasIsProportionalToArea)
+                        {
+                            var materialModel = tree.individuals
+                                                    .SelectMany(
+                                                         i => i.ages.SelectMany(
+                                                             a => a.stages.Select(s => s.LOD0)
+                                                         )
+                                                     )
+                                                    .FirstOrDefault();
+
+                            MaterialPropertyManager.SetMaterialProportionalAreas(
+                                tree.materials.inputMaterialCache,
+                                materialModel
                             );
-                        }
-                    }
-                }
-
-                if (buildVertexData)
-                {
-                    foreach (var shape in stage.shapes)
-                    {
-                        for (var i = 1; i < stage.lods.Count; i++)
-                        {
-                            var model = shape.geometry[0];
-                            var target = shape.geometry[i];
-                            var modelVertex = stage.lods[0].vertices[model.modelVertexStart];
-
-                            for (var v = target.modelVertexStart; v < target.modelVertexEnd; v++)
-                            {
-                                var vertex = stage.lods[i].vertices[v];
-
-                                vertex.wind.phase = modelVertex.wind.phase;
-                                vertex.wind.variation = modelVertex.wind.variation;
-                                vertex.wind.primaryPivot = modelVertex.wind.primaryPivot;
-                                vertex.wind.secondaryPivot = modelVertex.wind.secondaryPivot;
-                            }
-                        }
-                    }
-                }
-
-                geometryIndex = -1;
-                
-                foreach (var output in stage.lods)
-                {
-                    geometryIndex += 1;
-
-                    /*if (!buildLOD && (output.lodLevel > 0))
-                    {
-                        break;
-                    }*/
-
-                    if (buildUV)
-                    {
-                        if (output.lodLevel == 0)
-                        {
-                            tree.progressTracker.Update(BuildCategory.UV);
-                        }
-                        
-                        UVManager.RemapUVCoordinates(output, tree.materials, tree.settings.variants);
-                        
-                        UVManager.ApplyLeafRects(
-                            tree.species.hierarchies,
-                            stage.shapes,
-                            tree.materials.inputMaterialCache,
-                            output,
-                            individual.seed
-                        );
-                    }
-                }
-
-                if (buildMesh)
-                {
-                    for (var i = 0; i < stage.lods.Count; i++)
-                    {
-                        var vertices = stage.lods[i].vertices;
-                        foreach (var shape in stage.shapes)
-                        {
-                            if (shape is BarkShapeData bsd)
-                            {
-                                var rings = bsd.branchRings[i];
-
-                                for (var ri = 0; ri < rings.Count; ri++)
-                                {
-                                    var ring = rings[ri];
-
-                                    var vertexOne = vertices[ring.vertexStart];
-                                    var vertexTwo = vertices[ring.vertexEnd - 1];
-
-                                    vertexTwo.position = vertexOne.position;
-                                    vertexTwo.normal = vertexOne.normal;
-                                    vertexTwo.tangent = vertexOne.tangent;
-
-                                    vertexTwo.weldTo = ring.vertexStart;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                geometryIndex = -1;
-                
-                foreach (var output in stage.lods)
-                {
-                    geometryIndex += 1;
-
-                    /*if (!buildLOD && (output.lodLevel > 0))
-                    {
-                        break;
-                    }*/
-
-                    if (buildMesh)
-                    {
-                        var asset = stage.asset.levels[output.lodLevel];
-                        
-                        if (output.lodLevel == 0)
-                        {
-                            tree.progressTracker.Update(BuildCategory.Mesh);
-                        }
-
-                        if (asset.mesh == null)
-                        {
-                            stage.RecreateMesh(output.lodLevel);
-                        }
-
-                        var origMaterialIDs = output.materialIDs;
-
-                        var materials = new HashSet<OutputMaterial>();
-
-                        foreach (var materialID in origMaterialIDs)
-                        {
-                            if (materialID == -1)
-                            {
-                                continue;
-                            }
-                            
-                            var m = tree.materials.GetOutputMaterialByInputID(materialID);
-
-                            materials.Add(m);
-                        }
-
-                        var mats = materials.ToList();
-
-                        mats.Sort(
-                            (a, b) =>
-                            {
-                                if ((a.MaterialContext == MaterialContext.AtlasOutputMaterial) &&
-                                    (b.MaterialContext != MaterialContext.AtlasOutputMaterial))
-                                {
-                                    return -1;
-                                }
-
-                                if ((a.MaterialContext != MaterialContext.AtlasOutputMaterial) &&
-                                    (b.MaterialContext == MaterialContext.AtlasOutputMaterial))
-                                {
-                                    return 1;
-                                }
-
-                                return a.materialID.CompareTo(b.materialID);
-                            }
-                        );
-                        
-                        Func<TreeVertex, Color> colorFunction;
-
-                        if (tree.settings.wind.generateWind)
-                        {
-                            if (tree.settings.wind.normalizeWind)
-                            {
-                                colorFunction = v => v.TreeVertexColor;
-                            }
-                            else
-                            {
-                                colorFunction = v => v.TreeVertexColorUnclamped;
-                            }
                         }
                         else
                         {
-                            colorFunction = v => Color.black;
+                            MaterialPropertyManager.SetMaterialNonProportionalAreas(
+                                tree.materials.inputMaterialCache
+                            );
                         }
 
-                        foreach (var shape in stage.shapes.trunkShapes)
+                        if (tree.requestLevel != requestLevel)
                         {
-                            var baseRing = shape.branchRings[output.lodLevel][0];
-
-                            for (var i = baseRing.vertexStart; i < baseRing.vertexEnd; i++)
-                            {
-                                var outputVertex = output.vertices[i];
-                                var position = outputVertex.position;
-
-                                if (position.y >= 0)
-                                {
-                                    break;
-                                }
-                                position.y *= 2;
-                                
-                                outputVertex.position = position;
-                                output.vertices[i] = outputVertex;
-                            }
+                            EditorCoroutineUtility.StopCoroutine(_coroutine);
+                            completed = true;
+                            return;
                         }
-                        
-                        var runtimeMaterials = MeshGenerator.GenerateMeshes(
-                            output,
-                            stage.shapes.byID,
-                            tree.materials.inputMaterialCache,
-                            mats,
-                            tree.settings.mesh,
-                            asset.mesh,
-                            colorFunction,
-                            false,
-                            true,
-                            default
+
+                        tree.progressTracker.Update(BuildCategory.MaterialGeneration);
+
+                        var combinedInputMaterials = tree.materials.inputMaterialCache.atlasInputMaterials
+                                                         .Concat<InputMaterial>(
+                                                              tree.materials.inputMaterialCache
+                                                                  .tiledInputMaterials
+                                                          )
+                                                         .ToArray();
+
+                        tree.materials.UpdateMaterialNames(tree.species.nameBasis);
+
+                        var textureOutputCollection = new Dictionary<OutputMaterial, List<OutputTexture>>();
+
+                        combinedInputMaterials.ActivateProcessingTextureImporterSettings(
+                            tree.settings.texture.atlasTextureSize
                         );
 
-                        stage.SetMaterials(output.lodLevel, runtimeMaterials.ToArray());
+                        var adjustedTextuerSize = tree.settings.texture.textureSizeV2;
+                        if (tree.settings.qualityMode == QualityMode.Preview)
+                        {
+                            adjustedTextuerSize *= .25f;
+                        }
+                        else if (tree.settings.qualityMode == QualityMode.Working)
+                        {
+                            adjustedTextuerSize *= .125f;
+                        }
+
+                        var imc = tree.materials.inputMaterialCache;
+                        var omc = tree.materials.outputMaterialCache;
+
+                        var aim = imc.atlasInputMaterials;
+                        var aom = omc.atlasOutputMaterial;
+
+                        var textureSettings = tree.settings.texture;
+
+                        aom.EnsureCreated(tree.settings.lod.levels);
+
+                        var outputTextures = TextureCombiner.DrawAtlasTextures(
+                            aim,
+                            aom,
+                            adjustedTextuerSize,
+                            textureSettings.debugCombinationOutputs
+                        );
+
+                        textureOutputCollection.Add(aom, outputTextures);
+
+                        tree.progressTracker.Update(BuildCategory.MaterialGeneration);
+
+                        foreach (var tiledMaterial in omc.tiledOutputMaterials)
+                        {
+                            var match = imc.tiledInputMaterials.FirstOrDefault(
+                                tim => tiledMaterial.inputMaterialID == tim.materialID
+                            );
+
+                            tiledMaterial.EnsureCreated(tree.settings.lod.levels);
+
+                            var ot = TextureCombiner.DrawTiledTextures(
+                                match,
+                                tiledMaterial,
+                                adjustedTextuerSize,
+                                textureSettings.tiledMaterialsKeepOriginalSize,
+                                textureSettings.debugCombinationOutputs
+                            );
+
+                            textureOutputCollection.Add(tiledMaterial, ot);
+                        }
+
+                        if (tree.requestLevel != requestLevel)
+                        {
+                            EditorCoroutineUtility.StopCoroutine(_coroutine);
+                            completed = true;
+                            return;
+                        }
+
+                        tree.progressTracker.Update(BuildCategory.SavingTextures);
+
+                        if (tree.settings.lod.shadowCaster)
+                        {
+                            textureOutputCollection.Add(
+                                omc.shadowCasterOutputMaterial,
+                                new List<OutputTexture>()
+                            );
+                        }
+
+                        var filePaths = textureOutputCollection.SaveTextures(tree.subfolders, 1);
+
+                        textureOutputCollection.ReimportTextures(
+                            tree.subfolders,
+                            textureSettings.atlasTextureSize,
+                            tree.settings.qualityMode,
+                            filePaths,
+                            1
+                        );
+
+                        foreach (var tiledOutputMaterial in tree.materials.outputMaterialCache
+                                                                .tiledOutputMaterials)
+                        {
+                            tiledOutputMaterial.FinalizeMaterial();
+                        }
+
+                        tree.materials.outputMaterialCache.atlasOutputMaterial.FinalizeMaterial();
+
+                        if (tree.settings.qualityMode == QualityMode.Finalized)
+                        {
+                            combinedInputMaterials.RestoreOriginalTextureImporterSettings();
+                        }
+
+                        if (tree.requestLevel != requestLevel)
+                        {
+                            EditorCoroutineUtility.StopCoroutine(_coroutine);
+                            completed = true;
+                            return;
+                        }
                     }
                 }
 
-                if (buildShadowCaster)
+                if (doMaterialProperties)
                 {
-                    var cache = tree.materials.outputMaterialCache;
+                    tree.progressTracker.Update(BuildCategory.MaterialProperties);
 
-                    cache.shadowCasterOutputMaterial.EnsureCreated(tree.settings.lod.levels);
-                    cache.shadowCasterOutputMaterial.textureSet.Set(cache.atlasOutputMaterial.textureSet.outputTextures);
-                    
-                    cache.shadowCasterOutputMaterial.FinalizeMaterial();
-
-                    ShadowCasterGenerator.GenerateShadowCaster(
-                        tree,
-                        individual,
-                        stage,
-                        tree.species.hierarchies,
-                        stage.shapes,
+                    MaterialPropertyManager.AssignTransmissionMaterialProperties(
+                        tree.settings.transmission,
+                        tree.materials.transmission,
                         tree.materials.inputMaterialCache,
-                        tree.hierarchyPrefabs,
-                        tree.settings,
-                        true,
-                        individual.seed,
-                        stage.shapes.byID
+                        tree.materials.outputMaterialCache,
+                        tree.settings.material
                     );
+
+                    MaterialPropertyManager.CopyLODMaterialSettings(tree.materials.outputMaterialCache);
                 }
 
-                if (buildCollision)
-                {
-                    tree.progressTracker.Update(BuildCategory.Collision);
-                        
-                    stage.asset.collisionMeshes.CreateCollisionMeshes(stage.asset.CleanName);
-
-                    ColliderGenerator.GenerateCollider(
-                        stage.stageType,
-                        tree.species.hierarchies,
-                        stage.shapes,
-                        tree.materials.inputMaterialCache,
-                        tree.hierarchyPrefabs,
-                        tree.settings,
-                        stage.shapes.byID,
-                        stage.asset.collisionMeshes
-                    );                
-                }
+                tree.materials.hash = tree.materials.CalculateHash();
             }
         }
 
+        private static void UpdateStageSpecificMaterials(
+            TreeStage stage,
+            MaterialTransmissionValues transmission,
+            ImpostorSettings impostor)
+        {
+            using (BUILD_TIME.TREE_BUILD_MGR.UpdateStageSpecificMaterials.Auto())
+            {
+                if (stage.asset.impostor == null)
+                {
+                    return;
+                }
 
-        [UnityEditor.MenuItem(PKG.Menu.Appalachia.Tools.Base + "Trees/Mip Maps/Preserve Coverage")]
+                if (stage.asset.impostor.Material == null)
+                {
+                    return;
+                }
+
+                ImpostorGenerator.UpdateImpostorMaterialProperties(
+                    stage.asset.impostor,
+                    impostor,
+                    transmission
+                );
+            }
+        }
+
+        #region Menu Items
+
+        [MenuItem(PKG.Menu.Appalachia.Tools.Base + "Trees/Mip Maps/Preserve Coverage")]
         private static void MipMaps_PreserveCoverage()
         {
             var treeGuids = AssetDatabaseManager.FindAssets("t: TreeDataContainer");
@@ -1281,11 +1317,10 @@ namespace Appalachia.Simulation.Trees.Build.Execution
 
                     if (asset.shader == GSR.instance.leafShaders[0])
                     {
-
                         var mainTexture = asset.GetTexture(GSC.GENERAL._MainTex) as Texture2D;
 
                         var importer = mainTexture.GetTextureImporter();
-                        
+
                         var cutoffLowNear = asset.GetFloat(GSC.GENERAL._CutoffLowNear);
                         var cutoffHighNear = asset.GetFloat(GSC.GENERAL._CutoffHighNear);
 
@@ -1295,15 +1330,21 @@ namespace Appalachia.Simulation.Trees.Build.Execution
 
                         importer.mipMapsPreserveCoverage = true;
                         importer.alphaTestReferenceValue = cutoff;
-                        
+
                         importer.SaveAndReimport();
                     }
                 }
-                
-                
             }
         }
 
+        #endregion
 
+        #region Profiling
+
+        private const string _PRF_PFX = nameof(TreeBuildManager) + ".";
+
+        private static readonly ProfilerMarker _PRF_Update = new ProfilerMarker(_PRF_PFX + nameof(Update));
+
+        #endregion
     }
 }

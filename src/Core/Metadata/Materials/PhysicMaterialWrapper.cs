@@ -1,6 +1,5 @@
 using Appalachia.CI.Integration.Assets;
 using Appalachia.Core.Attributes.Editing;
-using Appalachia.Core.Extensions;
 using Appalachia.Core.Scriptables;
 using Appalachia.Simulation.Core.Metadata.Density;
 using Appalachia.Utility.Extensions;
@@ -12,31 +11,36 @@ using UnityEngine.Serialization;
 namespace Appalachia.Simulation.Core.Metadata.Materials
 {
     [SmartLabel]
-    public class
-        PhysicMaterialWrapper : CategorizableAppalachiaObject<PhysicMaterialWrapper>
+    public class PhysicMaterialWrapper : CategorizableAppalachiaObject
     {
-        [SmartLabel]
-        [SmartLabelChildren]
-        [InlineEditor(InlineEditorObjectFieldModes.Boxed)]
-        public PhysicMaterial material;
-
-        [SmartLabel] public DensityMetadata defaultDensity;
-
-        [SmartLabel]
-        [FormerlySerializedAs("gizmoColor")]
-        public Color wireColor;
-
-        [SmartLabel]
-        [PropertyRange(0f, 1.0f)]
-        public float meshTransparency = .1f;
+        #region Fields and Autoproperties
 
         [SmartLabel] public Color labelBackgroundColor;
 
         [SmartLabel] public Color labelTextColor;
 
+        [SmartLabel]
+        [FormerlySerializedAs("gizmoColor")]
+        public Color wireColor;
+
+        [SmartLabel] public DensityMetadata defaultDensity;
+
+        [SmartLabel]
+        [PropertyRange(0f, 1.0f)]
+        public float meshTransparency = .1f;
+
         [SmartLabel] public Material surface;
 
+        [SmartLabel]
+        [SmartLabelChildren]
+        [InlineEditor(InlineEditorObjectFieldModes.Boxed)]
+        public PhysicMaterial material;
+
+        #endregion
+
         public bool CanSearch => material == null;
+
+        #region Event Functions
 
         private void OnEnable()
         {
@@ -44,9 +48,9 @@ namespace Appalachia.Simulation.Core.Metadata.Materials
             if (defaultDensity == null)
             {
                 defaultDensity = AssetDatabaseManager.FindAssets<DensityMetadata>()
-                                                    .FirstOrDefault_NoAlloc(
-                                                         dm => dm.materialWrapper == this
-                                                     );
+                                                     .FirstOrDefault_NoAlloc(
+                                                          dm => dm.materialWrapper == this
+                                                      );
             }
 
             if (defaultDensity == null)
@@ -55,6 +59,8 @@ namespace Appalachia.Simulation.Core.Metadata.Materials
             }
 #endif
         }
+
+        #endregion
 
 #if UNITY_EDITOR
         [Button]

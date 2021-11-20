@@ -20,10 +20,62 @@ namespace Appalachia.Simulation.Trees.Definition
     [Serializable]
     public class TreeAge : TypeBasedSettings<TreeAge>, IMenuItemProvider
     {
-        [SerializeField] private List<TreeStage> _variants;
+        #region Fields and Autoproperties
+
+        public AgeBuildRequests buildRequest;
+
+        public AgeType ageType;
+
+        public bool active;
+
+        public BoundsOctree<AmbientOcclusionSamplePoint> samplePoints;
+
+        public int individualID;
+
+        public IntegrationAsset integrationAsset;
+
+        public TreeStage normalStage;
 
         private Dictionary<StageType, TreeStage> _variantLookupInternal;
-        
+        [SerializeField] private List<TreeStage> _variants;
+
+        #endregion
+
+        public bool HasAnyVariant => _variantLookup.Count > 0;
+        public bool HasDeadFelledRottedVariant => _variantLookup.ContainsKey(StageType.DeadFelledRotted);
+        public bool HasDeadFelledVariant => _variantLookup.ContainsKey(StageType.DeadFelled);
+
+        public bool HasDeadVariant => _variantLookup.ContainsKey(StageType.Dead);
+        public bool HasFelledBareRottedVariant => _variantLookup.ContainsKey(StageType.FelledBareRotted);
+        public bool HasFelledBareVariant => _variantLookup.ContainsKey(StageType.FelledBare);
+        public bool HasFelledVariant => _variantLookup.ContainsKey(StageType.Felled);
+        public bool HasStumpRottedVariant => _variantLookup.ContainsKey(StageType.StumpRotted);
+        public bool HasStumpVariant => _variantLookup.ContainsKey(StageType.Stump);
+
+        public bool RequiresCut =>
+            HasFelledVariant ||
+            HasDeadFelledVariant ||
+            HasDeadFelledRottedVariant ||
+            HasFelledBareVariant ||
+            HasFelledBareRottedVariant;
+
+        public IEnumerable<TreeStage> stages
+        {
+            get
+            {
+                yield return normalStage;
+                foreach (var variant in _variants)
+                {
+                    yield return variant;
+                }
+            }
+        }
+
+        public IEnumerable<TreeStage> Variants => _variants;
+        public int StageCount => VariantCount + (normalStage == null ? 0 : 1);
+
+        public int VariantCount => _variants.Count;
+
         private Dictionary<StageType, TreeStage> _variantLookup
         {
             get
@@ -32,7 +84,7 @@ namespace Appalachia.Simulation.Trees.Definition
                 {
                     _variantLookupInternal = new Dictionary<StageType, TreeStage>();
                 }
-                                    
+
                 if (_variants == null)
                 {
                     _variants = new List<TreeStage>();
@@ -47,103 +99,27 @@ namespace Appalachia.Simulation.Trees.Definition
                         _variantLookupInternal.Add(stage.stageType, stage);
                     }
                 }
-                
+
                 return _variantLookupInternal;
             }
         }
-        
-        public int individualID;
 
-        public TreeStage normalStage;
+        public TreeStage this[StageType type] =>
+            type == StageType.Normal ? normalStage : _variantLookup[type];
 
-        public TreeStage this[StageType type] => type == StageType.Normal ? normalStage : _variantLookup[type];
-
-        public AgeType ageType;
-
-        public bool active;
-
-        public AgeBuildRequests buildRequest;
-
-        public IntegrationAsset integrationAsset;
-        
-        public BuildRequestLevel GetRequestLevel(BuildState buildState)
-        {
-            var rl = buildRequest.requestLevel;
-                
-            if (rl == BuildRequestLevel.InitialPass) return rl;
-            
-            foreach (var stage in stages)
-            {
-                if (stage.buildRequest == null)
-                {
-                    stage.buildRequest = new StageBuildRequests();
-                }
-                
-                if (stage.active || (buildState > BuildState.Full))
-                {
-                    rl = rl.Max(stage.GetRequestLevel(buildState));
-                    
-                    if (rl == BuildRequestLevel.InitialPass)
-                    {
-                        return rl;
-                    }                        
-                }
-            }
-            
-            return rl;
-            
-        }        
-        
-        public BoundsOctree<AmbientOcclusionSamplePoint> samplePoints;
-        
-        public bool HasAnyVariant => _variantLookup.Count > 0;
-
-        public int VariantCount => _variants.Count;
-        public int StageCount => VariantCount + (normalStage == null ? 0 : 1);
-
-        public bool HasDeadVariant => _variantLookup.ContainsKey(StageType.Dead);
-        public bool HasDeadFelledVariant => _variantLookup.ContainsKey(StageType.DeadFelled);
-        public bool HasDeadFelledRottedVariant => _variantLookup.ContainsKey(StageType.DeadFelledRotted);
-        public bool HasFelledVariant => _variantLookup.ContainsKey(StageType.Felled);
-        public bool HasFelledBareVariant => _variantLookup.ContainsKey(StageType.FelledBare);
-        public bool HasFelledBareRottedVariant => _variantLookup.ContainsKey(StageType.FelledBareRotted);
-        public bool HasStumpVariant => _variantLookup.ContainsKey(StageType.Stump);        
-        public bool HasStumpRottedVariant => _variantLookup.ContainsKey(StageType.StumpRotted);
-        
-        
-        public bool RequiresCut => HasFelledVariant || HasDeadFelledVariant || HasDeadFelledRottedVariant || HasFelledBareVariant || HasFelledBareRottedVariant;
-
-        public IEnumerable<TreeStage> Variants => _variants;
-        
-        public IEnumerable<TreeStage> stages  {
-            get
-            {
-                yield return normalStage;
-                foreach (var variant in _variants)
-                {
-                    yield return variant;
-                }
-            }
-        }
-        
-        public bool HasType(StageType type)
-        {
-            if (type == StageType.Normal)
-            {
-                return true;
-            }
-            
-            return _variantLookup.ContainsKey(type);
-        }
-        
-        public static TreeAge Create(string folder, NameBasis nameBasis, int individualID, AgeType ageType, TreeAsset asset)
+        public static TreeAge Create(
+            string folder,
+            NameBasis nameBasis,
+            int individualID,
+            AgeType ageType,
+            TreeAsset asset)
         {
             var assetName = nameBasis.FileNameAgeSO(individualID, ageType);
-            var instance = LoadOrCreateNew(folder, assetName);
+            var instance = LoadOrCreateNew<TreeAge>(folder, assetName);
 
             instance.individualID = individualID;
             instance.ageType = ageType;
-            
+
             instance.normalStage = TreeStage.Create(
                 folder,
                 nameBasis,
@@ -152,12 +128,17 @@ namespace Appalachia.Simulation.Trees.Definition
                 StageType.Normal,
                 asset
             );
-            
+
             instance._variants = new List<TreeStage>();
             instance._variantLookupInternal = new Dictionary<StageType, TreeStage>();
             instance.buildRequest = new AgeBuildRequests();
 
             return instance;
+        }
+
+        public static string GetMenuString(AgeType age)
+        {
+            return age.ToString();
         }
 
         public TreeStage AddVariant(string folder, NameBasis nameBasis, StageType stage, TreeAsset asset)
@@ -166,32 +147,39 @@ namespace Appalachia.Simulation.Trees.Definition
 
             _variantLookupInternal.Add(stage, variant);
             _variants.Add(variant);
-            _variants.Sort(
-                (a, b) => a.stageType.CompareTo(b.stageType)
-            );
-            return variant;            
-        }
-        
-        public void RemoveNormal()
-        {
-            normalStage = null;
-        }
-        
-        public void RemoveVariant(StageType stage)
-        {
-            var variant = _variantLookup[stage];
-            _variants.Remove(variant);
-            _variantLookupInternal.Remove(stage);
-        }
-        
-        public string GetMenuString()
-        {
-            return GetMenuString(ageType);
+            _variants.Sort((a, b) => a.stageType.CompareTo(b.stageType));
+            return variant;
         }
 
-        public static string GetMenuString(AgeType age)
+        public bool CheckAllStageSettings(Predicate<StageBuildRequests> check)
         {
-            return age.ToString();
+            foreach (var setting in stages)
+            {
+                if (!check(setting.buildRequest))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public bool CheckAnyStageSetting(Predicate<StageBuildRequests> check)
+        {
+            foreach (var setting in stages)
+            {
+                if (check(setting.buildRequest))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public IEnumerable<BuildCost> GetBuildCosts(BuildRequestLevel level)
+        {
+            return buildRequest.GetBuildCosts(level);
         }
 
         public OdinMenuItem GetMenuItem(OdinMenuTree tree)
@@ -200,9 +188,89 @@ namespace Appalachia.Simulation.Trees.Definition
 
             return item;
         }
-       
+
+        public string GetMenuString()
+        {
+            return GetMenuString(ageType);
+        }
+
+        public BuildRequestLevel GetRequestLevel(BuildState buildState)
+        {
+            var rl = buildRequest.requestLevel;
+
+            if (rl == BuildRequestLevel.InitialPass)
+            {
+                return rl;
+            }
+
+            foreach (var stage in stages)
+            {
+                if (stage.buildRequest == null)
+                {
+                    stage.buildRequest = new StageBuildRequests();
+                }
+
+                if (stage.active || (buildState > BuildState.Full))
+                {
+                    rl = rl.Max(stage.GetRequestLevel(buildState));
+
+                    if (rl == BuildRequestLevel.InitialPass)
+                    {
+                        return rl;
+                    }
+                }
+            }
+
+            return rl;
+        }
+
+        public bool HasType(StageType type)
+        {
+            if (type == StageType.Normal)
+            {
+                return true;
+            }
+
+            return _variantLookup.ContainsKey(type);
+        }
+
+        public void PushStageGenerationSetting(Action<StageBuildRequests> action)
+        {
+            foreach (var setting in stages)
+            {
+                action(setting.buildRequest);
+            }
+        }
+
+        public void RemoveNormal()
+        {
+            normalStage = null;
+        }
+
+        public void RemoveVariant(StageType stage)
+        {
+            var variant = _variantLookup[stage];
+            _variants.Remove(variant);
+            _variantLookupInternal.Remove(stage);
+        }
+
+        public bool ShouldRebuildDistribution(BuildRequestLevel level)
+        {
+            return buildRequest.distribution == level;
+        }
+
+        public bool ShouldRebuildGeometry(BuildRequestLevel level)
+        {
+            var buildGeometry = stages.Any(s => s.ShouldRebuildGeometry(level));
+
+            return buildGeometry;
+        }
+
+        #region IMenuItemProvider Members
+
         public TreeIcon GetIcon(bool enabled)
-        { switch (ageType)
+        {
+            switch (ageType)
             {
                 case AgeType.Mature:
                     return enabled ? TreeIcons.age50 : TreeIcons.disabledAge50;
@@ -218,60 +286,7 @@ namespace Appalachia.Simulation.Trees.Definition
                     throw new ArgumentOutOfRangeException();
             }
         }
-        
-        public IEnumerable<BuildCost> GetBuildCosts(BuildRequestLevel level)
-        {
-            return buildRequest.GetBuildCosts(level);
-        }
-        
-        public bool ShouldRebuildDistribution(BuildRequestLevel level)
-        {
-            return buildRequest.distribution == level;
-        }
-        
-        public bool ShouldRebuildGeometry(BuildRequestLevel level)
-        {
-            var buildGeometry = stages
-                .Any(
-                    s => s.ShouldRebuildGeometry(level)
-                );
 
-            return buildGeometry;
-        }
-
-        public void PushStageGenerationSetting(Action<StageBuildRequests> action)
-        {
-            foreach (var setting in stages)
-            {
-                action(setting.buildRequest);
-            }
-        }
-        
-        public bool CheckAllStageSettings(Predicate<StageBuildRequests> check)
-        {
-            foreach (var setting in stages)
-            {
-                if (!check(setting.buildRequest))
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-        
-        public bool CheckAnyStageSetting(Predicate<StageBuildRequests> check)
-        {
-            foreach (var setting in stages)
-            {
-                if (check(setting.buildRequest))
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
+        #endregion
     }
 }

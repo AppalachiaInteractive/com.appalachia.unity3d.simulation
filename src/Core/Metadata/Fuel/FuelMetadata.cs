@@ -19,7 +19,7 @@ namespace Appalachia.Simulation.Trees.Simulation.Fuel
         #if UNITY_EDITOR
         public void ToWood()
         {
-            var wood = WoodSimulationData.LoadOrCreateNew($"{name}.asset", true, false, false);
+            var wood = AppalachiaObject.LoadOrCreateNew<WoodSimulationData>($"{name}.asset", true, false, false);
 
             wood.btuGreen = btuPerKgGreen;
             wood.btuDry = btuPerKgDry;

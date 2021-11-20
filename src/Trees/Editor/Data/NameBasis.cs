@@ -8,7 +8,7 @@ using UnityEngine;
 namespace Appalachia.Simulation.Trees.Data
 {
     [InlineEditor(InlineEditorObjectFieldModes.CompletelyHidden)]
-    public class NameBasis : ResponsiveNestedAppalachiaObject<NameBasis, TSEDataContainer>
+    public class NameBasis : ResponsiveNestedAppalachiaObject<TSEDataContainer>
     {
         [LabelText("Name"), LabelWidth(100)]
         [DelayedProperty, OnValueChanged(nameof(ValidateName))]

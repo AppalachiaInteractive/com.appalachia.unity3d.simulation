@@ -12,69 +12,45 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
     [Serializable]
     public class LogAsset : TypeBasedSettings<LogAsset>, ITreeStatistics, IPrefabSaveable
     {
-        public List<AssetLevel> levels;
-        
-        public GameObject prefab;
-
-        public GameObject Prefab
-        {
-            get { return prefab; }
-            set { prefab = value; }
-        }
-
-        public CollisionMeshCollection collisionMeshes;
-        
-        public string prefabPath => AssetDatabaseManager.GetAssetPath(prefab);
-
-        public AssetStatistics GetStatistics()
-        {
-            var stats = new AssetStatistics();
-
-            if (levels == null)
-            {
-                levels = new List<AssetLevel>();
-            }
-            
-            foreach (var level in levels)
-            {
-                stats.statistics.Add(level.GetStatistics());
-            }
-            
-            return stats;
-        }
-
-        public int GetStatsCount()
-        {
-            return levels.Count;
-        }
-
         private LogAsset()
         {
-            
         }
-        
+
+        #region Fields and Autoproperties
+
+        public CollisionMeshCollection collisionMeshes;
+
+        public GameObject prefab;
+        public List<AssetLevel> levels;
+
+        #endregion
+
+        public string CleanName => name.Replace("asset", string.Empty).TrimEnd('.', '_', '-');
+
+        public string prefabPath => AssetDatabaseManager.GetAssetPath(prefab);
+
         public static LogAsset Create(string folder, NameBasis nameBasis, int logID)
         {
             var assetName = nameBasis.FileNameLogAssetSO(logID);
-            var instance = LoadOrCreateNew(folder, assetName);
+            var instance = LoadOrCreateNew<LogAsset>(folder, assetName);
 
             instance.levels = new List<AssetLevel>();
-            
+
             return instance;
         }
 
+        public string GetMeshName(int meshLevel)
+        {
+            return $"{CleanName}_LOD{meshLevel}";
+        }
 
-        public GameObject ToInstance() => PrefabUtility.InstantiatePrefab(prefab) as GameObject;
-
-        
-                 
         public void Refresh(LevelOfDetailSettingsCollection lod)
         {
             if (prefab != null)
             {
                 prefab.name = CleanName;
             }
-            
+
             var current = levels;
 
             if (collisionMeshes == null)
@@ -82,13 +58,13 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
                 collisionMeshes = new CollisionMeshCollection();
                 collisionMeshes.CreateCollisionMeshes(CleanName);
             }
-            
+
             levels = new List<AssetLevel>();
 
             for (var i = 0; i < lod.levels; i++)
             {
                 AssetLevel match;
-                
+
                 if (i >= current.Count)
                 {
                     match = new AssetLevel(GetMeshName(i));
@@ -104,18 +80,50 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
                 }
 
                 match.mesh.name = GetMeshName(i);
-                
+
                 levels.Add(match);
             }
         }
 
-        public string GetMeshName(int meshLevel)
+        public GameObject ToInstance()
         {
-            return $"{CleanName}_LOD{meshLevel}";
+            return PrefabUtility.InstantiatePrefab(prefab) as GameObject;
         }
 
-        public string CleanName => name.Replace("asset", string.Empty).TrimEnd(new[] {'.', '_', '-'});
+        #region IPrefabSaveable Members
+
+        public GameObject Prefab
+        {
+            get => prefab;
+            set => prefab = value;
+        }
+
+        #endregion
+
+        #region ITreeStatistics Members
+
+        public AssetStatistics GetStatistics()
+        {
+            var stats = new AssetStatistics();
+
+            if (levels == null)
+            {
+                levels = new List<AssetLevel>();
+            }
+
+            foreach (var level in levels)
+            {
+                stats.statistics.Add(level.GetStatistics());
+            }
+
+            return stats;
+        }
+
+        public int GetStatsCount()
+        {
+            return levels.Count;
+        }
+
+        #endregion
     }
 }
-
-

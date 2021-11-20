@@ -20,34 +20,42 @@ namespace Appalachia.Simulation.ReactionSystem
         private static readonly ProfilerMarker _PRF_Initialize = new(_PRF_PFX + nameof(Initialize));
         public List<ReactionSubsystemGroup> groups;
 
-        private void Awake()
+        protected override void Awake()
         {
             using (_PRF_Awake.Auto())
             {
+                base.Awake();
+                
                 Initialize();
             }
         }
 
-        private void Start()
+        protected override void Start()
         {
             using (_PRF_Start.Auto())
             {
+                base.Start();
+                
                 Initialize();
             }
         }
 
-        private void OnEnable()
+        protected override void OnEnable()
         {
             using (_PRF_OnEnable.Auto())
             {
+                base.OnEnable();
+                
                 Initialize();
             }
         }
 
-        private void Initialize()
+        public override void Initialize()
         {
             using (_PRF_Initialize.Auto())
             {
+                base.Initialize();
+                
                 if (groups == null)
                 {
                     groups = new List<ReactionSubsystemGroup>();

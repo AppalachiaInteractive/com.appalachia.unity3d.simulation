@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace Appalachia.Simulation.Core.Metadata.Wind
 {
-    public class GlobalWindParameters : AppalachiaObject<GlobalWindParameters>
+    public class GlobalWindParameters  : AppalachiaObject
     {
         [FoldoutGroup("System")]
         [SmartLabel]

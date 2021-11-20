@@ -10,27 +10,34 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
     [Serializable]
     public class IntegrationAsset : PrefabAsset<IntegrationAsset>
     {
-        public TreeGPUInstancerPrefab integrationPrefab;
-        
-        public GameObject normal;
-        public GameObject stump;
-        public GameObject stumpRotted;
-        public GameObject felled;
-        public GameObject felledBare;
-        public GameObject felledBareRotted;
+        #region Fields and Autoproperties
+
         public GameObject dead;
         public GameObject deadFelled;
         public GameObject deadFelledRotted;
-        
-        public static IntegrationAsset Create(string folder, NameBasis nameBasis,
-                                              int individualID, AgeType age)
+        public GameObject felled;
+        public GameObject felledBare;
+        public GameObject felledBareRotted;
+
+        public GameObject normal;
+        public GameObject stump;
+        public GameObject stumpRotted;
+        public TreeGPUInstancerPrefab integrationPrefab;
+
+        #endregion
+
+        public static IntegrationAsset Create(
+            string folder,
+            NameBasis nameBasis,
+            int individualID,
+            AgeType age)
         {
             var assetName = nameBasis.FileNameAgeSO(individualID, age, "Integration");
-            var instance = LoadOrCreateNew(folder, assetName);
-            
+            var instance = LoadOrCreateNew<IntegrationAsset>(folder, assetName);
+
             return instance;
         }
-        
+
         public void Refresh(TreeSettings settings)
         {
             if (prefab != null)
@@ -42,7 +49,6 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
 
             if (!integrationPrefab)
             {
-                
             }
         }
     }

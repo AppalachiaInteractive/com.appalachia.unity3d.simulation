@@ -25,60 +25,63 @@ namespace Appalachia.Simulation.Trees.Definition
     [Serializable]
     public class LogInstance : TypeBasedSettings<LogInstance>, IMenuItemProvider
     {
+        #region Fields and Autoproperties
+
+        [HideInInspector] public bool active;
+
         [FoldoutGroup("Log Settings")]
         [OnValueChanged(nameof(DistributionSettingsChanged))]
         public bool constrainLength = true;
-        
+
+        [FoldoutGroup("Log Properties"), ReadOnly]
+        public float actualDiameter;
+
+        [FoldoutGroup("Log Properties"), ReadOnly]
+        public float actualLength;
+
+        [FoldoutGroup("Log Settings")]
+        [PropertyRange(0.0f, 0.1f), OnValueChanged(nameof(DistributionSettingsChanged))]
+        public float colliderInflation;
+
+        [FoldoutGroup("Log Properties"), ReadOnly]
+        public float effectiveScale;
+
         [FoldoutGroup("Log Settings")]
         [PropertyRange(0.1f, 3f), OnValueChanged(nameof(DistributionSettingsChanged))]
         public float length = 1f;
-        
+
         [FoldoutGroup("Log Settings")]
-        [PropertyRange(0.1f, 2f),  OnValueChanged(nameof(DistributionSettingsChanged))]
+        [PropertyRange(0.1f, 2f), OnValueChanged(nameof(DistributionSettingsChanged))]
         public float thickness = 1.0f;
-        
-        [FoldoutGroup("Log Settings")]
-        [PropertyRange(0.0f, 0.1f),  OnValueChanged(nameof(DistributionSettingsChanged))]
-        public float colliderInflation;
-        
-        [FoldoutGroup("Log Properties"), ReadOnly]
-        public float effectiveScale;
-        
-        [FoldoutGroup("Log Properties"), ReadOnly]
-        public float actualLength;
-        
-        [FoldoutGroup("Log Properties"), ReadOnly]
-        public float actualDiameter;
-        
-        [FoldoutGroup("Log Properties"), ReadOnly]
-        public Vector3 centerOfMass = Vector3.zero;
-        
-        [FoldoutGroup("Log Properties"), ReadOnly]
-        public Vector3 center = Vector3.zero;
-        
+
         [FoldoutGroup("Log Properties"), ReadOnly]
         public float volume;
-        
-        [HideInInspector] public LogAsset asset;
 
         [HideInInspector] public int logID;
 
-        [HideInInspector] public LogShapes shapes;
-
-        [HideInInspector] public bool active;
-        
         [HideInInspector] public InternalSeed seed;
 
-        [HideInInspector] public LogInstanceBuildRequest buildRequest;
-        
         [HideInInspector] public List<LODGenerationOutput> lods;
 
-        public static LogInstance Create(
-            string folder, NameBasis nameBasis, int logID, LogAsset asset)
+        [HideInInspector] public LogAsset asset;
+
+        [HideInInspector] public LogInstanceBuildRequest buildRequest;
+
+        [HideInInspector] public LogShapes shapes;
+
+        [FoldoutGroup("Log Properties"), ReadOnly]
+        public Vector3 center = Vector3.zero;
+
+        [FoldoutGroup("Log Properties"), ReadOnly]
+        public Vector3 centerOfMass = Vector3.zero;
+
+        #endregion
+
+        public static LogInstance Create(string folder, NameBasis nameBasis, int logID, LogAsset asset)
         {
             var assetName = nameBasis.FileNameLogSO(logID);
-            var instance = LoadOrCreateNew(folder, assetName);
-            
+            var instance = LoadOrCreateNew<LogInstance>(folder, assetName);
+
             instance.asset = asset;
             instance.logID = logID;
 
@@ -88,84 +91,9 @@ namespace Appalachia.Simulation.Trees.Definition
             return instance;
         }
 
-
-        public BuildRequestLevel GetRequestLevel(BuildState buildState)
-        {
-            var rl = buildRequest.requestLevel;
-
-            if (rl == BuildRequestLevel.InitialPass) return rl;
-
-            if (buildRequest == null)
-            {
-                buildRequest = new LogInstanceBuildRequest();
-            }
-            
-            if (active || (buildState > BuildState.Full))
-            {
-                rl = rl.Max(buildRequest.requestLevel);
-                
-                if (rl == BuildRequestLevel.InitialPass)
-                {
-                    return rl;
-                }
-            }
-
-            return rl;
-        }
-
-
-        public bool ShouldRebuildDistribution(BuildRequestLevel level)
-        {
-            return buildRequest.distribution == level;
-        }
-        
-        public bool ShouldRebuildGeometry(BuildRequestLevel level)
-        {
-            return buildRequest.ShouldBuild(BuildCategory.HighQualityGeometry, level);
-        }
-
-        public string GetMenuString()
-        {
-            return GetMenuString(logID);
-        }
-        
         public static string GetMenuString(int logID)
         {
             return $"{logID:00}";
-        }
-
-        public TreeIcon GetIcon(bool enabled)
-        {
-            return enabled ? TreeIcons.knot : TreeIcons.disabledKnot; 
-        }
-        
-        /*public OdinMenuItem GetMenuItem(OdinMenuTree tree)
-        {
-            var item = new OdinMenuItem(tree, GetMenuString(), this) {Icon = GetIcon(true).icon};
-
-            return item;
-        }*/
-        
-        private void RemoveLOD(int i)
-        {
-            lods.RemoveAt(i);
-        }
-
-        public void RecreateMesh(int level)
-        {
-            asset.levels[level].CreateMesh(asset.GetMeshName(level));
-        }
-
-        public void SetMaterials(int level, Material[] materials)
-        {
-            if (materials.Length == 0)
-            {
-                asset.levels[level].materials = new[] {DefaultMaterialResource.instance.material};
-            }
-            else
-            {
-                asset.levels[level].materials = materials;                
-            }
         }
 
         public void ClearGeometry(LevelOfDetailSettingsCollection lodSettings)
@@ -187,11 +115,53 @@ namespace Appalachia.Simulation.Trees.Definition
             }
         }
 
+        public IEnumerable<BuildCost> GetBuildCosts(BuildRequestLevel level)
+        {
+            return buildRequest.GetBuildCosts(level);
+        }
+
+        public string GetMenuString()
+        {
+            return GetMenuString(logID);
+        }
+
+        public BuildRequestLevel GetRequestLevel(BuildState buildState)
+        {
+            var rl = buildRequest.requestLevel;
+
+            if (rl == BuildRequestLevel.InitialPass)
+            {
+                return rl;
+            }
+
+            if (buildRequest == null)
+            {
+                buildRequest = new LogInstanceBuildRequest();
+            }
+
+            if (active || (buildState > BuildState.Full))
+            {
+                rl = rl.Max(buildRequest.requestLevel);
+
+                if (rl == BuildRequestLevel.InitialPass)
+                {
+                    return rl;
+                }
+            }
+
+            return rl;
+        }
+
         public void Rebuild()
         {
             shapes.Rebuild();
         }
-        
+
+        public void RecreateMesh(int level)
+        {
+            asset.levels[level].CreateMesh(asset.GetMeshName(level));
+        }
+
         public void Refresh(LevelOfDetailSettingsCollection lodSettings)
         {
             using (BUILD_TIME.INDV_STG_GEN_CXT.Refresh.Auto())
@@ -203,7 +173,7 @@ namespace Appalachia.Simulation.Trees.Definition
                 {
                     lods = new List<LODGenerationOutput>();
                 }
-                
+
                 var current = lods;
                 lods = new List<LODGenerationOutput>();
 
@@ -220,36 +190,59 @@ namespace Appalachia.Simulation.Trees.Definition
                 }
             }
         }
-        
-        
-        private void DistributionSettingsChanged()
-        {
-            LogBuildRequestManager.SettingsChanged(SettingsUpdateTarget.Distribution);
-        }
-        
-        public IEnumerable<BuildCost> GetBuildCosts(BuildRequestLevel level)
-        {
-            return buildRequest.GetBuildCosts(level);
-        }
 
         public bool RequiresUpdate(LogRuntimeInstance ri)
         {
-            if (ri.logName != name) return true;
-            if (ri.logID != logID) return true;
+            if (ri.logName != name)
+            {
+                return true;
+            }
+
+            if (ri.logID != logID)
+            {
+                return true;
+            }
+
             //if (ri.center != center) return true;
             //if (ri.volume != volume) return true;
             //if (ri.actualDiameter != actualDiameter) return true;
             //if (ri.actualLength != actualLength) return true;
             //if (ri.effectiveScale != effectiveScale) return true;
-            if (ri.centerOfMass != centerOfMass) return true;
+            if (ri.centerOfMass != centerOfMass)
+            {
+                return true;
+            }
 
             return false;
         }
-        
+
+        public void SetMaterials(int level, Material[] materials)
+        {
+            if (materials.Length == 0)
+            {
+                asset.levels[level].materials = new[] {DefaultMaterialResource.instance.material};
+            }
+            else
+            {
+                asset.levels[level].materials = materials;
+            }
+        }
+
+        public bool ShouldRebuildDistribution(BuildRequestLevel level)
+        {
+            return buildRequest.distribution == level;
+        }
+
+        public bool ShouldRebuildGeometry(BuildRequestLevel level)
+        {
+            return buildRequest.ShouldBuild(BuildCategory.HighQualityGeometry, level);
+        }
+
         public void UpdateRuntime(LogRuntimeInstance runtime)
         {
             runtime.logName = name;
             runtime.logID = logID;
+
             //runtime.center = center;
             //runtime.volume = volume;
             //runtime.actualDiameter = actualDiameter;
@@ -257,5 +250,31 @@ namespace Appalachia.Simulation.Trees.Definition
             //runtime.effectiveScale = effectiveScale;
             //runtime.centerOfMass = centerOfMass;
         }
+
+        private void DistributionSettingsChanged()
+        {
+            LogBuildRequestManager.SettingsChanged(SettingsUpdateTarget.Distribution);
+        }
+
+        /*public OdinMenuItem GetMenuItem(OdinMenuTree tree)
+        {
+            var item = new OdinMenuItem(tree, GetMenuString(), this) {Icon = GetIcon(true).icon};
+
+            return item;
+        }*/
+
+        private void RemoveLOD(int i)
+        {
+            lods.RemoveAt(i);
+        }
+
+        #region IMenuItemProvider Members
+
+        public TreeIcon GetIcon(bool enabled)
+        {
+            return enabled ? TreeIcons.knot : TreeIcons.disabledKnot;
+        }
+
+        #endregion
     }
 }

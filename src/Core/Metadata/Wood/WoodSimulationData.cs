@@ -3,14 +3,30 @@ using Appalachia.Core.Scriptables;
 using Appalachia.Simulation.Core.Metadata.Density;
 using Appalachia.Simulation.Core.Metadata.Fuel;
 using Sirenix.OdinInspector;
-using UnityEngine;
 
 namespace Appalachia.Simulation.Core.Metadata.Wood
 {
-    public class WoodSimulationData :
-        CategorizableIdentifiableAppalachiaObject<WoodSimulationData>
+    public class WoodSimulationData : CategorizableIdentifiableAppalachiaObject
     {
+        #region Fields and Autoproperties
+
         [BoxGroup("Physical")] public DensityMetadata densityMetadata;
+
+        [BoxGroup("Burning")]
+        [SuffixLabel("/kg")]
+        public double btuDry = 15000.0f;
+
+        [BoxGroup("Burning")]
+        [SuffixLabel("/kg")]
+        public double btuGreen = 10000.0f;
+
+        [BoxGroup("Burning")]
+        [PropertyRange(0.5f, 2.2f)]
+        public float smokeAmount = 1.0f;
+
+        [BoxGroup("Burning")] public FuelBurnRate burnRate;
+
+        [BoxGroup("Burning")] public FuelBurnScale burnScale;
 
         [BoxGroup("Ignition")]
         [PropertyRange(120, 200)]
@@ -22,28 +38,13 @@ namespace Appalachia.Simulation.Core.Metadata.Wood
         [SuffixLabel("°C")]
         public int ignitionTemperature = 200;
 
-        [BoxGroup("Burning")] public FuelBurnRate burnRate;
-
-        [BoxGroup("Burning")] public FuelBurnScale burnScale;
-
-        [BoxGroup("Burning")]
-        [SuffixLabel("/kg")]
-        public double btuGreen = 10000.0f;
-
-        [BoxGroup("Burning")]
-        [SuffixLabel("/kg")]
-        public double btuDry = 15000.0f;
-
-        [BoxGroup("Burning")]
-        [PropertyRange(0.5f, 2.2f)]
-        public float smokeAmount = 1.0f;
+        #endregion
 
         [BoxGroup("Physical")]
         [PropertyRange(400, 1000)]
         [ReadOnly]
         [ShowInInspector]
-        public float densityKgM3 =>
-            densityMetadata == null ? 650f : densityMetadata.densityKGPerCubicMeter;
+        public float densityKgM3 => densityMetadata == null ? 650f : densityMetadata.densityKGPerCubicMeter;
 
         [BoxGroup("Physical")]
         [ReadOnly]
@@ -78,16 +79,19 @@ namespace Appalachia.Simulation.Core.Metadata.Wood
                 }
             }
 
-            densityMetadata = DensityMetadata.LoadOrCreateNew($"wood_{name}");
+            densityMetadata = LoadOrCreateNew<DensityMetadata>($"wood_{name}");
 #pragma warning disable 612
             densityMetadata.densityKGPerCubicMeter = 650f;
 #pragma warning restore 612
         }
 
-        [UnityEditor.MenuItem(PKG.Menu.Assets.Base + nameof(WoodSimulationData), priority = PKG.Menu.Assets.Priority)]
+        [UnityEditor.MenuItem(
+            PKG.Menu.Assets.Base + nameof(WoodSimulationData),
+            priority = PKG.Menu.Assets.Priority
+        )]
         public static void CreateAsset()
         {
-            CreateNew();
+            CreateNew<WoodSimulationData>();
         }
 #endif
     }

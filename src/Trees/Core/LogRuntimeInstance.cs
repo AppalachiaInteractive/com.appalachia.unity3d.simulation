@@ -1,17 +1,16 @@
 #region
 
-using System;
 using Appalachia.Core.Behaviours;
-using Appalachia.Core.Extensions;
 using Appalachia.Core.Shading;
 using Appalachia.Simulation.Core.Metadata.Wood;
 using Appalachia.Simulation.Physical.Integration;
+using Appalachia.Simulation.Trees.Core.Model;
 using Appalachia.Utility.Extensions;
 using Appalachia.Utility.Logging;
 using Sirenix.OdinInspector;
+using Unity.Profiling;
 using UnityEngine;
 using UnityEngine.Serialization;
-using Object = UnityEngine.Object;
 
 #endregion
 
@@ -22,6 +21,8 @@ namespace Appalachia.Simulation.Trees.Core
     [RequireComponent(typeof(RigidbodyDensityManager))]
     public class LogRuntimeInstance : InstancedAppalachiaBehaviour
     {
+        #region Fields and Autoproperties
+
         [FormerlySerializedAs("densityRigidbodyManager")]
         [FoldoutGroup("References")]
         public RigidbodyDensityManager rigidbodyDensityManager;
@@ -77,73 +78,69 @@ namespace Appalachia.Simulation.Trees.Core
         [OnValueChanged(nameof(UpdateAllInstancedProperties))]
         public float _WindProtection;
 
+        #endregion
+
         [BoxGroup("Properties")]
         [ReadOnly]
         [ShowInInspector]
         public float mass => rigidbodyDensityManager.rb.mass;
 
-        private void OnEnable()
-        {
-            if (rigidbodyDensityManager == null)
-            {
-                rigidbodyDensityManager = GetComponent<RigidbodyDensityManager>();
+        #region Event Functions
 
+        protected override void OnEnable()
+        {
+            using (_PRF_OnEnable.Auto())
+            {
                 if (rigidbodyDensityManager == null)
                 {
-                    rigidbodyDensityManager = gameObject.AddComponent<RigidbodyDensityManager>();
+                    rigidbodyDensityManager = GetComponent<RigidbodyDensityManager>();
+
+                    if (rigidbodyDensityManager == null)
+                    {
+                        rigidbodyDensityManager = gameObject.AddComponent<RigidbodyDensityManager>();
+                    }
                 }
-            }
 
-            if (wood == null)
-            {
-                var errorMessage = $"Need to assign wood to this log [{name}]!";
+                if (wood == null)
+                {
+                    var errorMessage = $"Need to assign wood to this log [{name}]!";
 
 #if UNITY_EDITOR
-                AppaLog.Warn(errorMessage, this);
-                return;
+                    AppaLog.Warn(errorMessage, this);
+                    return;
 #else
                 throw new NotSupportedException(errorMessage);
 #endif
-            }
+                }
 
-            var densityMetadata = wood.densityMetadata;
+                var densityMetadata = wood.densityMetadata;
 
-            if (densityMetadata == null)
-            {
-                var errorMessage = $"Need to assign density to this wood [{wood.name}]!";
+                if (densityMetadata == null)
+                {
+                    var errorMessage = $"Need to assign density to this wood [{wood.name}]!";
 
 #if UNITY_EDITOR
-               AppaLog.Warn(errorMessage, this);
-                return;
+                    AppaLog.Warn(errorMessage, this);
+                    return;
 #else
                 throw new NotSupportedException(errorMessage);
 #endif
-            }
+                }
 
 #if UNITY_EDITOR
 
-            if (densityMetadata.name != wood.name)
-            {
-                densityMetadata.name = wood.name;
-                densityMetadata.UpdateName();
-            }
+                if (densityMetadata.name != wood.name)
+                {
+                    densityMetadata.name = wood.name;
+                    densityMetadata.UpdateName();
+                }
 #endif
 
-            rigidbodyDensityManager.density = densityMetadata;
-        }
-
-        protected override void UpdateInstancedProperties(MaterialPropertyBlock block, Material m)
-        {
-            if ((_Burned > 0) || (_Heat > 0))
-            {
-                m.EnableKeyword(GSC.FIRE._BURNABLE_ON);
+                rigidbodyDensityManager.density = densityMetadata;
             }
-
-            block.SetFloat(GSPL.Get(GSC.FIRE._Burned),         _Burned);
-            block.SetFloat(GSPL.Get(GSC.FIRE._Heat),           _Heat);
-            block.SetFloat(GSPL.Get(GSC.FIRE._Seasoned),       _Seasoned);
-            block.SetFloat(GSPL.Get(GSC.FIRE._WindProtection), _WindProtection);
         }
+
+        #endregion
 
         [Button]
 #if UNITY_EDITOR
@@ -151,19 +148,53 @@ namespace Appalachia.Simulation.Trees.Core
 #endif
         public void InitializeWithoutModel()
         {
-            logName = name;
+            using (_PRF_InitializeWithoutModel.Auto())
+            {
+                logName = name;
 
-            var _renderer = GetComponentInChildren<Renderer>();
+                var _renderer = GetComponentInChildren<Renderer>();
 
-            var mesh = _renderer.GetSharedMesh();
+                var mesh = _renderer.GetSharedMesh();
 
-            mesh.GetVolumeAndCenterOfMass(out volume, out centerOfMass);
+                mesh.GetVolumeAndCenterOfMass(out volume, out centerOfMass);
+            }
         }
+
+        protected override void UpdateInstancedProperties(MaterialPropertyBlock block, Material m)
+        {
+            using (_PRF_UpdateInstancedProperties.Auto())
+            {
+                if ((_Burned > 0) || (_Heat > 0))
+                {
+                    m.EnableKeyword(GSC.FIRE._BURNABLE_ON);
+                }
+
+                block.SetFloat(GSPL.Get(GSC.FIRE._Burned),         _Burned);
+                block.SetFloat(GSPL.Get(GSC.FIRE._Heat),           _Heat);
+                block.SetFloat(GSPL.Get(GSC.FIRE._Seasoned),       _Seasoned);
+                block.SetFloat(GSPL.Get(GSC.FIRE._WindProtection), _WindProtection);
+            }
+        }
+
+        #region Profiling
+
+        private const string _PRF_PFX = nameof(LogRuntimeInstance) + ".";
+
+        private static readonly ProfilerMarker _PRF_InitializeWithoutModel =
+            new ProfilerMarker(_PRF_PFX + nameof(InitializeWithoutModel));
+
+        private static readonly ProfilerMarker _PRF_UpdateInstancedProperties =
+            new ProfilerMarker(_PRF_PFX + nameof(UpdateInstancedProperties));
+
+        private static readonly ProfilerMarker
+            _PRF_OnEnable = new ProfilerMarker(_PRF_PFX + nameof(OnEnable));
+
+        #endregion
 
 #if UNITY_EDITOR
         [SerializeField]
         [HideInInspector]
-        private ILogModel _model;
+        private LogModel _model;
 
         private bool _missingModel => (_model == null) || _model.MissingContainer;
 
@@ -189,7 +220,7 @@ namespace Appalachia.Simulation.Trees.Core
         {
             if (_model == null)
             {
-                _model = GetComponentInParent<ILogModel>();
+                _model = GetComponentInParent<LogModel>();
             }
         }
 #endif

@@ -27,129 +27,117 @@ namespace Appalachia.Simulation.Trees.UI.Species
     [CustomEditor(typeof(TreeDataContainer))]
     public class TreeSpeciesEditor : OdinEditor
     {
+        #region Static Fields and Autoproperties
+
         public static TreeDataContainer _tree;
-        
-        private void ResetState()
-        {
-            _treeModel = null;
-            _tree = null;
-            _first = true;
-            _sidebar = null;
-            _hierarchyEditor = null;
-            _tree_IndividualTabPage = null;
-            //_topLevelAssetsPage = null;
-            _tree_MaterialTabPage = null;
-            _tree_SpeciesTabPage = null;
-            _tree_HierarchyTabPage = null;
-            _topLevelTabGroup = null;
-            //_assetsProperty = null;
-            _cameraTransform = null;
-        }
 
         public static TreeModel _treeModel;
+
+        private static EditorInstanceState editorState;
+        private static EditorInstanceState modelState;
+
+        #endregion
+
+        #region Fields and Autoproperties
+
         public bool _first = true;
-        public TreeEditorSidebarCollection _sidebar;
-        public TreeSpeciesHierarchyEditor _hierarchyEditor;
         public bool _swallowMenuError;
-        
-        
+        public GUITabGroup _globalTabGroup;
+
         public GUITabGroup _topLevelTabGroup;
         public GUITabGroup _treeTabGroup;
-        public GUITabGroup _globalTabGroup;
-        
-        public GUITabPage _topLevel_TreeTabPage;
+        public GUITabPage _global_DebugTabPage;
+        public GUITabPage _global_SceneTabPage;
+
+        public GUITabPage _global_SettingsTabPage;
         public GUITabPage _topLevel_GlobalTabPage;
-        
-        
-        public GUITabPage _tree_SpeciesTabPage;
+
+        public GUITabPage _topLevel_TreeTabPage;
         public GUITabPage _tree_HierarchyTabPage;
         public GUITabPage _tree_IndividualTabPage;
         public GUITabPage _tree_MaterialTabPage;
-        
-        public GUITabPage _global_SettingsTabPage;
-        public GUITabPage _global_DebugTabPage;
-        public GUITabPage _global_SceneTabPage;
-        
+
+        public GUITabPage _tree_SpeciesTabPage;
+
         public PropertyTree _debugProperty;
         public PropertyTree _globalProperty;
-        public PropertyTree _sceneProperty;
-        
-        public PropertyTree _speciesProperty;
         public PropertyTree _materialsProperty;
         public PropertyTree _modelProperty;
-        
+        public PropertyTree _sceneProperty;
+
+        public PropertyTree _speciesProperty;
+
         public Transform _cameraTransform;
-        
+        public TreeEditorSidebarCollection _sidebar;
+        public TreeSpeciesHierarchyEditor _hierarchyEditor;
+
         private readonly float buttonHeightMultiplier = .05f;
-        private readonly float sidebarButtonHeightMultiplier = .06f;
-        private readonly int initialButtonHeight = 32;
-        private readonly float initialMenu1Width = 140f;
         private readonly float drawSettingsWidth = 32f;
+        private readonly float initialMenu1Width = 140f;
 
         private readonly float menu1AHeight = 120f;
         private readonly float menuButtonWidthMultiplier = .92f;
 
         private readonly float menuWidthMultiplier = .25f;
+        private readonly float miniButtonScale = .65f;
+        private readonly float sidebarButtonHeightMultiplier = .06f;
 
         private readonly float smallButtonScale = .75f;
-        private readonly float miniButtonScale = .65f;
-        
-        
+        private readonly int initialButtonHeight = 32;
 
-        private static EditorInstanceState editorState;
-        private static EditorInstanceState modelState;
-        
+        #endregion
+
         private float buttonHeight =>
-            Mathf.Min(
-                initialButtonHeight,
-                EditorGUIUtility.currentViewWidth * buttonHeightMultiplier
-            );
-        
-        private float sidebarButtonHeight =>
-            Mathf.Min(
-                initialButtonHeight,
-                EditorGUIUtility.currentViewWidth * sidebarButtonHeightMultiplier
-            );
+            Mathf.Min(initialButtonHeight, EditorGUIUtility.currentViewWidth * buttonHeightMultiplier);
 
         private float editWindowWidth => EditorGUIUtility.currentViewWidth - sideToolbarWidth - 6;
-
-        private float sidebarMiniButtonHeight => miniButtonScale * sidebarButtonHeight;
         private float miniButtonHeight => miniButtonScale * buttonHeight;
 
+        private float sidebarButtonHeight =>
+            Mathf.Min(initialButtonHeight, EditorGUIUtility.currentViewWidth * sidebarButtonHeightMultiplier);
+
+        private float sidebarMiniButtonHeight => miniButtonScale * sidebarButtonHeight;
+
         private float sidebarSmallButtonHeight => smallButtonScale * sidebarButtonHeight;
-        private float smallButtonHeight => smallButtonScale * buttonHeight;
 
         private float sideToolbarWidth =>
             Mathf.Min(initialMenu1Width, EditorGUIUtility.currentViewWidth * menuWidthMultiplier);
 
-        protected override void OnHeaderGUI()
-        {
-        }
+        private float smallButtonHeight => smallButtonScale * buttonHeight;
+
+        #region Event Functions
 
         protected override void OnEnable()
         {
             base.OnEnable();
-            
+
             TreeBuildManager._enabled = true;
         }
 
         protected override void OnDisable()
         {
-            var instanceID = GetInstanceID();            
+            var instanceID = GetInstanceID();
 
-            if (editorState == null) editorState = new EditorInstanceState();
-            if (modelState == null) modelState = new EditorInstanceState();
+            if (editorState == null)
+            {
+                editorState = new EditorInstanceState();
+            }
+
+            if (modelState == null)
+            {
+                modelState = new EditorInstanceState();
+            }
 
             _hierarchyEditor?.Dispose();
-        
+
             _debugProperty?.Dispose();
             _globalProperty?.Dispose();
             _sceneProperty?.Dispose();
-        
+
             _speciesProperty?.Dispose();
             _materialsProperty?.Dispose();
             _modelProperty?.Dispose();
-            
+
             if (editorState.instanceID == instanceID)
             {
                 if ((_tree != null) && !EditorApplication.isCompiling)
@@ -158,26 +146,25 @@ namespace Appalachia.Simulation.Trees.UI.Species
                     {
                         _tree.Save();
                     }
-                
+
                     AssetManager.OnFinalize();
                 }
-                
+
                 editorState.instanceID = -1;
                 editorState.activeWindowWidth = 0;
             }
-            
 
             base.OnDisable();
 
             TreeBuildManager._enabled = false;
         }
 
-        
-        
+        #endregion
+
         public override void OnInspectorGUI()
         {
             try
-            {            
+            {
                 var t = target as TreeDataContainer;
 
                 if (t != _tree)
@@ -190,10 +177,17 @@ namespace Appalachia.Simulation.Trees.UI.Species
                 {
                     return;
                 }
-                
-                if (editorState == null) editorState = new EditorInstanceState();
-                if (modelState == null) modelState = new EditorInstanceState();
-                
+
+                if (editorState == null)
+                {
+                    editorState = new EditorInstanceState();
+                }
+
+                if (modelState == null)
+                {
+                    modelState = new EditorInstanceState();
+                }
+
                 if (!editorState.HandleStateChange(this))
                 {
                     if (modelState.HandleStateChange(this))
@@ -202,11 +196,9 @@ namespace Appalachia.Simulation.Trees.UI.Species
                         DrawModel();
                         return;
                     }
-                    else
-                    {
-                        DrawNonActive();
-                        return;
-                    }
+
+                    DrawNonActive();
+                    return;
                 }
 
                 if (editorState.instanceID == modelState.instanceID)
@@ -222,7 +214,7 @@ namespace Appalachia.Simulation.Trees.UI.Species
                     {
                         _tree.initializationSettings.name = _tree.name;
                     }
-                    
+
                     base.OnInspectorGUI();
                     return;
                 }
@@ -233,15 +225,15 @@ namespace Appalachia.Simulation.Trees.UI.Species
                 {
                     _hierarchyEditor = new TreeSpeciesHierarchyEditor();
                 }
-                
+
                 if (_tree.species.nameBasis == null)
                 {
-                    _tree.species.nameBasis = NameBasis.CreateNested(_tree);
+                    _tree.species.nameBasis = NameBasis.CreateNested<NameBasis>(_tree);
                 }
 
                 if (_tree.subfolders == null)
                 {
-                    _tree.subfolders = TreeAssetSubfolders.CreateNested(_tree);
+                    _tree.subfolders = TreeAssetSubfolders.CreateNested<TreeAssetSubfolders>(_tree);
                 }
 
                 if (_treeModel == null)
@@ -263,7 +255,6 @@ namespace Appalachia.Simulation.Trees.UI.Species
                         _sidebar = new TreeEditorSidebarCollection();
                     }
 
-                
                     _sidebar.RepopulateMenus(_tree, false, false);
                 }
 
@@ -273,8 +264,9 @@ namespace Appalachia.Simulation.Trees.UI.Species
                 {
                     using (TreeGUI.Layout.Vertical(
                         true,
-                        TreeGUI.Layout.Options.ExpandWidth(false).MinWidth(sideToolbarWidth)
-                            .MaxWidth(sideToolbarWidth)
+                        TreeGUI.Layout.Options.ExpandWidth(false)
+                               .MinWidth(sideToolbarWidth)
+                               .MaxWidth(sideToolbarWidth)
                     ))
                     {
                         var oldI = _sidebar.SelectedIndividual;
@@ -282,14 +274,14 @@ namespace Appalachia.Simulation.Trees.UI.Species
                         var oldS = _sidebar.SelectedStage;
 
                         var enabled = UnityEngine.GUI.enabled;
-                        
+
                         try
                         {
                             if (_tree.progressTracker.buildActive)
                             {
                                 UnityEngine.GUI.enabled = false;
                             }
-                            
+
                             _sidebar.DrawIndividualMenu(
                                 _tree,
                                 sideToolbarWidth,
@@ -319,13 +311,13 @@ namespace Appalachia.Simulation.Trees.UI.Species
                                 sideToolbarWidth * menuButtonWidthMultiplier,
                                 sidebarMiniButtonHeight
                             );
-                            
+
                             _swallowMenuError = false;
-                            UnityEngine.GUI.enabled = enabled;   
+                            UnityEngine.GUI.enabled = enabled;
                         }
                         catch (Exception ex)
                         {
-                            UnityEngine.GUI.enabled = enabled;         
+                            UnityEngine.GUI.enabled = enabled;
                             if (_swallowMenuError)
                             {
                                 throw;
@@ -335,17 +327,17 @@ namespace Appalachia.Simulation.Trees.UI.Species
                             _swallowMenuError = true;
                             return;
                         }
-                        
 
                         if (_first)
-                        {                        
+                        {
                             TreeBuildManager._enabled = true;
-                            
+
                             _sidebar.Select(
                                 TreeSpeciesEditorSelection.instance.tree.id,
                                 TreeSpeciesEditorSelection.instance.tree.age,
                                 TreeSpeciesEditorSelection.instance.tree.stage
                             );
+
                             //_sidebar.SelectFirst();
 
                             _tree.UpdateSettingsType(ResponsiveSettingsType.Tree);
@@ -360,19 +352,22 @@ namespace Appalachia.Simulation.Trees.UI.Species
                             {
                                 _treeModel.selection.individualSelection =
                                     _tree.individuals.IndexOf(_sidebar.SelectedIndividual);
-                                
-                                TreeSpeciesEditorSelection.instance.tree.id = _sidebar.SelectedIndividual.individualID;
+
+                                TreeSpeciesEditorSelection.instance.tree.id =
+                                    _sidebar.SelectedIndividual.individualID;
 
                                 if (_sidebar.HasSelectedAge)
                                 {
                                     _treeModel.selection.ageSelection = _sidebar.SelectedAge.ageType;
-                                TreeSpeciesEditorSelection.instance.tree.id = _sidebar.SelectedIndividual.individualID;
+                                    TreeSpeciesEditorSelection.instance.tree.id =
+                                        _sidebar.SelectedIndividual.individualID;
                                 }
 
                                 if (_sidebar.HasSelectedStage)
                                 {
                                     _treeModel.selection.stageSelection = _sidebar.SelectedStage.stageType;
-                                    TreeSpeciesEditorSelection.instance.tree.stage = _sidebar.SelectedStage.stageType;
+                                    TreeSpeciesEditorSelection.instance.tree.stage =
+                                        _sidebar.SelectedStage.stageType;
                                 }
                                 else
                                 {
@@ -390,7 +385,7 @@ namespace Appalachia.Simulation.Trees.UI.Species
                                     if ((index >= 0) && (index < _tree.individuals.Count))
                                     {
                                         var individual = _tree.individuals[index];
-                                
+
                                         if (!individual.HasType(_treeModel.selection.ageSelection))
                                         {
                                             var first = individual.ages.FirstOrDefault();
@@ -400,25 +395,23 @@ namespace Appalachia.Simulation.Trees.UI.Species
                                         }
 
                                         var age = individual[_treeModel.selection.ageSelection];
-                                
+
                                         if (!age.HasType(_treeModel.selection.stageSelection))
                                         {
                                             _treeModel.selection.stageSelection = StageType.Normal;
                                         }
 
-                                        var modelSelection = age[_treeModel.selection
-                                            .stageSelection];
+                                        var modelSelection = age[_treeModel.selection.stageSelection];
 
                                         if (modelSelection != _sidebar.SelectedStage)
                                         {
                                             _sidebar.Select(modelSelection);
                                         }
                                     }
-                                    
                                 }
                             }
                         }
-                        
+
                         _tree.SetActive(
                             _sidebar.SelectedIndividual?.individualID ?? 0,
                             _sidebar.SelectedAge?.ageType ?? AgeType.None,
@@ -429,74 +422,77 @@ namespace Appalachia.Simulation.Trees.UI.Species
                         {
                             _sidebar.SelectedIndividual.UpdateMetadata(_tree.species);
                         }
-                        
+
                         EditorGUILayout.Space();
-                        
+
                         CopySettingsToolbar
-                            .DrawCopyToolbar<TreeDataContainer, TreeSettingsSelection, TreeSettingsDataContainerSelection>(
+                           .DrawCopyToolbar<TreeDataContainer, TreeSettingsSelection,
+                                TreeSettingsDataContainerSelection>(
                                 _tree,
                                 TreeSpeciesEditorSelection.instance.treeCopySettings,
                                 TreeSpeciesEditorSelection.instance.treeCopySettings.selection.enabled,
-                                () => TreeSpeciesEditorSelection.instance.treeCopySettings.selection.enabled = false                                
+                                () => TreeSpeciesEditorSelection.instance.treeCopySettings.selection.enabled =
+                                    false
                             );
                     }
 
                     using (TreeGUI.Layout.Vertical())
                     {
-
                         using (TreeGUI.Layout.Horizontal())
                         {
-                            TreeModelViewToolbar.DrawToolbar(_tree, _treeModel, _cameraTransform, smallButtonHeight);
+                            TreeModelViewToolbar.DrawToolbar(
+                                _tree,
+                                _treeModel,
+                                _cameraTransform,
+                                smallButtonHeight
+                            );
                         }
 
                         using (TreeGUI.Layout.Horizontal())
                         {
-                            TreeSpeciesBuildToolbar.instance.DrawBuildToolbar(_tree, smallButtonHeight, drawSettingsWidth);
+                            TreeSpeciesBuildToolbar.instance.DrawBuildToolbar(
+                                _tree,
+                                smallButtonHeight,
+                                drawSettingsWidth
+                            );
                         }
-                        
+
                         using (TreeGUI.Layout.Horizontal())
                         {
-                            TreeSpeciesBuildToolbar.instance.DrawBuildProgress(_tree, smallButtonHeight*.75f);
+                            TreeSpeciesBuildToolbar.instance.DrawBuildProgress(
+                                _tree,
+                                smallButtonHeight * .75f
+                            );
                         }
 
                         if ((_topLevelTabGroup == null) && (Event.current.type == EventType.Layout))
                         {
-                            _topLevelTabGroup = new GUITabGroup
-                            {
-                                FixedHeight = false, AnimationSpeed = 1000
-                            };
-                            
+                            _topLevelTabGroup = new GUITabGroup {FixedHeight = false, AnimationSpeed = 1000};
+
                             _topLevel_TreeTabPage = _topLevelTabGroup.RegisterTab("Tree");
                             _topLevel_GlobalTabPage = _topLevelTabGroup.RegisterTab("Globals");
-                            
-                            _treeTabGroup = new GUITabGroup
-                            {
-                                FixedHeight = false, AnimationSpeed = 1000
-                            };
-                            
-                            _globalTabGroup = new GUITabGroup
-                            {
-                                FixedHeight = false, AnimationSpeed = 1000
-                            };
-                            
+
+                            _treeTabGroup = new GUITabGroup {FixedHeight = false, AnimationSpeed = 1000};
+
+                            _globalTabGroup = new GUITabGroup {FixedHeight = false, AnimationSpeed = 1000};
+
                             _tree_HierarchyTabPage = _treeTabGroup.RegisterTab("Shape");
                             _tree_SpeciesTabPage = _treeTabGroup.RegisterTab("Species");
                             _tree_IndividualTabPage = _treeTabGroup.RegisterTab("Individual");
                             _tree_MaterialTabPage = _treeTabGroup.RegisterTab("Materials");
-                            
+
                             _global_SettingsTabPage = _globalTabGroup.RegisterTab("Global");
                             _global_DebugTabPage = _globalTabGroup.RegisterTab("Debug");
                             _global_SceneTabPage = _globalTabGroup.RegisterTab("Scene");
-                            
-                            
+
                             if (TreeSpeciesEditorSelection.instance.tree.tab == 0)
                             {
                                 _topLevelTabGroup.SetCurrentPage(_topLevel_TreeTabPage);
-                                
+
                                 if (TreeSpeciesEditorSelection.instance.tree.subtab == 0)
                                 {
                                     _treeTabGroup.SetCurrentPage(_tree_HierarchyTabPage);
-                                } 
+                                }
                                 else if (TreeSpeciesEditorSelection.instance.tree.subtab == 1)
                                 {
                                     _treeTabGroup.SetCurrentPage(_tree_SpeciesTabPage);
@@ -513,11 +509,11 @@ namespace Appalachia.Simulation.Trees.UI.Species
                             else
                             {
                                 _topLevelTabGroup.SetCurrentPage(_topLevel_GlobalTabPage);
-                                
+
                                 if (TreeSpeciesEditorSelection.instance.tree.subtab == 0)
                                 {
                                     _globalTabGroup.SetCurrentPage(_global_SettingsTabPage);
-                                } 
+                                }
                                 else if (TreeSpeciesEditorSelection.instance.tree.subtab == 1)
                                 {
                                     _globalTabGroup.SetCurrentPage(_global_DebugTabPage);
@@ -528,7 +524,7 @@ namespace Appalachia.Simulation.Trees.UI.Species
                                 }
                             }
                         }
-                        
+
                         _topLevelTabGroup.BeginGroup(true, GUIStyle.none);
 
                         if (_topLevel_TreeTabPage.BeginPage())
@@ -536,11 +532,11 @@ namespace Appalachia.Simulation.Trees.UI.Species
                             _treeTabGroup.BeginGroup(true, GUIStyle.none);
 
                             TreeSpeciesEditorSelection.instance.tree.tab = 0;
-                            
+
                             if (_tree_HierarchyTabPage.BeginPage())
                             {
                                 TreeSpeciesEditorSelection.instance.tree.subtab = 0;
-                                
+
                                 using (TreeGUI.Layout.Horizontal())
                                 {
                                     if ((_sidebar.SelectedAge != null) &&
@@ -563,16 +559,16 @@ namespace Appalachia.Simulation.Trees.UI.Species
                             if (_tree_SpeciesTabPage.BeginPage())
                             {
                                 TreeSpeciesEditorSelection.instance.tree.subtab = 1;
-                                
+
                                 DrawSpecies();
                             }
-                            
+
                             _tree_SpeciesTabPage.EndPage();
 
                             if (_tree_IndividualTabPage.BeginPage())
                             {
                                 TreeSpeciesEditorSelection.instance.tree.subtab = 2;
-                                
+
                                 TreeEditorGenerationToggleMenuManager.DrawEditorAgeToolbar(
                                     _tree,
                                     _sidebar.SelectedIndividual,
@@ -592,7 +588,7 @@ namespace Appalachia.Simulation.Trees.UI.Species
                             if (_tree_MaterialTabPage.BeginPage())
                             {
                                 TreeSpeciesEditorSelection.instance.tree.subtab = 3;
-                                
+
                                 DrawMaterials();
                             }
 
@@ -606,23 +602,22 @@ namespace Appalachia.Simulation.Trees.UI.Species
                         if (_topLevel_GlobalTabPage.BeginPage())
                         {
                             _globalTabGroup.BeginGroup(true, GUIStyle.none);
-                            
+
                             TreeSpeciesEditorSelection.instance.tree.tab = 1;
 
                             if (_global_SettingsTabPage.BeginPage())
                             {
                                 TreeSpeciesEditorSelection.instance.tree.subtab = 0;
-                            
+
                                 DrawGlobal();
                             }
 
                             _global_SettingsTabPage.EndPage();
 
-                        
                             if (_global_DebugTabPage.BeginPage())
                             {
                                 TreeSpeciesEditorSelection.instance.tree.subtab = 1;
-                            
+
                                 DrawDebug();
                             }
 
@@ -631,17 +626,17 @@ namespace Appalachia.Simulation.Trees.UI.Species
                             if (_global_SceneTabPage.BeginPage())
                             {
                                 TreeSpeciesEditorSelection.instance.tree.subtab = 2;
-                            
+
                                 DrawScene();
                             }
 
                             _global_SceneTabPage.EndPage();
-                        
+
                             _globalTabGroup.EndGroup();
                         }
 
                         _topLevel_GlobalTabPage.EndPage();
-                        
+
                         _topLevelTabGroup.EndGroup();
                     }
                 }
@@ -654,7 +649,7 @@ namespace Appalachia.Simulation.Trees.UI.Species
                     {
                         _tree.Save();
                     }*/
-                }                
+                }
             }
             catch (ExitGUIException)
             {
@@ -673,19 +668,49 @@ namespace Appalachia.Simulation.Trees.UI.Species
             }
         }
 
-        private void DrawNonActive()
+        protected override void OnHeaderGUI()
         {
-            SirenixEditorGUI.WarningMessageBox("This window is not the active tree editing window.");
-            
-            TreeGUI.Button.Standard("Click to enable tree editing in this window",
-                string.Empty,
-                () => editorState.instanceID = GetInstanceID(),
-                TreeGUI.Styles.Button,
-                TreeGUI.Layout.Options.None);
-            
         }
-        
-        
+
+        private void DrawDebug()
+        {
+            if ((Event.current.type == EventType.Layout) && (_debugProperty == null))
+            {
+                _debugProperty = PropertyTree.Create(GlobalDebug.instance);
+            }
+
+            if (_debugProperty != null)
+            {
+                _debugProperty.Draw(false);
+            }
+        }
+
+        private void DrawGlobal()
+        {
+            if ((Event.current.type == EventType.Layout) && (_globalProperty == null))
+            {
+                _globalProperty = PropertyTree.Create(TreeGlobalSettings.instance);
+            }
+
+            if (_globalProperty != null)
+            {
+                _globalProperty.Draw(false);
+            }
+        }
+
+        private void DrawMaterials()
+        {
+            if ((Event.current.type == EventType.Layout) && (_materialsProperty == null))
+            {
+                _materialsProperty = PropertyTree.Create(_tree.materials);
+            }
+
+            if (_materialsProperty != null)
+            {
+                _materialsProperty.Draw(false);
+            }
+        }
+
         private void DrawModel()
         {
             if ((Event.current.type == EventType.Layout) && (_modelProperty == null))
@@ -703,34 +728,20 @@ namespace Appalachia.Simulation.Trees.UI.Species
                 _modelProperty.Draw(false);
             }
         }
-        
-        private void DrawGlobal()
+
+        private void DrawNonActive()
         {
-            if ((Event.current.type == EventType.Layout) && (_globalProperty == null))
-            {
-                _globalProperty = PropertyTree.Create(TreeGlobalSettings.instance);
-            }
+            SirenixEditorGUI.WarningMessageBox("This window is not the active tree editing window.");
 
-            if (_globalProperty != null)
-            {
-                _globalProperty.Draw(false);
-            }
-        }      
-        
-        private void DrawDebug()
-        {
-            if ((Event.current.type == EventType.Layout) && (_debugProperty == null))
-            {
-                _debugProperty = PropertyTree.Create(GlobalDebug.instance);
-            }
+            TreeGUI.Button.Standard(
+                "Click to enable tree editing in this window",
+                string.Empty,
+                () => editorState.instanceID = GetInstanceID(),
+                TreeGUI.Styles.Button,
+                TreeGUI.Layout.Options.None
+            );
+        }
 
-
-            if (_debugProperty != null)
-            {
-                _debugProperty.Draw(false);
-            }
-        }      
-        
         private void DrawScene()
         {
             if ((Event.current.type == EventType.Layout) && (_sceneProperty == null))
@@ -738,14 +749,12 @@ namespace Appalachia.Simulation.Trees.UI.Species
                 _sceneProperty = PropertyTree.Create(TreeGizmoStyle.instance);
             }
 
-
             if (_sceneProperty != null)
             {
                 _sceneProperty.Draw(false);
             }
         }
 
-        
         private void DrawSpecies()
         {
             if ((Event.current.type == EventType.Layout) && (_speciesProperty == null))
@@ -753,26 +762,31 @@ namespace Appalachia.Simulation.Trees.UI.Species
                 _speciesProperty = PropertyTree.Create(_tree.species);
             }
 
-
             if (_speciesProperty != null)
             {
                 _speciesProperty.Draw(false);
-            
+
                 base.OnInspectorGUI();
             }
         }
 
-        private void DrawMaterials()
+        private void ResetState()
         {
-            if ((Event.current.type == EventType.Layout) && (_materialsProperty == null))
-            {
-                _materialsProperty = PropertyTree.Create(_tree.materials);
-            }
+            _treeModel = null;
+            _tree = null;
+            _first = true;
+            _sidebar = null;
+            _hierarchyEditor = null;
+            _tree_IndividualTabPage = null;
 
-            if (_materialsProperty != null)
-            {
-                _materialsProperty.Draw(false);
-            }
+            //_topLevelAssetsPage = null;
+            _tree_MaterialTabPage = null;
+            _tree_SpeciesTabPage = null;
+            _tree_HierarchyTabPage = null;
+            _topLevelTabGroup = null;
+
+            //_assetsProperty = null;
+            _cameraTransform = null;
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using Appalachia.CI.Integration.Assets;
 using Appalachia.Core.Extensions;
 using Appalachia.Core.Layers;
+using Appalachia.Core.Scriptables;
 using Appalachia.Core.Shading;
 using Appalachia.Core.Types.Enums;
 using Appalachia.Globals.Shading;
@@ -19,7 +20,7 @@ namespace Appalachia.Simulation.ReactionSystem.TouchBend.Data
     [ExecuteAlways]
     public class TouchBendQuad : MonoBehaviour
     {
-#region Runtime
+        #region Runtime
 
         [FoldoutGroup("Runtime")]
         [InlineProperty]
@@ -128,11 +129,7 @@ namespace Appalachia.Simulation.ReactionSystem.TouchBend.Data
                 {
                     var child = transform.GetChild(i);
 
-                    if (string.Equals(
-                        child.name,
-                        "TOUCHBEND",
-                        StringComparison.InvariantCultureIgnoreCase
-                    ))
+                    if (string.Equals(child.name, "TOUCHBEND", StringComparison.InvariantCultureIgnoreCase))
                     {
                         go = child.gameObject;
 
@@ -258,9 +255,9 @@ namespace Appalachia.Simulation.ReactionSystem.TouchBend.Data
             lastPosition = p;
         }
 
-#endregion
+        #endregion
 
-#region Editor
+        #region Editor
 
 #if UNITY_EDITOR
         public Camera quadCam;
@@ -360,7 +357,7 @@ namespace Appalachia.Simulation.ReactionSystem.TouchBend.Data
             {
                 var runtimeName = $"{gameObject.name}_INTERACTION-INFO";
 
-                info = TouchBendComponentInfo.LoadOrCreateNew(runtimeName);
+                info = AppalachiaObject.LoadOrCreateNew<TouchBendComponentInfo>(runtimeName);
             }
         }
 
@@ -443,13 +440,7 @@ namespace Appalachia.Simulation.ReactionSystem.TouchBend.Data
                     GSR.instance.touchbendQuadBase
                 );
 
-                Graphics.DrawMesh(
-                    mesh,
-                    positionMatrix,
-                    generationMaterial,
-                    generationLayer,
-                    quadCam
-                );
+                Graphics.DrawMesh(mesh, positionMatrix, generationMaterial, generationLayer, quadCam);
             }
 
             dirty = true;
@@ -627,13 +618,10 @@ namespace Appalachia.Simulation.ReactionSystem.TouchBend.Data
 
             var textureResolution = renderQuality.GetRenderQualityPixelResolution();
 
-            info.texture =
-                new Texture2D(textureResolution, textureResolution, textureFormat, true, true)
-                {
-                    name = newTextureName,
-                    alphaIsTransparency = false,
-                    filterMode = FilterMode.Point
-                };
+            info.texture = new Texture2D(textureResolution, textureResolution, textureFormat, true, true)
+            {
+                name = newTextureName, alphaIsTransparency = false, filterMode = FilterMode.Point
+            };
 
             var srgbWrite = GL.sRGBWrite;
             GL.sRGBWrite = false;
@@ -682,85 +670,57 @@ namespace Appalachia.Simulation.ReactionSystem.TouchBend.Data
             {
                 var rawdata = info.texture.GetRawTextureData<RG16>();
 
-                new GaussianBlurRG16Job(
-                        rawdata,
-                        info.texture.width,
-                        info.texture.height,
-                        blurRadius
-                    ).Schedule()
-                     .Complete();
+                new GaussianBlurRG16Job(rawdata, info.texture.width, info.texture.height, blurRadius)
+                   .Schedule()
+                   .Complete();
             }
             else if (info.texture.format == TextureFormat.RGHalf)
             {
                 var rawdata = info.texture.GetRawTextureData<RGHalf>();
 
-                new GaussianBlurRGHalfJob(
-                        rawdata,
-                        info.texture.width,
-                        info.texture.height,
-                        blurRadius
-                    ).Schedule()
-                     .Complete();
+                new GaussianBlurRGHalfJob(rawdata, info.texture.width, info.texture.height, blurRadius)
+                   .Schedule()
+                   .Complete();
             }
             else if (info.texture.format == TextureFormat.RGFloat)
             {
                 var rawdata = info.texture.GetRawTextureData<RGFloat>();
 
-                new GaussianBlurRGFloatJob(
-                        rawdata,
-                        info.texture.width,
-                        info.texture.height,
-                        blurRadius
-                    ).Schedule()
-                     .Complete();
+                new GaussianBlurRGFloatJob(rawdata, info.texture.width, info.texture.height, blurRadius)
+                   .Schedule()
+                   .Complete();
             }
             else if (info.texture.format == TextureFormat.RGB24)
             {
                 var rawdata = info.texture.GetRawTextureData<RGB24>();
 
-                new GaussianBlurRGB24Job(
-                        rawdata,
-                        info.texture.width,
-                        info.texture.height,
-                        blurRadius
-                    ).Schedule()
-                     .Complete();
+                new GaussianBlurRGB24Job(rawdata, info.texture.width, info.texture.height, blurRadius)
+                   .Schedule()
+                   .Complete();
             }
             else if (info.texture.format == TextureFormat.RGBA32)
             {
                 var rawdata = info.texture.GetRawTextureData<RGBA32>();
 
-                new GaussianBlurRGBA32Job(
-                        rawdata,
-                        info.texture.width,
-                        info.texture.height,
-                        blurRadius
-                    ).Schedule()
-                     .Complete();
+                new GaussianBlurRGBA32Job(rawdata, info.texture.width, info.texture.height, blurRadius)
+                   .Schedule()
+                   .Complete();
             }
             else if (info.texture.format == TextureFormat.RGBAHalf)
             {
                 var rawdata = info.texture.GetRawTextureData<RGBAHalf>();
 
-                new GaussianBlurRGBAHalfJob(
-                        rawdata,
-                        info.texture.width,
-                        info.texture.height,
-                        blurRadius
-                    ).Schedule()
-                     .Complete();
+                new GaussianBlurRGBAHalfJob(rawdata, info.texture.width, info.texture.height, blurRadius)
+                   .Schedule()
+                   .Complete();
             }
             else if (info.texture.format == TextureFormat.RGBAFloat)
             {
                 var rawdata = info.texture.GetRawTextureData<RGBAFloat>();
 
-                new GaussianBlurRGBAFloatJob(
-                        rawdata,
-                        info.texture.width,
-                        info.texture.height,
-                        blurRadius
-                    ).Schedule()
-                     .Complete();
+                new GaussianBlurRGBAFloatJob(rawdata, info.texture.width, info.texture.height, blurRadius)
+                   .Schedule()
+                   .Complete();
             }
 
             info.texture.Apply();
@@ -936,6 +896,6 @@ namespace Appalachia.Simulation.ReactionSystem.TouchBend.Data
 
 #endif
 
-#endregion
+        #endregion
     }
 }

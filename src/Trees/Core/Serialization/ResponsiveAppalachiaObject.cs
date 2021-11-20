@@ -6,8 +6,7 @@ using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Core.Serialization
 {
-    public abstract class ResponsiveAppalachiaObject<T> : AppalachiaObject<T>, IResponsive
-        where T : AppalachiaObject<T>
+    public abstract class ResponsiveAppalachiaObject : AppalachiaObject, IResponsive
     {
 #if UNITY_EDITOR
 

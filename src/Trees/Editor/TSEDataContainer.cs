@@ -21,22 +21,28 @@ using UnityEngine.Serialization;
 
 namespace Appalachia.Simulation.Trees
 {
-    public abstract class TSEDataContainer : ResponsiveAppalachiaObject<TSEDataContainer>
+    public abstract class TSEDataContainer : ResponsiveAppalachiaObject
     {
-        [HideInInspector] 
-        public bool initialized;
+        public enum DataState
+        {
+            Normal = 0,
+            Dirty = 10,
+            PendingSave = 20
+        }
 
-        public bool canInitialize =>
-            !initialized &&
-            (initializationSettings != null) &&
-            !string.IsNullOrWhiteSpace(initializationSettings.name) &&
-            (initializationSettings.name.Length > 2) &&
-            (!initializationSettings.convertTreeData || (initializationSettings.original != null));
-        
-        [HideInInspector] public DataState dataState;
-        
+        #region Fields and Autoproperties
+
         [HideInInspector] public bool graphDirty;
 
+        [HideInInspector] public bool initialized;
+
+        [HideInInspector] public BuildState buildState = BuildState.Default;
+
+        [HideInInspector] public DataState dataState;
+
+        [FormerlySerializedAs("individualIDs")]
+        [HideInInspector]
+        public IDIncrementer primaryIDs = new IDIncrementer(false);
 
         [PropertyOrder(-100)]
         [HideIf(nameof(initialized))]
@@ -45,24 +51,22 @@ namespace Appalachia.Simulation.Trees
         [Title("Initialization", "Initialize the tree or branch before proceeding.")]
         public InitializationSettings initializationSettings;
 
-        [FormerlySerializedAs("individualIDs")] [HideInInspector] 
-        public IDIncrementer primaryIDs = new IDIncrementer(false);
-
-        [HideInInspector]
-        public TreePrefabCollection hierarchyPrefabs;
-
         [HideInInspector] public TreeAssetSubfolders subfolders;
-        
-        [HideInInspector] public BuildState buildState = BuildState.Default;
 
-        public enum DataState
-        {
-            Normal = 0,
-            Dirty = 10,
-            PendingSave = 20
-        }
+        [HideInInspector] public TreePrefabCollection hierarchyPrefabs;
 
         private BuildProgressTracker _progressTracker;
+
+        #endregion
+
+        public abstract ResponsiveSettingsType settingsType { get; }
+
+        public bool canInitialize =>
+            !initialized &&
+            (initializationSettings != null) &&
+            !string.IsNullOrWhiteSpace(initializationSettings.name) &&
+            (initializationSettings.name.Length > 2) &&
+            (!initializationSettings.convertTreeData || (initializationSettings.original != null));
 
         public BuildProgressTracker progressTracker
         {
@@ -77,7 +81,55 @@ namespace Appalachia.Simulation.Trees
             }
         }
 
+        #region Event Functions
+
+        private void OnEnable()
+        {
+            using (_PRF_OnEnable.Auto())
+            {
+                UpdateSettingsType(settingsType);
+            }
+        }
+
+        #endregion
+
+        public abstract void BuildDefault();
+        public abstract void BuildForceFull();
+
+        public abstract void BuildFull();
+
+        public abstract void CopyHierarchiesFrom(TSEDataContainer tsd);
+
+        public abstract void CopySettingsFrom(TSEDataContainer tsd);
+
+        public abstract NameBasis GetNameBasis();
+
+        public abstract void RebuildStructures();
+
         public abstract void SetDirtyStates();
+
+        public abstract void SettingsChanged(SettingsUpdateTarget target);
+
+        [DebuggerStepThrough]
+        public override string ToString()
+        {
+            var basis = GetNameBasis();
+
+            if (basis == null)
+            {
+                return name;
+            }
+
+            return GetNameBasis().friendlyName;
+        }
+
+        public override void UpdateSettingsType(ResponsiveSettingsType t)
+        {
+            using (_PRF_UpdateSettingsType.Auto())
+            {
+                this.HandleResponsiveUpdate(t);
+            }
+        }
 
         public void Save(bool generateImpostors = false)
         {
@@ -85,8 +137,8 @@ namespace Appalachia.Simulation.Trees
             {
                 try
                 {
-                    progress.Do(SetDirtyStates, "Setting states...");
-                    progress.Do(AssetDatabaseManager.SaveAssets, "Saving assets...");
+                    progress.Do(SetDirtyStates,                         "Setting states...");
+                    progress.Do(AssetDatabaseManager.SaveAssets,        "Saving assets...");
                     progress.Do(() => SaveAllAssets(generateImpostors), "Persisting changes...");
                     dataState = DataState.Normal;
                 }
@@ -97,54 +149,19 @@ namespace Appalachia.Simulation.Trees
                 }
             }
         }
-        
+
         protected abstract void SaveAllAssets(bool saveImpostors);
-        
-        public abstract ResponsiveSettingsType settingsType { get; }
+
+        #region Profiling
 
         private const string _PRF_PFX = nameof(TSEDataContainer) + ".";
-        private static readonly ProfilerMarker _PRF_OnEnable = new ProfilerMarker(_PRF_PFX + nameof(OnEnable));
-        private void OnEnable()
-        {
-            using (_PRF_OnEnable.Auto())
-            {
-                UpdateSettingsType(settingsType);
-            }
-        }
 
-        private static readonly ProfilerMarker _PRF_UpdateSettingsType = new ProfilerMarker(_PRF_PFX + nameof(UpdateSettingsType));
-        public override void UpdateSettingsType(ResponsiveSettingsType t)
-        {
-            using (_PRF_UpdateSettingsType.Auto())
-            {
-                this.HandleResponsiveUpdate(t);
-            }
-        }
+        private static readonly ProfilerMarker
+            _PRF_OnEnable = new ProfilerMarker(_PRF_PFX + nameof(OnEnable));
 
-        public abstract void RebuildStructures();
+        private static readonly ProfilerMarker _PRF_UpdateSettingsType =
+            new ProfilerMarker(_PRF_PFX + nameof(UpdateSettingsType));
 
-        public abstract NameBasis GetNameBasis();
-
-        [DebuggerStepThrough] public override string ToString()
-        {
-            var basis = GetNameBasis();
-
-            if (basis == null)
-            {
-                return name;
-            }
-            
-            return GetNameBasis().friendlyName;
-        }
-
-        public abstract void BuildFull();
-        public abstract void BuildForceFull();
-        public abstract void BuildDefault();
-
-        public abstract void SettingsChanged(SettingsUpdateTarget target);
-
-        public abstract void CopySettingsFrom(TSEDataContainer tsd);
-        
-        public abstract void CopyHierarchiesFrom(TSEDataContainer tsd);
+        #endregion
     }
 }

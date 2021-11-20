@@ -594,7 +594,7 @@ namespace Appalachia.Simulation.Trees.UI.GUI
                 {
                     var rect = EditorGUI.IndentedRect(EditorGUILayout.GetControlRect(false));
                     UnityEngine.GUI.Label(rect, title, style1);
-                    if ((subtitle != null) && !subtitle.IsNullOrWhitespace())
+                    if ((subtitle != null) && !subtitle.IsNullOrWhiteSpace())
                     {
                         rect = EditorGUI.IndentedRect(
                             GUILayoutUtility.GetRect(GUIHelper.TempContent(subtitle), style2)

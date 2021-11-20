@@ -31,287 +31,20 @@ namespace Appalachia.Simulation.Trees.Build.Execution
 {
     public static class LogBuildManager
     {
-        private static LogDataContainer CTX => TreeSpeciesEditorSelection.instance.log.selection.selected;
-        
-        private static EditorCoroutine _coroutine;
+        #region Static Fields and Autoproperties
+
         private static bool _executing;
+
+        private static EditorCoroutine _coroutine;
+
+        #endregion
+
+        private static LogDataContainer CTX => TreeSpeciesEditorSelection.instance.log.selection.selected;
 
         [InitializeOnLoadMethod]
         public static void Initialize()
         {
             EditorApplication.update += Update;
-        }
-
-        private static void Update()
-        {
-            try
-            {
-                if (!TreeBuildManager._enabled ||
-                    _executing || 
-                    EditorApplication.isCompiling ||
-                    EditorApplication.isPlayingOrWillChangePlaymode ||
-                    (CTX == null) ||
-                    !CTX.initialized ||
-                    (CTX.dataState == TSEDataContainer.DataState.Normal) || 
-                    (CTX.buildState == BuildState.Disabled) ||
-                    (CTX.buildState == BuildState.Cancelled) ||
-                    CTX.progressTracker.buildActive ||
-                    (CTX.requestLevel == BuildRequestLevel.None)
-                    )
-                {
-                    if ((CTX != null) && (CTX.progressTracker != null))
-                    {
-                        CTX.progressTracker.Validate();
-                    }
-                    
-                    return;
-                }
-                
-                _executing = true;
-                _coroutine = EditorCoroutineUtility.StartCoroutineOwnerless(ExecutePendingBuild());
-            }
-            catch (Exception ex)
-            {
-                AppaLog.Error(ex);
-            }
-        }
-
-        private static IEnumerator ExecutePendingBuild()
-        {
-            //using (BUILD_TIME.TREE_BUILD_MGR.ExecutePendingBuild.Auto())
-            //{
-                var completed = false;
-
-                var log = CTX;
-                log.dataState = TSEDataContainer.DataState.Normal;
-                    
-                try
-                {
-                    if (EditorApplication.isCompiling || EditorApplication.isPlayingOrWillChangePlaymode)
-                    {
-                        EditorCoroutineUtility.StopCoroutine(_coroutine);
-                        completed = true;
-                        yield break; // ========================================================== BREAK
-                    }
-
-                    if ((log.buildState == BuildState.Cancelled) || (log.buildState == BuildState.Disabled) || (log.requestLevel == BuildRequestLevel.None))
-                    {
-                        EditorCoroutineUtility.StopCoroutine(_coroutine);
-                        completed = true;
-                        yield break; // ========================================================== BREAK
-                    }
-
-                    if (log.buildState == BuildState.ForceFull)
-                    {
-                        if (log.dataState == TSEDataContainer.DataState.PendingSave)
-                        {
-                            log.Save();
-                        }
-                    }
-
-                    log.settings.Check();
-                    
-                    log.RebuildStructures();
-
-                    log.progressTracker.InitializeBuildBatch();
-
-                    if (log.subfolders == null)
-                    {
-                        log.subfolders = TreeAssetSubfolders.CreateNested(log);
-                    }
-                    
-                    log.subfolders.CreateFolders();
-
-                    SeedManager.UpdateSeeds(
-                        log.log,
-                        log.logInstances
-                    );
-                    
-                    var buildAll = log.buildState >= BuildState.Full;
-
-                    while (log.requestLevel > BuildRequestLevel.None)
-                    {
-                        var requestLevel = log.requestLevel;
-
-                        log.progressTracker.InitializeBuild(requestLevel, log.GetBuildCosts(requestLevel));
-
-                        foreach (var instance in log.logInstances)
-                        {
-                            if (!buildAll && !instance.active)
-                            {
-                                continue;
-                            }
-
-                            if (instance.GetRequestLevel(log.buildState) < requestLevel)
-                            {
-                                continue;
-                            }
-
-                            instance.seed.Reset();
-                            
-                            TreeProperty.SetActiveGenerationAge(AgeType.Mature);
-
-                            if (instance.ShouldRebuildDistribution(requestLevel))
-                            {
-                                GenerateDistribution(log, requestLevel, instance);
-
-                                yield return null;
-                            }
-
-                            #region BREAK / CONTINUE
-
-                            if (log.requestLevel != requestLevel)
-                            {
-                                EditorCoroutineUtility.StopCoroutine(_coroutine);
-                                completed = true;
-                                yield break; // ========================================== BREAK
-                            }
-
-                            #endregion
-
-
-                            if (instance.ShouldRebuildGeometry(requestLevel))
-                            {
-                                GenerateLogGeometry(
-                                    requestLevel,
-                                    log,
-                                    instance
-                                );
-
-                                yield return null;
-                            }
-                        }
-
-                        #region BREAK
-
-                        if (log.requestLevel != requestLevel)
-                        {
-                            EditorCoroutineUtility.StopCoroutine(_coroutine);
-                            completed = true;
-                            yield break; // ====================================================== BREAK
-                        }
-
-                        #endregion
-
-
-                        yield return null;
-
-                        AssignMaterialProperties(requestLevel, log, ref completed);
-
-                        yield return null;
-
-                        #region BREAK
-
-                        if (log.requestLevel != requestLevel)
-                        {
-                            completed = true;
-                            EditorCoroutineUtility.StopCoroutine(_coroutine);
-                            yield break; // ====================================================== BREAK
-                        }
-
-                        #endregion
-
-                        foreach (var instance in log.logInstances)
-                        {
-                            if (!buildAll && !instance.active)
-                            {
-                                continue;
-                            }
-
-                            if (instance.GetRequestLevel(log.buildState) < requestLevel)
-                            {
-                                continue;
-                            }
-
-                            #region BREAK / CONTINUE / YIELD
-
-                            if (log.requestLevel != requestLevel)
-                            {
-                                completed = true;
-                                EditorCoroutineUtility.StopCoroutine(_coroutine);
-                                yield break; // ===========================================BREAK
-                            }
-
-                            #endregion
-
-                            instance.seed.Reset();
-
-                            GenerateEnhancements(requestLevel, log, instance);
-
-                            yield return null;
-                        }
-
-                        /*if (tree.buildRequest.ShouldBuild(BuildCategory.PrefabCreation, requestLevel))
-                        {
-                            AssetManager.SaveAllAssets(tree);
-                        }*/
-
-                        foreach (var instance in log.logInstances)
-                        {
-                            if (!buildAll && !instance.active)
-                            {
-                                instance.buildRequest.CollapseDelayedBuildLevel();
-                            }
-                            else
-                            {
-                                if (instance.buildRequest.ShouldBuild(BuildCategory.Collision, requestLevel))
-                                {
-                                    AssetManager.SaveAsset(log, instance);
-                                }
-                                
-                                instance.buildRequest.DecreaseBuildLevel(requestLevel);
-                            }
-
-                            yield return null;
-                        }
-
-                        log.buildRequest.DecreaseBuildLevel(requestLevel);
-
-                        log.progressTracker.CompleteBuild();
-                    }
-
-                    completed = true;
-                }
-                finally
-                {
-                    using (BUILD_TIME.LOG_BUILD_MGR.FinalizeBuild.Auto())
-                    {
-                        if (!completed)
-                        {
-                            using (BUILD_TIME.LOG_BUILD_MGR.HandleBuildError.Auto())
-                            {
-                                AppaLog.Error("Tree build failed.");
-
-                                if (log != null)
-                                {
-                                    log.PushBuildRequestLevelAll(BuildRequestLevel.None);
-                                }
-                            }
-                        }
-
-                        
-                        if (log.progressTracker.buildActive)
-                        {
-                            if (log.buildState >= BuildState.Full)
-                            {
-                                log.Save();
-                            }
-
-                            log.dataState = TSEDataContainer.DataState.PendingSave;
-                            
-                            log.progressTracker.CompleteBuildBatch(completed);
-                        }
-
-                        if (log.buildState == BuildState.Cancelled)
-                        {
-                            log.buildState = BuildState.Default;
-                        }
-
-                        _executing = false;
-                        EditorCoroutineUtility.StopCoroutine(_coroutine);
-                    }
-                }
-            //}
         }
 
         private static void AssignMaterialProperties(
@@ -330,6 +63,236 @@ namespace Appalachia.Simulation.Trees.Build.Execution
             }
         }
 
+        private static IEnumerator ExecutePendingBuild()
+        {
+            //using (BUILD_TIME.TREE_BUILD_MGR.ExecutePendingBuild.Auto())
+            //{
+            var completed = false;
+
+            var log = CTX;
+            log.dataState = TSEDataContainer.DataState.Normal;
+
+            try
+            {
+                if (EditorApplication.isCompiling || EditorApplication.isPlayingOrWillChangePlaymode)
+                {
+                    EditorCoroutineUtility.StopCoroutine(_coroutine);
+                    completed = true;
+                    yield break; // ========================================================== BREAK
+                }
+
+                if ((log.buildState == BuildState.Cancelled) ||
+                    (log.buildState == BuildState.Disabled) ||
+                    (log.requestLevel == BuildRequestLevel.None))
+                {
+                    EditorCoroutineUtility.StopCoroutine(_coroutine);
+                    completed = true;
+                    yield break; // ========================================================== BREAK
+                }
+
+                if (log.buildState == BuildState.ForceFull)
+                {
+                    if (log.dataState == TSEDataContainer.DataState.PendingSave)
+                    {
+                        log.Save();
+                    }
+                }
+
+                log.settings.Check();
+
+                log.RebuildStructures();
+
+                log.progressTracker.InitializeBuildBatch();
+
+                if (log.subfolders == null)
+                {
+                    log.subfolders = TreeAssetSubfolders.CreateNested<TreeAssetSubfolders>(log);
+                }
+
+                log.subfolders.CreateFolders();
+
+                SeedManager.UpdateSeeds(log.log, log.logInstances);
+
+                var buildAll = log.buildState >= BuildState.Full;
+
+                while (log.requestLevel > BuildRequestLevel.None)
+                {
+                    var requestLevel = log.requestLevel;
+
+                    log.progressTracker.InitializeBuild(requestLevel, log.GetBuildCosts(requestLevel));
+
+                    foreach (var instance in log.logInstances)
+                    {
+                        if (!buildAll && !instance.active)
+                        {
+                            continue;
+                        }
+
+                        if (instance.GetRequestLevel(log.buildState) < requestLevel)
+                        {
+                            continue;
+                        }
+
+                        instance.seed.Reset();
+
+                        TreeProperty.SetActiveGenerationAge(AgeType.Mature);
+
+                        if (instance.ShouldRebuildDistribution(requestLevel))
+                        {
+                            GenerateDistribution(log, requestLevel, instance);
+
+                            yield return null;
+                        }
+
+                        #region BREAK / CONTINUE
+
+                        if (log.requestLevel != requestLevel)
+                        {
+                            EditorCoroutineUtility.StopCoroutine(_coroutine);
+                            completed = true;
+                            yield break; // ========================================== BREAK
+                        }
+
+                        #endregion
+
+                        if (instance.ShouldRebuildGeometry(requestLevel))
+                        {
+                            GenerateLogGeometry(requestLevel, log, instance);
+
+                            yield return null;
+                        }
+                    }
+
+                    #region BREAK
+
+                    if (log.requestLevel != requestLevel)
+                    {
+                        EditorCoroutineUtility.StopCoroutine(_coroutine);
+                        completed = true;
+                        yield break; // ====================================================== BREAK
+                    }
+
+                    #endregion
+
+                    yield return null;
+
+                    AssignMaterialProperties(requestLevel, log, ref completed);
+
+                    yield return null;
+
+                    #region BREAK
+
+                    if (log.requestLevel != requestLevel)
+                    {
+                        completed = true;
+                        EditorCoroutineUtility.StopCoroutine(_coroutine);
+                        yield break; // ====================================================== BREAK
+                    }
+
+                    #endregion
+
+                    foreach (var instance in log.logInstances)
+                    {
+                        if (!buildAll && !instance.active)
+                        {
+                            continue;
+                        }
+
+                        if (instance.GetRequestLevel(log.buildState) < requestLevel)
+                        {
+                            continue;
+                        }
+
+                        #region BREAK / CONTINUE / YIELD
+
+                        if (log.requestLevel != requestLevel)
+                        {
+                            completed = true;
+                            EditorCoroutineUtility.StopCoroutine(_coroutine);
+                            yield break; // ===========================================BREAK
+                        }
+
+                        #endregion
+
+                        instance.seed.Reset();
+
+                        GenerateEnhancements(requestLevel, log, instance);
+
+                        yield return null;
+                    }
+
+                    /*if (tree.buildRequest.ShouldBuild(BuildCategory.PrefabCreation, requestLevel))
+                    {
+                        AssetManager.SaveAllAssets(tree);
+                    }*/
+
+                    foreach (var instance in log.logInstances)
+                    {
+                        if (!buildAll && !instance.active)
+                        {
+                            instance.buildRequest.CollapseDelayedBuildLevel();
+                        }
+                        else
+                        {
+                            if (instance.buildRequest.ShouldBuild(BuildCategory.Collision, requestLevel))
+                            {
+                                AssetManager.SaveAsset(log, instance);
+                            }
+
+                            instance.buildRequest.DecreaseBuildLevel(requestLevel);
+                        }
+
+                        yield return null;
+                    }
+
+                    log.buildRequest.DecreaseBuildLevel(requestLevel);
+
+                    log.progressTracker.CompleteBuild();
+                }
+
+                completed = true;
+            }
+            finally
+            {
+                using (BUILD_TIME.LOG_BUILD_MGR.FinalizeBuild.Auto())
+                {
+                    if (!completed)
+                    {
+                        using (BUILD_TIME.LOG_BUILD_MGR.HandleBuildError.Auto())
+                        {
+                            AppaLog.Error("Tree build failed.");
+
+                            if (log != null)
+                            {
+                                log.PushBuildRequestLevelAll(BuildRequestLevel.None);
+                            }
+                        }
+                    }
+
+                    if (log.progressTracker.buildActive)
+                    {
+                        if (log.buildState >= BuildState.Full)
+                        {
+                            log.Save();
+                        }
+
+                        log.dataState = TSEDataContainer.DataState.PendingSave;
+
+                        log.progressTracker.CompleteBuildBatch(completed);
+                    }
+
+                    if (log.buildState == BuildState.Cancelled)
+                    {
+                        log.buildState = BuildState.Default;
+                    }
+
+                    _executing = false;
+                    EditorCoroutineUtility.StopCoroutine(_coroutine);
+                }
+            }
+
+            //}
+        }
 
         private static void GenerateDistribution(
             LogDataContainer log,
@@ -353,7 +316,7 @@ namespace Appalachia.Simulation.Trees.Build.Execution
                     trunk.trunk.flareResolution.SetValue(1.0f);
                     trunk.trunk.trunkSpread.SetValue(1.0f);
                 }
-                
+
                 if (instance.buildRequest.distribution == requestLevel)
                 {
                     log.progressTracker.Update(BuildCategory.Distribution);
@@ -364,7 +327,7 @@ namespace Appalachia.Simulation.Trees.Build.Execution
                         instance.seed,
                         instance.shapes,
                         log.log.hierarchies
-                        );
+                    );
 
                     instance.Rebuild();
                 }
@@ -372,6 +335,109 @@ namespace Appalachia.Simulation.Trees.Build.Execution
                 if (instance.shapes.TotalShapeCount() == 0)
                 {
                     throw new NotSupportedException("Bad shape count!");
+                }
+            }
+        }
+
+        private static void GenerateEnhancements(
+            BuildRequestLevel requestLevel,
+            LogDataContainer log,
+            LogInstance instance)
+        {
+            using (BUILD_TIME.LOG_BUILD_MGR.GenerateEnhancements.Auto())
+            {
+                var buildVertexData = instance.buildRequest.ShouldBuild(
+                    BuildCategory.VertexData,
+                    requestLevel
+                );
+                var buildMesh = instance.buildRequest.ShouldBuildMesh(requestLevel);
+
+                //var buildUV = instance.buildRequest.ShouldBuild(BuildCategory.UV, requestLevel);
+                var buildCollision = instance.buildRequest.ShouldBuild(BuildCategory.Collision, requestLevel);
+                var buildLOD = instance.buildRequest.ShouldBuild(BuildCategory.LevelsOfDetail,  requestLevel);
+
+                foreach (var levelOfDetail in instance.lods)
+                {
+                    if (!buildLOD && (levelOfDetail.lodLevel > 0))
+                    {
+                        break;
+                    }
+
+                    if (buildVertexData)
+                    {
+                        if (log.settings.vertex.generate)
+                        {
+                            LogGenerator.ApplyMeshLogData(
+                                instance.shapes,
+                                log.log.hierarchies,
+                                levelOfDetail,
+                                log.settings.vertex,
+                                instance.seed
+                            );
+                        }
+                    }
+
+                    if (buildMesh)
+                    {
+                        var asset = instance.asset.levels[levelOfDetail.lodLevel];
+
+                        if (levelOfDetail.lodLevel == 0)
+                        {
+                            log.progressTracker.Update(BuildCategory.Mesh);
+                        }
+
+                        if (asset.mesh == null)
+                        {
+                            instance.RecreateMesh(levelOfDetail.lodLevel);
+                        }
+
+                        Func<TreeVertex, Color> colorFunction;
+
+                        if (log.settings.vertex.generate)
+                        {
+                            colorFunction = v => v.LogColor;
+                        }
+                        else
+                        {
+                            colorFunction = v => Color.black;
+                        }
+
+                        MeshGenerator.GenerateMeshes(
+                            levelOfDetail,
+                            instance.shapes.byID,
+                            null,
+                            null,
+                            log.settings.mesh,
+                            asset.mesh,
+                            colorFunction,
+                            true,
+                            true,
+                            default
+                        );
+
+                        asset.mesh.uv2 = null;
+                        asset.mesh.uv3 = null;
+                        asset.mesh.uv4 = null;
+                        asset.mesh.uv5 = null;
+
+                        instance.SetMaterials(levelOfDetail.lodLevel, new[] {log.material});
+                    }
+                }
+
+                if (buildCollision)
+                {
+                    log.progressTracker.Update(BuildCategory.Collision);
+
+                    instance.asset.collisionMeshes.CreateCollisionMeshes(instance.asset.CleanName);
+
+                    ColliderGenerator.GenerateLogColliders(
+                        log.log.hierarchies,
+                        instance.shapes,
+                        instance,
+                        log.settings,
+                        instance.shapes.byID,
+                        instance.asset.collisionMeshes
+                    );
                 }
             }
         }
@@ -386,7 +452,7 @@ namespace Appalachia.Simulation.Trees.Build.Execution
                 var buildLOD = instance.buildRequest.ShouldBuild(BuildCategory.LevelsOfDetail, requestLevel);
 
                 instance.Rebuild();
-                
+
                 var baseSeed = instance.seed;
                 baseSeed.Reset();
 
@@ -404,7 +470,7 @@ namespace Appalachia.Simulation.Trees.Build.Execution
                     if (output.lodLevel == 0)
                     {
                         log.progressTracker.Update(BuildCategory.HighQualityGeometry);
-                        
+
                         foreach (var hierarchy in log.log.hierarchies)
                         {
                             var bh = hierarchy as BarkHierarchyData;
@@ -413,18 +479,17 @@ namespace Appalachia.Simulation.Trees.Build.Execution
                             {
                                 continue;
                             }*/
-                        
+
                             foreach (var shape in instance.shapes.GetShapesByHierarchy(bh.hierarchyID))
                             {
                                 shape.effectiveSize *= instance.thickness;
-                            } 
+                            }
                         }
-                        
 
                         foreach (var shape in instance.shapes.GetShapes(TreeComponentType.Trunk))
                         {
                             var bs = shape as BarkShapeData;
-                            bs.breakOffset = .95f;                        
+                            bs.breakOffset = .95f;
                         }
                     }
 
@@ -447,7 +512,7 @@ namespace Appalachia.Simulation.Trees.Build.Execution
                     }
 
                     var bounds = output.GetBounds();
-                    
+
                     if (output.lodLevel == 0)
                     {
                         instance.effectiveScale = instance.length / (bounds.size.y == 0f ? 1 : bounds.size.y);
@@ -470,14 +535,15 @@ namespace Appalachia.Simulation.Trees.Build.Execution
                             }
                         }
 
-                        if ((vertex.type == TreeComponentType.Branch) && (Math.Abs(vertex.log.bark - 1.0f) < float.Epsilon))
+                        if ((vertex.type == TreeComponentType.Branch) &&
+                            (Math.Abs(vertex.log.bark - 1.0f) < float.Epsilon))
                         {
                             vertex.rect_uv0.y *= 2;
                         }
                     }
 
                     bounds = output.GetBounds();
-                    
+
                     for (var index = 0; index < output.vertices.Count; index++)
                     {
                         var vertex = output.vertices[index];
@@ -507,11 +573,12 @@ namespace Appalachia.Simulation.Trees.Build.Execution
 
                             var volume = SignedVolumeOfTriangle(v0.position, v1.position, v2.position);
 
-                            instance.centerOfMass += (volume * (v0.position + v1.position + v2.position)) / 4f;
+                            instance.centerOfMass +=
+                                (volume * (v0.position + v1.position + v2.position)) / 4f;
                             instance.volume += volume;
                         }
 
-                        instance.centerOfMass /= (instance.volume > 0 ? instance.volume : 1f);
+                        instance.centerOfMass /= instance.volume > 0 ? instance.volume : 1f;
 
                         instance.actualLength = bounds.size.y;
 
@@ -532,105 +599,37 @@ namespace Appalachia.Simulation.Trees.Build.Execution
                 }
             }
         }
-        
 
-        private static void GenerateEnhancements(
-            BuildRequestLevel requestLevel,
-            LogDataContainer log,
-            LogInstance instance)
+        private static void Update()
         {
-            using (BUILD_TIME.LOG_BUILD_MGR.GenerateEnhancements.Auto())
+            try
             {
-                var buildVertexData = instance.buildRequest.ShouldBuild(BuildCategory.VertexData, requestLevel);
-                var buildMesh = instance.buildRequest.ShouldBuildMesh(requestLevel);
-                //var buildUV = instance.buildRequest.ShouldBuild(BuildCategory.UV, requestLevel);
-                var buildCollision = instance.buildRequest.ShouldBuild(BuildCategory.Collision, requestLevel);
-                var buildLOD = instance.buildRequest.ShouldBuild(BuildCategory.LevelsOfDetail, requestLevel);
-
-                foreach (var levelOfDetail in instance.lods)
+                if (!TreeBuildManager._enabled ||
+                    _executing ||
+                    EditorApplication.isCompiling ||
+                    EditorApplication.isPlayingOrWillChangePlaymode ||
+                    (CTX == null) ||
+                    !CTX.initialized ||
+                    (CTX.dataState == TSEDataContainer.DataState.Normal) ||
+                    (CTX.buildState == BuildState.Disabled) ||
+                    (CTX.buildState == BuildState.Cancelled) ||
+                    CTX.progressTracker.buildActive ||
+                    (CTX.requestLevel == BuildRequestLevel.None))
                 {
-                    if (!buildLOD && (levelOfDetail.lodLevel > 0))
+                    if ((CTX != null) && (CTX.progressTracker != null))
                     {
-                        break;
+                        CTX.progressTracker.Validate();
                     }
 
-                    if (buildVertexData)
-                    {
-                       if (log.settings.vertex.generate)
-                       {
-                            LogGenerator.ApplyMeshLogData(
-                                instance.shapes,
-                                log.log.hierarchies,
-                                levelOfDetail,
-                                log.settings.vertex,
-                                instance.seed
-                            );
-                       }
-                    }
-
-                    if (buildMesh)
-                    {
-                        var asset = instance.asset.levels[levelOfDetail.lodLevel];
-                        
-                        if (levelOfDetail.lodLevel == 0)
-                        {
-                            log.progressTracker.Update(BuildCategory.Mesh);
-                        }
-
-                        if (asset.mesh == null)
-                        {
-                            instance.RecreateMesh(levelOfDetail.lodLevel);
-                        }
-                       
-                        
-                        Func<TreeVertex, Color> colorFunction;
-                        
-                        if (log.settings.vertex.generate)
-                        {
-                            colorFunction = v => v.LogColor;
-                        }
-                        else
-                        {
-                            colorFunction = v => Color.black;
-                        }
-                        
-                        MeshGenerator.GenerateMeshes(
-                            levelOfDetail,
-                            instance.shapes.byID,
-                            null,
-                            null,
-                            log.settings.mesh,
-                            asset.mesh,
-                            colorFunction,
-                            true,
-                            true,
-                            default
-                        );
-
-                        asset.mesh.uv2 = null;
-                        asset.mesh.uv3 = null;
-                        asset.mesh.uv4 = null;
-                        asset.mesh.uv5 = null;
-                        
-                        instance.SetMaterials(levelOfDetail.lodLevel, new [] {log.material});
-                    }
-                }                
-
-                if (buildCollision)
-                {
-                    log.progressTracker.Update(BuildCategory.Collision);
-                        
-                    instance.asset.collisionMeshes.CreateCollisionMeshes(instance.asset.CleanName);
-
-                    ColliderGenerator.GenerateLogColliders(
-                        log.log.hierarchies,
-                        instance.shapes,                        
-                        instance,
-                        log.settings,
-                        instance.shapes.byID,
-                        instance.asset.collisionMeshes
-                    );
+                    return;
                 }
+
+                _executing = true;
+                _coroutine = EditorCoroutineUtility.StartCoroutineOwnerless(ExecutePendingBuild());
+            }
+            catch (Exception ex)
+            {
+                AppaLog.Error(ex);
             }
         }
     }

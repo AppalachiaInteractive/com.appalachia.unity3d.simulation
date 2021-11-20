@@ -19,7 +19,6 @@ using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Core.Model
 {
-    
     [ExecuteAlways]
     public class TreeModel : EditorOnlyFrustumCulledBehaviour, ITreeModel
     {

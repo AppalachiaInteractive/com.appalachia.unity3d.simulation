@@ -31,70 +31,87 @@ namespace Appalachia.Simulation.Trees.UI.Branches
     [CustomEditor(typeof(BranchDataContainer))]
     public class BranchEditor : OdinEditor
     {
+        #region Static Fields and Autoproperties
+
         public static BranchDataContainer branchData;
-        
+        private static int _previewRenderUtilityCount;
+
+        #endregion
+
+        #region Fields and Autoproperties
+
         public bool _first = true;
         public BranchEditorSidebarCollection _sidebar;
 
-        private readonly float buttonHeightMultiplier = .06f;
-        private readonly int initialButtonHeight = 32;
-        private readonly float initialMenu1Width = 250f;
+        public float previewSize = .5f;
+        public GUITabGroup _tabGroup;
+        public GUITabPage _hierarchyPage;
+        public GUITabPage _materialsPage;
+        public GUITabPage _scenePage;
+        public GUITabPage _settingsPage;
+        public PropertyTree hierarchyProperty;
+        public PropertyTree materialsProperty;
+        public PropertyTree outputProperty;
 
+        public PropertyTree sceneProperty;
+        public PropertyTree settingsProperty;
+
+        private readonly float buttonHeightMultiplier = .06f;
+        private readonly float initialMenu1Width = 250f;
 
         private readonly float menu1AHeight = 120f;
 
         private readonly float menuWidthMultiplier = .50f;
 
-        private readonly float smallButtonScale = .75f;
-
         private readonly float miniButtonScale = .65f;
-        
-        private float editWindowWidth => EditorGUIUtility.currentViewWidth - sideToolbarWidth - 6;
 
-        public PropertyTree sceneProperty;
-        public PropertyTree hierarchyProperty;
-        public PropertyTree settingsProperty;
-        public PropertyTree materialsProperty;
-        public PropertyTree outputProperty;
-        public GUITabPage _scenePage;
-        public GUITabPage _hierarchyPage;
-        public GUITabPage _settingsPage;
-        public GUITabPage _materialsPage;
-        public GUITabGroup _tabGroup;
+        private readonly float smallButtonScale = .75f;
+        private readonly int initialButtonHeight = 32;
+        private int _previewRenderUtilityID;
 
         private PreviewRenderUtility _previewRenderUtility;
-        private int _previewRenderUtilityID;
-        private static int _previewRenderUtilityCount;
+
+        private SnapshotRenderer.SnapshotMode renderMode = SnapshotRenderer.SnapshotMode.Albedo;
+
+        private SnapshotRenderer.SnapshotMode[][] modeGroups =
+        {
+            new[] {SnapshotRenderer.SnapshotMode.Lit, SnapshotRenderer.SnapshotMode.Sample},
+            new[]
+            {
+                SnapshotRenderer.SnapshotMode.Albedo,
+                SnapshotRenderer.SnapshotMode.Normal,
+                SnapshotRenderer.SnapshotMode.Surface
+            }
+        };
+
+        #endregion
 
         private float buttonHeight =>
             Mathf.Min(initialButtonHeight, EditorGUIUtility.currentViewWidth * buttonHeightMultiplier);
 
+        private float editWindowWidth => EditorGUIUtility.currentViewWidth - sideToolbarWidth - 6;
+
         private float miniButtonHeight => miniButtonScale * buttonHeight;
-
-        private float smallButtonHeight => smallButtonScale * buttonHeight;
-
-        public float previewSize = .5f;
 
         private float sideToolbarWidth =>
             Mathf.Min(initialMenu1Width, EditorGUIUtility.currentViewWidth * menuWidthMultiplier);
 
-        protected override void OnHeaderGUI()
-        {
-        }
+        private float smallButtonHeight => smallButtonScale * buttonHeight;
+
+        #region Event Functions
 
         protected override void OnEnable()
         {
             base.OnEnable();
-            
+
             BranchBuildManager._enabled = true;
         }
-
 
         protected override void OnDisable()
         {
             if (_previewRenderUtility != null)
             {
-               //AppaLog.Warn($"Cleaning up preview utility {_previewRenderUtilityID} from branch editor.");
+                //AppaLog.Warn($"Cleaning up preview utility {_previewRenderUtilityID} from branch editor.");
                 _previewRenderUtility.Cleanup();
                 _previewRenderUtility = null;
             }
@@ -130,6 +147,8 @@ namespace Appalachia.Simulation.Trees.UI.Branches
             }
         }
 
+        #endregion
+
         public override void OnInspectorGUI()
         {
             branchData = target as BranchDataContainer;
@@ -156,9 +175,10 @@ namespace Appalachia.Simulation.Trees.UI.Branches
 
                 if (branchData.subfolders == null)
                 {
-                    branchData.subfolders = TreeAssetSubfolders.CreateNested(branchData, false);
+                    branchData.subfolders =
+                        TreeAssetSubfolders.CreateNested<TreeAssetSubfolders>(branchData, false);
                 }
-                
+
                 branchData.subfolders.nameBasis = branchData.GetNameBasis();
                 branchData.subfolders.Initialize(branchData);
 
@@ -166,61 +186,71 @@ namespace Appalachia.Simulation.Trees.UI.Branches
 
                 if (branchData.snapshots == null)
                 {
-	                branchData.snapshots = new List<BranchSnapshotParameters>();
+                    branchData.snapshots = new List<BranchSnapshotParameters>();
                 }
 
                 if (branchData.snapshots.Count == 0)
                 {
-	                if ((_sidebar != null) && (_sidebar.snapshotMenu.Selected != null))
-	                {
-		                branchData.snapshots.Add(_sidebar.snapshotMenu.Selected);
-	                }
-	                else
-	                {
-		                branchData.snapshots.Add(
-			                BranchSnapshotParameters.Create(branchData.subfolders.data, branchData.branch.nameBasis, 0)
-		                );
-	                }
+                    if ((_sidebar != null) && (_sidebar.snapshotMenu.Selected != null))
+                    {
+                        branchData.snapshots.Add(_sidebar.snapshotMenu.Selected);
+                    }
+                    else
+                    {
+                        branchData.snapshots.Add(
+                            BranchSnapshotParameters.Create(
+                                branchData.subfolders.data,
+                                branchData.branch.nameBasis,
+                                0
+                            )
+                        );
+                    }
                 }
 
                 if (Event.current.type == EventType.Layout)
                 {
-	                if (_sidebar == null)
-	                {
-		                _sidebar = new BranchEditorSidebarCollection();
-	                }
+                    if (_sidebar == null)
+                    {
+                        _sidebar = new BranchEditorSidebarCollection();
+                    }
 
-	                _sidebar.snapshotMenu.RepopulateMenus(false, false);
-	                _sidebar.hierarchyMenu.RepopulateMenus(false, false);
+                    _sidebar.snapshotMenu.RepopulateMenus(false, false);
+                    _sidebar.hierarchyMenu.RepopulateMenus(false, false);
                 }
 
                 if (_previewRenderUtility == null)
                 {
                     _previewRenderUtilityCount += 1;
                     _previewRenderUtilityID = _previewRenderUtilityCount;
+
                     //AppaLog.Warn($"Creating new preview utility {_previewRenderUtilityID} for branch editor.");
                     _previewRenderUtility = new PreviewRenderUtility();
                 }
 
                 EditorGUILayout.Space();
 
-
-
                 using (TreeGUI.Layout.Horizontal())
                 {
                     using (TreeGUI.Layout.Vertical(
                         true,
-                        TreeGUI.Layout.Options.ExpandWidth(false).MinWidth(sideToolbarWidth).MaxWidth(sideToolbarWidth)
+                        TreeGUI.Layout.Options.ExpandWidth(false)
+                               .MinWidth(sideToolbarWidth)
+                               .MaxWidth(sideToolbarWidth)
                     ))
                     {
-	                    //TreeSpeciesEditorSelection.instance.branch.DrawAndSelect();
-	                    
-                        _sidebar.snapshotMenu.DrawMenu(sideToolbarWidth, menu1AHeight, buttonHeight, miniButtonHeight);
+                        //TreeSpeciesEditorSelection.instance.branch.DrawAndSelect();
+
+                        _sidebar.snapshotMenu.DrawMenu(
+                            sideToolbarWidth,
+                            menu1AHeight,
+                            buttonHeight,
+                            miniButtonHeight
+                        );
 
                         if (_first || !_sidebar.snapshotMenu.HasSelection)
                         {
                             _sidebar.snapshotMenu.SelectFirst();
-                                
+
                             _first = false;
                         }
 
@@ -232,27 +262,28 @@ namespace Appalachia.Simulation.Trees.UI.Branches
                                 branchData.materials.inputMaterialCache
                             );
                         }
-                        
+
                         if (!_sidebar.hierarchyMenu.HasSelection)
                         {
                             _sidebar.hierarchyMenu.SelectFirst();
                         }
-                        
+
                         _sidebar.hierarchyMenu.DrawMenu(
                             sideToolbarWidth,
                             menu1AHeight,
                             buttonHeight,
                             miniButtonHeight
                         );
-                        
+
                         EditorGUILayout.Space();
-                        
+
                         DrawActionMenu();
-                        
+
                         EditorGUILayout.Space();
-                        
+
                         CopySettingsToolbar
-                            .DrawCopyToolbar<BranchDataContainer, BranchSettingsSelection, BranchSettingsDataContainerSelection>(
+                           .DrawCopyToolbar<BranchDataContainer, BranchSettingsSelection,
+                                BranchSettingsDataContainerSelection>(
                                 branchData,
                                 TreeSpeciesEditorSelection.instance.branchCopySettings,
                                 !_sidebar.snapshotMenu.Selected.locked,
@@ -262,13 +293,22 @@ namespace Appalachia.Simulation.Trees.UI.Branches
 
                     using (var rect = TreeGUI.Layout.Vertical())
                     {
-                        previewSize = SirenixEditorFields.RangeFloatField(TreeGUI.Content.Label("Preview Size"), previewSize, 0.1f, 1f, TreeGUI.Styles.LeftAlignedGreyMiniLabel);
+                        previewSize = SirenixEditorFields.RangeFloatField(
+                            TreeGUI.Content.Label("Preview Size"),
+                            previewSize,
+                            0.1f,
+                            1f,
+                            TreeGUI.Styles.LeftAlignedGreyMiniLabel
+                        );
 
-                        var size = (.9f * editWindowWidth) * previewSize;
+                        var size = .9f * editWindowWidth * previewSize;
 
-                        using (TreeGUI.Layout.Vertical(false, TreeGUI.Layout.Options.ExpandWidth(false).Width(size)))
+                        using (TreeGUI.Layout.Vertical(
+                            false,
+                            TreeGUI.Layout.Options.ExpandWidth(false).Width(size)
+                        ))
                         {
-                            Rect aspectRect = GUILayoutUtility.GetAspectRect(1);
+                            var aspectRect = GUILayoutUtility.GetAspectRect(1);
 
                             var center = rect.rect.x + (rect.rect.width / 2);
                             aspectRect.x = center - (aspectRect.width * .5f);
@@ -280,7 +320,6 @@ namespace Appalachia.Simulation.Trees.UI.Branches
                             {
                                 HandlePreviewInput(branchData.branchAsset.mesh, aspectRect);
                             }
-                            
 
                             if (Event.current.type == EventType.Repaint)
                             {
@@ -288,18 +327,21 @@ namespace Appalachia.Simulation.Trees.UI.Branches
 
                                 if (_sidebar.snapshotMenu.HasSelection)
                                 {
-                                    var matElement = snapshot.branchOutputMaterial.GetMaterialElementByIndex(0);
+                                    var matElement =
+                                        snapshot.branchOutputMaterial.GetMaterialElementByIndex(0);
 
                                     var matAssetPath = AssetDatabaseManager.GetAssetPath(matElement.asset);
 
                                     if (string.IsNullOrWhiteSpace(matAssetPath))
                                     {
-                                        var assetGUIDs =
-                                            AssetDatabaseManager.FindAssets($"t:Material {snapshot.name}_snapshot");
+                                        var assetGUIDs = AssetDatabaseManager.FindAssets(
+                                            $"t:Material {snapshot.name}_snapshot"
+                                        );
 
                                         if (assetGUIDs.Length > 0)
                                         {
-                                            var assetPath = AssetDatabaseManager.GUIDToAssetPath(assetGUIDs[0]);
+                                            var assetPath =
+                                                AssetDatabaseManager.GUIDToAssetPath(assetGUIDs[0]);
 
                                             matElement.SetMaterial(
                                                 AssetDatabaseManager.LoadAssetAtPath<Material>(assetPath),
@@ -308,12 +350,15 @@ namespace Appalachia.Simulation.Trees.UI.Branches
                                         }
                                     }
 
-                                    if ((snapshot.branchOutputMaterial.textureSet.outputTextures.Count == 0) &&
+                                    if (
+                                        (snapshot.branchOutputMaterial.textureSet.outputTextures.Count ==
+                                         0) &&
                                         (branchData.branchAsset != null) &&
                                         (branchData.branchAsset.materials != null) &&
                                         (branchData.branchAsset.materials.Length > 0) &&
                                         (snapshot.branchOutputMaterial.Count > 0) &&
-                                        (snapshot.branchOutputMaterial.GetMaterialElementByIndex(0).asset != null) &&
+                                        (snapshot.branchOutputMaterial.GetMaterialElementByIndex(0).asset !=
+                                         null) &&
                                         (branchData.branchAsset.mesh != null))
                                     {
                                         snapshot.branchOutputMaterial.RebuildTextureSets();
@@ -322,43 +367,56 @@ namespace Appalachia.Simulation.Trees.UI.Branches
 
                                 if (_sidebar.snapshotMenu.HasSelection && snapshot.locked)
                                 {
-
                                     UnityEngine.GUI.DrawTexture(
                                         aspectRect,
-                                        snapshot.branchOutputMaterial.textureSet.outputTextures[0]
-                                            .texture,
+                                        snapshot.branchOutputMaterial.textureSet.outputTextures[0].texture,
                                         ScaleMode.StretchToFill,
                                         true
                                     );
                                 }
                                 else if ((branchData != null) &&
-                                        (branchData.branchAsset != null) &&
-                                        (branchData.branchAsset.mesh != null) &&
-                                        (_previewRenderUtility != null))
+                                         (branchData.branchAsset != null) &&
+                                         (branchData.branchAsset.mesh != null) &&
+                                         (_previewRenderUtility != null))
                                 {
                                     Texture resultRender;
 
                                     SnapshotRenderer.SetReplacementShader(_previewRenderUtility, renderMode);
 
-                                    if ((renderMode == SnapshotRenderer.SnapshotMode.Lit) || (renderMode == SnapshotRenderer.SnapshotMode.Sample))
+                                    if ((renderMode == SnapshotRenderer.SnapshotMode.Lit) ||
+                                        (renderMode == SnapshotRenderer.SnapshotMode.Sample))
                                     {
-                                        resultRender = SnapshotRenderer.RenderMeshPreview(_previewRenderUtility, branchData, snapshot, aspectRect);
+                                        resultRender = SnapshotRenderer.RenderMeshPreview(
+                                            _previewRenderUtility,
+                                            branchData,
+                                            snapshot,
+                                            aspectRect
+                                        );
                                     }
                                     else
                                     {
                                         var bg = SnapshotRenderer.GetBackgroundForRenderMode(renderMode);
-		                            
-                                        resultRender = SnapshotRenderer.RenderMeshPreview(_previewRenderUtility, branchData, snapshot, aspectRect, bg);
+
+                                        resultRender = SnapshotRenderer.RenderMeshPreview(
+                                            _previewRenderUtility,
+                                            branchData,
+                                            snapshot,
+                                            aspectRect,
+                                            bg
+                                        );
                                     }
-                                
-                                    UnityEngine.GUI.DrawTexture(aspectRect, resultRender, ScaleMode.StretchToFill, false);
+
+                                    UnityEngine.GUI.DrawTexture(
+                                        aspectRect,
+                                        resultRender,
+                                        ScaleMode.StretchToFill,
+                                        false
+                                    );
                                 }
                                 else
                                 {
                                     EditorGUI.DropShadowLabel(aspectRect, "Nothing to render.");
                                 }
-                                
-                                
                             }
                         }
 
@@ -366,7 +424,11 @@ namespace Appalachia.Simulation.Trees.UI.Branches
                         {
                             using (TreeGUI.Layout.Horizontal())
                             {
-                                BranchBuildToolbar.instance.DrawBuildToolbar(branchData, smallButtonHeight, 32f);
+                                BranchBuildToolbar.instance.DrawBuildToolbar(
+                                    branchData,
+                                    smallButtonHeight,
+                                    32f
+                                );
                             }
 
                             if (_tabGroup == null)
@@ -380,55 +442,63 @@ namespace Appalachia.Simulation.Trees.UI.Branches
 
                             if (_sidebar != null)
                             {
-                                if (hierarchyProperty == null )
+                                if (hierarchyProperty == null)
                                 {
                                     if (_sidebar.hierarchyMenu.HasSelection)
                                     {
-                                        hierarchyProperty = PropertyTree.Create(_sidebar.hierarchyMenu.Selected);
+                                        hierarchyProperty =
+                                            PropertyTree.Create(_sidebar.hierarchyMenu.Selected);
                                     }
                                 }
                                 else if (_sidebar.hierarchyMenu.HasSelection)
                                 {
-                                    if (!ReferenceEquals(_sidebar.hierarchyMenu.Selected, hierarchyProperty.WeakTargets[0]))
+                                    if (!ReferenceEquals(
+                                        _sidebar.hierarchyMenu.Selected,
+                                        hierarchyProperty.WeakTargets[0]
+                                    ))
                                     {
-                                        hierarchyProperty = PropertyTree.Create(_sidebar.hierarchyMenu.Selected);
+                                        hierarchyProperty =
+                                            PropertyTree.Create(_sidebar.hierarchyMenu.Selected);
                                     }
                                 }
                             }
 
                             foreach (var parameter in branchData.snapshots)
                             {
-	                            if (_sidebar.snapshotMenu.HasSelection && (parameter == _sidebar.snapshotMenu.Selected))
-	                            {
-		                            parameter.active = true;
-	                            }
-	                            else
-	                            {
-		                            parameter.active = false;
-	                            }
+                                if (_sidebar.snapshotMenu.HasSelection &&
+                                    (parameter == _sidebar.snapshotMenu.Selected))
+                                {
+                                    parameter.active = true;
+                                }
+                                else
+                                {
+                                    parameter.active = false;
+                                }
                             }
-                            
-                            if ((sceneProperty == null) || !ReferenceEquals(sceneProperty.WeakTargets[0], _sidebar.snapshotMenu.Selected))
+
+                            if ((sceneProperty == null) ||
+                                !ReferenceEquals(
+                                    sceneProperty.WeakTargets[0],
+                                    _sidebar.snapshotMenu.Selected
+                                ))
                             {
-	                            sceneProperty = PropertyTree.Create(_sidebar.snapshotMenu.Selected);
+                                sceneProperty = PropertyTree.Create(_sidebar.snapshotMenu.Selected);
                             }
-                            
+
                             if (settingsProperty == null)
                             {
                                 settingsProperty = PropertyTree.Create(branchData.settings);
                             }
-                            
+
                             if (materialsProperty == null)
                             {
                                 materialsProperty = PropertyTree.Create(branchData.materials);
                             }
 
-
-
                             if (_sidebar.snapshotMenu.HasSelection && !_sidebar.snapshotMenu.Selected.locked)
                             {
                                 _tabGroup.BeginGroup();
-                                
+
                                 if (_hierarchyPage.BeginPage())
                                 {
                                     if (hierarchyProperty != null)
@@ -472,9 +542,11 @@ namespace Appalachia.Simulation.Trees.UI.Branches
                             {
                                 if (outputProperty == null)
                                 {
-                                    outputProperty = PropertyTree.Create(_sidebar.snapshotMenu.Selected.branchOutputMaterial);
+                                    outputProperty = PropertyTree.Create(
+                                        _sidebar.snapshotMenu.Selected.branchOutputMaterial
+                                    );
                                 }
-                                
+
                                 outputProperty.Draw(false);
                             }
                         }
@@ -504,10 +576,7 @@ namespace Appalachia.Simulation.Trees.UI.Branches
                 {
                     branchData.RebuildStructures();
                 }
-                else
-                {
-                    //branchData.Initialize();
-                }
+
                 //throw;
             }
         }
@@ -522,19 +591,18 @@ namespace Appalachia.Simulation.Trees.UI.Branches
 
             if (current.shift)
             {
-	            delta *= 3;
+                delta *= 3;
             }
 
             if (current.control)
             {
-	            delta *= .333f;
+                delta *= .333f;
             }
 
             if (current.alt)
             {
-	            delta *= .1f;
+                delta *= .1f;
             }
-            
 
             switch (current.GetTypeForControl(controlID))
             {
@@ -559,15 +627,16 @@ namespace Appalachia.Simulation.Trees.UI.Branches
                 case EventType.MouseDrag:
                     if (GUIUtility.hotControl == controlID)
                     {
-                        if (((current.button == 1) || (current.button == 2)) && !_sidebar.snapshotMenu.Selected.lockCameraPerspective)
+                        if (((current.button == 1) || (current.button == 2)) &&
+                            !_sidebar.snapshotMenu.Selected.lockCameraPerspective)
                         {
-	                        var multiplier = .01f;
-	                        
-	                        if (current.button == 2)
-	                        {
-		                        multiplier = .0025f;
-	                        }
-	                        
+                            var multiplier = .01f;
+
+                            if (current.button == 2)
+                            {
+                                multiplier = .0025f;
+                            }
+
                             _sidebar.snapshotMenu.Selected.translationXOffset += multiplier * delta.x;
                             _sidebar.snapshotMenu.Selected.translationYOffset += multiplier * delta.y;
 
@@ -587,8 +656,7 @@ namespace Appalachia.Simulation.Trees.UI.Branches
                             var old = _sidebar.snapshotMenu.Selected.rotationOffset;
 
                             _sidebar.snapshotMenu.Selected.rotationOffset -=
-                                (delta / Mathf.Min(rect.width, rect.height)) *
-                                140f;
+                                (delta / Mathf.Min(rect.width, rect.height)) * 140f;
 
                             _sidebar.snapshotMenu.Selected.rotationOffset.y = Mathf.Clamp(
                                 _sidebar.snapshotMenu.Selected.rotationOffset.y,
@@ -613,7 +681,6 @@ namespace Appalachia.Simulation.Trees.UI.Branches
 
                     break;
             }
-
 
             if (rect.Contains(current.mousePosition))
             {
@@ -649,26 +716,14 @@ namespace Appalachia.Simulation.Trees.UI.Branches
             }
         }
 
-
-        private SnapshotRenderer.SnapshotMode renderMode = SnapshotRenderer.SnapshotMode.Albedo;
-
-        private SnapshotRenderer.SnapshotMode[][] modeGroups = new[]
+        protected override void OnHeaderGUI()
         {
-            new[] {SnapshotRenderer.SnapshotMode.Lit, SnapshotRenderer.SnapshotMode.Sample},
-            new[]
-            {
-                SnapshotRenderer.SnapshotMode.Albedo,
-                SnapshotRenderer.SnapshotMode.Normal,
-                SnapshotRenderer.SnapshotMode.Surface
-            }
-        };
-        
+        }
 
         private void DrawActionMenu()
         {
             using (TreeGUI.Layout.Vertical(true))
             {
-
                 foreach (var modeGroup in modeGroups)
                 {
                     using (TreeGUI.Layout.Horizontal(true))
@@ -690,117 +745,108 @@ namespace Appalachia.Simulation.Trees.UI.Branches
                 }
 
                 EditorGUILayout.Space();
-                
+
                 using (TreeGUI.Layout.Horizontal(true))
                 {
-	                   
-	                TreeGUI.Button.Toolbar(
-		                _sidebar.snapshotMenu.Selected != null,                
-		                _sidebar.snapshotMenu.Selected.textureSize == TextureSize.k256,
-		                "256", "256 pixels",
-		                () =>
-		                {
-			                _sidebar.snapshotMenu.Selected.textureSize = TextureSize.k256;
-		                },
-		                TreeGUI.Styles.ButtonLeftSelected,
-		                TreeGUI.Styles.ButtonLeft,
-		                TreeGUI.Layout.Options.None
-	                );
-	                   
-	                TreeGUI.Button.Toolbar(
-		                _sidebar.snapshotMenu.Selected != null,                
-		                _sidebar.snapshotMenu.Selected.textureSize == TextureSize.k512,
-		                "512", "512 pixels",
-		                () =>
-		                {
-			                _sidebar.snapshotMenu.Selected.textureSize = TextureSize.k512;
-		                },
-		                TreeGUI.Styles.ButtonMidSelected,
-		                TreeGUI.Styles.ButtonMid,
-		                TreeGUI.Layout.Options.None
-	                );
-	                   
-	                TreeGUI.Button.Toolbar(
-		                _sidebar.snapshotMenu.Selected != null,                
-		                _sidebar.snapshotMenu.Selected.textureSize == TextureSize.k1024,
-		                "1024", "1024 pixels",
-		                () =>
-		                {
-			                _sidebar.snapshotMenu.Selected.textureSize = TextureSize.k1024;
-		                },
-		                TreeGUI.Styles.ButtonMidSelected,
-		                TreeGUI.Styles.ButtonMid,
-		                TreeGUI.Layout.Options.None
-	                );
-	                   
-	                TreeGUI.Button.Toolbar(
-		                _sidebar.snapshotMenu.Selected != null,                
-		                _sidebar.snapshotMenu.Selected.textureSize == TextureSize.k2048,
-		                "2048", "2048 pixels",
-		                () =>
-		                {
-			                _sidebar.snapshotMenu.Selected.textureSize = TextureSize.k2048;
-		                },
-		                TreeGUI.Styles.ButtonRightSelected,
-		                TreeGUI.Styles.ButtonRight,
-		                TreeGUI.Layout.Options.None
-	                );
+                    TreeGUI.Button.Toolbar(
+                        _sidebar.snapshotMenu.Selected != null,
+                        _sidebar.snapshotMenu.Selected.textureSize == TextureSize.k256,
+                        "256",
+                        "256 pixels",
+                        () => { _sidebar.snapshotMenu.Selected.textureSize = TextureSize.k256; },
+                        TreeGUI.Styles.ButtonLeftSelected,
+                        TreeGUI.Styles.ButtonLeft,
+                        TreeGUI.Layout.Options.None
+                    );
+
+                    TreeGUI.Button.Toolbar(
+                        _sidebar.snapshotMenu.Selected != null,
+                        _sidebar.snapshotMenu.Selected.textureSize == TextureSize.k512,
+                        "512",
+                        "512 pixels",
+                        () => { _sidebar.snapshotMenu.Selected.textureSize = TextureSize.k512; },
+                        TreeGUI.Styles.ButtonMidSelected,
+                        TreeGUI.Styles.ButtonMid,
+                        TreeGUI.Layout.Options.None
+                    );
+
+                    TreeGUI.Button.Toolbar(
+                        _sidebar.snapshotMenu.Selected != null,
+                        _sidebar.snapshotMenu.Selected.textureSize == TextureSize.k1024,
+                        "1024",
+                        "1024 pixels",
+                        () => { _sidebar.snapshotMenu.Selected.textureSize = TextureSize.k1024; },
+                        TreeGUI.Styles.ButtonMidSelected,
+                        TreeGUI.Styles.ButtonMid,
+                        TreeGUI.Layout.Options.None
+                    );
+
+                    TreeGUI.Button.Toolbar(
+                        _sidebar.snapshotMenu.Selected != null,
+                        _sidebar.snapshotMenu.Selected.textureSize == TextureSize.k2048,
+                        "2048",
+                        "2048 pixels",
+                        () => { _sidebar.snapshotMenu.Selected.textureSize = TextureSize.k2048; },
+                        TreeGUI.Styles.ButtonRightSelected,
+                        TreeGUI.Styles.ButtonRight,
+                        TreeGUI.Layout.Options.None
+                    );
                 }
-                
-                
+
                 EditorGUILayout.Space();
-                
+
                 var old = UnityEngine.GUI.backgroundColor;
                 UnityEngine.GUI.backgroundColor = TreeGUI.Colors.LightGreen;
-                
+
                 TreeGUI.Button.EnableDisable(
-	                (_sidebar.snapshotMenu.Selected != null) &&
-						!_sidebar.snapshotMenu.Selected.locked,                
-	                "Render", "Render the texture",
-	                () =>
-	                {
-		                _sidebar.snapshotMenu.Selected.active = true;
-		                BranchBuildRequestManager.Default();
-		                
-	                },
-	                TreeGUI.Styles.Button,
-	                TreeGUI.Layout.Options.None
+                    (_sidebar.snapshotMenu.Selected != null) && !_sidebar.snapshotMenu.Selected.locked,
+                    "Render",
+                    "Render the texture",
+                    () =>
+                    {
+                        _sidebar.snapshotMenu.Selected.active = true;
+                        BranchBuildRequestManager.Default();
+                    },
+                    TreeGUI.Styles.Button,
+                    TreeGUI.Layout.Options.None
                 );
 
                 UnityEngine.GUI.backgroundColor = TreeGUI.Colors.BurntLightOrange;
-                
+
                 TreeGUI.Button.ContextEnableDisable(
-	                _sidebar.snapshotMenu.Selected != null,
-	                (_sidebar.snapshotMenu.Selected != null) && !_sidebar.snapshotMenu.Selected.locked,
-	                "Lock", 
-	                "Lock the snapshot", 
-	                () => { 
+                    _sidebar.snapshotMenu.Selected != null,
+                    (_sidebar.snapshotMenu.Selected != null) && !_sidebar.snapshotMenu.Selected.locked,
+                    "Lock",
+                    "Lock the snapshot",
+                    () =>
+                    {
                         _sidebar.snapshotMenu.Selected.locked = true;
                         branchData.dataState = TSEDataContainer.DataState.PendingSave;
                         EditorUtility.SetDirty(_sidebar.snapshotMenu.Selected);
                         EditorUtility.SetDirty(branchData);
-                        
-                        branchData.Save(); },
-	                TreeGUI.Styles.Button,
-	                "Unlock",
-	                "Unlock the snapshot",
+
+                        branchData.Save();
+                    },
+                    TreeGUI.Styles.Button,
+                    "Unlock",
+                    "Unlock the snapshot",
                     () =>
                     {
                         _sidebar.snapshotMenu.Selected.locked = false;
                         branchData.dataState = TSEDataContainer.DataState.PendingSave;
                         EditorUtility.SetDirty(_sidebar.snapshotMenu.Selected);
                         EditorUtility.SetDirty(branchData);
-                        
+
                         branchData.Save();
-                        
                     },
-	                TreeGUI.Styles.Button,
-	                TreeGUI.Layout.Options.None
+                    TreeGUI.Styles.Button,
+                    TreeGUI.Layout.Options.None
                 );
 
                 TreeGUI.Button.EnableDisable(
                     (Selection.objects.Length != 1) || (Selection.objects[0] != branchData),
-                    "Select", "Select the branch data container",
+                    "Select",
+                    "Select the branch data container",
                     () => { Selection.objects = new Object[] {branchData}; },
                     TreeGUI.Styles.Button,
                     TreeGUI.Layout.Options.None
@@ -809,8 +855,10 @@ namespace Appalachia.Simulation.Trees.UI.Branches
                 TreeGUI.Button.EnableDisable(
                     (_sidebar?.snapshotMenu != null) &&
                     (_sidebar.snapshotMenu.Selected != null) &&
-                    (_sidebar.snapshotMenu.Selected.branchOutputMaterial?.GetMaterialElementByIndex(0) != null) &&
-                    (_sidebar.snapshotMenu.Selected.branchOutputMaterial.GetMaterialElementByIndex(0).asset != null) &&
+                    (_sidebar.snapshotMenu.Selected.branchOutputMaterial?.GetMaterialElementByIndex(0) !=
+                     null) &&
+                    (_sidebar.snapshotMenu.Selected.branchOutputMaterial.GetMaterialElementByIndex(0).asset !=
+                     null) &&
                     TreeMaterialUsageTracker.IsMaterialUsedInTrees(
                         _sidebar.snapshotMenu.Selected.branchOutputMaterial.GetMaterialElementByIndex(0).asset
                     ),
@@ -823,11 +871,12 @@ namespace Appalachia.Simulation.Trees.UI.Branches
                         EditorUtility.SetDirty(branchData);
                         branchData.Save();
 
-                        var material = _sidebar.snapshotMenu.Selected.branchOutputMaterial.GetMaterialElementByIndex(0)
-                            .asset;
+                        var material = _sidebar.snapshotMenu.Selected.branchOutputMaterial
+                                               .GetMaterialElementByIndex(0)
+                                               .asset;
 
                         var trees = TreeMaterialUsageTracker.GetTreeDataContainers(material);
-                        
+
                         TreeBuildManager._executing = true;
                         TreeBuildManager._autobuilding = true;
                         TreeBuildManager._coroutine = EditorCoroutineUtility.StartCoroutineOwnerless(
@@ -837,19 +886,15 @@ namespace Appalachia.Simulation.Trees.UI.Branches
                                 trees
                             )
                         );
-
-
-
                     },
                     TreeGUI.Styles.Button,
                     TreeGUI.Layout.Options.None
                 );
 
                 EditorGUILayout.Space();
-                
+
                 UnityEngine.GUI.backgroundColor = old;
             }
         }
     }
 }
-

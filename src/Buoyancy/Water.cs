@@ -4,7 +4,6 @@ using System;
 using Appalachia.Core.Attributes;
 using Appalachia.Core.Attributes.Editing;
 using Appalachia.Core.Behaviours;
-using Appalachia.Core.Extensions;
 using Appalachia.Core.Filtering;
 using Appalachia.Core.Math.Smoothing;
 using Appalachia.Simulation.Buoyancy.Collections;
@@ -31,107 +30,15 @@ namespace Appalachia.Simulation.Buoyancy
     [ExecutionOrder(-100)]
     public class Water : AppalachiaBehaviour
     {
-        private const string _PRF_PFX = nameof(Water) + ".";
+        #region Constants and Static Readonly
 
-        private const float _voxelResolutionMin = .25f;
         private const float _voxelResolutionMax = 5.0f;
 
-        private static readonly ProfilerMarker _PRF_waterBounds =
-            new(_PRF_PFX + nameof(waterBounds));
+        private const float _voxelResolutionMin = .25f;
 
-        private static readonly ProfilerMarker _PRF_GetWorldHeightAt =
-            new(_PRF_PFX + nameof(GetWorldHeightAt));
+        #endregion
 
-        private static readonly ProfilerMarker _PRF_SetRenderTexture =
-            new(_PRF_PFX + nameof(SetRenderTexture));
-
-        private static readonly ProfilerMarker _PRF_Start = new(_PRF_PFX + nameof(Start));
-
-        private static readonly ProfilerMarker _PRF_OnEnable = new(_PRF_PFX + nameof(OnEnable));
-
-        private static readonly ProfilerMarker _PRF_OnDestroy = new(_PRF_PFX + nameof(OnDestroy));
-
-        private static readonly ProfilerMarker _PRF_Initialize = new(_PRF_PFX + nameof(Initialize));
-
-        private static readonly ProfilerMarker _PRF_OnDisable = new(_PRF_PFX + nameof(OnDisable));
-        private static readonly ProfilerMarker _PRF_CleanUp = new(_PRF_PFX + nameof(CleanUp));
-
-        private static readonly ProfilerMarker _PRF_CheckTriggersAndVoxels =
-            new(_PRF_PFX + nameof(CheckTriggersAndVoxels));
-
-        private static readonly ProfilerMarker _PRF_FixedUpdate =
-            new(_PRF_PFX + nameof(FixedUpdate));
-
-        private static readonly ProfilerMarker _PRF_FixedUpdate_SynchronizeVoxelData =
-            new(_PRF_PFX + nameof(FixedUpdate) + ".SynchronizeVoxelData");
-
-        private static readonly ProfilerMarker _PRF_FixedUpdate_SyncTransforms =
-            new(_PRF_PFX + nameof(FixedUpdate) + ".SyncTransforms");
-
-        private static readonly ProfilerMarker _PRF_FixedUpdate_ScheduleBatchedJobs =
-            new(_PRF_PFX + nameof(FixedUpdate) + ".ScheduleBatchedJobs");
-
-        private static readonly ProfilerMarker _PRF_FixedUpdate_IterateIndices =
-            new(_PRF_PFX + nameof(FixedUpdate) + ".IterateIndices");
-
-        private static readonly ProfilerMarker _PRF_FixedUpdate_ScheduleBuoyancyJobs =
-            new(_PRF_PFX + nameof(FixedUpdate) + ".ScheduleBuoyancyJobs");
-
-        private static readonly ProfilerMarker _PRF_FixedUpdate_JobHandleComplete =
-            new(_PRF_PFX + nameof(FixedUpdate) + ".JobHandleComplete");
-
-        private static readonly ProfilerMarker _PRF_FixedUpdate_UpdateDrag =
-            new(_PRF_PFX + nameof(FixedUpdate) + ".UpdateDrag");
-
-        private static readonly ProfilerMarker _PRF_ApplyBuoyancyForces_New =
-            new(_PRF_PFX + nameof(ApplyBuoyancyForces_New));
-
-        private static readonly ProfilerMarker _PRF_ApplyBuoyancyForces_New_AddForce =
-            new(_PRF_PFX + nameof(ApplyBuoyancyForces_New) + ".AddForce");
-
-        private static readonly ProfilerMarker _PRF_ApplyBuoyancyForces_New_AddTorque =
-            new(_PRF_PFX + nameof(ApplyBuoyancyForces_New) + ".AddTorque");
-
-        private static readonly ProfilerMarker _PRF_ApplyBuoyancyForces =
-            new(_PRF_PFX + nameof(ApplyBuoyancyForces));
-
-        private static readonly ProfilerMarker _PRF_ApplyBuoyancyForces_IterateCalculations =
-            new(_PRF_PFX + nameof(ApplyBuoyancyForces) + ".IterateCalculations");
-
-        private static readonly ProfilerMarker
-            _PRF_ApplyBuoyancyForces_IterateCalculations_Iteration = new(_PRF_PFX +
-                nameof(ApplyBuoyancyForces) +
-                ".IterateCalculations.Iteration");
-
-        private static readonly ProfilerMarker _PRF_ApplyBuoyancyForces_GetCalculationData =
-            new(_PRF_PFX + nameof(ApplyBuoyancyForces) + ".GetCalculationData");
-
-        private static readonly ProfilerMarker _PRF_ApplyBuoyancyForces_GetVoxelWorldPosition =
-            new(_PRF_PFX + nameof(ApplyBuoyancyForces) + ".GetVoxelWorldPosition");
-
-        private static readonly ProfilerMarker _PRF_ApplyBuoyancyForces_GetForce =
-            new(_PRF_PFX + nameof(ApplyBuoyancyForces) + ".GetForce");
-
-        private static readonly ProfilerMarker _PRF_ApplyBuoyancyForces_AddCumulativeForce =
-            new(_PRF_PFX + nameof(ApplyBuoyancyForces) + ".AddCumulativeForce");
-
-        private static readonly ProfilerMarker _PRF_ApplyBuoyancyForces_GetVoxel =
-            new(_PRF_PFX + nameof(ApplyBuoyancyForces) + ".GetVoxel");
-
-        private static readonly ProfilerMarker _PRF_ApplyBuoyancyForces_AddForceAtPosition =
-            new(_PRF_PFX + nameof(ApplyBuoyancyForces) + ".AddForceAtPosition");
-
-        private static readonly ProfilerMarker _PRF_OnTriggerEnter =
-            new(_PRF_PFX + nameof(OnTriggerEnter));
-
-        private static readonly ProfilerMarker _PRF_InitiateBuoyancy =
-            new(_PRF_PFX + nameof(InitiateBuoyancy));
-
-        private static readonly ProfilerMarker _PRF_OnTriggerExit =
-            new(_PRF_PFX + nameof(OnTriggerExit));
-
-        private static readonly ProfilerMarker _PRF_UpdateSamples =
-            new(_PRF_PFX + nameof(UpdateSamples));
+        #region Fields and Autoproperties
 
         public bool useNewForceApplication;
 
@@ -150,9 +57,7 @@ namespace Appalachia.Simulation.Buoyancy
         [NonSerialized] private Collider[] _triggers;
         [NonSerialized] private Voxels<WaterVoxel> _voxels;
 
-        [SmartLabel]
-        [ShowInInspector]
-        public int tracking => _index.Count;
+        #endregion
 
         public Bounds waterBounds
         {
@@ -172,10 +77,18 @@ namespace Appalachia.Simulation.Buoyancy
             }
         }
 
-        private void Start()
+        [SmartLabel]
+        [ShowInInspector]
+        public int tracking => _index.Count;
+
+        #region Event Functions
+
+        protected override void Start()
         {
             using (_PRF_Start.Auto())
             {
+                base.Start();
+
                 Initialize();
             }
         }
@@ -250,9 +163,7 @@ namespace Appalachia.Simulation.Buoyancy
 
                         using (_PRF_FixedUpdate_UpdateDrag.Auto())
                         {
-                            buoyant.UpdateDrag(
-                                buoyant.voxels.objectData.submersionPercentage.Value
-                            );
+                            buoyant.UpdateDrag(buoyant.voxels.objectData.submersionPercentage.Value);
                         }
 
                         if (useNewForceApplication)
@@ -284,18 +195,36 @@ namespace Appalachia.Simulation.Buoyancy
             }
         }
 
-        private void OnEnable()
+        protected override void OnEnable()
         {
             using (_PRF_OnEnable.Auto())
             {
+                base.OnEnable();
                 Initialize();
             }
         }
 
-        private void OnDestroy()
+        protected override void OnDisable()
+        {
+            using (_PRF_OnDisable.Auto())
+            {
+                base.OnDisable();
+                
+#if UNITY_EDITOR
+                if (UnityEditor.EditorApplication.isCompiling ||
+                    UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode)
+                {
+                    CleanUp();
+                }
+#endif
+            }
+        }
+
+        protected override void OnDestroy()
         {
             using (_PRF_OnDestroy.Auto())
             {
+                base.OnDestroy();
                 CleanUp();
             }
         }
@@ -350,12 +279,36 @@ namespace Appalachia.Simulation.Buoyancy
             }
         }
 
+        #endregion
+
+        [Button]
+        public void ExecuteReset()
+        {
+            CleanUp();
+            OnEnable();
+        }
+
         // ReSharper disable once UnusedParameter.Global
         public float GetWorldHeightAt(Vector3 worldPoint)
         {
             using (_PRF_GetWorldHeightAt.Auto())
             {
                 return waterBounds.max.y;
+            }
+        }
+
+        public void InitiateBuoyancy(Buoyant buoyant)
+        {
+            using (_PRF_InitiateBuoyancy.Auto())
+            {
+                buoyant.EnterWater(this);
+
+                var go = buoyant.gameObject;
+
+                if (!_index.ContainsKey(go))
+                {
+                    _index.Add(go, buoyant);
+                }
             }
         }
 
@@ -367,158 +320,47 @@ namespace Appalachia.Simulation.Buoyancy
             }
         }
 
-        private void Initialize()
+        public void UpdateSamples(ref TrilinearSamples<WaterVoxel> currentSamples)
         {
-            using (_PRF_Initialize.Auto())
+            using (_PRF_UpdateSamples.Auto())
             {
-                if (_index == null)
-                {
-                    _index = new BuoyancyLookup();
-                }
-
-                var allColliders = _transform.FilterComponents<Collider>(true)
-                                             .NoTriggers()
-                                             .RunFilter();
-
-                foreach (var c in allColliders)
-                {
-                    if (c.attachedRigidbody)
-                    {
-                        AppaLog.Error("Water should REALLY not have a rigidbody!");
-
-                        c.attachedRigidbody.detectCollisions = false;
-                    }
-
-                    AppaLog.Error("Water should not have real colliders!");
-
-                    c.enabled = false;
-                }
-
                 CheckTriggersAndVoxels();
-#if UNITY_EDITOR
-                if (!Application.isPlaying)
-                {
-                    PhysicsSimulator.onSimulationUpdate -= FixedUpdate;
-                    PhysicsSimulator.onSimulationUpdate += FixedUpdate;
-                }
-#endif
-            }
-        }
-
-        private void CleanUp()
-        {
-            using (_PRF_CleanUp.Auto())
-            {
-                _voxels.Dispose();
-
-                _triggers = default;
-                _voxels = default;
-                _hasCurrentChanged = default;
-                _index = default;
-
-#if UNITY_EDITOR
-                if (!Application.isPlaying)
-                {
-                    PhysicsSimulator.onSimulationUpdate -= FixedUpdate;
-                }
-#endif
-            }
-        }
-
-        [Button]
-        public void ExecuteReset()
-        {
-            CleanUp();
-            OnEnable();
-        }
-
-        private void CheckTriggersAndVoxels()
-        {
-            using (_PRF_CheckTriggersAndVoxels.Auto())
-            {
-                var anyTriggerNull = false;
-
-                if ((_triggers != null) && (_triggers.Length > 0))
-                {
-                    for (var i = 0; i < _triggers.Length; i++)
-                    {
-                        if (_triggers[i] == null)
-                        {
-                            anyTriggerNull = true;
-                            break;
-                        }
-                    }
-                }
-
-                if ((_triggers == null) || (_triggers.Length == 0) || anyTriggerNull)
-                {
-                    _triggers = _transform.FilterComponents<Collider>(true)
-                                          .OnlyTriggers()
-                                          .RunFilter();
-
-                    for (var i = 0; i < _triggers.Length; i++)
-                    {
-                        var trigger = _triggers[i];
-
-                        var relay = trigger.GetComponent<TriggerRelay_EnterExit>();
-
-                        if (relay == null)
-                        {
-                            relay = trigger.gameObject.AddComponent<TriggerRelay_EnterExit>();
-                        }
-
-                        relay.OnRelayedTriggerEnter -= RelayOnOnRelayedTriggerEnter;
-                        relay.OnRelayedTriggerEnter += RelayOnOnRelayedTriggerEnter;
-                        relay.OnRelayedTriggerExit -= RelayOnOnRelayedTriggerExit;
-                        relay.OnRelayedTriggerExit += RelayOnOnRelayedTriggerExit;
-                    }
-                }
-
-                if (_triggers.Length == 0)
-                {
-                    throw new NotSupportedException("Need to add triggers here!");
-                }
 
                 if (_voxels == null)
                 {
-                    voxelResolution = math.clamp(
-                        voxelResolution,
-                        _voxelResolutionMin,
-                        _voxelResolutionMax
-                    );
-                    _voxels = Voxels<WaterVoxel>.Voxelize(_transform, _triggers, voxelResolution);
+                    return;
                 }
-            }
-        }
 
-        private void ApplyBuoyancyForces_New(Buoyant buoyant)
-        {
-            using (_PRF_ApplyBuoyancyForces_New.Auto())
-            {
-                var cumulativeForce = buoyant.voxels.objectData.force.Value;
-                var cumulativeTorque = buoyant.voxels.objectData.torque.Value;
-
-                if (buoyant.averagedTorque == null)
+                if (!_hasCurrentChanged && currentSamples.isCreated && currentSamples.isPopulated)
                 {
-                    buoyant.averagedTorque = new double3Average {windowSize = 4};
+                    return;
                 }
 
-                buoyant.averagedTorque.ComputeAverage(cumulativeTorque);
+                var matrix = currentSamples.localToWorld;
 
-                var body = buoyant.body;
-
-                using (_PRF_ApplyBuoyancyForces_New_AddForce.Auto())
+                for (var i = 0; i < currentSamples.points.Length; i++)
                 {
-                    body.AddForce(cumulativeForce);
+                    var point = currentSamples.points[i];
+
+                    var worldPoint = matrix.MultiplyPoint3x4(point);
+                    var waterVoxelSpacePoint = _voxels.worldToLocal.MultiplyPoint3x4(worldPoint);
+
+                    if (_voxels.TryGetSamplePointIndices(waterVoxelSpacePoint, out var samplePointIndex))
+                    {
+                        var samplePoint = _voxels.samplePoints[samplePointIndex];
+
+                        if (!samplePoint.populated)
+                        {
+                            currentSamples.values[i] = default;
+                            continue;
+                        }
+
+                        currentSamples.values[i] = _voxels.elementDatas[samplePoint.index];
+                    }
                 }
 
-                using (_PRF_ApplyBuoyancyForces_New_AddTorque.Auto())
-                {
-                    body.AddTorque(cumulativeTorque);
-                }
-
-                buoyant.cumulativeForce = cumulativeForce;
-                buoyant.cumulativeTorque = cumulativeTorque;
+                currentSamples.isPopulated = true;
+                _hasCurrentChanged = false;
             }
         }
 
@@ -581,98 +423,249 @@ namespace Appalachia.Simulation.Buoyancy
             }
         }
 
-        private void RelayOnOnRelayedTriggerEnter(
-            TriggerRelay relay,
-            Collider[] these,
-            Collider other)
+        private void ApplyBuoyancyForces_New(Buoyant buoyant)
+        {
+            using (_PRF_ApplyBuoyancyForces_New.Auto())
+            {
+                var cumulativeForce = buoyant.voxels.objectData.force.Value;
+                var cumulativeTorque = buoyant.voxels.objectData.torque.Value;
+
+                if (buoyant.averagedTorque == null)
+                {
+                    buoyant.averagedTorque = new double3Average {windowSize = 4};
+                }
+
+                buoyant.averagedTorque.ComputeAverage(cumulativeTorque);
+
+                var body = buoyant.body;
+
+                using (_PRF_ApplyBuoyancyForces_New_AddForce.Auto())
+                {
+                    body.AddForce(cumulativeForce);
+                }
+
+                using (_PRF_ApplyBuoyancyForces_New_AddTorque.Auto())
+                {
+                    body.AddTorque(cumulativeTorque);
+                }
+
+                buoyant.cumulativeForce = cumulativeForce;
+                buoyant.cumulativeTorque = cumulativeTorque;
+            }
+        }
+
+        private void CheckTriggersAndVoxels()
+        {
+            using (_PRF_CheckTriggersAndVoxels.Auto())
+            {
+                var anyTriggerNull = false;
+
+                if ((_triggers != null) && (_triggers.Length > 0))
+                {
+                    for (var i = 0; i < _triggers.Length; i++)
+                    {
+                        if (_triggers[i] == null)
+                        {
+                            anyTriggerNull = true;
+                            break;
+                        }
+                    }
+                }
+
+                if ((_triggers == null) || (_triggers.Length == 0) || anyTriggerNull)
+                {
+                    _triggers = _transform.FilterComponents<Collider>(true).OnlyTriggers().RunFilter();
+
+                    for (var i = 0; i < _triggers.Length; i++)
+                    {
+                        var trigger = _triggers[i];
+
+                        var relay = trigger.GetComponent<TriggerRelay_EnterExit>();
+
+                        if (relay == null)
+                        {
+                            relay = trigger.gameObject.AddComponent<TriggerRelay_EnterExit>();
+                        }
+
+                        relay.OnRelayedTriggerEnter -= RelayOnOnRelayedTriggerEnter;
+                        relay.OnRelayedTriggerEnter += RelayOnOnRelayedTriggerEnter;
+                        relay.OnRelayedTriggerExit -= RelayOnOnRelayedTriggerExit;
+                        relay.OnRelayedTriggerExit += RelayOnOnRelayedTriggerExit;
+                    }
+                }
+
+                if (_triggers.Length == 0)
+                {
+                    throw new NotSupportedException("Need to add triggers here!");
+                }
+
+                if (_voxels == null)
+                {
+                    voxelResolution = math.clamp(voxelResolution, _voxelResolutionMin, _voxelResolutionMax);
+                    _voxels = Voxels<WaterVoxel>.Voxelize(_transform, _triggers, voxelResolution);
+                }
+            }
+        }
+
+        private void CleanUp()
+        {
+            using (_PRF_CleanUp.Auto())
+            {
+                _voxels.Dispose();
+
+                _triggers = default;
+                _voxels = default;
+                _hasCurrentChanged = default;
+                _index = default;
+
+#if UNITY_EDITOR
+                if (!Application.isPlaying)
+                {
+                    PhysicsSimulator.onSimulationUpdate -= FixedUpdate;
+                }
+#endif
+            }
+        }
+
+        public override void Initialize()
+        {
+            using (_PRF_Initialize.Auto())
+            {
+                base.Initialize();
+                
+                if (_index == null)
+                {
+                    _index = new BuoyancyLookup();
+                }
+
+                var allColliders = _transform.FilterComponents<Collider>(true).NoTriggers().RunFilter();
+
+                foreach (var c in allColliders)
+                {
+                    if (c.attachedRigidbody)
+                    {
+                        AppaLog.Error("Water should REALLY not have a rigidbody!");
+
+                        c.attachedRigidbody.detectCollisions = false;
+                    }
+
+                    AppaLog.Error("Water should not have real colliders!");
+
+                    c.enabled = false;
+                }
+
+                CheckTriggersAndVoxels();
+#if UNITY_EDITOR
+                if (!Application.isPlaying)
+                {
+                    PhysicsSimulator.onSimulationUpdate -= FixedUpdate;
+                    PhysicsSimulator.onSimulationUpdate += FixedUpdate;
+                }
+#endif
+            }
+        }
+
+        private void RelayOnOnRelayedTriggerEnter(TriggerRelay relay, Collider[] these, Collider other)
         {
             OnTriggerEnter(other);
         }
 
-        private void RelayOnOnRelayedTriggerExit(
-            TriggerRelay relay,
-            Collider[] these,
-            Collider other)
+        private void RelayOnOnRelayedTriggerExit(TriggerRelay relay, Collider[] these, Collider other)
         {
             OnTriggerExit(other);
         }
 
-        public void InitiateBuoyancy(Buoyant buoyant)
-        {
-            using (_PRF_InitiateBuoyancy.Auto())
-            {
-                buoyant.EnterWater(this);
+        #region Profiling
 
-                var go = buoyant.gameObject;
+        private const string _PRF_PFX = nameof(Water) + ".";
 
-                if (!_index.ContainsKey(go))
-                {
-                    _index.Add(go, buoyant);
-                }
-            }
-        }
+        private static readonly ProfilerMarker _PRF_waterBounds = new(_PRF_PFX + nameof(waterBounds));
 
-        public void UpdateSamples(ref TrilinearSamples<WaterVoxel> currentSamples)
-        {
-            using (_PRF_UpdateSamples.Auto())
-            {
-                CheckTriggersAndVoxels();
+        private static readonly ProfilerMarker _PRF_GetWorldHeightAt =
+            new(_PRF_PFX + nameof(GetWorldHeightAt));
 
-                if (_voxels == null)
-                {
-                    return;
-                }
+        private static readonly ProfilerMarker _PRF_SetRenderTexture =
+            new(_PRF_PFX + nameof(SetRenderTexture));
 
-                if (!_hasCurrentChanged && currentSamples.isCreated && currentSamples.isPopulated)
-                {
-                    return;
-                }
+        private static readonly ProfilerMarker _PRF_Start = new(_PRF_PFX + nameof(Start));
+        private static readonly ProfilerMarker _PRF_OnEnable = new(_PRF_PFX + nameof(OnEnable));
+        private static readonly ProfilerMarker _PRF_OnDestroy = new(_PRF_PFX + nameof(OnDestroy));
+        private static readonly ProfilerMarker _PRF_Initialize = new(_PRF_PFX + nameof(Initialize));
+        private static readonly ProfilerMarker _PRF_OnDisable = new(_PRF_PFX + nameof(OnDisable));
+        private static readonly ProfilerMarker _PRF_CleanUp = new(_PRF_PFX + nameof(CleanUp));
 
-                var matrix = currentSamples.localToWorld;
+        private static readonly ProfilerMarker _PRF_CheckTriggersAndVoxels =
+            new(_PRF_PFX + nameof(CheckTriggersAndVoxels));
 
-                for (var i = 0; i < currentSamples.points.Length; i++)
-                {
-                    var point = currentSamples.points[i];
+        private static readonly ProfilerMarker _PRF_FixedUpdate = new(_PRF_PFX + nameof(FixedUpdate));
 
-                    var worldPoint = matrix.MultiplyPoint3x4(point);
-                    var waterVoxelSpacePoint = _voxels.worldToLocal.MultiplyPoint3x4(worldPoint);
+        private static readonly ProfilerMarker _PRF_FixedUpdate_SynchronizeVoxelData =
+            new(_PRF_PFX + nameof(FixedUpdate) + ".SynchronizeVoxelData");
 
-                    if (_voxels.TryGetSamplePointIndices(
-                        waterVoxelSpacePoint,
-                        out var samplePointIndex
-                    ))
-                    {
-                        var samplePoint = _voxels.samplePoints[samplePointIndex];
+        private static readonly ProfilerMarker _PRF_FixedUpdate_SyncTransforms =
+            new(_PRF_PFX + nameof(FixedUpdate) + ".SyncTransforms");
 
-                        if (!samplePoint.populated)
-                        {
-                            currentSamples.values[i] = default;
-                            continue;
-                        }
+        private static readonly ProfilerMarker _PRF_FixedUpdate_ScheduleBatchedJobs =
+            new(_PRF_PFX + nameof(FixedUpdate) + ".ScheduleBatchedJobs");
 
-                        currentSamples.values[i] = _voxels.elementDatas[samplePoint.index];
-                    }
-                }
+        private static readonly ProfilerMarker _PRF_FixedUpdate_IterateIndices =
+            new(_PRF_PFX + nameof(FixedUpdate) + ".IterateIndices");
 
-                currentSamples.isPopulated = true;
-                _hasCurrentChanged = false;
-            }
-        }
+        private static readonly ProfilerMarker _PRF_FixedUpdate_ScheduleBuoyancyJobs =
+            new(_PRF_PFX + nameof(FixedUpdate) + ".ScheduleBuoyancyJobs");
 
+        private static readonly ProfilerMarker _PRF_FixedUpdate_JobHandleComplete =
+            new(_PRF_PFX + nameof(FixedUpdate) + ".JobHandleComplete");
 
-        private void OnDisable()
-        {
-#if UNITY_EDITOR
-            using (_PRF_OnDisable.Auto())
-            {
-                if (UnityEditor.EditorApplication.isCompiling ||
-                    UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode)
-                {
-                    CleanUp();
-                }
-            }
-#endif
-        }
+        private static readonly ProfilerMarker _PRF_FixedUpdate_UpdateDrag =
+            new(_PRF_PFX + nameof(FixedUpdate) + ".UpdateDrag");
+
+        private static readonly ProfilerMarker _PRF_ApplyBuoyancyForces_New =
+            new(_PRF_PFX + nameof(ApplyBuoyancyForces_New));
+
+        private static readonly ProfilerMarker _PRF_ApplyBuoyancyForces_New_AddForce =
+            new(_PRF_PFX + nameof(ApplyBuoyancyForces_New) + ".AddForce");
+
+        private static readonly ProfilerMarker _PRF_ApplyBuoyancyForces_New_AddTorque =
+            new(_PRF_PFX + nameof(ApplyBuoyancyForces_New) + ".AddTorque");
+
+        private static readonly ProfilerMarker _PRF_ApplyBuoyancyForces =
+            new(_PRF_PFX + nameof(ApplyBuoyancyForces));
+
+        private static readonly ProfilerMarker _PRF_ApplyBuoyancyForces_IterateCalculations =
+            new(_PRF_PFX + nameof(ApplyBuoyancyForces) + ".IterateCalculations");
+
+        private static readonly ProfilerMarker _PRF_ApplyBuoyancyForces_IterateCalculations_Iteration =
+            new(_PRF_PFX + nameof(ApplyBuoyancyForces) + ".IterateCalculations.Iteration");
+
+        private static readonly ProfilerMarker _PRF_ApplyBuoyancyForces_GetCalculationData =
+            new(_PRF_PFX + nameof(ApplyBuoyancyForces) + ".GetCalculationData");
+
+        private static readonly ProfilerMarker _PRF_ApplyBuoyancyForces_GetVoxelWorldPosition =
+            new(_PRF_PFX + nameof(ApplyBuoyancyForces) + ".GetVoxelWorldPosition");
+
+        private static readonly ProfilerMarker _PRF_ApplyBuoyancyForces_GetForce =
+            new(_PRF_PFX + nameof(ApplyBuoyancyForces) + ".GetForce");
+
+        private static readonly ProfilerMarker _PRF_ApplyBuoyancyForces_AddCumulativeForce =
+            new(_PRF_PFX + nameof(ApplyBuoyancyForces) + ".AddCumulativeForce");
+
+        private static readonly ProfilerMarker _PRF_ApplyBuoyancyForces_GetVoxel =
+            new(_PRF_PFX + nameof(ApplyBuoyancyForces) + ".GetVoxel");
+
+        private static readonly ProfilerMarker _PRF_ApplyBuoyancyForces_AddForceAtPosition =
+            new(_PRF_PFX + nameof(ApplyBuoyancyForces) + ".AddForceAtPosition");
+
+        private static readonly ProfilerMarker _PRF_OnTriggerEnter = new(_PRF_PFX + nameof(OnTriggerEnter));
+
+        private static readonly ProfilerMarker _PRF_InitiateBuoyancy =
+            new(_PRF_PFX + nameof(InitiateBuoyancy));
+
+        private static readonly ProfilerMarker _PRF_OnTriggerExit = new(_PRF_PFX + nameof(OnTriggerExit));
+
+        private static readonly ProfilerMarker _PRF_UpdateSamples = new(_PRF_PFX + nameof(UpdateSamples));
+
+        #endregion
 
 #if UNITY_EDITOR
 

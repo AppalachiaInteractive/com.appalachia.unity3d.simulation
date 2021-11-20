@@ -3,6 +3,7 @@ using Appalachia.Core.Behaviours;
 using Appalachia.Core.Types.Enums;
 using Appalachia.Utility.Logging;
 using Sirenix.OdinInspector;
+using Unity.Profiling;
 using UnityEngine;
 
 namespace Appalachia.Simulation.ReactionSystem.Base
@@ -11,7 +12,7 @@ namespace Appalachia.Simulation.ReactionSystem.Base
     [Serializable]
     public abstract class ReactionSubsystemBase : AppalachiaBehaviour
     {
-        private const string _PRF_PFX = nameof(ReactionSubsystemBase) + ".";
+        #region Fields and Autoproperties
 
         public ReactionSystem mainSystem;
 
@@ -49,10 +50,7 @@ namespace Appalachia.Simulation.ReactionSystem.Base
 
         private bool updateLoopInitialized;
 
-        protected abstract string SubsystemName { get; }
-
-        protected ReactionSubsystemGroup Group =>
-            mainSystem ? mainSystem.groups[_groupIndex] : null;
+        #endregion
 
         [InlineProperty]
         [ShowInInspector]
@@ -63,66 +61,95 @@ namespace Appalachia.Simulation.ReactionSystem.Base
 
         protected abstract bool showRenderTexture { get; }
 
+        protected abstract string SubsystemName { get; }
+
+        protected ReactionSubsystemGroup Group => mainSystem ? mainSystem.groups[_groupIndex] : null;
+
+        #region Event Functions
+
         //public abstract void GetRenderingPosition(out Vector3 minimumPosition, out Vector3 size);
 
-        private void Awake()
+        protected override void Awake()
         {
-            updateLoopInitialized = false;
-            Initialize();
-        }
-
-        private void Update()
-        {
-            try
+            using (_PRF_Awake.Auto())
             {
-                if (!updateLoopInitialized)
-                {
-                    updateLoopInitialized = InitializeUpdateLoop();
-                }
-
-                if (!updateLoopInitialized)
-                {
-                    return;
-                }
-
-                DoUpdateLoop();
-            }
-            catch (Exception ex)
-            {
-                AppaLog.Error(ex);
+                base.Awake();
+                updateLoopInitialized = false;
+                Initialize();
             }
         }
 
-        private void OnEnable()
+        protected void Update()
         {
-            updateLoopInitialized = false;
-            Initialize();
+            using (_PRF_Update.Auto())
+            {
+                try
+                {
+                    if (!updateLoopInitialized)
+                    {
+                        updateLoopInitialized = InitializeUpdateLoop();
+                    }
+
+                    if (!updateLoopInitialized)
+                    {
+                        return;
+                    }
+
+                    DoUpdateLoop();
+                }
+                catch (Exception ex)
+                {
+                    AppaLog.Error(ex);
+                }
+            }
         }
 
-        private void OnDisable()
+        protected override void OnEnable()
         {
-            TeardownSubsystem();
-            updateLoopInitialized = false;
+            using (_PRF_OnEnable.Auto())
+            {
+                base.OnEnable();
+
+                updateLoopInitialized = false;
+                Initialize();
+            }
         }
 
-        protected abstract void TeardownSubsystem();
+        protected override void OnDisable()
+        {
+            using (_PRF_OnDisable.Auto())
+            {
+                base.OnDisable();
 
-        protected abstract void OnInitialization();
+                TeardownSubsystem();
+                updateLoopInitialized = false;
+            }
+        }
+
+        #endregion
+
+        [Button]
+        public override void Initialize()
+        {
+            using (_PRF_Initialize.Auto())
+            {
+                base.Initialize();
+
+                gameObject.name = SubsystemName;
+
+                OnInitialization();
+            }
+        }
 
         public void InitializeSubsystem(ReactionSystem system, int groupIndex)
         {
-            mainSystem = system;
-            _groupIndex = groupIndex;
+            using (_PRF_InitializeSubsystem.Auto())
+            {
+                mainSystem = system;
+                _groupIndex = groupIndex;
 
-            Initialize();
-        }
-
-        [Button]
-        public void Initialize()
-        {
-            gameObject.name = SubsystemName;
-
-            OnInitialization();
+                Initialize();
+            }
         }
 
         public void UpdateGroupIndex(int i)
@@ -130,8 +157,34 @@ namespace Appalachia.Simulation.ReactionSystem.Base
             _groupIndex = i;
         }
 
+        protected abstract void DoUpdateLoop();
+
         protected abstract bool InitializeUpdateLoop();
 
-        protected abstract void DoUpdateLoop();
+        protected abstract void OnInitialization();
+
+        protected abstract void TeardownSubsystem();
+
+        #region Profiling
+
+        private const string _PRF_PFX = nameof(ReactionSubsystemBase) + ".";
+
+        private static readonly ProfilerMarker _PRF_InitializeSubsystem =
+            new ProfilerMarker(_PRF_PFX + nameof(InitializeSubsystem));
+
+        private static readonly ProfilerMarker _PRF_Initialize =
+            new ProfilerMarker(_PRF_PFX + nameof(Initialize));
+
+        private static readonly ProfilerMarker _PRF_Awake = new ProfilerMarker(_PRF_PFX + nameof(Awake));
+
+        private static readonly ProfilerMarker _PRF_Update = new ProfilerMarker(_PRF_PFX + nameof(Update));
+
+        private static readonly ProfilerMarker
+            _PRF_OnEnable = new ProfilerMarker(_PRF_PFX + nameof(OnEnable));
+
+        private static readonly ProfilerMarker _PRF_OnDisable =
+            new ProfilerMarker(_PRF_PFX + nameof(OnDisable));
+
+        #endregion
     }
 }

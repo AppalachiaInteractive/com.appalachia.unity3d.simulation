@@ -3,6 +3,7 @@
 using System;
 using Appalachia.Core.Attributes.Editing;
 using Appalachia.Simulation.Core.Metadata.Tree;
+using Appalachia.Simulation.Trees.Core.Model;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -95,7 +96,7 @@ namespace Appalachia.Simulation.Trees.Core
 #if UNITY_EDITOR
         [SerializeField]
         [HideInInspector]
-        private ITreeModel _model;
+        private TreeModel _model;
 
         private bool _missingModel => (_model == null) || _model.MissingContainer;
 
@@ -121,7 +122,7 @@ namespace Appalachia.Simulation.Trees.Core
         {
             if (_model == null)
             {
-                _model = GetComponentInParent<ITreeModel>();
+                _model = GetComponentInParent<TreeModel>();
             }
         }
 

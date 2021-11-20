@@ -6,7 +6,7 @@ namespace Appalachia.Simulation.Core.Metadata.Tree
 {
     [Serializable]
     public class
-        TreeIndividualMetadata : IdentifiableAppalachiaObject<TreeIndividualMetadata>
+        TreeIndividualMetadata : IdentifiableAppalachiaObject
     {
         public int individualID;
 

@@ -9,6 +9,7 @@ using Appalachia.Simulation.Trees.Definition.Interfaces;
 using Appalachia.Simulation.Trees.Generation.Geometry.Leaves;
 using Appalachia.Simulation.Trees.Hierarchy.Options.Properties;
 using Appalachia.Simulation.Trees.Settings;
+using Unity.Profiling;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Prefabs
@@ -16,18 +17,18 @@ namespace Appalachia.Simulation.Trees.Prefabs
     [Serializable]
     public class TreePrefabCollection : TypeBasedSettings<TreePrefabCollection>
     {
-        private Dictionary<string, Dictionary<TreeComponentType, TreePrefab>> _prefabsByGUIDAndType;
-
-        private Dictionary<string, Dictionary<TreeComponentType, TreePrefab>> prefabsByGUIDAndType
-        {
-            get
-            {
-                RebuildLookups();
-                return _prefabsByGUIDAndType;
-            }
-        }
+        #region Fields and Autoproperties
 
         private Dictionary<int, TreePrefab> _prefabsByID;
+        private Dictionary<string, Dictionary<TreeComponentType, TreePrefab>> _prefabsByGUIDAndType;
+
+        [SerializeField] private IDIncrementer _prefabIDs = new IDIncrementer(true);
+
+        [SerializeField] private List<TreePrefab> _prefabs;
+
+        #endregion
+
+        public IReadOnlyList<TreePrefab> prefabs => _prefabs;
 
         private Dictionary<int, TreePrefab> prefabsByID
         {
@@ -38,29 +39,32 @@ namespace Appalachia.Simulation.Trees.Prefabs
             }
         }
 
-        [SerializeField]
-        private IDIncrementer _prefabIDs = new IDIncrementer(true);
-
-        [SerializeField]
-        private List<TreePrefab> _prefabs;
-
-        public IReadOnlyList<TreePrefab> prefabs => _prefabs;
+        private Dictionary<string, Dictionary<TreeComponentType, TreePrefab>> prefabsByGUIDAndType
+        {
+            get
+            {
+                RebuildLookups();
+                return _prefabsByGUIDAndType;
+            }
+        }
 
         public static TreePrefabCollection Create(string folder, NameBasis nameBasis)
         {
             var assetName = nameBasis.FileNameSO("prefabs");
-            var instance = LoadOrCreateNew(folder, assetName);
-            
-           instance._prefabs = new List<TreePrefab>();
-           instance._prefabsByID = new Dictionary<int, TreePrefab>();
-           instance._prefabsByGUIDAndType = new Dictionary<string, Dictionary<TreeComponentType, TreePrefab>>();
-           
-           return instance;
+            var instance = LoadOrCreateNew<TreePrefabCollection>(folder, assetName);
+
+            instance._prefabs = new List<TreePrefab>();
+            instance._prefabsByID = new Dictionary<int, TreePrefab>();
+            instance._prefabsByGUIDAndType =
+                new Dictionary<string, Dictionary<TreeComponentType, TreePrefab>>();
+
+            return instance;
         }
 
         public int AddTreePrefab(PrefabSetup prefab, TreeComponentType type)
         {
-            if (prefabsByGUIDAndType.ContainsKey(prefab.guid) && _prefabsByGUIDAndType[prefab.guid].ContainsKey(type))
+            if (prefabsByGUIDAndType.ContainsKey(prefab.guid) &&
+                _prefabsByGUIDAndType[prefab.guid].ContainsKey(type))
             {
                 return _prefabsByGUIDAndType[prefab.guid][type].prefabID;
             }
@@ -82,7 +86,8 @@ namespace Appalachia.Simulation.Trees.Prefabs
 
         public bool Contains(PrefabSetup prefab, TreeComponentType type)
         {
-            return prefabsByGUIDAndType.ContainsKey(prefab.guid) && _prefabsByGUIDAndType[prefab.guid].ContainsKey(type);
+            return prefabsByGUIDAndType.ContainsKey(prefab.guid) &&
+                   _prefabsByGUIDAndType[prefab.guid].ContainsKey(type);
         }
 
         public bool Contains(int prefabID)
@@ -90,10 +95,22 @@ namespace Appalachia.Simulation.Trees.Prefabs
             return prefabsByID.ContainsKey(prefabID);
         }
 
-        public int GetPrefabID(GameObject prefab, TreeComponentType type)
+        public bool ContainsMaterial(Material m)
         {
-            AssetDatabaseManager.TryGetGUIDAndLocalFileIdentifier(prefab, out var guid, out long _);
-            return prefabsByGUIDAndType[guid][type].prefabID;
+            foreach (var prefab in prefabs)
+            {
+                var mats = prefab.GetMaterials();
+
+                foreach (var mat in mats)
+                {
+                    if (m == mat)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
         public TreePrefab GetPrefab(int prefabID)
@@ -106,6 +123,22 @@ namespace Appalachia.Simulation.Trees.Prefabs
             return _prefabsByGUIDAndType[prefab.guid][type];
         }
 
+        public int GetPrefabID(GameObject prefab, TreeComponentType type)
+        {
+            AssetDatabaseManager.TryGetGUIDAndLocalFileIdentifier(prefab, out var guid, out var _);
+            return prefabsByGUIDAndType[guid][type].prefabID;
+        }
+
+        public void ResetPrefabs()
+        {
+            Initialize();
+
+            _prefabsByGUIDAndType.Clear();
+            _prefabsByID.Clear();
+            _prefabIDs.SetNextID(0);
+            _prefabs.Clear();
+        }
+
         public void UpdatePrefabAvailability(ITree species)
         {
             foreach (var leafGroup in species.Leaves)
@@ -115,7 +148,6 @@ namespace Appalachia.Simulation.Trees.Prefabs
                 {
                     continue;
                 }
-
 
                 var treePrefab = prefabsByGUIDAndType[prefab.guid][TreeComponentType.Leaf];
 
@@ -129,7 +161,6 @@ namespace Appalachia.Simulation.Trees.Prefabs
                 {
                     continue;
                 }
-                
 
                 var treePrefab = prefabsByGUIDAndType[prefab.guid][TreeComponentType.Fruit];
 
@@ -144,7 +175,6 @@ namespace Appalachia.Simulation.Trees.Prefabs
                     continue;
                 }
 
-                
                 var treePrefab = prefabsByGUIDAndType[prefab.guid][TreeComponentType.Knot];
 
                 treePrefab.SetAvailability();
@@ -153,7 +183,7 @@ namespace Appalachia.Simulation.Trees.Prefabs
             foreach (var fungusGroup in species.Fungi)
             {
                 var prefab = fungusGroup.geometry.prefab;
-                
+
                 if ((prefab == null) || (prefab.prefab == null))
                 {
                     continue;
@@ -175,7 +205,6 @@ namespace Appalachia.Simulation.Trees.Prefabs
                     continue;
                 }
 
-
                 var treePrefab = prefabsByGUIDAndType[prefab.guid][TreeComponentType.Leaf];
 
                 treePrefab.SetAvailability();
@@ -188,55 +217,10 @@ namespace Appalachia.Simulation.Trees.Prefabs
                 {
                     continue;
                 }
-                
 
                 var treePrefab = prefabsByGUIDAndType[prefab.guid][TreeComponentType.Fruit];
 
                 treePrefab.SetAvailability();
-            }
-        }
-
-        
-        private void RebuildLookups()
-        {
-            if (_prefabsByID == null)
-            {
-                _prefabsByID = new Dictionary<int, TreePrefab>();
-            }
-
-            if (_prefabsByID.Count != prefabs.Count)
-            {
-                _prefabsByID.Clear();
-
-                for (var i = 0; i < prefabs.Count; i++)
-                {
-                    var original = prefabs[i];
-                    _prefabsByID.Add(original.prefabID, original);
-                }
-            }
-
-            if (_prefabsByGUIDAndType == null)
-            {
-                _prefabsByGUIDAndType = new Dictionary<string, Dictionary<TreeComponentType, TreePrefab>>();
-            }
-
-            var sum = _prefabsByGUIDAndType.Values.Sum(v => v.Count);
-
-            if (_prefabsByID.Count != sum)
-            {
-                _prefabsByGUIDAndType.Clear();
-
-                for (var i = 0; i < prefabs.Count; i++)
-                {
-                    var original = prefabs[i];
-
-                    if (!_prefabsByGUIDAndType.ContainsKey(original.guid))
-                    {
-                        _prefabsByGUIDAndType.Add(original.guid, new Dictionary<TreeComponentType, TreePrefab>());
-                    }
-
-                    _prefabsByGUIDAndType[original.guid].Add(original.type, original);
-                }
             }
         }
 
@@ -247,8 +231,11 @@ namespace Appalachia.Simulation.Trees.Prefabs
                 if (hierarchy.geometry.geometryMode == LeafGeometryMode.Mesh)
                 {
                     var prefab = hierarchy.geometry.prefab;
-                    
-                    if (prefab == null) continue;
+
+                    if (prefab == null)
+                    {
+                        continue;
+                    }
 
                     if (!_prefabsByGUIDAndType.ContainsKey(prefab.guid) &&
                         !_prefabsByGUIDAndType[prefab.guid].ContainsKey(TreeComponentType.Leaf))
@@ -261,8 +248,11 @@ namespace Appalachia.Simulation.Trees.Prefabs
             foreach (var hierarchy in species.Fruits)
             {
                 var prefab = hierarchy.geometry.prefab;
-                    
-                if (prefab == null) continue;
+
+                if (prefab == null)
+                {
+                    continue;
+                }
 
                 if (!_prefabsByGUIDAndType.ContainsKey(prefab.guid) &&
                     !_prefabsByGUIDAndType[prefab.guid].ContainsKey(TreeComponentType.Fruit))
@@ -274,8 +264,11 @@ namespace Appalachia.Simulation.Trees.Prefabs
             foreach (var hierarchy in species.Knots)
             {
                 var prefab = hierarchy.geometry.prefab;
-                    
-                if (prefab == null) continue;
+
+                if (prefab == null)
+                {
+                    continue;
+                }
 
                 if (!_prefabsByGUIDAndType.ContainsKey(prefab.guid) &&
                     !_prefabsByGUIDAndType[prefab.guid].ContainsKey(TreeComponentType.Knot))
@@ -287,8 +280,11 @@ namespace Appalachia.Simulation.Trees.Prefabs
             foreach (var hierarchy in species.Fungi)
             {
                 var prefab = hierarchy.geometry.prefab;
-                    
-                if ((prefab == null) || (prefab.prefab == null)) continue;
+
+                if ((prefab == null) || (prefab.prefab == null))
+                {
+                    continue;
+                }
 
                 if (!_prefabsByGUIDAndType.ContainsKey(prefab.guid) ||
                     !_prefabsByGUIDAndType[prefab.guid].ContainsKey(TreeComponentType.Fungus))
@@ -298,89 +294,139 @@ namespace Appalachia.Simulation.Trees.Prefabs
             }
         }
 
-
         public void UpdatePrefabs(IBranch branch)
         {
-            foreach (var hierarchy in branch.Leaves)
+            using (_PRF_UpdatePrefabs.Auto())
             {
-                if (hierarchy.geometry.geometryMode == LeafGeometryMode.Mesh)
+                foreach (var hierarchy in branch.Leaves)
+                {
+                    if (hierarchy.geometry.geometryMode == LeafGeometryMode.Mesh)
+                    {
+                        var prefab = hierarchy.geometry.prefab;
+
+                        if (prefab == null)
+                        {
+                            continue;
+                        }
+
+                        if (!_prefabsByGUIDAndType.ContainsKey(prefab.guid) &&
+                            !_prefabsByGUIDAndType[prefab.guid].ContainsKey(TreeComponentType.Leaf))
+                        {
+                            AddTreePrefab(prefab, TreeComponentType.Leaf);
+                        }
+                    }
+                }
+
+                foreach (var hierarchy in branch.Fruits)
                 {
                     var prefab = hierarchy.geometry.prefab;
-                    
-                    if (prefab == null) continue;
+
+                    if (prefab == null)
+                    {
+                        continue;
+                    }
 
                     if (!_prefabsByGUIDAndType.ContainsKey(prefab.guid) &&
-                        !_prefabsByGUIDAndType[prefab.guid].ContainsKey(TreeComponentType.Leaf))
+                        !_prefabsByGUIDAndType[prefab.guid].ContainsKey(TreeComponentType.Fruit))
                     {
-                        AddTreePrefab(prefab, TreeComponentType.Leaf);
+                        AddTreePrefab(prefab, TreeComponentType.Fruit);
                     }
                 }
             }
+        }
 
-            foreach (var hierarchy in branch.Fruits)
+        public override void Initialize()
+        {
+            using (_PRF_Initialize.Auto())
             {
-                var prefab = hierarchy.geometry.prefab;
-                    
-                if (prefab == null) continue;
-
-                if (!_prefabsByGUIDAndType.ContainsKey(prefab.guid) &&
-                    !_prefabsByGUIDAndType[prefab.guid].ContainsKey(TreeComponentType.Fruit))
+                base.Initialize();
+                
+                if (_prefabsByGUIDAndType == null)
                 {
-                    AddTreePrefab(prefab, TreeComponentType.Fruit);
+                    _prefabsByGUIDAndType =
+                        new Dictionary<string, Dictionary<TreeComponentType, TreePrefab>>();
+                }
+
+                if (_prefabsByID == null)
+                {
+                    _prefabsByID = new Dictionary<int, TreePrefab>();
+                }
+
+                if (_prefabIDs == null)
+                {
+                    _prefabIDs = new IDIncrementer(true);
+                }
+
+                if (_prefabs == null)
+                {
+                    _prefabs = new List<TreePrefab>();
                 }
             }
         }
-        
-        public bool ContainsMaterial(Material m)
-        {
-            foreach (var prefab in prefabs)
-            {
-                var mats = prefab.GetMaterials();
 
-                foreach (var mat in mats)
+        private void RebuildLookups()
+        {
+            using (_PRF_RebuildLookups.Auto())
+            {
+                if (_prefabsByID == null)
                 {
-                    if (m == mat)
+                    _prefabsByID = new Dictionary<int, TreePrefab>();
+                }
+
+                if (_prefabsByID.Count != prefabs.Count)
+                {
+                    _prefabsByID.Clear();
+
+                    for (var i = 0; i < prefabs.Count; i++)
                     {
-                        return true;
+                        var original = prefabs[i];
+                        _prefabsByID.Add(original.prefabID, original);
+                    }
+                }
+
+                if (_prefabsByGUIDAndType == null)
+                {
+                    _prefabsByGUIDAndType =
+                        new Dictionary<string, Dictionary<TreeComponentType, TreePrefab>>();
+                }
+
+                var sum = _prefabsByGUIDAndType.Values.Sum(v => v.Count);
+
+                if (_prefabsByID.Count != sum)
+                {
+                    _prefabsByGUIDAndType.Clear();
+
+                    for (var i = 0; i < prefabs.Count; i++)
+                    {
+                        var original = prefabs[i];
+
+                        if (!_prefabsByGUIDAndType.ContainsKey(original.guid))
+                        {
+                            _prefabsByGUIDAndType.Add(
+                                original.guid,
+                                new Dictionary<TreeComponentType, TreePrefab>()
+                            );
+                        }
+
+                        _prefabsByGUIDAndType[original.guid].Add(original.type, original);
                     }
                 }
             }
-
-            return false;
         }
 
-        private void Initialize()
-        {
-            if (_prefabsByGUIDAndType == null)
-            {
-                _prefabsByGUIDAndType = new Dictionary<string, Dictionary<TreeComponentType, TreePrefab>>();
-            }
+        #region Profiling
 
-            if (_prefabsByID == null)
-            {
-                _prefabsByID = new Dictionary<int, TreePrefab>();
-            }
+        private const string _PRF_PFX = nameof(TreePrefabCollection) + ".";
 
-            if (_prefabIDs == null)
-            {
-                _prefabIDs = new IDIncrementer(true);
-            }
+        private static readonly ProfilerMarker _PRF_UpdatePrefabs =
+            new ProfilerMarker(_PRF_PFX + nameof(UpdatePrefabs));
 
-            if (_prefabs == null)
-            {
-                _prefabs = new List<TreePrefab>();
-            }
-        }
-        
-        public void ResetPrefabs()
-        {
-            Initialize();
-            
-            _prefabsByGUIDAndType.Clear();
-            _prefabsByID.Clear();
-            _prefabIDs.SetNextID(0);
-            _prefabs.Clear();
-            
-        }
+        private static readonly ProfilerMarker _PRF_Initialize =
+            new ProfilerMarker(_PRF_PFX + nameof(Initialize));
+
+        private static readonly ProfilerMarker _PRF_RebuildLookups =
+            new ProfilerMarker(_PRF_PFX + nameof(RebuildLookups));
+
+        #endregion
     }
 }

@@ -6,11 +6,13 @@ using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Core
 {
-    public class
-        TreeRuntimeMetadataCollection : SingletonAppalachiaObject<
-            TreeRuntimeMetadataCollection>
+    public class TreeRuntimeMetadataCollection : SingletonAppalachiaObject<TreeRuntimeMetadataCollection>
     {
+        #region Fields and Autoproperties
+
         public List<TreeRuntimeInstanceMetadata> treeRuntimeInstanceMetadatas = new();
+
+        #endregion
 
 #if UNITY_EDITOR
         protected override void OnEnable()
@@ -40,10 +42,13 @@ namespace Appalachia.Simulation.Trees.Core
             }
         }
 
-        [UnityEditor.MenuItem(PKG.Menu.Assets.Base + nameof(TreeRuntimeMetadataCollection), priority = PKG.Menu.Assets.Priority)]
+        [UnityEditor.MenuItem(
+            PKG.Menu.Assets.Base + nameof(TreeRuntimeMetadataCollection),
+            priority = PKG.Menu.Assets.Priority
+        )]
         public static void CreateAsset()
         {
-            CreateNew();
+            CreateNew<TreeRuntimeMetadataCollection>();
         }
 #endif
     }

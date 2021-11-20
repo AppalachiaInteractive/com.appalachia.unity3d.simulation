@@ -20,28 +20,23 @@ namespace Appalachia.Simulation.Trees.Definition
     [Serializable]
     public sealed class TreeSpecies : TypeBasedSettings<TreeSpecies>, ITree
     {
-        [FormerlySerializedAs("name")]
-        [TitleGroup("Species Information", Alignment = TitleAlignments.Centered)]
-        [PropertyOrder(0)]
-        public NameBasis nameBasis;
-
-        public ExternalDualSeed Seed
-        {
-            get
-            {
-                return seed;
-            }
-            set
-            {
-                seed = value;
-            }
-        }
-        
+        #region Fields and Autoproperties
 
         [PropertySpace]
         [PropertyOrder(1), InlineProperty, HideLabel]
         [OnValueChanged(nameof(DistributionSettingsChanged), true)]
         public ExternalDualSeed seed;
+
+        [FormerlySerializedAs("name")]
+        [TitleGroup("Species Information", Alignment = TitleAlignments.Centered)]
+        [PropertyOrder(0)]
+        public NameBasis nameBasis;
+
+        [HideInInspector] public TreeHierarchies hierarchies;
+
+        public WoodSimulationData woodData;
+
+        #endregion
 
         [PropertyTooltip("How deep into the ground to start tree generation.")]
         [PropertyRange(0f, 3f), PropertyOrder(2), ShowInInspector]
@@ -52,58 +47,56 @@ namespace Appalachia.Simulation.Trees.Definition
             set => hierarchies.verticalOffset = value;
         }
 
-        public WoodSimulationData woodData;
-
-        [HideInInspector]
-        public TreeHierarchies hierarchies;
-
         public static TreeSpecies Create(string folder, NameBasis nameBasis)
         {
             var assetName = nameBasis.FileNameSO("species");
-            var instance = LoadOrCreateNew(folder, assetName);
-            
+            var instance = LoadOrCreateNew<TreeSpecies>(folder, assetName);
+
             instance.nameBasis = nameBasis;
             instance.hierarchies = new TreeHierarchies();
-            
+
             return instance;
         }
 
         public static TreeSpecies Create(TreeEditor.TreeData data, string folder, NameBasis nameBasis)
         {
             var assetName = nameBasis.FileNameSO("species");
-            var instance = LoadOrCreateNew(folder, assetName);
-            
+            var instance = LoadOrCreateNew<TreeSpecies>(folder, assetName);
+
             instance.nameBasis = nameBasis;
-            instance.seed = new ExternalDualSeed(0, 0,  Mathf.Clamp(data.root.seed, 0, BaseSeed.HIGH_ELEMENT));
+            instance.seed = new ExternalDualSeed(0, 0, Mathf.Clamp(data.root.seed, 0, BaseSeed.HIGH_ELEMENT));
 
             var idLookup = new Dictionary<int, int>();
 
-            instance.hierarchies.trunks = data.branchGroups.Where(bg => bg.parentGroupID == data.root.uniqueID).Select(
-                bg =>
-                {
-                    var newID = instance.hierarchies.idGenerator.GetNextIdAndIncrement();
+            instance.hierarchies.trunks = data.branchGroups
+                                              .Where(bg => bg.parentGroupID == data.root.uniqueID)
+                                              .Select(
+                                                   bg =>
+                                                   {
+                                                       var newID = instance.hierarchies.idGenerator
+                                                          .GetNextIdAndIncrement();
 
-                    idLookup.Add(bg.uniqueID, newID);
+                                                       idLookup.Add(bg.uniqueID, newID);
 
-                    return new TrunkHierarchyData(
-                        newID,
-                        bg,
-                        data.root,
-                        bg.materialBranch,
-                        bg.materialBreak,
-                        bg.materialFrond
-                    );
-
-                }
-            ).ToList();
+                                                       return new TrunkHierarchyData(
+                                                           newID,
+                                                           bg,
+                                                           data.root,
+                                                           bg.materialBranch,
+                                                           bg.materialBreak,
+                                                           bg.materialFrond
+                                                       );
+                                                   }
+                                               )
+                                              .ToList();
 
             var trunkIDs = instance.hierarchies.trunks.Select(t => t.hierarchyID).ToList();
 
             var parentIDs = data.branchGroups.Select(t => t.parentGroupID)
-                .Concat(data.leafGroups.Select(l => l.parentGroupID)).ToList();
+                                .Concat(data.leafGroups.Select(l => l.parentGroupID))
+                                .ToList();
 
-            var allBranches =
-                data.branchGroups.Where(b => !trunkIDs.Contains(b.uniqueID)).ToArray();
+            var allBranches = data.branchGroups.Where(b => !trunkIDs.Contains(b.uniqueID)).ToArray();
 
             var rootGroups = new List<TreeEditor.TreeGroupBranch>();
             var branchGroups = new List<TreeEditor.TreeGroupBranch>();
@@ -114,7 +107,7 @@ namespace Appalachia.Simulation.Trees.Definition
                 {
                     continue;
                 }
-                
+
                 if (parentIDs.Contains(branch.parentGroupID))
                 {
                     branchGroups.Add(branch);
@@ -172,65 +165,83 @@ namespace Appalachia.Simulation.Trees.Definition
             }
 
             instance.hierarchies.roots = rootGroups.Select(
-                rg =>
-                {
-                    var newID = instance.hierarchies.idGenerator.GetNextIdAndIncrement();
+                                                        rg =>
+                                                        {
+                                                            var newID = instance.hierarchies.idGenerator
+                                                               .GetNextIdAndIncrement();
 
-                    idLookup.Add(rg.uniqueID, newID);
+                                                            idLookup.Add(rg.uniqueID, newID);
 
-                    return new RootHierarchyData(
-                        newID,
-                        idLookup[rg.parentGroupID],
-                        rg,
-                        rg.materialBranch,
-                        rg.materialBreak,
-                        rg.materialFrond
-                    );
-                }
-            ).ToList();
+                                                            return new RootHierarchyData(
+                                                                newID,
+                                                                idLookup[rg.parentGroupID],
+                                                                rg,
+                                                                rg.materialBranch,
+                                                                rg.materialBreak,
+                                                                rg.materialFrond
+                                                            );
+                                                        }
+                                                    )
+                                                   .ToList();
 
             instance.hierarchies.branches = branchGroups.Select(
-                bg =>
-                {
-                    var newID = instance.hierarchies.idGenerator.GetNextIdAndIncrement();
+                                                             bg =>
+                                                             {
+                                                                 var newID = instance.hierarchies.idGenerator
+                                                                    .GetNextIdAndIncrement();
 
-                    idLookup.Add(bg.uniqueID, newID);
+                                                                 idLookup.Add(bg.uniqueID, newID);
 
-                    return new BranchHierarchyData(
-                        newID,
-                        idLookup[bg.parentGroupID],
-                        bg,
-                        bg.materialBranch,
-                        bg.materialBreak,
-                        bg.materialFrond
-                    );
-                }
-            ).ToList();
+                                                                 return new BranchHierarchyData(
+                                                                     newID,
+                                                                     idLookup[bg.parentGroupID],
+                                                                     bg,
+                                                                     bg.materialBranch,
+                                                                     bg.materialBreak,
+                                                                     bg.materialFrond
+                                                                 );
+                                                             }
+                                                         )
+                                                        .ToList();
 
             instance.hierarchies.leaves = data.leafGroups.Select(
-                lg =>
-                {
-                    if (idLookup.ContainsKey(lg.parentGroupID))
-                    {
-                        var newID = instance.hierarchies.idGenerator.GetNextIdAndIncrement();
+                                                   lg =>
+                                                   {
+                                                       if (idLookup.ContainsKey(lg.parentGroupID))
+                                                       {
+                                                           var newID = instance.hierarchies.idGenerator
+                                                              .GetNextIdAndIncrement();
 
-                        idLookup.Add(lg.uniqueID, newID);
-                        return new LeafHierarchyData(
-                            newID,
-                            idLookup[lg.parentGroupID],
-                            lg,
-                            lg.materialLeaf,
-                            lg.instanceMesh
-                        );
-                    }
-                    else
-                    {
-                        return null;
-                    }
-                }
-            ).Where(lg => lg != null).ToList();
+                                                           idLookup.Add(lg.uniqueID, newID);
+                                                           return new LeafHierarchyData(
+                                                               newID,
+                                                               idLookup[lg.parentGroupID],
+                                                               lg,
+                                                               lg.materialLeaf,
+                                                               lg.instanceMesh
+                                                           );
+                                                       }
+
+                                                       return null;
+                                                   }
+                                               )
+                                              .Where(lg => lg != null)
+                                              .ToList();
 
             return instance;
+        }
+
+        private void DistributionSettingsChanged()
+        {
+            TreeBuildRequestManager.SettingsChanged(SettingsUpdateTarget.Distribution);
+        }
+
+        #region ITree Members
+
+        public ExternalDualSeed Seed
+        {
+            get => seed;
+            set => seed = value;
         }
 
         public List<BranchHierarchyData> Branches => hierarchies.branches;
@@ -246,11 +257,6 @@ namespace Appalachia.Simulation.Trees.Definition
         public List<FungusHierarchyData> Fungi => hierarchies.fungi;
 
         public List<KnotHierarchyData> Knots => hierarchies.knots;
-        
-        private void DistributionSettingsChanged()
-        {
-            TreeBuildRequestManager.SettingsChanged(SettingsUpdateTarget.Distribution);
-        }
 
         public IEnumerator<HierarchyData> GetEnumerator()
         {
@@ -261,8 +267,7 @@ namespace Appalachia.Simulation.Trees.Definition
         {
             return GetEnumerator();
         }
+
+        #endregion
     }
 }
-
-
-

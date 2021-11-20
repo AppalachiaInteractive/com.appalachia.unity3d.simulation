@@ -9,51 +9,49 @@ using UnityEngine;
 namespace Appalachia.Simulation.Buoyancy.Data
 {
     [Serializable]
-    public class BuoyancyData : AppalachiaObject<BuoyancyData>
+    public class BuoyancyData : AppalachiaObject
     {
-        [SmartLabel(Postfix = true)]
-        [SerializeField]
-        public bool overrideDefaultWetnessAccumulationSpeed;
-
-        [EnableIf(nameof(overrideDefaultWetnessAccumulationSpeed))]
-        [SmartLabel]
-        [PropertyRange(0.00001f, 0.01f)]
-        [SerializeField]
-        public float wetnessAccumulationSpeed;
+        #region Fields and Autoproperties
 
         [SmartLabel(Postfix = true)]
         [SerializeField]
-        public bool overrideDefaultWetnessDispersalSpeed;
-
-        [EnableIf(nameof(overrideDefaultWetnessDispersalSpeed))]
-        [SmartLabel]
-        [PropertyRange(0.00001f, 0.01f)]
-        [SerializeField]
-        public float wetnessDispersalSpeed;
+        public bool overrideDefaultBuoyancyType;
 
         [SmartLabel(Postfix = true)]
         [SerializeField]
         public bool overrideDefaultSubmergednessAccumulationSpeed;
 
-        [EnableIf(nameof(overrideDefaultSubmergednessAccumulationSpeed))]
-        [SmartLabel]
-        [PropertyRange(0.00001f, 0.01f)]
-        [SerializeField]
-        public float submergednessAccumulationSpeed;
-
         [SmartLabel(Postfix = true)]
         [SerializeField]
         public bool overrideDefaultSubmergednessDispersalSpeed;
 
-        [EnableIf(nameof(overrideDefaultSubmergednessDispersalSpeed))]
-        [SmartLabel]
-        [PropertyRange(0.00001f, 0.01f)]
+        [SmartLabel(Postfix = true)]
         [SerializeField]
-        public float submergednessDispersalSpeed;
+        public bool overrideDefaultSubmersionDisengageSmoothing;
 
         [SmartLabel(Postfix = true)]
         [SerializeField]
-        public bool overrideDefaultBuoyancyType;
+        public bool overrideDefaultSubmersionEngageSmoothing;
+
+        [SmartLabel(Postfix = true)]
+        [SerializeField]
+        public bool overrideDefaultVoxelResolution;
+
+        [SmartLabel(Postfix = true)]
+        [SerializeField]
+        public bool overrideDefaultWaterLevelOffset;
+
+        [SmartLabel(Postfix = true)]
+        [SerializeField]
+        public bool overrideDefaultWetnessAccumulationSpeed;
+
+        [SmartLabel(Postfix = true)]
+        [SerializeField]
+        public bool overrideDefaultWetnessDispersalSpeed;
+
+        [SmartLabel(Postfix = true)]
+        [SerializeField]
+        public bool overrideVoxelPopulationStyle;
 
         /// <summary>
         ///     type of buoyancy to calculate
@@ -63,21 +61,29 @@ namespace Appalachia.Simulation.Buoyancy.Data
         [SerializeField]
         public BuoyancyType buoyancyType;
 
-        [SmartLabel(Postfix = true)]
-        [SerializeField]
-        public bool overrideVoxelPopulationStyle;
-
-        /// <summary>
-        ///     type of voxel population to use
-        /// </summary>
-        [EnableIf(nameof(overrideVoxelPopulationStyle))]
+        [EnableIf(nameof(overrideDefaultSubmergednessAccumulationSpeed))]
         [SmartLabel]
+        [PropertyRange(0.00001f, 0.01f)]
         [SerializeField]
-        public VoxelPopulationStyle voxelPopulationStyle;
+        public float submergednessAccumulationSpeed;
 
-        [SmartLabel(Postfix = true)]
+        [EnableIf(nameof(overrideDefaultSubmergednessDispersalSpeed))]
+        [SmartLabel]
+        [PropertyRange(0.00001f, 0.01f)]
         [SerializeField]
-        public bool overrideDefaultVoxelResolution;
+        public float submergednessDispersalSpeed;
+
+        [EnableIf(nameof(overrideDefaultSubmersionDisengageSmoothing))]
+        [SmartLabel]
+        [PropertyRange(0.01f, 1.0f)]
+        [SerializeField]
+        public float submersionDisengageSmoothing;
+
+        [EnableIf(nameof(overrideDefaultSubmersionEngageSmoothing))]
+        [SmartLabel]
+        [PropertyRange(0.01f, 1.0f)]
+        [SerializeField]
+        public float submersionEngageSmoothing;
 
         /// <summary>
         ///     voxel resolution, represents the half size of a voxel when creating the voxel representation
@@ -88,53 +94,37 @@ namespace Appalachia.Simulation.Buoyancy.Data
         [SerializeField]
         public float voxelResolution;
 
-        [SmartLabel(Postfix = true)]
-        [SerializeField]
-        public bool overrideDefaultSubmersionEngageSmoothing;
-
-        [EnableIf(nameof(overrideDefaultSubmersionEngageSmoothing))]
-        [SmartLabel]
-        [PropertyRange(0.01f, 1.0f)]
-        [SerializeField]
-        public float submersionEngageSmoothing;
-
-        [SmartLabel(Postfix = true)]
-        [SerializeField]
-        public bool overrideDefaultSubmersionDisengageSmoothing;
-
-        [EnableIf(nameof(overrideDefaultSubmersionDisengageSmoothing))]
-        [SmartLabel]
-        [PropertyRange(0.01f, 1.0f)]
-        [SerializeField]
-        public float submersionDisengageSmoothing;
-
-        [SmartLabel(Postfix = true)]
-        [SerializeField]
-        public bool overrideDefaultWaterLevelOffset;
-
         [EnableIf(nameof(_enableWaterLevelOffset))]
         [PropertyRange(-10f, 10f)]
         [SerializeField]
         public float waterLevelOffset;
 
+        [EnableIf(nameof(overrideDefaultWetnessAccumulationSpeed))]
+        [SmartLabel]
+        [PropertyRange(0.00001f, 0.01f)]
+        [SerializeField]
+        public float wetnessAccumulationSpeed;
+
+        [EnableIf(nameof(overrideDefaultWetnessDispersalSpeed))]
+        [SmartLabel]
+        [PropertyRange(0.00001f, 0.01f)]
+        [SerializeField]
+        public float wetnessDispersalSpeed;
+
         [SerializeField] public Vector3 centerOfMassOffset;
+
+        /// <summary>
+        ///     type of voxel population to use
+        /// </summary>
+        [EnableIf(nameof(overrideVoxelPopulationStyle))]
+        [SmartLabel]
+        [SerializeField]
+        public VoxelPopulationStyle voxelPopulationStyle;
 
         [SerializeField] private Mesh _mesh;
         [SerializeField] private string _meshGUID;
 
-        private bool _enableWaterLevelOffset => overrideDefaultWaterLevelOffset;
-
-        public Mesh mesh
-        {
-            get => _mesh;
-#if UNITY_EDITOR
-            set
-            {
-                _mesh = value;
-                AssetDatabaseManager.TryGetGUIDAndLocalFileIdentifier(_mesh, out _meshGUID, out long _);
-            }
-#endif
-        }
+        #endregion
 
         public string meshGUID
         {
@@ -147,11 +137,25 @@ namespace Appalachia.Simulation.Buoyancy.Data
                     return null;
                 }
 
-                AssetDatabaseManager.TryGetGUIDAndLocalFileIdentifier(_mesh, out _meshGUID, out long _);
+                AssetDatabaseManager.TryGetGUIDAndLocalFileIdentifier(_mesh, out _meshGUID, out var _);
 #endif
                 return _meshGUID;
             }
         }
+
+        public Mesh mesh
+        {
+            get => _mesh;
+#if UNITY_EDITOR
+            set
+            {
+                _mesh = value;
+                AssetDatabaseManager.TryGetGUIDAndLocalFileIdentifier(_mesh, out _meshGUID, out var _);
+            }
+#endif
+        }
+
+        private bool _enableWaterLevelOffset => overrideDefaultWaterLevelOffset;
 
         [Button]
         public void Prepare()
@@ -168,14 +172,12 @@ namespace Appalachia.Simulation.Buoyancy.Data
 
             if (!overrideDefaultSubmergednessAccumulationSpeed)
             {
-                submergednessAccumulationSpeed =
-                    BuoyancyDataDefaults.instance.submergednessAccumulationSpeed;
+                submergednessAccumulationSpeed = BuoyancyDataDefaults.instance.submergednessAccumulationSpeed;
             }
 
             if (!overrideDefaultSubmergednessDispersalSpeed)
             {
-                submergednessDispersalSpeed =
-                    BuoyancyDataDefaults.instance.submergednessDispersalSpeed;
+                submergednessDispersalSpeed = BuoyancyDataDefaults.instance.submergednessDispersalSpeed;
             }
 
             if (!overrideDefaultBuoyancyType)
@@ -200,8 +202,7 @@ namespace Appalachia.Simulation.Buoyancy.Data
 
             if (!overrideDefaultSubmersionDisengageSmoothing)
             {
-                submersionDisengageSmoothing =
-                    BuoyancyDataDefaults.instance.submersionDisengageSmoothing;
+                submersionDisengageSmoothing = BuoyancyDataDefaults.instance.submersionDisengageSmoothing;
             }
 
             if (!overrideDefaultWaterLevelOffset)
