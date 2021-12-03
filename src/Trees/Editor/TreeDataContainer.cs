@@ -26,10 +26,10 @@ using Appalachia.Simulation.Trees.Prefabs;
 using Appalachia.Simulation.Trees.ResponsiveUI;
 using Appalachia.Simulation.Trees.Seeds;
 using Appalachia.Simulation.Trees.Settings;
+using Appalachia.Utility.Extensions;
 using Appalachia.Utility.Logging;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
-using UnityEditor;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -177,7 +177,7 @@ namespace Appalachia.Simulation.Trees
         [Button]
         [HideIf(nameof(initialized))]
         [EnableIf(nameof(canInitialize))]
-        public override void Initialize()
+        protected override void Initialize()
         {
             using (_PRF_Initialize.Auto())
             {
@@ -294,12 +294,12 @@ namespace Appalachia.Simulation.Trees
 
         public override void SetDirtyStates()
         {
-            EditorUtility.SetDirty(this);
-            EditorUtility.SetDirty(settings);
-            EditorUtility.SetDirty(species);
-            EditorUtility.SetDirty(materials);
-            EditorUtility.SetDirty(subfolders);
-            EditorUtility.SetDirty(runtimeSpeciesMetadata);
+            this.MarkAsModified();
+            settings.MarkAsModified();
+            species.MarkAsModified();
+            materials.MarkAsModified();
+            subfolders.MarkAsModified();
+            runtimeSpeciesMetadata.MarkAsModified();
 
             foreach (var material in materials.outputMaterialCache.tiledOutputMaterials)
             {
@@ -307,7 +307,7 @@ namespace Appalachia.Simulation.Trees
                 {
                     if (subMaterial.asset != null)
                     {
-                        EditorUtility.SetDirty(subMaterial.asset);
+                        subMaterial.asset.MarkAsModified();
                     }
                 }
             }
@@ -318,7 +318,7 @@ namespace Appalachia.Simulation.Trees
                 {
                     if (subMaterial.asset != null)
                     {
-                        EditorUtility.SetDirty(subMaterial.asset);
+                        subMaterial.asset.MarkAsModified();
                     }
                 }
             }
@@ -329,37 +329,37 @@ namespace Appalachia.Simulation.Trees
                 {
                     if (subMaterial.asset != null)
                     {
-                        EditorUtility.SetDirty(subMaterial.asset);
+                        subMaterial.asset.MarkAsModified();
                     }
                 }
             }
 
-            EditorUtility.SetDirty(hierarchyPrefabs);
+            hierarchyPrefabs.MarkAsModified();
 
             foreach (var individual in individuals)
             {
-                EditorUtility.SetDirty(individual);
+                individual.MarkAsModified();
 
                 foreach (var age in individual.ages)
                 {
-                    EditorUtility.SetDirty(age);
-                    EditorUtility.SetDirty(age.integrationAsset);
+                    age.MarkAsModified();
+                    age.integrationAsset.MarkAsModified();
 
                     foreach (var stage in age.stages)
                     {
-                        EditorUtility.SetDirty(stage);
-                        EditorUtility.SetDirty(stage.asset);
+                        stage.MarkAsModified();
+                        stage.asset.MarkAsModified();
 
                         if (stage.asset.prefab != null)
                         {
-                            EditorUtility.SetDirty(stage.asset.prefab);
+                            stage.asset.prefab.MarkAsModified();
                         }
 
                         foreach (var level in stage.asset.levels)
                         {
                             if (level.mesh != null)
                             {
-                                EditorUtility.SetDirty(level.mesh);
+                                level.mesh.MarkAsModified();
                             }
                         }
                     }
@@ -1008,15 +1008,18 @@ namespace Appalachia.Simulation.Trees
 
         #endregion
 
+#if UNITY_EDITOR
+
         #region Menu Items
 
-        [MenuItem(PKG.Menu.Assets.Base + nameof(TreeDataContainer), priority = PKG.Menu.Assets.Priority)]
+        [UnityEditor.MenuItem(PKG.Menu.Assets.Base + nameof(TreeDataContainer), priority = PKG.Menu.Assets.Priority)]
         public static void CreateAsset()
         {
             CreateNew<TreeDataContainer>();
         }
 
-        #endregion
+#endregion
+#endif
 
         #region Profiling
 

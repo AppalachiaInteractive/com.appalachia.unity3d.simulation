@@ -5,6 +5,7 @@ using Appalachia.Simulation.Trees.Generation.Texturing.Materials.Management;
 using Appalachia.Simulation.Trees.Generation.Texturing.Materials.Rects;
 using Appalachia.Simulation.Trees.Icons;
 using Appalachia.Simulation.Trees.UI.GUI;
+using Appalachia.Utility.Extensions;
 using Appalachia.Utility.Logging;
 using UnityEditor;
 using UnityEngine;
@@ -286,7 +287,7 @@ namespace Appalachia.Simulation.Trees.UI.UV
                     uvRect.Finish();
                 }
 
-                EditorUtility.SetDirty(LeafUVRectCollection.instance);
+                LeafUVRectCollection.instance.MarkAsModified();
             }
             
             modifyingUVs = false;

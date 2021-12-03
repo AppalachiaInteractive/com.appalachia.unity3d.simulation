@@ -741,7 +741,7 @@ namespace Appalachia.Simulation.Trees.UI.Gizmos
                                         s_SelectedNode.spline.UpdateRotations();
     
                                         // Make sure changes are saved
-                                        // EditorUtility.SetDirty( selectedGroup );
+                                        // selectedGroup.MarkAsModified();s
                                         evt.Use();
                                         PreviewMesh(tree);
                                     }

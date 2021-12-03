@@ -1,5 +1,6 @@
 #region
 
+using Appalachia.Core.Behaviours;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -8,27 +9,35 @@ using UnityEngine;
 namespace Appalachia.Simulation.Physical.Relays
 {
     [ExecuteAlways]
-    public abstract class ColliderRelayBase : MonoBehaviour
+    public abstract class ColliderRelayBase: AppalachiaBehaviour
     {
         public Collider[] relayingColliders;
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+            
             UpdateRelayingColliders();
         }
 
-        private void Start()
+        protected override void Start()
         {
+            base.Start();
+            
             UpdateRelayingColliders();
         }
 
-        private void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
+            
             UpdateRelayingColliders();
         }
 
-        private void OnDisable()
+        protected override void OnDisable()
         {
+            base.OnDisable();
+            
             relayingColliders = null;
         }
 

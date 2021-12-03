@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Appalachia.CI.Integration.Assets;
+using Appalachia.Core.Behaviours;
 using Appalachia.Core.Extensions;
 using Appalachia.Core.Layers;
 using Appalachia.Core.Scriptables;
@@ -9,6 +10,7 @@ using Appalachia.Core.Shading;
 using Appalachia.Core.Types.Enums;
 using Appalachia.Globals.Shading;
 using Appalachia.Jobs.TextureJobs.Jobs;
+using Appalachia.Jobs.TextureJobs.Jobs.GaussianBlur;
 using Appalachia.Jobs.TextureJobs.Structures;
 using Sirenix.OdinInspector;
 using Unity.Jobs;
@@ -18,7 +20,7 @@ using UnityEngine.Rendering;
 namespace Appalachia.Simulation.ReactionSystem.TouchBend.Data
 {
     [ExecuteAlways]
-    public class TouchBendQuad : MonoBehaviour
+    public class TouchBendQuad: AppalachiaBehaviour
     {
         #region Runtime
 
@@ -60,41 +62,49 @@ namespace Appalachia.Simulation.ReactionSystem.TouchBend.Data
         [HideInInspector] public MeshFilter quadFilter;
         [HideInInspector] public MeshRenderer quadRenderer;
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+            
 #if UNITY_EDITOR
             InitializeCamera();
 #endif
-            RecalculateBounds();
+            RecalculateTouchBendBounds();
             InitializeQuadComponents();
             RepositionQuad();
             UpdateRenderParameters();
         }
 
-        private void Start()
+        protected override void Start()
         {
+            base.Start();
+            
 #if UNITY_EDITOR
             InitializeCamera();
 #endif
-            RecalculateBounds();
+            RecalculateTouchBendBounds();
             InitializeQuadComponents();
             RepositionQuad();
             UpdateRenderParameters();
         }
 
-        private void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
+            
 #if UNITY_EDITOR
             InitializeCamera();
 #endif
-            RecalculateBounds();
+            RecalculateTouchBendBounds();
             InitializeQuadComponents();
             RepositionQuad();
             UpdateRenderParameters();
         }
 
-        private void OnDisable()
+        protected override void OnDisable()
         {
+            base.OnDisable();
+            
             if (quadRenderer)
             {
                 quadRenderer.enabled = false;
@@ -103,7 +113,7 @@ namespace Appalachia.Simulation.ReactionSystem.TouchBend.Data
 
         private void Refresh()
         {
-            RecalculateBounds();
+            RecalculateTouchBendBounds();
             InitializeQuadComponents();
             RepositionQuad();
             UpdateRenderParameters();
@@ -193,7 +203,7 @@ namespace Appalachia.Simulation.ReactionSystem.TouchBend.Data
             renderMaterial.SetFloat(GSC.TOUCHBEND._VELOCITY, velocity);
         }
 
-        private void RecalculateBounds()
+        private void RecalculateTouchBendBounds()
         {
             bounds = new Bounds {center = transform.position};
 

@@ -2,6 +2,7 @@ using Appalachia.CI.Integration.Assets;
 using Appalachia.Core.Scriptables;
 using Appalachia.Simulation.Core.Metadata.Density;
 using Appalachia.Simulation.Core.Metadata.Fuel;
+using Appalachia.Utility.Extensions;
 using Sirenix.OdinInspector;
 
 namespace Appalachia.Simulation.Core.Metadata.Wood
@@ -75,7 +76,7 @@ namespace Appalachia.Simulation.Core.Metadata.Wood
                 if (d.name == $"wood_{name}")
                 {
                     densityMetadata = d;
-                    SetDirty();
+                   this.MarkAsModified();
                     return;
                 }
             }

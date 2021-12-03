@@ -13,10 +13,10 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Output
         public OutputShaderSelectionSet shadowShaderSet;
         public Shader logShader;
         public AmplifyImpostorBakePreset impostorPreset;
-        
-        protected override void OnEnable()
+
+        protected override void Initialize()
         {
-            base.OnEnable();
+            base.Initialize();
             
             for (var i = branchShaderSet.Count - 1; i >= 0; i--)
             {

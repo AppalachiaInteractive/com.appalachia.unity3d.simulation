@@ -568,7 +568,7 @@ namespace Appalachia.Simulation.Trees.UI.GUI
                             margin = new RectOffset(0, 0, 5, 0),
                             fontStyle = FontStyle.Normal,
                             wordWrap = true,
-                            font = EditorStyles.centeredGreyMiniLabel.font,
+                            font = new GUIStyle(EditorStyles.centeredGreyMiniLabel).font,
                             overflow = new RectOffset(0, 0, 0, 0)
                         };
                     }
@@ -585,7 +585,7 @@ namespace Appalachia.Simulation.Trees.UI.GUI
                     {
                         smallTitle = new GUIStyle(Title)
                         {
-                            font = UnityEngine.GUI.skin.button.font, fontSize = 10, fixedHeight = 16f
+                            font = new GUIStyle(UnityEngine.GUI.skin.button).font, fontSize = 10, fixedHeight = 16f
                         };
 
                         var textColor = smallTitle.normal.textColor;
@@ -631,7 +631,7 @@ namespace Appalachia.Simulation.Trees.UI.GUI
                     {
                         subtitle = new GUIStyle(Title)
                         {
-                            font = UnityEngine.GUI.skin.button.font,
+                            font = new GUIStyle(UnityEngine.GUI.skin.button).font,
                             fontSize = 10,
                             contentOffset = new Vector2(0.0f, -3f),
                             fixedHeight = 16f

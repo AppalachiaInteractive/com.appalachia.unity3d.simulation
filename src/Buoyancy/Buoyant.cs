@@ -43,7 +43,7 @@ namespace Appalachia.Simulation.Buoyancy
     [ExecuteAlways]
     [RequireComponent(typeof(Rigidbody))]
     [RequireComponent(typeof(RigidbodyDensityManager))]
-    [ExecutionOrder(-90)]
+    [ExecutionOrder(ExecutionOrders.Buoyant)]
     public class Buoyant : InstancedAppalachiaBehaviour
     {
         private const string _PRF_PFX = nameof(Buoyant) + ".";
@@ -384,7 +384,7 @@ namespace Appalachia.Simulation.Buoyancy
             enabled = true;
         }
 
-        public override void Initialize()
+        protected override void Initialize()
         {
             using (_PRF_Initialize.Auto())
             {
@@ -410,14 +410,14 @@ namespace Appalachia.Simulation.Buoyancy
 
                     buoyancyData.mesh = mesh;
 
-                    UnityEditor.EditorUtility.SetDirty(buoyancyData);
+                    buoyancyData.MarkAsModified();
                     UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(gameObject.scene);
                 }
                 else if (buoyancyData.mesh == null)
                 {
                     buoyancyData.mesh = MeshObjectManager.GetCheapestMesh(gameObject);
 
-                    UnityEditor.EditorUtility.SetDirty(buoyancyData);
+                    buoyancyData.MarkAsModified();
                     UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(gameObject.scene);
                 }
 #endif
@@ -441,7 +441,7 @@ namespace Appalachia.Simulation.Buoyancy
                     densityManager = RigidbodyDensityManager.CreateNow(gameObject);
                 }
 
-                densityManager.Initialize();
+                densityManager.InitializeExternal();
 
                 if (voxels != null)
                 {
@@ -1036,7 +1036,7 @@ namespace Appalachia.Simulation.Buoyancy
 
                 if (_voxelGizmoSettings == null)
                 {
-                    var lookup = VoxelDataGizmoSettingsLookup.instance;
+                    var lookup = VoxelDataGizmoSettingsCollection.instance;
 
                     _voxelGizmoSettings = lookup.GetOrLoadOrCreateNew(
                         VoxelDataGizmoStyle.Buoyancy,

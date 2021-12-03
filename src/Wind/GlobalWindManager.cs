@@ -2,7 +2,7 @@
 
 using System;
 using Appalachia.Audio;
-using Appalachia.Audio.Components;
+using Appalachia.Audio.Analysis;
 using Appalachia.Core.Attributes.Editing;
 using Appalachia.Core.Behaviours;
 using Appalachia.Core.Scriptables;
@@ -332,7 +332,7 @@ namespace Appalachia.Simulation.Wind
             }
         }
 
-        public override void Initialize()
+        protected override void Initialize()
         {
             using (_PRF_Initialize.Auto())
             {

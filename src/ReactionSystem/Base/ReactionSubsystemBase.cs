@@ -129,7 +129,7 @@ namespace Appalachia.Simulation.ReactionSystem.Base
         #endregion
 
         [Button]
-        public override void Initialize()
+        protected override void Initialize()
         {
             using (_PRF_Initialize.Auto())
             {

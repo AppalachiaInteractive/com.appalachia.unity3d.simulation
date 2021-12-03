@@ -33,7 +33,7 @@ namespace Appalachia.Simulation.Trees.Simulation.Fuel
             wood.burnScale = burnScale;
             wood.smokeAmount = smokeMultiplier;
 
-            EditorUtility.SetDirty(wood);
+            wood.MarkAsModified();
         }
 
         [Button, ShowInInspector]

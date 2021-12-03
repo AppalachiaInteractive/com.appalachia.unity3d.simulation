@@ -16,6 +16,7 @@ using Appalachia.Simulation.Trees.UI.Selections;
 using Appalachia.Simulation.Trees.UI.Selections.Dropdown;
 using Appalachia.Simulation.Trees.UI.Selections.Icons.Branch;
 using Appalachia.Simulation.Trees.UI.Selections.State;
+using Appalachia.Utility.Extensions;
 using Appalachia.Utility.Logging;
 using Sirenix.OdinInspector.Editor;
 using Sirenix.Utilities.Editor;
@@ -821,9 +822,9 @@ namespace Appalachia.Simulation.Trees.UI.Branches
                     () =>
                     {
                         _sidebar.snapshotMenu.Selected.locked = true;
-                        branchData.dataState = TSEDataContainer.DataState.PendingSave;
-                        EditorUtility.SetDirty(_sidebar.snapshotMenu.Selected);
-                        EditorUtility.SetDirty(branchData);
+                        branchData.dataState = TSEDataContainer.DataState.PendingSave;                        
+                        _sidebar.snapshotMenu.Selected.MarkAsModified();
+                        branchData.MarkAsModified();
 
                         branchData.Save();
                     },
@@ -834,8 +835,8 @@ namespace Appalachia.Simulation.Trees.UI.Branches
                     {
                         _sidebar.snapshotMenu.Selected.locked = false;
                         branchData.dataState = TSEDataContainer.DataState.PendingSave;
-                        EditorUtility.SetDirty(_sidebar.snapshotMenu.Selected);
-                        EditorUtility.SetDirty(branchData);
+                        _sidebar.snapshotMenu.Selected.MarkAsModified();
+                        branchData.MarkAsModified();
 
                         branchData.Save();
                     },
@@ -867,8 +868,8 @@ namespace Appalachia.Simulation.Trees.UI.Branches
                     () =>
                     {
                         branchData.dataState = TSEDataContainer.DataState.PendingSave;
-                        EditorUtility.SetDirty(_sidebar.snapshotMenu.Selected);
-                        EditorUtility.SetDirty(branchData);
+                        _sidebar.snapshotMenu.Selected.MarkAsModified();
+                        branchData.MarkAsModified();
                         branchData.Save();
 
                         var material = _sidebar.snapshotMenu.Selected.branchOutputMaterial

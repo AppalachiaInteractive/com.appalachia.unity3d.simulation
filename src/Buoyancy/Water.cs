@@ -27,7 +27,7 @@ using UnityEngine;
 namespace Appalachia.Simulation.Buoyancy
 {
     [ExecuteAlways]
-    [ExecutionOrder(-100)]
+    [ExecutionOrder(ExecutionOrders.Water)]
     public class Water : AppalachiaBehaviour
     {
         #region Constants and Static Readonly
@@ -139,7 +139,7 @@ namespace Appalachia.Simulation.Buoyancy
                             continue;
                         }
 
-                        buoyant.Initialize();
+                        buoyant.InitializeExternal();
 
                         if (buoyant.buoyancyData.buoyancyType == BuoyancyType.NonPhysical)
                         {
@@ -527,7 +527,7 @@ namespace Appalachia.Simulation.Buoyancy
             }
         }
 
-        public override void Initialize()
+        protected override void Initialize()
         {
             using (_PRF_Initialize.Auto())
             {
@@ -692,7 +692,7 @@ namespace Appalachia.Simulation.Buoyancy
 
             if (_voxelGizmoSettings == null)
             {
-                var lookup = VoxelDataGizmoSettingsLookup.instance;
+                var lookup = VoxelDataGizmoSettingsCollection.instance;
 
                 _voxelGizmoSettings = lookup.GetOrLoadOrCreateNew(
                     VoxelDataGizmoStyle.Water,

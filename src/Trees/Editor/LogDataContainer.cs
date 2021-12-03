@@ -19,6 +19,7 @@ using Appalachia.Simulation.Trees.Generation.Texturing.Materials.Output;
 using Appalachia.Simulation.Trees.ResponsiveUI;
 using Appalachia.Simulation.Trees.Seeds;
 using Appalachia.Simulation.Trees.Settings.Log;
+using Appalachia.Utility.Extensions;
 using Appalachia.Utility.Logging;
 using Sirenix.OdinInspector;
 using UnityEditor;
@@ -246,7 +247,7 @@ namespace Appalachia.Simulation.Trees
         [Button]
         [HideIf(nameof(initialized))]
         [EnableIf(nameof(canInitialize))]
-        public override void Initialize()
+        protected override void Initialize()
         {
             try
             {
@@ -546,30 +547,30 @@ namespace Appalachia.Simulation.Trees
 
         public override void SetDirtyStates()
         {
-            EditorUtility.SetDirty(this);
-            EditorUtility.SetDirty(settings);
-            EditorUtility.SetDirty(log);
-            EditorUtility.SetDirty(subfolders);
+            this.MarkAsModified();
+            settings.MarkAsModified();
+            log.MarkAsModified();
+            subfolders.MarkAsModified();
             if (material != null)
             {
-                EditorUtility.SetDirty(material);
+                material.MarkAsModified();
             }
             
             foreach (var instance in logInstances)
             {
-                EditorUtility.SetDirty(instance);
-                EditorUtility.SetDirty(instance.asset);
+                instance.MarkAsModified();
+                instance.asset.MarkAsModified();
 
                 if (instance.asset.prefab != null)
                 {
-                    EditorUtility.SetDirty(instance.asset.prefab);
+                    instance.asset.prefab.MarkAsModified();
                 }
 
                 foreach (var level in instance.asset.levels)
                 {
                     if (level.mesh != null)
                     {
-                        EditorUtility.SetDirty(level.mesh);
+                        level.mesh.MarkAsModified();
                     }
                 }
             }

@@ -37,9 +37,24 @@ namespace Appalachia.Simulation.Trees.Build.Execution
 
         private static EditorCoroutine _coroutine;
 
+        private static TreeSpeciesEditorSelection _selectionInstance;
+
         #endregion
 
-        private static LogDataContainer CTX => TreeSpeciesEditorSelection.instance.log.selection.selected;
+        private static LogDataContainer CTX => selectionInstance.log.selection.selected;
+
+        private static TreeSpeciesEditorSelection selectionInstance
+        {
+            get
+            {
+                if (_selectionInstance == null)
+                {
+                    _selectionInstance = TreeSpeciesEditorSelection.instance;
+                }
+
+                return _selectionInstance;
+            }
+        }
 
         [InitializeOnLoadMethod]
         public static void Initialize()
@@ -420,7 +435,7 @@ namespace Appalachia.Simulation.Trees.Build.Execution
                         asset.mesh.uv4 = null;
                         asset.mesh.uv5 = null;
 
-                        instance.SetMaterials(levelOfDetail.lodLevel, new[] {log.material});
+                        instance.SetMaterials(levelOfDetail.lodLevel, new[] { log.material });
                     }
                 }
 

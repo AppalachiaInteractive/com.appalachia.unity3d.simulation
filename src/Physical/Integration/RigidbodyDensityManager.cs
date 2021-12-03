@@ -118,7 +118,7 @@ namespace Appalachia.Simulation.Physical.Integration
         private static readonly ProfilerMarker _PRF_Initialize = new(_PRF_PFX + nameof(Initialize));
 
         [Button]
-        public override void Initialize()
+        protected override void Initialize()
         {
             using (_PRF_Initialize.Auto())
             {

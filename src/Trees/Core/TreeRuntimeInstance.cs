@@ -2,6 +2,7 @@
 
 using System;
 using Appalachia.Core.Attributes.Editing;
+using Appalachia.Core.Behaviours;
 using Appalachia.Simulation.Core.Metadata.Tree;
 using Appalachia.Simulation.Trees.Core.Model;
 using Sirenix.OdinInspector;
@@ -16,7 +17,7 @@ namespace Appalachia.Simulation.Trees.Core
 {
     [DisallowMultipleComponent]
     [ExecuteAlways]
-    public class TreeRuntimeInstance : MonoBehaviour
+    public class TreeRuntimeInstance: AppalachiaBehaviour
     {
         [InlineEditor]
         [SmartLabel]

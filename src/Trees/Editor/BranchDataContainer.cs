@@ -17,6 +17,7 @@ using Appalachia.Simulation.Trees.Seeds;
 using Appalachia.Simulation.Trees.Settings;
 using Appalachia.Simulation.Trees.Snapshot;
 using Appalachia.Spatial.Octree;
+using Appalachia.Utility.Extensions;
 using Appalachia.Utility.Logging;
 using Sirenix.OdinInspector;
 using UnityEditor;
@@ -134,10 +135,10 @@ namespace Appalachia.Simulation.Trees
 
         public override void SetDirtyStates()
         {
-            EditorUtility.SetDirty(this);
-            EditorUtility.SetDirty(subfolders);
-            EditorUtility.SetDirty(settings);
-            EditorUtility.SetDirty(materials);
+            this.MarkAsModified();
+            subfolders.MarkAsModified();
+            settings.MarkAsModified();
+            materials.MarkAsModified();
 
             foreach (var outputMaterial in materials.outputMaterialCache.tiledOutputMaterials)
             {
@@ -145,7 +146,7 @@ namespace Appalachia.Simulation.Trees
                 {
                     if (material.asset != null)
                     {
-                        EditorUtility.SetDirty(material.asset);
+                        material.asset.MarkAsModified();
                     }
                 }
             }
@@ -154,7 +155,7 @@ namespace Appalachia.Simulation.Trees
             {
                 if (material.asset != null)
                 {
-                    EditorUtility.SetDirty(material.asset);
+                    material.asset.MarkAsModified();
                 }
             }
 
@@ -162,24 +163,24 @@ namespace Appalachia.Simulation.Trees
             {
                 if (snapshot != null)
                 {
-                    EditorUtility.SetDirty(snapshot);
+                    snapshot.MarkAsModified();
                 }
 
                 foreach (var material in snapshot.branchOutputMaterial)
                 {
                     if (material.asset != null)
                     {
-                        EditorUtility.SetDirty(material.asset);
+                        material.asset.MarkAsModified();
                     }
                 }
             }
 
-            EditorUtility.SetDirty(hierarchyPrefabs);
-            EditorUtility.SetDirty(branch);
-            EditorUtility.SetDirty(branchAsset);
+            hierarchyPrefabs.MarkAsModified();
+            branch.MarkAsModified();
+            branchAsset.MarkAsModified();
             if (branchAsset.mesh != null)
             {
-                EditorUtility.SetDirty(branchAsset.mesh);
+                branchAsset.mesh.MarkAsModified();
             }
         }
 
@@ -189,7 +190,7 @@ namespace Appalachia.Simulation.Trees
         }
 
         [Button, HideIf(nameof(initialized))]
-        public override void Initialize()
+        protected override void Initialize()
         {
             try
             {

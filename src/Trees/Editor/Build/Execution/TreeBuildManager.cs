@@ -54,9 +54,24 @@ namespace Appalachia.Simulation.Trees.Build.Execution
         public static bool _executing;
         public static EditorCoroutine _coroutine;
 
+        private static TreeSpeciesEditorSelection _selectionInstance;
+
         #endregion
 
-        private static TreeDataContainer CTX => TreeSpeciesEditorSelection.instance.tree.selection.selected;
+        private static TreeDataContainer CTX => selectionInstance.tree.selection.selected;
+
+        private static TreeSpeciesEditorSelection selectionInstance
+        {
+            get
+            {
+                if (_selectionInstance == null)
+                {
+                    _selectionInstance = TreeSpeciesEditorSelection.instance;
+                }
+
+                return _selectionInstance;
+            }
+        }
 
         public static IEnumerator ExecuteAllBuildsEnumerator(
             QualityMode quality,

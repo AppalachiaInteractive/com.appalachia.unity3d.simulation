@@ -4,6 +4,7 @@ using Appalachia.Simulation.Trees.Core.Settings;
 using Appalachia.Simulation.Trees.Hierarchy.Options.Attributes;
 using Appalachia.Simulation.Trees.Hierarchy.Options.Properties;
 using Appalachia.Simulation.Trees.ResponsiveUI;
+using Appalachia.Utility.Extensions;
 using Sirenix.OdinInspector;
 using UnityEditor;
 
@@ -153,8 +154,8 @@ namespace Appalachia.Simulation.Trees.Definition
 
                 CopySettingsTo(settings);
 
-                EditorUtility.SetDirty(tree);
-                EditorUtility.SetDirty(tree.settings);
+                tree.MarkAsModified();
+                tree.settings.MarkAsModified();
 
                 tree.Save();
             }

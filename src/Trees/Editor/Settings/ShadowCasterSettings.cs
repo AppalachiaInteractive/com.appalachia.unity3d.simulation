@@ -2,6 +2,7 @@ using System;
 using Appalachia.CI.Integration.Assets;
 using Appalachia.Simulation.Trees.Core.Settings;
 using Appalachia.Simulation.Trees.ResponsiveUI;
+using Appalachia.Utility.Extensions;
 using Sirenix.OdinInspector;
 using UnityEditor;
 
@@ -78,8 +79,8 @@ namespace Appalachia.Simulation.Trees.Settings
 
                 CopySettingsTo(settings);
 
-                EditorUtility.SetDirty(tree);
-                EditorUtility.SetDirty(tree.settings);
+                tree.MarkAsModified();
+                tree.settings.MarkAsModified();
 
                 tree.Save();
             }

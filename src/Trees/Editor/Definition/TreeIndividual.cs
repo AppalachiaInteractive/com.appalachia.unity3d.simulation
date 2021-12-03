@@ -15,6 +15,7 @@ using Appalachia.Simulation.Trees.Hierarchy;
 using Appalachia.Simulation.Trees.Icons;
 using Appalachia.Simulation.Trees.Interfaces;
 using Appalachia.Simulation.Trees.Settings;
+using Appalachia.Utility.Extensions;
 using Appalachia.Utility.Logging;
 using UnityEditor;
 using UnityEngine;
@@ -197,43 +198,43 @@ namespace Appalachia.Simulation.Trees.Definition
                         stage.runtimeMetadata =
                             AppalachiaObject.LoadOrCreateNew<TreeRuntimeInstanceMetadata>(stage.DirectoryPath, $"runtime_{stage.name}");
                         
-                        EditorUtility.SetDirty(stage.runtimeMetadata);
+                        stage.runtimeMetadata.MarkAsModified();
                     }
 
                     if (stage.runtimeMetadata.age != stage.ageType)
                     {
                         stage.runtimeMetadata.age = stage.ageType;
-                        EditorUtility.SetDirty(stage.runtimeMetadata);
+                        stage.runtimeMetadata.MarkAsModified();
                     }
 
                     if (stage.runtimeMetadata.stage != stage.stageType)
                     {
                         stage.runtimeMetadata.stage = stage.stageType;
-                        EditorUtility.SetDirty(stage.runtimeMetadata);
+                        stage.runtimeMetadata.MarkAsModified();
                     }
 
                     if (Math.Abs(stage.runtimeMetadata.rootDepth - species.hierarchies.verticalOffset) > float.Epsilon)
                     {
                         stage.runtimeMetadata.rootDepth = species.hierarchies.verticalOffset;
-                        EditorUtility.SetDirty(stage.runtimeMetadata);
+                        stage.runtimeMetadata.MarkAsModified();
                     }
 
                     if (stage.runtimeMetadata.speciesName != species.nameBasis.safeName)
                     {
                         stage.runtimeMetadata.speciesName = species.nameBasis.safeName;
-                        EditorUtility.SetDirty(stage.runtimeMetadata);
+                        stage.runtimeMetadata.MarkAsModified();
                     }
 
                     if (stage.runtimeMetadata.individualID != individualID)
                     {
                         stage.runtimeMetadata.individualID = individualID;
-                        EditorUtility.SetDirty(stage.runtimeMetadata);
+                        stage.runtimeMetadata.MarkAsModified();
                     }
 
                     if (stage.runtimeMetadata.pointsOfInterest == null)
                     {
                         stage.runtimeMetadata.pointsOfInterest = new List<RuntimePointOfInterest>();
-                        EditorUtility.SetDirty(stage.runtimeMetadata);                 
+                        stage.runtimeMetadata.MarkAsModified();
                     }
                 }
             }

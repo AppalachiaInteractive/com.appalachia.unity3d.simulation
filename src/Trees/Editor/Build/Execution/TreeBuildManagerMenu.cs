@@ -6,6 +6,7 @@ using Appalachia.CI.Integration.Assets;
 using Appalachia.Simulation.Trees.Build.RequestManagers;
 using Appalachia.Simulation.Trees.Settings;
 using Appalachia.Utility.Constants;
+using Appalachia.Utility.Extensions;
 using Unity.EditorCoroutines.Editor;
 using UnityEditor;
 
@@ -54,8 +55,8 @@ namespace Appalachia.Simulation.Trees.Build.Execution
             foreach (var tree in trees)
             {
                 tree.CreateRuntimeMetadata();
-                EditorUtility.SetDirty(tree);
-                EditorUtility.SetDirty(tree.runtimeSpeciesMetadata);
+                tree.MarkAsModified();
+                tree.runtimeSpeciesMetadata.MarkAsModified();
 
                 foreach (var individual in tree.individuals)
                 {

@@ -335,7 +335,7 @@ namespace Appalachia.Simulation.Trees.Prefabs
             }
         }
 
-        public override void Initialize()
+        protected override void Initialize()
         {
             using (_PRF_Initialize.Auto())
             {

@@ -6,9 +6,11 @@ using Appalachia.Simulation.Buoyancy.Collections;
 namespace Appalachia.Simulation.Buoyancy.Data
 {
     [Serializable]
-    public class BuoyancyDataCollection : AppalachiaObjectLookupCollection<BuoyancyDataCollection,
-        BuoyancyDataLookup, string, BuoyancyData, AppaList_string, AppaList_BuoyancyData>
+    public class BuoyancyDataCollection : AppalachiaObjectLookupCollection<string, BuoyancyData,
+        AppaList_string, AppaList_BuoyancyData, BuoyancyDataLookup, BuoyancyDataCollection>
     {
+        public override bool HasDefault => false;
+
         protected override string GetUniqueKeyFromValue(BuoyancyData value)
         {
             return value.meshGUID;

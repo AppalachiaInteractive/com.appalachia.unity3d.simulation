@@ -1,6 +1,7 @@
 #region
 
 using System.Linq;
+using Appalachia.Core.Behaviours;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -12,12 +13,14 @@ namespace Appalachia.Simulation.Trees.Rendering
 {
     [DisallowMultipleComponent]
     [ExecuteAlways]
-    public class TreePrefabInstance : MonoBehaviour
+    public class TreePrefabInstance: AppalachiaBehaviour
     {
         public TreePrefabInstanceData instanceData;
 
-        public void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
+            
             var lightProbeProxyVolume = FindObjectsOfType<LightProbeProxyVolume>()
                                        .OrderByDescending(lppv => lppv.boundsGlobal.size)
                                        .FirstOrDefault(

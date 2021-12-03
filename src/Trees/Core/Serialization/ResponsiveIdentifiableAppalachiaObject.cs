@@ -16,7 +16,7 @@ namespace Appalachia.Simulation.Trees.Core.Serialization
         {
             var objects = new Object[] {this};
 
-            UnityEditor.EditorUtility.SetDirty(this);
+            this.MarkAsModified();
 
             UnityEditor.Undo.RegisterCompleteObjectUndo(objects, mode.ToString().ToTitleCase());
         }

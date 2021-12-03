@@ -1,8 +1,9 @@
+using Appalachia.Core.Behaviours;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Buoyancy
 {
-    public class WaterSplash : MonoBehaviour
+    public class WaterSplash: AppalachiaBehaviour
     {
         public Transform sphere;
         public Transform splashTop;
