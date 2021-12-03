@@ -1,6 +1,4 @@
 ```
-C:/Users/Chris/com.appalachia/unity3d/appa/Assets/Appalachia.Simulation
-Development environment loaded!  
  ______   ______   __       ______   ______   ______   ______    
 /\  == \ /\  ___\ /\ \     /\  ___\ /\  __ \ /\  ___\ /\  ___\   
 \ \  __< \ \  __\ \ \ \____\ \  __\ \ \  __ \\ \___  \\ \  __\   
@@ -15,6 +13,8 @@ Development environment loaded!
 `0.2.0`
 | Hash | Date | Author | Changes |
 |------|------|--------|---------|
+| e1b8699cdd8902cfd1d1b0815029379604435ebe | 2021-12-02 | Chris Schubert | General code cleanup |
+| 6683ce46261027252c773e584a127e860db00b87 | 2021-11-21 | Chris Schubert | Updating changelog and releaselog |
 | d29a6944e8d378e0411528a6b9c6907febf02e18 | 2021-11-20 | Chris Schubert | Updating changelog and releaselog |
 | 741cabc95f753d2b0977b197ceec3ae8a9d560c3 | 2021-11-20 | Chris Schubert | Updating changelog and releaselog |
 | 63d44c49be394cd03186a71397e6c4d65de51147 | 2021-11-20 | Chris Schubert | Expanding initialization setup class, and fixing some initialization in appa object bases |
