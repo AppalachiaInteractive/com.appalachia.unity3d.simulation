@@ -12,6 +12,7 @@
 ## Releasing
 | Hash | Date | Author | Changes |
 |------|------|--------|---------|
+| 107bdf8c011038dd52bfe72ba9795779a024b5ef | 2021-12-02 | Chris Schubert | Updating changelog and releaselog |
 | e1b8699cdd8902cfd1d1b0815029379604435ebe | 2021-12-02 | Chris Schubert | General code cleanup |
 | 6683ce46261027252c773e584a127e860db00b87 | 2021-11-21 | Chris Schubert | Updating changelog and releaselog |
 | d29a6944e8d378e0411528a6b9c6907febf02e18 | 2021-11-20 | Chris Schubert | Updating changelog and releaselog |
