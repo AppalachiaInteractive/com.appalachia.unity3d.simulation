@@ -7,8 +7,8 @@ using Appalachia.Simulation.Trees.Generation.Assets;
 using Appalachia.Simulation.Trees.Hierarchy;
 using Appalachia.Simulation.Trees.Icons;
 using Appalachia.Simulation.Trees.ResponsiveUI;
-using Appalachia.Simulation.Trees.UI.GUI;
 using Appalachia.Simulation.Trees.UI.Selections.State;
+using Appalachia.Utility.Strings;
 using UnityEditor;
 using UnityEngine;
 
@@ -16,6 +16,13 @@ namespace Appalachia.Simulation.Trees.UI.Graph
 {
     public static class TreeGraph
     {
+        // [CallStaticConstructorInEditor] should be added to the class
+        static TreeGraph()
+        {
+            TreeSpeciesEditorSelection.InstanceAvailable += i => _treeSpeciesEditorSelection = i;
+        }
+
+        private static TreeSpeciesEditorSelection _treeSpeciesEditorSelection;
         private static readonly string _assetString =
             "LOD{0} Stats|{1} vertices|{2} triangles|{3} materials";
 
@@ -266,14 +273,14 @@ namespace Appalachia.Simulation.Trees.UI.Graph
 
             if (selected == null)
             {
-                var selectedHierarchyID = TreeSpeciesEditorSelection.instance.tree.hierarchyID;
+                var selectedHierarchyID = _treeSpeciesEditorSelection.tree.hierarchyID;
 
                 var match = _nodes.FirstOrDefault(n => n.data.hierarchyID == selectedHierarchyID);
 
                 if (match == null)
                 {
                     selected = _nodes.First();
-                    TreeSpeciesEditorSelection.instance.tree.hierarchyID = selected?.data?.hierarchyID ?? 0;
+                    _treeSpeciesEditorSelection.tree.hierarchyID = selected?.data?.hierarchyID ?? 0;
                 }
                 else
                 {
@@ -589,7 +596,7 @@ namespace Appalachia.Simulation.Trees.UI.Graph
 
             if (!targetHierarchy.SupportsChildType(sourceHierarchy.type))
 
-                // AppaLog.Info("Drop target cannot have subGroups");
+                // Context.Log.Info("Drop target cannot have subGroups");
             {
                 return null;
             }
@@ -597,7 +604,7 @@ namespace Appalachia.Simulation.Trees.UI.Graph
             if (sourceHierarchy.parentHierarchyID == targetHierarchy.hierarchyID)
 
                 // No need to do anything
-                // AppaLog.Info("Drop target already parent of Drag node .. IGNORING");
+                // Context.Log.Info("Drop target already parent of Drag node .. IGNORING");
             {
                 return null;
             }
@@ -605,7 +612,7 @@ namespace Appalachia.Simulation.Trees.UI.Graph
             if (hierarchies.IsAncestor(sourceHierarchy, targetHierarchy))
 
                 // Would create cyclic-dependency
-                // AppaLog.Info("Drop target is a subGroup of Drag node");
+                // Context.Log.Info("Drop target is a subGroup of Drag node");
             {
                 return null;
             }
@@ -824,7 +831,7 @@ namespace Appalachia.Simulation.Trees.UI.Graph
             {
                 var stat = stats.statistics[i];
 
-                strings[i] = string.Format(
+                strings[i] = ZString.Format(
                     _assetString,
                     i,
                     stat.vertices,

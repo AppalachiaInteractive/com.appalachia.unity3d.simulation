@@ -1,3 +1,5 @@
+using System;
+using Appalachia.CI.Constants;
 using Appalachia.Simulation.Trees.Build.Execution;
 using Appalachia.Simulation.Trees.Core;
 using Appalachia.Simulation.Trees.Core.Shape;
@@ -6,7 +8,7 @@ using Appalachia.Simulation.Trees.Generation.Spline;
 using Appalachia.Simulation.Trees.Hierarchy;
 using Appalachia.Simulation.Trees.Hierarchy.Options.Properties;
 using Appalachia.Simulation.Trees.Shape;
-using Appalachia.Utility.Logging;
+using Appalachia.Utility.Strings;
 using UnityEditor;
 using UnityEngine;
 
@@ -14,6 +16,21 @@ namespace Appalachia.Simulation.Trees.Generation.Geometry
 {
     public static class ShapeMatrixCalculator
     {
+        [NonSerialized] private static AppaContext _context;
+
+        private static AppaContext Context
+        {
+            get
+            {
+                if (_context == null)
+                {
+                    _context = new AppaContext(typeof(ShapeMatrixCalculator));
+                }
+
+                return _context;
+            }
+        }
+        
         public static void UpdateSplineMatrix(
             float rootDepth,
             BarkShapeData shape,
@@ -73,8 +90,12 @@ namespace Appalachia.Simulation.Trees.Generation.Geometry
 
                     if (shape.matrix.isIdentity)
                     {
-                       AppaLog.Warn(
-                            $"Default matrix present for shape {shape.shapeID} in hierarchy {shape.hierarchyID}"
+                        Context.Log.Warn(
+                            ZString.Format(
+                                "Default matrix present for shape {0} in hierarchy {1}",
+                                shape.shapeID,
+                                shape.hierarchyID
+                            )
                         );
                     }
                 }

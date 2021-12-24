@@ -1,8 +1,8 @@
-using Appalachia.Simulation.Trees.UI.GUI;
+using Appalachia.Core.Objects.Root;
 
 namespace Appalachia.Simulation.Trees.UI.Selections.Icons.Log
 {
-    public class LogEditorSidebarCollection
+    public class LogEditorSidebarCollection : AppalachiaSimpleBase
     {
         private LogInstanceSidebarMenu _instanceMenu;
 

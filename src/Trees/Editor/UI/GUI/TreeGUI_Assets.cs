@@ -1,10 +1,11 @@
 using System;
 using Appalachia.CI.Integration.Assets;
 using Appalachia.CI.Integration.FileSystem;
+using Appalachia.Utility.Strings;
 using UnityEditor;
 using UnityEngine;
 
-namespace Appalachia.Simulation.Trees.UI.GUI
+namespace Appalachia.Simulation.Trees.UI
 {
     public static partial class TreeGUI
     {
@@ -26,7 +27,7 @@ namespace Appalachia.Simulation.Trees.UI.GUI
 
                 var assetPath = AppaPath.Combine(
                     dataFolder,
-                    $"{typeof(T).Name}_{DateTime.Now:yyyyMMdd-hhmmssfff}.asset"
+                    ZString.Format("{0}_{1:yyyyMMdd-hhmmssfff}.asset", typeof(T).Name, DateTime.Now)
                 );
 
                 return CreateAndSave(assetPath, instance);
@@ -42,7 +43,7 @@ namespace Appalachia.Simulation.Trees.UI.GUI
                     AppaDirectory.CreateDirectory(folder);
                 }
 
-                var assetPath = AppaPath.Combine(folder, $"{name}.asset");
+                var assetPath = AppaPath.Combine(folder, ZString.Format("{0}.asset", name));
 
                 return CreateAndSave(assetPath, instance);
             }

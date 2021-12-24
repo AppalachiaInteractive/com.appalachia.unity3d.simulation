@@ -2,7 +2,7 @@ using Sirenix.Utilities;
 using UnityEditor;
 using UnityEngine;
 
-namespace Appalachia.Simulation.Trees.UI.GUI
+namespace Appalachia.Simulation.Trees.UI
 {
     [InitializeOnLoad]
     public static partial class TreeGUI

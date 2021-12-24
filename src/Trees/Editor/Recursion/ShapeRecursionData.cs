@@ -2,6 +2,7 @@ using System.Diagnostics;
 using Appalachia.Simulation.Trees.Core;
 using Appalachia.Simulation.Trees.Core.Shape;
 using Appalachia.Simulation.Trees.Hierarchy;
+using Appalachia.Utility.Strings;
 
 namespace Appalachia.Simulation.Trees.Recursion
 {
@@ -37,8 +38,12 @@ namespace Appalachia.Simulation.Trees.Recursion
 
         [DebuggerStepThrough] public override string ToString()
         {
-            return
-                $"ShapeID: {shape.shapeID} | {shape.type} | HierarchyID: {hierarchy.hierarchyID}";
+            return ZString.Format(
+                "ShapeID: {0} | {1} | HierarchyID: {2}",
+                shape.shapeID,
+                shape.type,
+                hierarchy.hierarchyID
+            );
         }
     }
 }

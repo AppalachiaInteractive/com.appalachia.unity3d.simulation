@@ -11,7 +11,7 @@ using Appalachia.Simulation.Trees.Build.Execution;
 using Appalachia.Simulation.Trees.Core.Settings;
 using Appalachia.Simulation.Trees.Generation.Texturing.Materials.Input;
 using Appalachia.Simulation.Trees.Generation.Texturing.Materials.Output;
-using Appalachia.Utility.Logging;
+using Appalachia.Utility.Strings;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -22,6 +22,8 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Management
     [Serializable]
     public class OutputMaterialCache
     {
+        
+        
         [SerializeField]
         [TabGroup("Atlas", Paddingless = true)]
         [HideLabel, InlineProperty, PropertyOrder(-1100)]
@@ -98,7 +100,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Management
                 }
                 catch (Exception ex)
                 {
-                    AppaLog.Error(ex);
+                    Context.Log.Error(ex);
                     throw;
                 }
             }
@@ -209,7 +211,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Management
                         builder.Append(tex.name);
                         builder.Append(tex.GetInstanceID());
                         builder.Append(AppaFile.GetLastWriteTime(path).ToString("s"));
-                        builder.Append(AppaFile.ReadAllText($"{path}.meta"));
+                        builder.Append(AppaFile.ReadAllText(ZString.Format("{0}.meta", path)));
                     }
                 }
 

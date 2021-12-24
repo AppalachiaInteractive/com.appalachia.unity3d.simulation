@@ -1,6 +1,8 @@
 using System;
 using System.Diagnostics;
 using Appalachia.CI.Integration.Assets;
+using Appalachia.Core.Attributes;
+using Appalachia.Core.Objects.Initialization;
 using Appalachia.Core.Types;
 using Appalachia.Simulation.Trees.Build.Cost;
 using Appalachia.Simulation.Trees.Build.Requests;
@@ -9,11 +11,12 @@ using Appalachia.Simulation.Trees.Core.Settings;
 using Appalachia.Simulation.Trees.Data;
 using Appalachia.Simulation.Trees.Extensions;
 using Appalachia.Simulation.Trees.Generation.Assets;
+using Appalachia.Simulation.Trees.Generation.Texturing.Materials.Output;
 using Appalachia.Simulation.Trees.Prefabs;
 using Appalachia.Simulation.Trees.ResponsiveUI;
 using Appalachia.Simulation.Trees.Settings;
 using Appalachia.Simulation.Trees.UI.Utilities;
-using Appalachia.Utility.Logging;
+using Appalachia.Utility.Async;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
 using UnityEngine;
@@ -21,8 +24,16 @@ using UnityEngine.Serialization;
 
 namespace Appalachia.Simulation.Trees
 {
+    [CallStaticConstructorInEditor]
     public abstract class TSEDataContainer : ResponsiveAppalachiaObject
     {
+        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
+        static TSEDataContainer()
+        {
+            DefaultShaderResource.InstanceAvailable += i => _defaultShaderResource = i;
+        }
+
+        protected static DefaultShaderResource _defaultShaderResource;
         public enum DataState
         {
             Normal = 0,
@@ -81,19 +92,6 @@ namespace Appalachia.Simulation.Trees
             }
         }
 
-        #region Event Functions
-
-        protected override void OnEnable()
-        {
-            using (_PRF_OnEnable.Auto())
-            {
-                base.OnEnable();
-                UpdateSettingsType(settingsType);
-            }
-        }
-
-        #endregion
-
         public abstract void BuildDefault();
         public abstract void BuildForceFull();
 
@@ -134,28 +132,46 @@ namespace Appalachia.Simulation.Trees
 
         public void Save(bool generateImpostors = false)
         {
-            using (var progress = new ProgressDisplay(3))
+            using (_PRF_Save.Auto())
             {
-                try
+                using (var progress = new ProgressDisplay(3))
                 {
-                    progress.Do(SetDirtyStates,                         "Setting states...");
-                    progress.Do(AssetDatabaseManager.SaveAssets,        "Saving assets...");
-                    progress.Do(() => SaveAllAssets(generateImpostors), "Persisting changes...");
-                    dataState = DataState.Normal;
-                }
-                catch (Exception ex)
-                {
-                    AppaLog.Error(ex);
-                    dataState = DataState.PendingSave;
+                    try
+                    {
+                        progress.Do(SetDirtyStates,                         "Setting states...");
+                        progress.Do(AssetDatabaseManager.SaveAssets,        "Saving assets...");
+                        progress.Do(() => SaveAllAssets(generateImpostors), "Persisting changes...");
+                        dataState = DataState.Normal;
+                    }
+                    catch (Exception ex)
+                    {
+                        Context.Log.Error(ex);
+                        dataState = DataState.PendingSave;
+                    }
                 }
             }
         }
 
         protected abstract void SaveAllAssets(bool saveImpostors);
 
+        protected override async AppaTask Initialize(Initializer initializer)
+        {
+            using (_PRF_Initialize.Auto())
+            {
+                await base.Initialize(initializer);
+
+                UpdateSettingsType(settingsType);
+            }
+        }
+
         #region Profiling
 
         private const string _PRF_PFX = nameof(TSEDataContainer) + ".";
+
+        private static readonly ProfilerMarker _PRF_Initialize =
+            new ProfilerMarker(_PRF_PFX + nameof(Initialize));
+
+        private static readonly ProfilerMarker _PRF_Save = new ProfilerMarker(_PRF_PFX + nameof(Save));
 
         private static readonly ProfilerMarker
             _PRF_OnEnable = new ProfilerMarker(_PRF_PFX + nameof(OnEnable));

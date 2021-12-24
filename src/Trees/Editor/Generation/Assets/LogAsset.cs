@@ -4,6 +4,7 @@ using Appalachia.CI.Integration.Assets;
 using Appalachia.Editing.Scene.Prefabs;
 using Appalachia.Simulation.Trees.Data;
 using Appalachia.Simulation.Trees.Settings;
+using Appalachia.Utility.Strings;
 using UnityEditor;
 using UnityEngine;
 
@@ -32,7 +33,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
         public static LogAsset Create(string folder, NameBasis nameBasis, int logID)
         {
             var assetName = nameBasis.FileNameLogAssetSO(logID);
-            var instance = LoadOrCreateNew<LogAsset>(folder, assetName);
+            var instance = LogAsset.LoadOrCreateNew(folder, assetName);
 
             instance.levels = new List<AssetLevel>();
 
@@ -41,7 +42,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
 
         public string GetMeshName(int meshLevel)
         {
-            return $"{CleanName}_LOD{meshLevel}";
+            return ZString.Format("{0}_LOD{1}", CleanName, meshLevel);
         }
 
         public void Refresh(LevelOfDetailSettingsCollection lod)

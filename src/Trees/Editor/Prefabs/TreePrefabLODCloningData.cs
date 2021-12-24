@@ -1,18 +1,20 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Appalachia.Core.Objects.Root;
 using Appalachia.Simulation.Trees.Core;
 using Appalachia.Simulation.Trees.Core.Shape;
 using Appalachia.Simulation.Trees.Generation.Meshing;
 using Appalachia.Simulation.Trees.Generation.Texturing.Materials.Management;
 using UnityEngine;
 using Object = UnityEngine.Object;
+
 // ReSharper disable UnusedParameter.Local
 
 namespace Appalachia.Simulation.Trees.Prefabs
 {
     [Serializable]
-    public class TreePrefabLODCloningData
+    public class TreePrefabLODCloningData : AppalachiaSimpleBase
     {
         public List<TreePrefabLODRendererCloningData> lodCloningData;
         public TreeComponentType type;

@@ -1,6 +1,8 @@
+using Appalachia.Core.Objects.Root;
+
 namespace Appalachia.Simulation.Trees.Generation.Assets
 {
-    public class LODAssetBase
+    public class LODAssetBase : AppalachiaSimpleBase
     {
         
     }

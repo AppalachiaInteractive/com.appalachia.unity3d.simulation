@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Appalachia.Core.Attributes;
 using Appalachia.Simulation.Trees.Generation.Texturing.Shading.InputShaders;
 using Appalachia.Simulation.Trees.Generation.Texturing.Shading.OutputShaders;
+using Appalachia.Utility.Strings;
 
 namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading
 {
@@ -88,7 +89,9 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading
         {
             if (!_outputMaterialShaders.ContainsKey(name))
             {
-                throw new KeyNotFoundException($"The given key [{name}] was not found in the dictionary.");
+                throw new KeyNotFoundException(
+                    ZString.Format("The given key [{0}] was not found in the dictionary.", name)
+                );
             }
             return _outputMaterialShaders[name];
         }

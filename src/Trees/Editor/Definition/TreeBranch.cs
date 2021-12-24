@@ -49,7 +49,7 @@ namespace Appalachia.Simulation.Trees.Definition
         public static TreeBranch Create(string folder, NameBasis nameBasis)
         {
             var assetName = nameBasis.FileNameSO("branch");
-            var instance = LoadOrCreateNew<TreeBranch>(folder, assetName);
+            var instance = TreeBranch.LoadOrCreateNew(folder, assetName);
 
             instance.nameBasis = nameBasis;
             instance.hierarchies = new BranchHierarchies();

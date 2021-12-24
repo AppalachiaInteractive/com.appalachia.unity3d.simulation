@@ -1,12 +1,28 @@
-using Appalachia.Utility.Logging;
+using System;
+using Appalachia.CI.Constants;
+using Appalachia.Utility.Strings;
 using Unity.Burst;
 using Unity.Mathematics;
-using UnityEngine;
 
 namespace Appalachia.Simulation.Buoyancy.Jobs
 {
     public static class BuoyancyJobHelper
     {
+        [NonSerialized] private static AppaContext _context;
+
+        private static AppaContext Context
+        {
+            get
+            {
+                if (_context == null)
+                {
+                    _context = new AppaContext(typeof(BuoyancyJobHelper));
+                }
+
+                return _context;
+            }
+        }
+        
         public enum ForceType
         {
             Buoyancy = 10,
@@ -34,7 +50,7 @@ namespace Appalachia.Simulation.Buoyancy.Jobs
         [BurstDiscard]
         public static void LogCheckForce(ForceType forceType)
         {
-           AppaLog.Warn($"{forceType} force is NaN!");
+            Context.Log.Warn(ZString.Format("{0} force is NaN!", forceType));
         }
     }
 }

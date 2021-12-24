@@ -1,4 +1,5 @@
 using System;
+using Appalachia.Core.Attributes;
 using Appalachia.Simulation.Trees.Build.Requests;
 using Appalachia.Simulation.Trees.Extensions;
 using Appalachia.Simulation.Trees.ResponsiveUI;
@@ -6,22 +7,45 @@ using Appalachia.Simulation.Trees.UI.Selections.State;
 
 namespace Appalachia.Simulation.Trees.Build.RequestManagers
 {
+    [CallStaticConstructorInEditor]
     public static class LogBuildRequestManager
     {
-        private static LogDataContainer CTX => TreeSpeciesEditorSelection.instance.log.selection.selected;
-        
+        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
+        static LogBuildRequestManager()
+        {
+            TreeSpeciesEditorSelection.InstanceAvailable += i => _treeSpeciesEditorSelection = i;
+        }
+
+        #region Static Fields and Autoproperties
+
+        private static TreeSpeciesEditorSelection _treeSpeciesEditorSelection;
+
+        #endregion
+
+        private static LogDataContainer CTX => _treeSpeciesEditorSelection.log.selection.selected;
+
         /// <summary>
-        /// Builds all individuals for the species, resetting assets beforehand.
+        ///     Builds only the current stage, only what needs to be built.
+        /// </summary>
+        public static void Default()
+        {
+            CTX.dataState = TSEDataContainer.DataState.Dirty;
+            CTX.buildState = BuildState.Default;
+            CTX.PushBuildRequestLevelAll(BuildRequestLevel.FinalPass);
+        }
+
+        /// <summary>
+        ///     Builds all individuals for the species, resetting assets beforehand.
         /// </summary>
         public static void ForceFull()
         {
             CTX.dataState = TSEDataContainer.DataState.Dirty;
-            CTX.buildState = BuildState.ForceFull;            
+            CTX.buildState = BuildState.ForceFull;
             CTX.PushBuildRequestLevelAll(BuildRequestLevel.FinalPass);
         }
-        
+
         /// <summary>
-        /// Builds all individuals for the species, only what needs to be built.
+        ///     Builds all individuals for the species, only what needs to be built.
         /// </summary>
         public static void Full()
         {
@@ -30,90 +54,15 @@ namespace Appalachia.Simulation.Trees.Build.RequestManagers
             CTX.PushBuildRequestLevelAll(BuildRequestLevel.FinalPass);
         }
 
-        /// <summary>
-        /// Builds only the current stage, only what needs to be built.
-        /// </summary>
-        public static void Default()
-        {
-            CTX.dataState = TSEDataContainer.DataState.Dirty;
-            CTX.buildState = BuildState.Default;
-            CTX.PushBuildRequestLevelAll(BuildRequestLevel.FinalPass);
-        }
-        
-        private static void MaterialGenerationChanged()
-        {
-            CTX.BuildMaterialGeneration(BuildRequestLevel.FinalPass)
-                .BuildMaterialProperties(BuildRequestLevel.FinalPass);
-        }
-        
-        private static void MaterialPropertiesChanged()
-        {
-            CTX.BuildMaterialProperties(BuildRequestLevel.FinalPass);
-        }
-
-        private static void DistributionSettingsChanged()
-        {
-            CTX.BuildDistribution(BuildRequestLevel.FinalPass)
-                /*.BuildMaterialProperties(BuildRequestLevel.FinalPass)*/
-                .BuildStage(BuildRequestLevel.FinalPass);
-        }
-        
-        private static void GeometrySettingsChanged()
-        {
-            CTX.BuildDistribution(BuildRequestLevel.FinalPass)
-                .BuildStage(BuildRequestLevel.FinalPass)
-                /*.BuildLowQualityGeometry(BuildRequestLevel.InitialPass)
-                .BuildUv(BuildRequestLevel.InitialPass)*/;
-        }
-        
-        private static void MeshSettingsChanged()
-        {        
-            CTX.BuildDistribution(BuildRequestLevel.FinalPass).BuildStage(BuildRequestLevel.FinalPass)
-                /*.BuildLowQualityGeometry(BuildRequestLevel.InitialPass)
-                .BuildUv(BuildRequestLevel.InitialPass)*/;
-        }
-
-        
-        private static void AmbientOcclusionSettingsChanged()
-        {
-            CTX//.BuildDistribution(BuildRequestLevel.FinalPass)
-                .BuildStage(BuildRequestLevel.FinalPass);
-        }
-
-        private static void LevelOfDetailSettingsChanged()
-        {
-            CTX//.BuildDistribution(BuildRequestLevel.FinalPass)
-                .BuildStage(BuildRequestLevel.FinalPass);
-        }
-
-        private static void VertexDataSettingsChanged()
-        {
-            CTX//.BuildDistribution(BuildRequestLevel.FinalPass)
-                .BuildMaterialProperties(BuildRequestLevel.FinalPass)
-                .BuildStage(BuildRequestLevel.FinalPass);
-        }
-        
-        private static void UVSettingsChanged()
-        {
-            CTX//.BuildDistribution(BuildRequestLevel.FinalPass)
-                .BuildStage(BuildRequestLevel.FinalPass);
-        }
-        
-        private static void CollisionSettingsChanged()
-        {
-            CTX//.BuildDistribution(BuildRequestLevel.FinalPass)
-                .BuildStage(BuildRequestLevel.FinalPass);
-        }
-
         public static void SettingsChanged(SettingsUpdateTarget type)
         {
             CTX.dataState = TSEDataContainer.DataState.Dirty;
-            
+
             if (CTX.buildState != BuildState.Disabled)
             {
                 CTX.buildState = BuildState.Default;
             }
-            
+
             switch (type)
             {
                 case SettingsUpdateTarget.MaterialGeneration:
@@ -149,6 +98,69 @@ namespace Appalachia.Simulation.Trees.Build.RequestManagers
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }
+        }
+
+        private static void AmbientOcclusionSettingsChanged()
+        {
+            CTX //.BuildDistribution(BuildRequestLevel.FinalPass)
+               .BuildStage(BuildRequestLevel.FinalPass);
+        }
+
+        private static void CollisionSettingsChanged()
+        {
+            CTX //.BuildDistribution(BuildRequestLevel.FinalPass)
+               .BuildStage(BuildRequestLevel.FinalPass);
+        }
+
+        private static void DistributionSettingsChanged()
+        {
+            CTX.BuildDistribution(BuildRequestLevel.FinalPass)
+                /*.BuildMaterialProperties(BuildRequestLevel.FinalPass)*/
+               .BuildStage(BuildRequestLevel.FinalPass);
+        }
+
+        private static void GeometrySettingsChanged()
+        {
+            CTX.BuildDistribution(BuildRequestLevel.FinalPass).BuildStage(BuildRequestLevel.FinalPass)
+                /*.BuildLowQualityGeometry(BuildRequestLevel.InitialPass)
+                .BuildUv(BuildRequestLevel.InitialPass)*/;
+        }
+
+        private static void LevelOfDetailSettingsChanged()
+        {
+            CTX //.BuildDistribution(BuildRequestLevel.FinalPass)
+               .BuildStage(BuildRequestLevel.FinalPass);
+        }
+
+        private static void MaterialGenerationChanged()
+        {
+            CTX.BuildMaterialGeneration(BuildRequestLevel.FinalPass)
+               .BuildMaterialProperties(BuildRequestLevel.FinalPass);
+        }
+
+        private static void MaterialPropertiesChanged()
+        {
+            CTX.BuildMaterialProperties(BuildRequestLevel.FinalPass);
+        }
+
+        private static void MeshSettingsChanged()
+        {
+            CTX.BuildDistribution(BuildRequestLevel.FinalPass).BuildStage(BuildRequestLevel.FinalPass)
+                /*.BuildLowQualityGeometry(BuildRequestLevel.InitialPass)
+                .BuildUv(BuildRequestLevel.InitialPass)*/;
+        }
+
+        private static void UVSettingsChanged()
+        {
+            CTX //.BuildDistribution(BuildRequestLevel.FinalPass)
+               .BuildStage(BuildRequestLevel.FinalPass);
+        }
+
+        private static void VertexDataSettingsChanged()
+        {
+            CTX //.BuildDistribution(BuildRequestLevel.FinalPass)
+               .BuildMaterialProperties(BuildRequestLevel.FinalPass)
+               .BuildStage(BuildRequestLevel.FinalPass);
         }
     }
 }

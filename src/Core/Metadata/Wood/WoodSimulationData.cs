@@ -1,14 +1,17 @@
 using Appalachia.CI.Integration.Assets;
-using Appalachia.Core.Scriptables;
+using Appalachia.Core.Objects.Scriptables;
 using Appalachia.Simulation.Core.Metadata.Density;
 using Appalachia.Simulation.Core.Metadata.Fuel;
-using Appalachia.Utility.Extensions;
+using Appalachia.Utility.Async;
+using Appalachia.Utility.Strings;
 using Sirenix.OdinInspector;
 
 namespace Appalachia.Simulation.Core.Metadata.Wood
 {
-    public class WoodSimulationData : CategorizableIdentifiableAppalachiaObject
+    public class WoodSimulationData : CategorizableIdentifiableAppalachiaObject<WoodSimulationData>
     {
+        
+        
         #region Fields and Autoproperties
 
         [BoxGroup("Physical")] public DensityMetadata densityMetadata;
@@ -54,9 +57,9 @@ namespace Appalachia.Simulation.Core.Metadata.Wood
             (densityMetadata == null ? 650f : densityMetadata.densityKGPerCubicMeter) / 1250f;
 
 #if UNITY_EDITOR
-        protected override void OnEnable()
+        protected override async AppaTask WhenEnabled()
         {
-            base.OnEnable();
+            await base.WhenEnabled();
             AssignBestDensity();
         }
 
@@ -73,7 +76,7 @@ namespace Appalachia.Simulation.Core.Metadata.Wood
             {
                 var d = densities[i];
 
-                if (d.name == $"wood_{name}")
+                if (d.name == ZString.Format("wood_{0}", name))
                 {
                     densityMetadata = d;
                    this.MarkAsModified();
@@ -81,7 +84,7 @@ namespace Appalachia.Simulation.Core.Metadata.Wood
                 }
             }
 
-            densityMetadata = LoadOrCreateNew<DensityMetadata>($"wood_{name}");
+            densityMetadata = DensityMetadata.LoadOrCreateNew(ZString.Format("wood_{0}", name));
 #pragma warning disable 612
             densityMetadata.densityKGPerCubicMeter = 650f;
 #pragma warning restore 612

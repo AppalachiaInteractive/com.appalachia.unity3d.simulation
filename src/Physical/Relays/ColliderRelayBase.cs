@@ -1,6 +1,7 @@
 #region
 
-using Appalachia.Core.Behaviours;
+using Appalachia.Core.Objects.Root;
+using Appalachia.Utility.Async;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -9,36 +10,29 @@ using UnityEngine;
 namespace Appalachia.Simulation.Physical.Relays
 {
     [ExecuteAlways]
-    public abstract class ColliderRelayBase: AppalachiaBehaviour
+    public abstract class ColliderRelayBase : AppalachiaBehaviour<ColliderRelayBase>
     {
+        #region Fields and Autoproperties
+
         public Collider[] relayingColliders;
 
-        protected override void Awake()
-        {
-            base.Awake();
-            
-            UpdateRelayingColliders();
-        }
+        #endregion
 
-        protected override void Start()
-        {
-            base.Start();
-            
-            UpdateRelayingColliders();
-        }
+        protected abstract Collider[] GetColliders();
 
-        protected override void OnEnable()
-        {
-            base.OnEnable();
-            
-            UpdateRelayingColliders();
-        }
+        protected override async AppaTask WhenDisabled()
 
-        protected override void OnDisable()
         {
-            base.OnDisable();
-            
+            await base.WhenDisabled();
+
             relayingColliders = null;
+        }
+
+        protected override async AppaTask WhenEnabled()
+        {
+            await base.WhenEnabled();
+
+            UpdateRelayingColliders();
         }
 
         [Button]
@@ -46,7 +40,5 @@ namespace Appalachia.Simulation.Physical.Relays
         {
             relayingColliders = GetColliders();
         }
-
-        protected abstract Collider[] GetColliders();
     }
 }

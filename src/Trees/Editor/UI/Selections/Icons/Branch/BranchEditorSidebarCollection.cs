@@ -1,8 +1,8 @@
-using Appalachia.Simulation.Trees.UI.GUI;
+using Appalachia.Core.Objects.Root;
 
 namespace Appalachia.Simulation.Trees.UI.Selections.Icons.Branch
 {
-    public class BranchEditorSidebarCollection
+    public class BranchEditorSidebarCollection : AppalachiaSimpleBase
     {
         private BranchSnapshotSidebarMenu _snapshotMenu;
 

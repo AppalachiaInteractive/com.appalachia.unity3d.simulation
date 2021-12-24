@@ -3,12 +3,15 @@
 using System;
 using Appalachia.Audio;
 using Appalachia.Audio.Analysis;
+using Appalachia.Core.Attributes;
 using Appalachia.Core.Attributes.Editing;
-using Appalachia.Core.Behaviours;
-using Appalachia.Core.Scriptables;
+using Appalachia.Core.Objects.Initialization;
+using Appalachia.Core.Objects.Root;
 using Appalachia.Core.Shading;
 using Appalachia.Globals.Shading;
 using Appalachia.Simulation.Core.Metadata.Wind;
+using Appalachia.Utility.Async;
+using Appalachia.Utility.Execution;
 using Sirenix.OdinInspector;
 using Unity.Mathematics;
 using Unity.Profiling;
@@ -18,75 +21,26 @@ using Random = UnityEngine.Random;
 
 #endregion
 
-
-
 namespace Appalachia.Simulation.Wind
 {
     [DisallowMultipleComponent]
     [ExecuteAlways]
+    [CallStaticConstructorInEditor]
     public class GlobalWindManager : SingletonAppalachiaBehaviour<GlobalWindManager>
     {
-        private const string _PRF_PFX = nameof(GlobalWindManager) + ".";
-        private static readonly ProfilerMarker _PRF_Awake = new(_PRF_PFX + "Awake");
-        private static readonly ProfilerMarker _PRF_Start = new(_PRF_PFX + "Start");
-        private static readonly ProfilerMarker _PRF_OnEnable = new(_PRF_PFX + "OnEnable");
-        private static readonly ProfilerMarker _PRF_FixedUpdate = new(_PRF_PFX + "FixedUpdate");
-        private static readonly ProfilerMarker _PRF_Update = new(_PRF_PFX + "Update");
-        private static readonly ProfilerMarker _PRF_LateUpdate = new(_PRF_PFX + "LateUpdate");
-        private static readonly ProfilerMarker _PRF_OnDisable = new(_PRF_PFX + "OnDisable");
-        private static readonly ProfilerMarker _PRF_OnDestroy = new(_PRF_PFX + "OnDestroy");
-        private static readonly ProfilerMarker _PRF_Reset = new(_PRF_PFX + "Reset");
-        private static readonly ProfilerMarker _PRF_OnDrawGizmos = new(_PRF_PFX + "OnDrawGizmos");
+        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
+        static GlobalWindManager()
+        {
+            GSR.InstanceAvailable += i => _GSR = i;
+        }
 
-        private static readonly ProfilerMarker _PRF_OnDrawGizmosSelected =
-            new(_PRF_PFX + "OnDrawGizmosSelected");
+        #region Static Fields and Autoproperties
 
-        private static readonly ProfilerMarker _PRF_Initialize = new(_PRF_PFX + nameof(Initialize));
+        private static GSR _GSR;
 
-        private static readonly ProfilerMarker _PRF_RecreateArrowComponents =
-            new(_PRF_PFX + nameof(RecreateArrowComponents));
+        #endregion
 
-        private static readonly ProfilerMarker _PRF_GetCurrentAudioStrength =
-            new(_PRF_PFX + nameof(GetCurrentAudioStrength));
-
-        private static readonly ProfilerMarker _PRF_InitializeAudioPlugins =
-            new(_PRF_PFX + nameof(InitializeAudioPlugins));
-
-        private static readonly ProfilerMarker _PRF_SetGlobalShaderProperties =
-            new(_PRF_PFX + nameof(SetGlobalShaderProperties));
-
-        private static readonly ProfilerMarker _PRF_SetGlobalShaderProperties_SetDefaults =
-            new(_PRF_PFX + nameof(SetGlobalShaderProperties) + ".SetDefaults");
-
-        private static readonly ProfilerMarker _PRF_SetGlobalShaderProperties_GetCurrent =
-            new(_PRF_PFX + nameof(SetGlobalShaderProperties) + ".GetCurrent");
-
-        private static readonly ProfilerMarker _PRF_SetGlobalShaderProperties_AddLatest =
-            new(_PRF_PFX + nameof(SetGlobalShaderProperties) + ".AddLatest");
-
-        private static readonly ProfilerMarker _PRF_SetGlobalShaderProperties_SetLatest =
-            new(_PRF_PFX + nameof(SetGlobalShaderProperties) + ".SetLatest");
-
-        private static readonly ProfilerMarker
-            _PRF_SetGlobalShaderProperties_SetLatest_RealtimeUpdate = new(_PRF_PFX +
-                nameof(SetGlobalShaderProperties) +
-                ".SetLatest.RealtimeUpdate");
-
-        private static readonly ProfilerMarker
-            _PRF_SetGlobalShaderProperties_SetLatest_NonRealtimeUpdate = new(_PRF_PFX +
-                nameof(SetGlobalShaderProperties) +
-                ".SetLatest.NonRealtimeUpdate");
-
-        private static readonly ProfilerMarker _PRF_SetGlobalShaderProperties_SetShaderProps =
-            new(_PRF_PFX + nameof(SetGlobalShaderProperties) + ".SetShaderProps");
-
-        private static readonly ProfilerMarker _PRF_SetGlobalShaderProperties_SetShaderTexture =
-            new(_PRF_PFX + nameof(SetGlobalShaderProperties) + ".SetShaderTexture");
-
-        private static readonly ProfilerMarker _PRF_SetGlobalShaderProperties_ApplyProperties =
-            new(_PRF_PFX + nameof(SetGlobalShaderProperties) + ".ApplyProperties");
-
-        private static readonly ProfilerMarker _PRF_LerpValues = new(_PRF_PFX + nameof(LerpValues));
+        #region Fields and Autoproperties
 
         [FoldoutGroup("Wind/Runtime")]
         [PropertyRange(0f, 1.0f)]
@@ -209,6 +163,8 @@ namespace Appalachia.Simulation.Wind
         [HideInInspector] public MeshRenderer _meshRenderer;
         [NonSerialized] private bool _initialized;
 
+        #endregion
+
         /*[TitleGroup("System Center")]
         public GameObject reference;*/
 
@@ -216,17 +172,6 @@ namespace Appalachia.Simulation.Wind
         [FoldoutGroup("Wind/Physics")]
         [ShowInInspector]
         public float3 WindDirection => _transform.forward;
-
-        [FoldoutGroup("Wind/Physics")]
-        [ShowInInspector]
-        [SuffixLabel("m/s")]
-        public float3 WindSpeed => gustAudioStrengthActual * parameters.maximumWindSpeed;
-
-        [FoldoutGroup("Wind/Physics")]
-        [ShowInInspector]
-        [SmartLabel]
-        [SuffixLabel("m/s")]
-        public float3 WindVelocity => WindDirection * WindSpeed;
 
         /// <summary>
         ///     Fw = pd A
@@ -243,14 +188,32 @@ namespace Appalachia.Simulation.Wind
         public float3 WindDynamicPressure =>
             .5f * parameters.airDensity.densityKGPerCubicMeter * WindVelocity * WindVelocity;
 
+        [FoldoutGroup("Wind/Physics")]
+        [ShowInInspector]
+        [SuffixLabel("m/s")]
+        public float3 WindSpeed => gustAudioStrengthActual * parameters.maximumWindSpeed;
+
+        [FoldoutGroup("Wind/Physics")]
+        [ShowInInspector]
+        [SmartLabel]
+        [SuffixLabel("m/s")]
+        public float3 WindVelocity => WindDirection * WindSpeed;
+
+        #region Event Functions
+
         private void Update()
         {
             using (_PRF_Update.Auto())
             {
+                if (!DependenciesAreReady)
+                {
+                    return;
+                }
+
                 CheckSetup();
 
 #if UNITY_EDITOR
-                if (!Application.isPlaying)
+                if (!AppalachiaApplication.IsPlayingOrWillPlay)
                 {
                     ExecuteHeadingStepUpdate(false);
                 }
@@ -262,10 +225,6 @@ namespace Appalachia.Simulation.Wind
             if (param.realtimeUpdate)
             {
 #endif
-                if (!_initialized)
-                {
-                    Initialize();
-                }
 
                 if (_meshRenderer.sharedMaterial != param.arrowMaterial)
                 {
@@ -291,7 +250,7 @@ namespace Appalachia.Simulation.Wind
                 }*/
 
 #if UNITY_EDITOR
-                if (!Application.isPlaying || param.realtimeUpdate)
+                if (!AppalachiaApplication.IsPlayingOrWillPlay || param.realtimeUpdate)
                 {
 #endif
                     SetGlobalShaderProperties(Time.deltaTime, param);
@@ -332,17 +291,159 @@ namespace Appalachia.Simulation.Wind
             }
         }
 
-        protected override void Initialize()
+        #endregion
+
+        protected override async AppaTask Initialize(Initializer initializer)
         {
             using (_PRF_Initialize.Auto())
             {
-                base.Initialize();
-                
+                await base.Initialize(initializer);
+
                 _initialized = true;
 
                 gameObject.name = "Global Wind Manager";
 
-                GSR.instance.InitializeShaderReferences();
+                _GSR.InitializeShaderReferences();
+            }
+        }
+
+        private static float GetCurrentAudioStrength(AudioSignalSmoothAnalyzer analyzer, bool clamped = true)
+        {
+            using (_PRF_GetCurrentAudioStrength.Auto())
+            {
+                var i = GAC.ChannelMonitor_GetLoudnessData_dB(analyzer.referenceID);
+                var mag = GAC.dBToNormalized(
+                    i,
+                    GAC.WIND.WIND_THRESHOLD_LOW_DB,
+                    GAC.WIND.WIND_THRESHOLD_HIGH_DB,
+                    clamp: clamped
+                );
+
+                return mag;
+            }
+        }
+
+        private static void LerpValues(
+            float timeStep,
+            Vector2 stepRange,
+            float target,
+            float sharpness,
+            ref float current)
+        {
+            using (_PRF_LerpValues.Auto())
+            {
+                var scaledStepRange = timeStep * stepRange;
+
+                var newTarget = Mathf.Lerp(current, target, sharpness);
+
+                var desiredChange = newTarget - current;
+
+                if (desiredChange > scaledStepRange.y)
+                {
+                    desiredChange = scaledStepRange.y;
+                }
+                else if (desiredChange < -scaledStepRange.y)
+                {
+                    desiredChange = -scaledStepRange.y;
+                }
+                else if ((desiredChange < scaledStepRange.x) && (desiredChange > -scaledStepRange.x))
+                {
+                    current = target;
+                    desiredChange = 0;
+                }
+
+                current += desiredChange;
+            }
+        }
+
+        private void CheckSetup()
+        {
+#if UNITY_EDITOR
+
+            if (debugParameters == null)
+            {
+                debugParameters = GlobalWindParameters.LoadOrCreateNew("GLOBAL-WIND-PARAMS_DEBUG");
+            }
+
+            if (parameters == null)
+            {
+                parameters = GlobalWindParameters.LoadOrCreateNew("GLOBAL-WIND-PARAMS");
+            }
+#endif
+        }
+
+        private void ExecuteHeadingStepUpdate(bool forceUpdate)
+        {
+            var time = Time.time;
+            if ((time > nextHeadingUpdateTime) || forceUpdate)
+            {
+                var update = Random.Range(parameters.headingUpdateRange.x, parameters.headingUpdateRange.y);
+
+                var rotation = Quaternion.AngleAxis(update, Vector3.up);
+
+                targetHeading = _transform.rotation * rotation;
+                nextHeadingUpdateTime = time +
+                                        Random.Range(
+                                            parameters.headingChangeInterval.x,
+                                            parameters.headingChangeInterval.y
+                                        );
+            }
+            else
+            {
+                _transform.rotation = Quaternion.Slerp(
+                    _transform.rotation,
+                    targetHeading,
+                    parameters.headingUpdateSpeed
+                );
+            }
+        }
+
+        private void InitializeAudioPlugins(AudioMixer mixer)
+        {
+            using (_PRF_InitializeAudioPlugins.Auto())
+            {
+                if (veryHigh == null)
+                {
+                    veryHigh = new AudioSignalSmoothAnalyzer();
+                }
+
+                if (veryHigh.referenceID <= 0)
+                {
+                    veryHigh.referenceID = (int)GAC.Lookup(
+                        mixer,
+                        GAC.WIND._GUST_CHANNEL_MONITOR_INSTANCE_VERYHIGH
+                    );
+                }
+
+                if (high == null)
+                {
+                    high = new AudioSignalSmoothAnalyzer();
+                }
+
+                if (high.referenceID <= 0)
+                {
+                    high.referenceID = (int)GAC.Lookup(mixer, GAC.WIND._GUST_CHANNEL_MONITOR_INSTANCE_HIGH);
+                }
+
+                if (mid == null)
+                {
+                    mid = new AudioSignalSmoothAnalyzer();
+                }
+
+                if (mid.referenceID <= 0)
+                {
+                    mid.referenceID = (int)GAC.Lookup(mixer, GAC.WIND._GUST_CHANNEL_MONITOR_INSTANCE_MID);
+                }
+
+                if (low == null)
+                {
+                    low = new AudioSignalSmoothAnalyzer();
+                }
+
+                if (low.referenceID <= 0)
+                {
+                    low.referenceID = (int)GAC.Lookup(mixer, GAC.WIND._GUST_CHANNEL_MONITOR_INSTANCE_LOW);
+                }
             }
         }
 
@@ -375,149 +476,6 @@ namespace Appalachia.Simulation.Wind
                 if (_meshRenderer == null)
                 {
                     _meshRenderer = _arrow.AddComponent<MeshRenderer>();
-                }
-            }
-        }
-
-        private void ToggleHideShowArrowComponents(bool show)
-        {
-            _arrow.hideFlags = show ? HideFlags.None : HideFlags.HideInInspector;
-            _meshFilter.hideFlags = show ? HideFlags.None : HideFlags.HideInInspector;
-            _meshRenderer.hideFlags = show ? HideFlags.None : HideFlags.HideInInspector;
-        }
-
-        private void CheckSetup()
-        {
-#if UNITY_EDITOR
-
-            if (debugParameters == null)
-            {
-                debugParameters = AppalachiaObject.LoadOrCreateNew<GlobalWindParameters>(
-                    "GLOBAL-WIND-PARAMS_DEBUG",
-                    false,
-                    false
-                );
-            }
-
-            if (parameters == null)
-            {
-                parameters = AppalachiaObject.LoadOrCreateNew<GlobalWindParameters>(
-                    "GLOBAL-WIND-PARAMS",
-                    false,
-                    false
-                );
-            }
-#endif
-        }
-
-        [Button]
-        [FoldoutGroup("Wind/Runtime/Heading")]
-        private void UpdateHeadingNow()
-        {
-            ExecuteHeadingStepUpdate(true);
-        }
-
-        private void ExecuteHeadingStepUpdate(bool forceUpdate)
-        {
-            var time = Time.time;
-            if ((time > nextHeadingUpdateTime) || forceUpdate)
-            {
-                var update = Random.Range(
-                    parameters.headingUpdateRange.x,
-                    parameters.headingUpdateRange.y
-                );
-
-                var rotation = Quaternion.AngleAxis(update, Vector3.up);
-
-                targetHeading = _transform.rotation * rotation;
-                nextHeadingUpdateTime = time +
-                                        Random.Range(
-                                            parameters.headingChangeInterval.x,
-                                            parameters.headingChangeInterval.y
-                                        );
-            }
-            else
-            {
-                _transform.rotation = Quaternion.Slerp(
-                    _transform.rotation,
-                    targetHeading,
-                    parameters.headingUpdateSpeed
-                );
-            }
-        }
-
-        private static float GetCurrentAudioStrength(
-            AudioSignalSmoothAnalyzer analyzer,
-            bool clamped = true)
-        {
-            using (_PRF_GetCurrentAudioStrength.Auto())
-            {
-                var i = GAC.ChannelMonitor_GetLoudnessData_dB(analyzer.referenceID);
-                var mag = GAC.dBToNormalized(
-                    i,
-                    GAC.WIND.WIND_THRESHOLD_LOW_DB,
-                    GAC.WIND.WIND_THRESHOLD_HIGH_DB,
-                    clamp: clamped
-                );
-
-                return mag;
-            }
-        }
-
-        private void InitializeAudioPlugins(AudioMixer mixer)
-        {
-            using (_PRF_InitializeAudioPlugins.Auto())
-            {
-                if (veryHigh == null)
-                {
-                    veryHigh = new AudioSignalSmoothAnalyzer();
-                }
-
-                if (veryHigh.referenceID <= 0)
-                {
-                    veryHigh.referenceID = (int) GAC.Lookup(
-                        mixer,
-                        GAC.WIND._GUST_CHANNEL_MONITOR_INSTANCE_VERYHIGH
-                    );
-                }
-
-                if (high == null)
-                {
-                    high = new AudioSignalSmoothAnalyzer();
-                }
-
-                if (high.referenceID <= 0)
-                {
-                    high.referenceID = (int) GAC.Lookup(
-                        mixer,
-                        GAC.WIND._GUST_CHANNEL_MONITOR_INSTANCE_HIGH
-                    );
-                }
-
-                if (mid == null)
-                {
-                    mid = new AudioSignalSmoothAnalyzer();
-                }
-
-                if (mid.referenceID <= 0)
-                {
-                    mid.referenceID = (int) GAC.Lookup(
-                        mixer,
-                        GAC.WIND._GUST_CHANNEL_MONITOR_INSTANCE_MID
-                    );
-                }
-
-                if (low == null)
-                {
-                    low = new AudioSignalSmoothAnalyzer();
-                }
-
-                if (low.referenceID <= 0)
-                {
-                    low.referenceID = (int) GAC.Lookup(
-                        mixer,
-                        GAC.WIND._GUST_CHANNEL_MONITOR_INSTANCE_LOW
-                    );
                 }
             }
         }
@@ -565,8 +523,7 @@ namespace Appalachia.Simulation.Wind
 
                 using (_PRF_SetGlobalShaderProperties_SetLatest.Auto())
                 {
-                    gustAudioStrengthActualVeryHigh =
-                        param.realtimeUpdate ? veryHigh.avg : veryHigh.last;
+                    gustAudioStrengthActualVeryHigh = param.realtimeUpdate ? veryHigh.avg : veryHigh.last;
                     gustAudioStrengthActualHigh = param.realtimeUpdate ? high.avg : high.last;
                     gustAudioStrengthActualMid = param.realtimeUpdate ? mid.avg : mid.last;
                     gustAudioStrengthActualLow = param.realtimeUpdate ? low.avg : low.last;
@@ -614,19 +571,10 @@ namespace Appalachia.Simulation.Wind
                 {
                     Shader.SetGlobalFloat(GSPL.Get(GSC.WIND._WIND_AUDIO_INFLUENCE), audioInfluence);
                     Shader.SetGlobalVector(GSPL.Get(GSC.WIND._WIND_DIRECTION), _transform.forward);
-                    Shader.SetGlobalFloat(
-                        GSPL.Get(GSC.WIND._WIND_BASE_AMPLITUDE),
-                        param.baseAmplitude
-                    );
-                    Shader.SetGlobalFloat(
-                        GSPL.Get(GSC.WIND._WIND_BASE_TO_GUST_RATIO),
-                        param.baseToGustRatio
-                    );
+                    Shader.SetGlobalFloat(GSPL.Get(GSC.WIND._WIND_BASE_AMPLITUDE),     param.baseAmplitude);
+                    Shader.SetGlobalFloat(GSPL.Get(GSC.WIND._WIND_BASE_TO_GUST_RATIO), param.baseToGustRatio);
 
-                    Shader.SetGlobalFloat(
-                        GSPL.Get(GSC.WIND._WIND_GUST_AMPLITUDE),
-                        gustAmplitudeActual
-                    );
+                    Shader.SetGlobalFloat(GSPL.Get(GSC.WIND._WIND_GUST_AMPLITUDE), gustAmplitudeActual);
                     Shader.SetGlobalFloat(
                         GSPL.Get(GSC.WIND._WIND_GUST_AUDIO_STRENGTH),
                         gustAudioStrengthActual
@@ -668,16 +616,10 @@ namespace Appalachia.Simulation.Wind
                         }
                         else
                         {
-                            Shader.SetGlobalTexture(
-                                GSPL.Get(GSC.WIND._WIND_GUST_TEXTURE),
-                                param.gustTexture
-                            );
+                            Shader.SetGlobalTexture(GSPL.Get(GSC.WIND._WIND_GUST_TEXTURE), param.gustTexture);
                         }
 
-                        Shader.SetGlobalFloat(
-                            GSPL.Get(GSC.WIND._WIND_GUST_CONTRAST),
-                            param.gustContrast
-                        );
+                        Shader.SetGlobalFloat(GSPL.Get(GSC.WIND._WIND_GUST_CONTRAST), param.gustContrast);
                     }
                 }
 
@@ -692,38 +634,81 @@ namespace Appalachia.Simulation.Wind
             }
         }
 
-        private static void LerpValues(
-            float timeStep,
-            Vector2 stepRange,
-            float target,
-            float sharpness,
-            ref float current)
+        private void ToggleHideShowArrowComponents(bool show)
         {
-            using (_PRF_LerpValues.Auto())
-            {
-                var scaledStepRange = timeStep * stepRange;
-
-                var newTarget = Mathf.Lerp(current, target, sharpness);
-
-                var desiredChange = newTarget - current;
-
-                if (desiredChange > scaledStepRange.y)
-                {
-                    desiredChange = scaledStepRange.y;
-                }
-                else if (desiredChange < -scaledStepRange.y)
-                {
-                    desiredChange = -scaledStepRange.y;
-                }
-                else if ((desiredChange < scaledStepRange.x) &&
-                         (desiredChange > -scaledStepRange.x))
-                {
-                    current = target;
-                    desiredChange = 0;
-                }
-
-                current += desiredChange;
-            }
+            _arrow.hideFlags = show ? HideFlags.None : HideFlags.HideInInspector;
+            _meshFilter.hideFlags = show ? HideFlags.None : HideFlags.HideInInspector;
+            _meshRenderer.hideFlags = show ? HideFlags.None : HideFlags.HideInInspector;
         }
+
+        [Button]
+        [FoldoutGroup("Wind/Runtime/Heading")]
+        private void UpdateHeadingNow()
+        {
+            ExecuteHeadingStepUpdate(true);
+        }
+
+        #region Profiling
+
+        private const string _PRF_PFX = nameof(GlobalWindManager) + ".";
+        private static readonly ProfilerMarker _PRF_Awake = new(_PRF_PFX + "Awake");
+        private static readonly ProfilerMarker _PRF_Start = new(_PRF_PFX + "Start");
+        private static readonly ProfilerMarker _PRF_OnEnable = new(_PRF_PFX + "OnEnable");
+        private static readonly ProfilerMarker _PRF_FixedUpdate = new(_PRF_PFX + "FixedUpdate");
+
+        private static readonly ProfilerMarker _PRF_Update = new(_PRF_PFX + "Update");
+        private static readonly ProfilerMarker _PRF_LateUpdate = new(_PRF_PFX + "LateUpdate");
+        private static readonly ProfilerMarker _PRF_OnDisable = new(_PRF_PFX + "OnDisable");
+        private static readonly ProfilerMarker _PRF_OnDestroy = new(_PRF_PFX + "OnDestroy");
+        private static readonly ProfilerMarker _PRF_Reset = new(_PRF_PFX + "Reset");
+        private static readonly ProfilerMarker _PRF_OnDrawGizmos = new(_PRF_PFX + "OnDrawGizmos");
+
+        private static readonly ProfilerMarker _PRF_OnDrawGizmosSelected =
+            new(_PRF_PFX + "OnDrawGizmosSelected");
+
+        private static readonly ProfilerMarker _PRF_Initialize = new(_PRF_PFX + nameof(Initialize));
+
+        private static readonly ProfilerMarker _PRF_RecreateArrowComponents =
+            new(_PRF_PFX + nameof(RecreateArrowComponents));
+
+        private static readonly ProfilerMarker _PRF_GetCurrentAudioStrength =
+            new(_PRF_PFX + nameof(GetCurrentAudioStrength));
+
+        private static readonly ProfilerMarker _PRF_InitializeAudioPlugins =
+            new(_PRF_PFX + nameof(InitializeAudioPlugins));
+
+        private static readonly ProfilerMarker _PRF_SetGlobalShaderProperties =
+            new(_PRF_PFX + nameof(SetGlobalShaderProperties));
+
+        private static readonly ProfilerMarker _PRF_SetGlobalShaderProperties_SetDefaults =
+            new(_PRF_PFX + nameof(SetGlobalShaderProperties) + ".SetDefaults");
+
+        private static readonly ProfilerMarker _PRF_SetGlobalShaderProperties_GetCurrent =
+            new(_PRF_PFX + nameof(SetGlobalShaderProperties) + ".GetCurrent");
+
+        private static readonly ProfilerMarker _PRF_SetGlobalShaderProperties_AddLatest =
+            new(_PRF_PFX + nameof(SetGlobalShaderProperties) + ".AddLatest");
+
+        private static readonly ProfilerMarker _PRF_SetGlobalShaderProperties_SetLatest =
+            new(_PRF_PFX + nameof(SetGlobalShaderProperties) + ".SetLatest");
+
+        private static readonly ProfilerMarker _PRF_SetGlobalShaderProperties_SetLatest_RealtimeUpdate =
+            new(_PRF_PFX + nameof(SetGlobalShaderProperties) + ".SetLatest.RealtimeUpdate");
+
+        private static readonly ProfilerMarker _PRF_SetGlobalShaderProperties_SetLatest_NonRealtimeUpdate =
+            new(_PRF_PFX + nameof(SetGlobalShaderProperties) + ".SetLatest.NonRealtimeUpdate");
+
+        private static readonly ProfilerMarker _PRF_SetGlobalShaderProperties_SetShaderProps =
+            new(_PRF_PFX + nameof(SetGlobalShaderProperties) + ".SetShaderProps");
+
+        private static readonly ProfilerMarker _PRF_SetGlobalShaderProperties_SetShaderTexture =
+            new(_PRF_PFX + nameof(SetGlobalShaderProperties) + ".SetShaderTexture");
+
+        private static readonly ProfilerMarker _PRF_SetGlobalShaderProperties_ApplyProperties =
+            new(_PRF_PFX + nameof(SetGlobalShaderProperties) + ".ApplyProperties");
+
+        private static readonly ProfilerMarker _PRF_LerpValues = new(_PRF_PFX + nameof(LerpValues));
+
+        #endregion
     }
 }

@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace Appalachia.Simulation.Trees.UI.GUI
+namespace Appalachia.Simulation.Trees.UI
 {
     public static partial class TreeGUI
     {

@@ -7,6 +7,13 @@ namespace Appalachia.Simulation.Trees.UI.Selections.State
     [Serializable]
     public class TreeSelection : TSESelection<TreeDataContainer, TreeDataContainerSelection>
     {
+        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
+        static TreeSelection()
+        {
+            TreeDataContainerSelection.InstanceAvailable += i => _treeDataContainerSelection = i;
+        }
+
+        private static TreeDataContainerSelection _treeDataContainerSelection;
         public AgeType age;
         public StageType stage;
 
@@ -16,12 +23,11 @@ namespace Appalachia.Simulation.Trees.UI.Selections.State
             {
                 if (_selection == null)
                 {
-                    _selection = TreeDataContainerSelection.instance;
+                    _selection = _treeDataContainerSelection;
                 }
 
                 return _selection;
             }
-            set { _selection = value; }
         }
     }
 }

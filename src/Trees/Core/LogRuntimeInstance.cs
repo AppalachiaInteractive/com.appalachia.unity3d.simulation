@@ -1,12 +1,14 @@
 #region
 
-using Appalachia.Core.Behaviours;
+using Appalachia.Core.Objects.Behaviours;
+using Appalachia.Core.Objects.Initialization;
 using Appalachia.Core.Shading;
 using Appalachia.Simulation.Core.Metadata.Wood;
 using Appalachia.Simulation.Physical.Integration;
 using Appalachia.Simulation.Trees.Core.Model;
+using Appalachia.Utility.Async;
 using Appalachia.Utility.Extensions;
-using Appalachia.Utility.Logging;
+using Appalachia.Utility.Strings;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
 using UnityEngine;
@@ -19,8 +21,10 @@ namespace Appalachia.Simulation.Trees.Core
     [DisallowMultipleComponent]
     [ExecuteAlways]
     [RequireComponent(typeof(RigidbodyDensityManager))]
-    public class LogRuntimeInstance : InstancedAppalachiaBehaviour
+    public class LogRuntimeInstance : InstancedAppalachiaBehaviour<LogRuntimeInstance>
     {
+        
+        
         #region Fields and Autoproperties
 
         [FormerlySerializedAs("densityRigidbodyManager")]
@@ -87,29 +91,32 @@ namespace Appalachia.Simulation.Trees.Core
 
         #region Event Functions
 
-        protected override void OnEnable()
-        {
-            using (_PRF_OnEnable.Auto())
-            {
-                if (rigidbodyDensityManager == null)
-                {
-                    rigidbodyDensityManager = GetComponent<RigidbodyDensityManager>();
+        private static readonly ProfilerMarker _PRF_Initialize =
+            new ProfilerMarker(_PRF_PFX + nameof(Initialize));
 
-                    if (rigidbodyDensityManager == null)
-                    {
-                        rigidbodyDensityManager = gameObject.AddComponent<RigidbodyDensityManager>();
-                    }
-                }
+        protected override async AppaTask Initialize(Initializer initializer)
+        {
+            using (_PRF_Initialize.Auto())
+            {
+                await base.Initialize(initializer);
+
+                await initializer.Do(
+                    this,
+                    nameof(RigidbodyDensityManager),
+                    rigidbodyDensityManager == null,
+                    () => gameObject.GetOrCreateComponent(ref rigidbodyDensityManager)
+                );
+                
 
                 if (wood == null)
                 {
-                    var errorMessage = $"Need to assign wood to this log [{name}]!";
+                    var errorMessage = ZString.Format("Need to assign wood to this log [{0}]!", name);
 
 #if UNITY_EDITOR
-                    AppaLog.Warn(errorMessage, this);
+                    Context.Log.Warn(errorMessage, this);
                     return;
 #else
-                throw new NotSupportedException(errorMessage);
+                    throw new System.NotSupportedException(errorMessage);
 #endif
                 }
 
@@ -117,13 +124,16 @@ namespace Appalachia.Simulation.Trees.Core
 
                 if (densityMetadata == null)
                 {
-                    var errorMessage = $"Need to assign density to this wood [{wood.name}]!";
+                    var errorMessage = ZString.Format(
+                        "Need to assign density to this wood [{0}]!",
+                        wood.name
+                    );
 
 #if UNITY_EDITOR
-                    AppaLog.Warn(errorMessage, this);
+                    Context.Log.Warn(errorMessage, this);
                     return;
 #else
-                throw new NotSupportedException(errorMessage);
+                    throw new System.NotSupportedException(errorMessage);
 #endif
                 }
 
@@ -139,6 +149,9 @@ namespace Appalachia.Simulation.Trees.Core
                 rigidbodyDensityManager.density = densityMetadata;
             }
         }
+     
+
+            
 
         #endregion
 

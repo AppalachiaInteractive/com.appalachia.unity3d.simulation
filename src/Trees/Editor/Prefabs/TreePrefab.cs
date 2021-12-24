@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Appalachia.Core.Objects.Root;
 using Appalachia.Simulation.Trees.Core;
 using Appalachia.Simulation.Trees.Core.Geometry;
 using Appalachia.Simulation.Trees.Core.Shape;
@@ -17,7 +18,7 @@ using Object = UnityEngine.Object;
 namespace Appalachia.Simulation.Trees.Prefabs
 {
     [Serializable]
-    public class TreePrefab
+    public class TreePrefab : AppalachiaSimpleBase
     {
         public PrefabSetup setup;
 

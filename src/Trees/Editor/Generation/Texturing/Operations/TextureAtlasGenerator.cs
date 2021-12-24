@@ -137,7 +137,7 @@ namespace Appalachia.Simulation.Trees.Texturing
             }
             catch (Exception ex)
             {
-                UnityEngine.AppaLog.Error(ex);
+                UnityEngine.Context.Log.Error(ex);
                 
                 if (renderTextureState != null)
                 {

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Appalachia.CI.Integration.Assets;
+using Appalachia.Core.Objects.Initialization;
 using Appalachia.Simulation.Trees.Build.RequestManagers;
 using Appalachia.Simulation.Trees.Build.Requests;
 using Appalachia.Simulation.Trees.Core.Seeds;
@@ -17,9 +18,11 @@ using Appalachia.Simulation.Trees.Seeds;
 using Appalachia.Simulation.Trees.Settings;
 using Appalachia.Simulation.Trees.Snapshot;
 using Appalachia.Spatial.Octree;
+using Appalachia.Utility.Async;
 using Appalachia.Utility.Extensions;
-using Appalachia.Utility.Logging;
+using Appalachia.Utility.Strings;
 using Sirenix.OdinInspector;
+using Unity.Profiling;
 using UnityEditor;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -27,7 +30,7 @@ using Random = UnityEngine.Random;
 namespace Appalachia.Simulation.Trees
 {
     [Serializable]
-    public class BranchDataContainer : TSEDataContainer
+    public sealed class BranchDataContainer : TSEDataContainer<BranchDataContainer>
     {
         #region Fields and Autoproperties
 
@@ -73,19 +76,6 @@ namespace Appalachia.Simulation.Trees
             set => _samplePoints = value;
         }
 
-        #region Event Functions
-
-        protected void OnDisable()
-        {
-            if (_renderUtility != null)
-            {
-                _renderUtility.Cleanup();
-                _renderUtility = null;
-            }
-        }
-
-        #endregion
-
         public override void BuildDefault()
         {
             BranchBuildRequestManager.Default();
@@ -101,20 +91,14 @@ namespace Appalachia.Simulation.Trees
             BranchBuildRequestManager.Full();
         }
 
-        public override void CopyHierarchiesFrom(TSEDataContainer tsd)
+        public override void CopyHierarchiesFrom(BranchDataContainer dc)
         {
-            if (tsd is BranchDataContainer dc)
-            {
-                dc.branch.hierarchies.CopyHierarchiesTo(branch.hierarchies);
-            }
+            dc.branch.hierarchies.CopyHierarchiesTo(branch.hierarchies);
         }
 
-        public override void CopySettingsFrom(TSEDataContainer tsd)
+        public override void CopySettingsFrom(BranchDataContainer dc)
         {
-            if (tsd is BranchDataContainer dc)
-            {
-                dc.settings.CopySettingsTo(settings);
-            }
+            dc.settings.CopySettingsTo(settings);
         }
 
         public override NameBasis GetNameBasis()
@@ -135,7 +119,7 @@ namespace Appalachia.Simulation.Trees
 
         public override void SetDirtyStates()
         {
-            this.MarkAsModified();
+            MarkAsModified();
             subfolders.MarkAsModified();
             settings.MarkAsModified();
             materials.MarkAsModified();
@@ -189,8 +173,38 @@ namespace Appalachia.Simulation.Trees
             BranchBuildRequestManager.SettingsChanged(target);
         }
 
+        public void PushBuildRequestLevel(
+            bool distribution = false,
+            bool materialProperties = false,
+            bool materialGeneration = false,
+            bool uv = false,
+            bool highQualityGeometry = false,
+            bool ambientOcclusion = false)
+        {
+            buildRequest.materialGeneration =
+                materialGeneration ? BuildRequestLevel.FinalPass : BuildRequestLevel.None;
+            buildRequest.materialProperties =
+                materialProperties ? BuildRequestLevel.FinalPass : BuildRequestLevel.None;
+            buildRequest.distribution = distribution ? BuildRequestLevel.FinalPass : BuildRequestLevel.None;
+            buildRequest.uv = uv ? BuildRequestLevel.FinalPass : BuildRequestLevel.None;
+            buildRequest.geometry =
+                highQualityGeometry ? BuildRequestLevel.FinalPass : BuildRequestLevel.None;
+            buildRequest.ambientOcclusion =
+                ambientOcclusion ? BuildRequestLevel.FinalPass : BuildRequestLevel.None;
+        }
+
+        public void PushBuildRequestLevelAll(bool active)
+        {
+            buildRequest.materialGeneration = active ? BuildRequestLevel.FinalPass : BuildRequestLevel.None;
+            buildRequest.materialProperties = active ? BuildRequestLevel.FinalPass : BuildRequestLevel.None;
+            buildRequest.distribution = active ? BuildRequestLevel.FinalPass : BuildRequestLevel.None;
+            buildRequest.uv = active ? BuildRequestLevel.FinalPass : BuildRequestLevel.None;
+            buildRequest.geometry = active ? BuildRequestLevel.FinalPass : BuildRequestLevel.None;
+            buildRequest.ambientOcclusion = active ? BuildRequestLevel.FinalPass : BuildRequestLevel.None;
+        }
+
         [Button, HideIf(nameof(initialized))]
-        protected override void Initialize()
+        protected override async AppaTask Initialize(Initializer initializer)
         {
             try
             {
@@ -198,8 +212,8 @@ namespace Appalachia.Simulation.Trees
                 {
                     return;
                 }
-                
-                base.Initialize();
+
+                await base.Initialize(initializer);
 
                 ResetInitialization();
 
@@ -209,7 +223,7 @@ namespace Appalachia.Simulation.Trees
 
                 if (string.IsNullOrWhiteSpace(n))
                 {
-                    n = $"branch_{DateTime.Now:yyyyMMdd-HHmmss}";
+                    n = ZString.Format("branch_{0:yyyyMMdd-HHmmss}", DateTime.Now);
                 }
 
                 basis.nameBasis = n;
@@ -272,45 +286,30 @@ namespace Appalachia.Simulation.Trees
             }
             catch (Exception ex)
             {
-                AppaLog.Error(ex.Message, this);
+                Context.Log.Error(ex.Message, this);
                 initialized = false;
                 throw;
             }
         }
 
-        public void PushBuildRequestLevel(
-            bool distribution = false,
-            bool materialProperties = false,
-            bool materialGeneration = false,
-            bool uv = false,
-            bool highQualityGeometry = false,
-            bool ambientOcclusion = false)
-        {
-            buildRequest.materialGeneration =
-                materialGeneration ? BuildRequestLevel.FinalPass : BuildRequestLevel.None;
-            buildRequest.materialProperties =
-                materialProperties ? BuildRequestLevel.FinalPass : BuildRequestLevel.None;
-            buildRequest.distribution = distribution ? BuildRequestLevel.FinalPass : BuildRequestLevel.None;
-            buildRequest.uv = uv ? BuildRequestLevel.FinalPass : BuildRequestLevel.None;
-            buildRequest.geometry =
-                highQualityGeometry ? BuildRequestLevel.FinalPass : BuildRequestLevel.None;
-            buildRequest.ambientOcclusion =
-                ambientOcclusion ? BuildRequestLevel.FinalPass : BuildRequestLevel.None;
-        }
-
-        public void PushBuildRequestLevelAll(bool active)
-        {
-            buildRequest.materialGeneration = active ? BuildRequestLevel.FinalPass : BuildRequestLevel.None;
-            buildRequest.materialProperties = active ? BuildRequestLevel.FinalPass : BuildRequestLevel.None;
-            buildRequest.distribution = active ? BuildRequestLevel.FinalPass : BuildRequestLevel.None;
-            buildRequest.uv = active ? BuildRequestLevel.FinalPass : BuildRequestLevel.None;
-            buildRequest.geometry = active ? BuildRequestLevel.FinalPass : BuildRequestLevel.None;
-            buildRequest.ambientOcclusion = active ? BuildRequestLevel.FinalPass : BuildRequestLevel.None;
-        }
-
         protected override void SaveAllAssets(bool saveImpostors)
         {
             AssetManager.SaveAllAssets(this);
+        }
+
+        protected override async AppaTask WhenDisabled()
+
+        {
+            using (_PRF_OnDisable.Auto())
+            {
+                await base.WhenDisabled();
+
+                if (_renderUtility != null)
+                {
+                    _renderUtility.Cleanup();
+                    _renderUtility = null;
+                }
+            }
         }
 
         private void ResetInitialization()
@@ -334,6 +333,15 @@ namespace Appalachia.Simulation.Trees
         {
             CreateNew<BranchDataContainer>();
         }
+
+        #endregion
+
+        #region Profiling
+
+        private const string _PRF_PFX = nameof(BranchDataContainer) + ".";
+
+        private static readonly ProfilerMarker _PRF_OnDisable =
+            new ProfilerMarker(_PRF_PFX + nameof(OnDisable));
 
         #endregion
     }

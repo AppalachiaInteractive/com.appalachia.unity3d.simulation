@@ -70,7 +70,7 @@ Shader "Snapshot Normal Replacement"
 
 		ENDCG
 	}
-	CustomEditor "ASEMaterialInspector"
+	CustomEditor "AppalachiaShaderGUI"
 }
 /*ASEBEGIN
 Version=17500

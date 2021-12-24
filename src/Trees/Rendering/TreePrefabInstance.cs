@@ -1,11 +1,10 @@
 #region
 
 using System.Linq;
-using Appalachia.Core.Behaviours;
+using Appalachia.Core.Objects.Root;
+using Appalachia.Utility.Async;
 using UnityEngine;
 using UnityEngine.Rendering;
-
-
 
 #endregion
 
@@ -13,13 +12,13 @@ namespace Appalachia.Simulation.Trees.Rendering
 {
     [DisallowMultipleComponent]
     [ExecuteAlways]
-    public class TreePrefabInstance: AppalachiaBehaviour
+    public sealed class TreePrefabInstance : AppalachiaBehaviour<TreePrefabInstance>
     {
         public TreePrefabInstanceData instanceData;
 
-        protected override void OnEnable()
+        protected override async AppaTask WhenEnabled()
         {
-            base.OnEnable();
+            await base.WhenEnabled();
             
             var lightProbeProxyVolume = FindObjectsOfType<LightProbeProxyVolume>()
                                        .OrderByDescending(lppv => lppv.boundsGlobal.size)

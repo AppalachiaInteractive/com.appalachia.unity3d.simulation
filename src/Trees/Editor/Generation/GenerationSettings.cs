@@ -9,7 +9,7 @@ namespace Appalachia.Simulation.Trees.Generation
     
 
     [Serializable]
-    public class GenerationSettings
+    public class GenerationSettings : AppalachiaBase<GenerationSettings>
     {
 
         private GenerationState _state = GenerationState.Normal;

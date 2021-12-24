@@ -1,9 +1,9 @@
-using Appalachia.Core.Behaviours;
+using Appalachia.Core.Objects.Root;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Buoyancy
 {
-    public class WaterSplash: AppalachiaBehaviour
+    public sealed class WaterSplash : AppalachiaBehaviour<WaterSplash>
     {
         public Transform sphere;
         public Transform splashTop;
@@ -54,7 +54,7 @@ namespace Appalachia.Simulation.Buoyancy
     
                     if (!splashParticleSystem.isPlaying)
                     {
-                        //AppaLog.Info("Add foam");
+                        //Context.Log.Info("Add foam");
     
                         splashParticleSystem.Play();
                     }

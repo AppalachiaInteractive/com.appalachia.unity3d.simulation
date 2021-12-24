@@ -4,6 +4,7 @@ using Appalachia.Simulation.Trees.Data;
 using Appalachia.Simulation.Trees.Generation.Texturing.Materials.Output;
 using Appalachia.Simulation.Trees.Generation.Texturing.Specifications;
 using Appalachia.Simulation.Trees.Settings;
+using Appalachia.Utility.Strings;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -107,7 +108,7 @@ namespace Appalachia.Simulation.Trees.Snapshot
 
         public static BranchSnapshotParameters Create(string folder, NameBasis nameBasis, int index)
         {
-            var assetName = $"{nameBasis.FileNameSO("snapshot")}_{index}";
+            var assetName = ZString.Format("{0}_{1}", nameBasis.FileNameSO("snapshot"), index);
             var instance = LoadOrCreateNew<BranchSnapshotParameters>(folder, assetName);
 
             return instance;

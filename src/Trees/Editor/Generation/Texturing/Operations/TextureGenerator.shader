@@ -249,7 +249,7 @@ Shader "appalachia/core/trees/TextureGenerator"
 			ENDCG
 		}
 	}
-	CustomEditor "ASEMaterialInspector"
+	CustomEditor "AppalachiaShaderGUI"
 	
 	
 }

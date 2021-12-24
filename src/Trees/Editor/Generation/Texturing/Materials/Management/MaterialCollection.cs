@@ -8,6 +8,7 @@ using Appalachia.Simulation.Trees.Generation.Texturing.Materials.Base;
 using Appalachia.Simulation.Trees.Generation.Texturing.Materials.Input;
 using Appalachia.Simulation.Trees.Generation.Texturing.Materials.Output;
 using Appalachia.Simulation.Trees.Settings;
+using Appalachia.Utility.Strings;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -132,7 +133,12 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Management
 
                 foreach (var mat in material)
                 {
-                    mat.asset.name = $"{nameBasis.safeName}_tiled_{inputMaterial.material.name}_LOD{count}";
+                    mat.asset.name = ZString.Format(
+                        "{0}_tiled_{1}_LOD{2}",
+                        nameBasis.safeName,
+                        inputMaterial.material.name,
+                        count
+                    );
                     count += 1;
                 }
             }
@@ -140,7 +146,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Management
             count = 0;
             foreach (var mat in outputMaterialCache.atlasOutputMaterial)
             {
-                mat.asset.name = $"{nameBasis.safeName}_atlas_LOD{count}";
+                mat.asset.name = ZString.Format("{0}_atlas_LOD{1}", nameBasis.safeName, count);
                 count += 1;
             }
 
@@ -149,7 +155,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Management
             {
                 if ((mat != null) && (mat.asset != null))
                 {
-                    mat.asset.name = $"{nameBasis.safeName}_shadow_LOD{count}";
+                    mat.asset.name = ZString.Format("{0}_shadow_LOD{1}", nameBasis.safeName, count);
                     count += 1;
                 }
             }

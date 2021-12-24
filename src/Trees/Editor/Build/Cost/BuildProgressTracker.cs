@@ -1,14 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Appalachia.Core.Objects.Root;
 using Appalachia.Simulation.Trees.Build.Execution;
 using Appalachia.Simulation.Trees.Build.Requests;
+using Appalachia.Utility.Strings;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Build.Cost
 {
     [Serializable]
-    public class BuildProgressTracker
+    public class BuildProgressTracker : AppalachiaSimpleBase
     {
         [SerializeField] private float _buildCost;
         
@@ -200,10 +202,16 @@ namespace Appalachia.Simulation.Trees.Build.Cost
             switch (buildResult)
             {
                 case BuildResult.Success:
-                    _buildMessage = $"SUCCESS:  {Time.realtimeSinceStartup - _startTime:##.000} seconds";
+                    _buildMessage = ZString.Format(
+                        "SUCCESS:  {0:##.000} seconds",
+                        Time.realtimeSinceStartup - _startTime
+                    );
                     break;
                 case BuildResult.Error:
-                    _buildMessage = $"FAILURE:  {Time.realtimeSinceStartup - _startTime:##.000} seconds";
+                    _buildMessage = ZString.Format(
+                        "FAILURE:  {0:##.000} seconds",
+                        Time.realtimeSinceStartup - _startTime
+                    );
                     break;
                 case BuildResult.InProgress:
                     string friendly;
@@ -219,7 +227,13 @@ namespace Appalachia.Simulation.Trees.Build.Cost
                         );
                     }
 
-                    _buildMessage = $"IN PROGRESS:  {friendly}: {_categoryConsumed[category]} of {_categoryCounts[category]} | {Time.realtimeSinceStartup - _startTime:##.000} s";
+                    _buildMessage = ZString.Format(
+                        "IN PROGRESS:  {0}: {1} of {2} | {3:##.000} s",
+                        friendly,
+                        _categoryConsumed[category],
+                        _categoryCounts[category],
+                        Time.realtimeSinceStartup - _startTime
+                    );
                     
                     break;
 

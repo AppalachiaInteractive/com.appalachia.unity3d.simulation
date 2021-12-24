@@ -2,6 +2,8 @@
 
 using System;
 using System.Collections;
+using Appalachia.CI.Constants;
+using Appalachia.Core.Attributes;
 using Appalachia.Simulation.Core.Metadata.Tree.Types;
 using Appalachia.Simulation.Trees.Build.Cost;
 using Appalachia.Simulation.Trees.Build.Requests;
@@ -20,7 +22,7 @@ using Appalachia.Simulation.Trees.Hierarchy.Options.Properties;
 using Appalachia.Simulation.Trees.Seeds;
 using Appalachia.Simulation.Trees.Shape;
 using Appalachia.Simulation.Trees.UI.Selections.State;
-using Appalachia.Utility.Logging;
+using Appalachia.Utility.Execution;
 using Unity.EditorCoroutines.Editor;
 using UnityEditor;
 using UnityEngine;
@@ -29,9 +31,18 @@ using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Build.Execution
 {
+    [CallStaticConstructorInEditor]
     public static class LogBuildManager
     {
+// [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
+        static LogBuildManager()
+        {
+            TreeSpeciesEditorSelection.InstanceAvailable += i => _treeSpeciesEditorSelection = i;
+        }
+
         #region Static Fields and Autoproperties
+
+        [NonSerialized] private static AppaContext _context;
 
         private static bool _executing;
 
@@ -39,7 +50,22 @@ namespace Appalachia.Simulation.Trees.Build.Execution
 
         private static TreeSpeciesEditorSelection _selectionInstance;
 
+        private static TreeSpeciesEditorSelection _treeSpeciesEditorSelection;
+
         #endregion
+
+        private static AppaContext Context
+        {
+            get
+            {
+                if (_context == null)
+                {
+                    _context = new AppaContext(typeof(LogBuildManager));
+                }
+
+                return _context;
+            }
+        }
 
         private static LogDataContainer CTX => selectionInstance.log.selection.selected;
 
@@ -49,7 +75,7 @@ namespace Appalachia.Simulation.Trees.Build.Execution
             {
                 if (_selectionInstance == null)
                 {
-                    _selectionInstance = TreeSpeciesEditorSelection.instance;
+                    _selectionInstance = _treeSpeciesEditorSelection;
                 }
 
                 return _selectionInstance;
@@ -59,6 +85,11 @@ namespace Appalachia.Simulation.Trees.Build.Execution
         [InitializeOnLoadMethod]
         public static void Initialize()
         {
+            if (AppalachiaApplication.IsPlayingOrWillPlay)
+            {
+                return;
+            }
+
             EditorApplication.update += Update;
         }
 
@@ -89,7 +120,7 @@ namespace Appalachia.Simulation.Trees.Build.Execution
 
             try
             {
-                if (EditorApplication.isCompiling || EditorApplication.isPlayingOrWillChangePlaymode)
+                if (EditorApplication.isCompiling || AppalachiaApplication.IsPlayingOrWillPlay)
                 {
                     EditorCoroutineUtility.StopCoroutine(_coroutine);
                     completed = true;
@@ -275,7 +306,7 @@ namespace Appalachia.Simulation.Trees.Build.Execution
                     {
                         using (BUILD_TIME.LOG_BUILD_MGR.HandleBuildError.Auto())
                         {
-                            AppaLog.Error("Tree build failed.");
+                            Context.Log.Error("Tree build failed.");
 
                             if (log != null)
                             {
@@ -622,7 +653,7 @@ namespace Appalachia.Simulation.Trees.Build.Execution
                 if (!TreeBuildManager._enabled ||
                     _executing ||
                     EditorApplication.isCompiling ||
-                    EditorApplication.isPlayingOrWillChangePlaymode ||
+                    AppalachiaApplication.IsPlayingOrWillPlay ||
                     (CTX == null) ||
                     !CTX.initialized ||
                     (CTX.dataState == TSEDataContainer.DataState.Normal) ||
@@ -644,7 +675,7 @@ namespace Appalachia.Simulation.Trees.Build.Execution
             }
             catch (Exception ex)
             {
-                AppaLog.Error(ex);
+                Context.Log.Error(ex);
             }
         }
     }

@@ -19,8 +19,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Output
 
         public override MaterialContext MaterialContext => MaterialContext.BranchOutputMaterial;
 
-
-        protected override OutputShaderSelectionSet defaultShaders => DefaultShaderResource.instance.branchShaderSet;
+        protected override OutputShaderSelectionSet defaultShaders => _defaultShaderResource.branchShaderSet;
 
         public void RebuildTextureSets()
         {

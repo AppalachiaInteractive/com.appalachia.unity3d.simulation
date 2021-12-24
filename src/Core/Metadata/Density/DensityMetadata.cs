@@ -1,7 +1,7 @@
 #region
 
 using Appalachia.Core.Attributes.Editing;
-using Appalachia.Core.Scriptables;
+using Appalachia.Core.Objects.Scriptables;
 using Appalachia.Simulation.Core.Metadata.Materials;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -10,8 +10,10 @@ using UnityEngine;
 
 namespace Appalachia.Simulation.Core.Metadata.Density
 {
-    public class DensityMetadata : CategorizableAutonamedIdentifiableAppalachiaObject
+    public class DensityMetadata : CategorizableAutonamedIdentifiableAppalachiaObject<DensityMetadata>
     {
+        
+        
         [SerializeField]
         [SmartLabel]
         public float densityGramPerCubicCentimeter;

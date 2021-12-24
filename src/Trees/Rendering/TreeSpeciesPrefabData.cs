@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
+using Appalachia.Core.Objects.Root;
 using Appalachia.Simulation.Core.Metadata.Tree;
 
 namespace Appalachia.Simulation.Trees.Rendering
 {
     [Serializable]
-    public class TreeSpeciesPrefabData
+    public class TreeSpeciesPrefabData : AppalachiaSimpleBase
     {
         public TreeSpeciesMetadata speciesMetadata;
 

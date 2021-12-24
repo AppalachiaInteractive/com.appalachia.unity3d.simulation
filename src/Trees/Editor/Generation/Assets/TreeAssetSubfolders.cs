@@ -9,7 +9,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
 {
     [Serializable]
     [Title("Subfolders", TitleAlignment = TitleAlignments.Centered)]
-    public class TreeAssetSubfolders : ResponsiveNestedAppalachiaObject<TSEDataContainer>
+    public class TreeAssetSubfolders : ResponsiveNestedAppalachiaObject<TreeAssetSubfolders>
     {
         private const string _DATA_FOLDER = "Data";
         private const string _MATERIALS_FOLDER = "Materials";

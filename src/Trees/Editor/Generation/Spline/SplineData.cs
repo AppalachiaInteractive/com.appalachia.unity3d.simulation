@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Appalachia.Utility.Strings;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Generation.Spline
@@ -41,8 +42,11 @@ namespace Appalachia.Simulation.Trees.Generation.Spline
 
         [DebuggerStepThrough] public override string ToString()
         {
-            return
-                $"Spline | Points: {points.Count} | Length: {(points[points.Count - 1].point - points[0].point).magnitude}";
+            return ZString.Format(
+                "Spline | Points: {0} | Length: {1}",
+                points.Count,
+                (points[points.Count - 1].point - points[0].point).magnitude
+            );
         }
     }
 }

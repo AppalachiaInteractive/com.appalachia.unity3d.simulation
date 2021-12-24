@@ -115,7 +115,7 @@ namespace Appalachia.Simulation.Trees.Definition
             TreeAsset asset)
         {
             var assetName = nameBasis.FileNameAgeSO(individualID, ageType);
-            var instance = LoadOrCreateNew<TreeAge>(folder, assetName);
+            var instance = TreeAge.LoadOrCreateNew(folder, assetName);
 
             instance.individualID = individualID;
             instance.ageType = ageType;

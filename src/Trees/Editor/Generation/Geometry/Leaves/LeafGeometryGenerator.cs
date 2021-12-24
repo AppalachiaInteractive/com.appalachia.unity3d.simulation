@@ -1,3 +1,4 @@
+using Appalachia.Core.Attributes;
 using Appalachia.Simulation.Trees.Build.Execution;
 using Appalachia.Simulation.Trees.Core;
 using Appalachia.Simulation.Trees.Core.Geometry;
@@ -17,8 +18,16 @@ using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Generation.Geometry.Leaves
 {
+    [CallStaticConstructorInEditor]
     public static class LeafGeometryGenerator
     {
+        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
+        static LeafGeometryGenerator()
+        {
+            LeafUVRectCollection.InstanceAvailable += i => _leafUVRectCollection = i;
+        }
+
+        private static LeafUVRectCollection _leafUVRectCollection;
         private static readonly TreeVertex[] _planeVerts = new TreeVertex[8];
         private static readonly TreeVertex[] _planeVerts2 = new TreeVertex[8];
         private static BillboardPlane _billboardPlane;
@@ -306,7 +315,7 @@ namespace Appalachia.Simulation.Trees.Generation.Geometry.Leaves
                     }
                 }
 
-                var rects = LeafUVRectCollection.instance.Get(hierarchy.geometry.leafMaterial);
+                var rects = _leafUVRectCollection.Get(hierarchy.geometry.leafMaterial);
 
                 float xRatio = hierarchy.geometry.xRatio;
 
@@ -560,7 +569,7 @@ namespace Appalachia.Simulation.Trees.Generation.Geometry.Leaves
                     }
                 }
 
-                var rects = LeafUVRectCollection.instance.Get(hierarchy.geometry.leafMaterial);
+                var rects = _leafUVRectCollection.Get(hierarchy.geometry.leafMaterial);
 
                 float xRatio = hierarchy.geometry.xRatio;
 

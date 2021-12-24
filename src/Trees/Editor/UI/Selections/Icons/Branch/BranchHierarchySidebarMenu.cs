@@ -10,7 +10,7 @@ using Appalachia.Simulation.Trees.Icons;
 using Appalachia.Simulation.Trees.ResponsiveUI;
 using Appalachia.Simulation.Trees.Seeds;
 using Appalachia.Simulation.Trees.UI.Graph;
-using Appalachia.Simulation.Trees.UI.GUI;
+using Appalachia.Utility.Strings;
 using Sirenix.OdinInspector.Editor;
 using UnityEditor;
 using UnityEngine;
@@ -38,13 +38,17 @@ namespace Appalachia.Simulation.Trees.UI.Selections.Icons.Branch
 
                     if (node.parent == null)
                     {
-                        nodeNames.Add(node.data, $"{node.data.type}_{node.data.hierarchyID}");
+                        nodeNames.Add(
+                            node.data,
+                            ZString.Format("{0}_{1}", node.data.type, node.data.hierarchyID)
+                        );
                     }
                     else
                     {
                         nodeNames.Add(
                             node.data,
-                            $"{nodeNames[node.parent.data]}_" + $"{node.data.type}_{node.data.hierarchyID}"
+                            ZString.Format("{0}_",    nodeNames[node.parent.data]) +
+                            ZString.Format("{0}_{1}", node.data.type, node.data.hierarchyID)
                         );
                     }
                 },

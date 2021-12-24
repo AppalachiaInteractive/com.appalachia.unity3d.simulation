@@ -1,11 +1,11 @@
-using Appalachia.Core.Scriptables;
+using Appalachia.Simulation.Trees.Core;
 using Appalachia.Simulation.Trees.Core.Interfaces;
 using Appalachia.Simulation.Trees.Core.Model;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.UI.Gizmos
 {
-    public class TreeGizmoDelegate : SingletonAppalachiaObject<TreeGizmoDelegate>, ISpeciesGizmoDelegate
+    public class TreeGizmoDelegate : SingletonAppalachiaTreeObject<TreeGizmoDelegate>, ISpeciesGizmoDelegate
     {
         private TreeGizmoDelegate()
         {

@@ -1,6 +1,7 @@
 using Appalachia.Core.Shading;
 using Appalachia.Simulation.Trees.Generation.Texturing.Shading.OutputShaders;
 using Appalachia.Simulation.Trees.Hierarchy.Settings;
+using Appalachia.Utility.Strings;
 using UnityEditor;
 using UnityEngine;
 
@@ -239,7 +240,7 @@ namespace Appalachia.Simulation.Trees.UI.UV
                     labelRect.x = p1.x + TreeUV.PAD;
                     labelRect.y = p1.y + TreeUV.PAD;
 
-                    UnityEngine.GUI.Label(labelRect, $"{p0.x:F1}, {p0.y:F1}");
+                    GUI.Label(labelRect, ZString.Format("{0:F1}, {1:F1}", p0.x, p0.y));
                 }
             }
 
@@ -264,13 +265,13 @@ namespace Appalachia.Simulation.Trees.UI.UV
                 var pb1 = TreeUV.UVToGUIPoint(pb, center, uvGraphOffset, uvGraphScale);
                 labelRect.x = pb1.x;
                 labelRect.y = pb1.y + TreeUV.PAD;
-                UnityEngine.GUI.Label(labelRect, $"{uvRect.rect.size.x:F1}");
+                GUI.Label(labelRect, ZString.Format("{0:F1}", uvRect.rect.size.x));
 
                 var pr = .5f * (uvRect.rect[2] + uvRect.rect[3]);
                 var pr1 = TreeUV.UVToGUIPoint(pr, center, uvGraphOffset, uvGraphScale);
                 labelRect.x = pr1.x + TreeUV.PAD;
                 labelRect.y = pr1.y;
-                UnityEngine.GUI.Label(labelRect, $"{uvRect.rect.size.y:F1}");
+                GUI.Label(labelRect, ZString.Format("{0:F1}", uvRect.rect.size.y));
                 
             }
 

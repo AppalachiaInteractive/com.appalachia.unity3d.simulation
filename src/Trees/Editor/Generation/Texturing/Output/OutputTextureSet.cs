@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
+using Appalachia.Core.Objects.Root;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Generation.Texturing.Output
 {
     [Serializable]
-    public class OutputTextureSet
+    public class OutputTextureSet : AppalachiaSimpleBase
     {
         [ListDrawerSettings(
             Expanded = true,

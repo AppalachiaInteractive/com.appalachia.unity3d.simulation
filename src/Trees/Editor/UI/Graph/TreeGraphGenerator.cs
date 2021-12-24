@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
+using Appalachia.Core.Objects.Root;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.UI.Graph
 {
-    public class TreeGraphLayoutResult
+    public class TreeGraphLayoutResult : AppalachiaSimpleBase
     {
         public float height;
         public List<float> layerHeights = new List<float>();

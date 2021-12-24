@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Appalachia.Core.Attributes;
 using Appalachia.Core.Types;
 using Appalachia.Simulation.Trees.Core;
 using Appalachia.Simulation.Trees.Core.Settings;
@@ -11,6 +12,8 @@ using Appalachia.Simulation.Trees.Definition.Interfaces;
 using Appalachia.Simulation.Trees.Extensions;
 using Appalachia.Simulation.Trees.Generation.Texturing.Materials.Management;
 using Appalachia.Simulation.Trees.Recursion;
+using Appalachia.Utility.Constants;
+using Appalachia.Utility.Strings;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -18,9 +21,17 @@ using UnityEngine.Serialization;
 namespace Appalachia.Simulation.Trees.Hierarchy.Collections
 {
     [Serializable]
+    [CallStaticConstructorInEditor]
     public abstract class HierarchyCollection<T> : IEnumerable<HierarchyData>, ISerializationCallbackReceiver, IHierarchyReadWrite, IResponsive
         where T : HierarchyCollection<T>
     {
+        static HierarchyCollection()
+        {
+            TreePresets.InstanceAvailable += i => _treePresets = i;
+        }
+
+        private static TreePresets _treePresets;
+            
         [NonSerialized] public Dictionary<int, HierarchyData> byID;
         [NonSerialized] public Dictionary<int, List<HierarchyData>> byParentID;
         [HideInInspector] public IDIncrementer idGenerator = new IDIncrementer(true);
@@ -110,11 +121,14 @@ namespace Appalachia.Simulation.Trees.Hierarchy.Collections
 
         public void OnBeforeSerialize()
         {
+            using var scope = APPASERIALIZE.OnBeforeSerialize();
         }
 
         public void OnAfterDeserialize()
         {
+            using var scope = APPASERIALIZE.OnAfterDeserialize();
             Rebuild();
+            
         }
 
         public abstract IEnumerator<HierarchyData> GetEnumerator();
@@ -309,38 +323,38 @@ namespace Appalachia.Simulation.Trees.Hierarchy.Collections
                     switch (type)
                     {
                         case TreeComponentType.Trunk:
-                            barkH.distribution = TreePresets.instance.trunk_distribution.Clone();
-                            barkH.geometry = TreePresets.instance.trunk_branch.Clone();
-                            barkH.curvature = TreePresets.instance.trunk_curvature.Clone();
-                            barkH.limb = TreePresets.instance.trunk_limb.Clone();
+                            barkH.distribution = _treePresets.trunk_distribution.Clone();
+                            barkH.geometry = _treePresets.trunk_branch.Clone();
+                            barkH.curvature = _treePresets.trunk_curvature.Clone();
+                            barkH.limb = _treePresets.trunk_limb.Clone();
                             barkH.geometry.relativeToParentAllowed = false;
                             barkH.geometry.relativeToParent = false;
                             break;
                         
                         case TreeComponentType.Branch:
-                            barkH.distribution = TreePresets.instance.branch_distribution.Clone();
-                            barkH.geometry = TreePresets.instance.branch_branch.Clone();
-                            barkH.curvature = TreePresets.instance.branch_curvature.Clone();
-                            barkH.limb = TreePresets.instance.branch_limb.Clone();
+                            barkH.distribution = _treePresets.branch_distribution.Clone();
+                            barkH.geometry = _treePresets.branch_branch.Clone();
+                            barkH.curvature = _treePresets.branch_curvature.Clone();
+                            barkH.limb = _treePresets.branch_limb.Clone();
                         {
                             var ch = barkH as CollaredBarkHierarchyData;
-                            ch.collar = TreePresets.instance.branch_collar.Clone();
+                            ch.collar = _treePresets.branch_collar.Clone();
                             barkH.geometry.relativeToParentAllowed = true;
                             barkH.geometry.relativeToParent = true;
                         }
                             break;
                         
                         case TreeComponentType.Root:
-                            barkH.distribution = TreePresets.instance.root_distribution.Clone();
-                            barkH.geometry = TreePresets.instance.root_branch.Clone();
-                            barkH.curvature = TreePresets.instance.root_curvature.Clone();
-                            barkH.limb = TreePresets.instance.root_limb.Clone();
+                            barkH.distribution = _treePresets.root_distribution.Clone();
+                            barkH.geometry = _treePresets.root_branch.Clone();
+                            barkH.curvature = _treePresets.root_curvature.Clone();
+                            barkH.limb = _treePresets.root_limb.Clone();
                             barkH.geometry.relativeToParentAllowed = true;
                             barkH.geometry.relativeToParent = false;
 
                         {
-                            var ch = barkH as CollaredBarkHierarchyData;                            
-                            ch.collar = TreePresets.instance.root_collar.Clone();
+                            var ch = barkH as CollaredBarkHierarchyData;
+                            ch.collar = _treePresets.root_collar.Clone();
                         }
                             break;
                     }
@@ -353,26 +367,26 @@ namespace Appalachia.Simulation.Trees.Hierarchy.Collections
                         var h = newHierarchy as LeafHierarchyData;
 
                         h.geometry.leafMaterial = materials?.defaultMaterials.materialLeaf;
-                        h.distribution = TreePresets.instance.leaf_distribution.Clone();
+                        h.distribution = _treePresets.leaf_distribution.Clone();
                     }
                 }
                     break;
                 case TreeComponentType.Fruit:
                 {
                     var h = newHierarchy as FruitHierarchyData;
-                    h.distribution = TreePresets.instance.fruit_distribution.Clone();
+                    h.distribution = _treePresets.fruit_distribution.Clone();
                 }
                     break;
                 case TreeComponentType.Knot:
                 {
                     var h = newHierarchy as KnotHierarchyData;
-                    h.distribution = TreePresets.instance.knot_distribution.Clone();
+                    h.distribution = _treePresets.knot_distribution.Clone();
                 }
                     break;
                 case TreeComponentType.Fungus:
                 {
                     var h = newHierarchy as FungusHierarchyData;
-                    h.distribution = TreePresets.instance.fungus_distribution.Clone();
+                    h.distribution = _treePresets.fungus_distribution.Clone();
                 }
                     break;
             }
@@ -400,10 +414,10 @@ namespace Appalachia.Simulation.Trees.Hierarchy.Collections
             var nextID = idGenerator.GetNextIdAndIncrement();
             var newHierarchy = new TrunkHierarchyData(nextID, SettingsType);
 
-            newHierarchy.distribution = TreePresets.instance.trunk_distribution.Clone();
-            newHierarchy.geometry = TreePresets.instance.trunk_branch.Clone();
-            newHierarchy.curvature = TreePresets.instance.trunk_curvature.Clone();
-            newHierarchy.limb = TreePresets.instance.trunk_limb.Clone();
+            newHierarchy.distribution = _treePresets.trunk_distribution.Clone();
+            newHierarchy.geometry = _treePresets.trunk_branch.Clone();
+            newHierarchy.curvature = _treePresets.trunk_curvature.Clone();
+            newHierarchy.limb = _treePresets.trunk_limb.Clone();
             newHierarchy.geometry.relativeToParentAllowed = false;
             newHierarchy.geometry.relativeToParent = false;
             
@@ -435,7 +449,9 @@ namespace Appalachia.Simulation.Trees.Hierarchy.Collections
 
             if (shape.hierarchyID == -1)
             {
-                throw new NotSupportedException($"Bad hierarchy for shape {shape.shapeID}.");
+                throw new NotSupportedException(
+                    ZString.Format("Bad hierarchy for shape {0}.", shape.shapeID)
+                );
             }
 
             return GetHierarchyData(shape.hierarchyID);

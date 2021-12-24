@@ -1,5 +1,4 @@
 using System;
-using Appalachia.Simulation.Trees.UI.GUI;
 using Appalachia.Simulation.Trees.UI.Selections.Dropdown;
 using Appalachia.Simulation.Trees.UI.Selections.State;
 using UnityEditor;

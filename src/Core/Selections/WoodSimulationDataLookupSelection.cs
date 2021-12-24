@@ -7,5 +7,6 @@ namespace Appalachia.Simulation.Core.Selections
     public sealed class WoodSimulationDataLookupSelection : MetadataLookupSelection<
         WoodSimulationDataLookupSelection, WoodSimulationDataCollection, WoodSimulationData, AppaList_WoodSimulationData>
     {
+        
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Appalachia.CI.Integration.Assets;
+using Appalachia.Core.Objects.Initialization;
 using Appalachia.Simulation.Trees.Build;
 using Appalachia.Simulation.Trees.Build.Cost;
 using Appalachia.Simulation.Trees.Build.RequestManagers;
@@ -15,22 +16,22 @@ using Appalachia.Simulation.Trees.Data;
 using Appalachia.Simulation.Trees.Definition;
 using Appalachia.Simulation.Trees.Extensions;
 using Appalachia.Simulation.Trees.Generation.Assets;
-using Appalachia.Simulation.Trees.Generation.Texturing.Materials.Output;
 using Appalachia.Simulation.Trees.ResponsiveUI;
 using Appalachia.Simulation.Trees.Seeds;
 using Appalachia.Simulation.Trees.Settings.Log;
+using Appalachia.Utility.Async;
 using Appalachia.Utility.Extensions;
-using Appalachia.Utility.Logging;
+using Appalachia.Utility.Strings;
 using Sirenix.OdinInspector;
-using UnityEditor;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 namespace Appalachia.Simulation.Trees
 {
     [Serializable]
-    public class LogDataContainer : TSEDataContainer, ILogDataProvider
+    public sealed class LogDataContainer : TSEDataContainer<LogDataContainer>, ILogDataProvider
     {
+        
         [HideInInspector] public bool _drawGizmos;
 
         [HideInInspector] public List<LogInstance> logInstances;
@@ -247,7 +248,7 @@ namespace Appalachia.Simulation.Trees
         [Button]
         [HideIf(nameof(initialized))]
         [EnableIf(nameof(canInitialize))]
-        protected override void Initialize()
+        protected override async AppaTask Initialize(Initializer initializer)
         {
             try
             {
@@ -255,8 +256,8 @@ namespace Appalachia.Simulation.Trees
                 {
                     return;
                 }
-                
-                base.Initialize();
+
+                await base.Initialize(initializer);
 
                 ResetInitialization();
 
@@ -272,7 +273,10 @@ namespace Appalachia.Simulation.Trees
                 
                 subfolders.CreateFolders();
 
-                material = new Material(DefaultShaderResource.instance.logShader) {name = $"{basis.safeName}"};
+                material = new Material(_defaultShaderResource.logShader)
+                {
+                    name = ZString.Format("{0}", basis.safeName)
+                };
 
                 log = TreeLog.Create(subfolders.main, basis);                
 
@@ -301,7 +305,7 @@ namespace Appalachia.Simulation.Trees
             }
             catch (Exception ex)
             {
-                AppaLog.Error(ex.Message, this);
+                Context.Log.Error(ex.Message, this);
                 initialized = false;
                 throw;
             }
@@ -447,7 +451,10 @@ namespace Appalachia.Simulation.Trees
         {
             if (material == null)
             {
-                material = new Material(DefaultShaderResource.instance.logShader) {name = $"{log.nameBasis.safeName}"};
+                material = new Material(_defaultShaderResource.logShader)
+                {
+                    name = ZString.Format("{0}", log.nameBasis.safeName)
+                };
             }
 
             for (var i = logInstances.Count - 1; i >= 0; i--)
@@ -483,9 +490,9 @@ namespace Appalachia.Simulation.Trees
             return costs;
         }
 
-        protected override void OnEnable()
+        protected override async AppaTask WhenEnabled()
         {
-            base.OnEnable();
+            await base.WhenEnabled();
             if (HasAssetPath(out _))
             {
                 if (HasSubAssets(out var subAssets))

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Appalachia.Simulation.Trees.Icons;
 using Appalachia.Simulation.Trees.Snapshot;
-using Appalachia.Simulation.Trees.UI.GUI;
+using Appalachia.Utility.Strings;
 using Sirenix.OdinInspector.Editor;
 using UnityEngine;
 
@@ -54,7 +54,11 @@ namespace Appalachia.Simulation.Trees.UI.Selections.Icons.Branch
                     "Add new snapshot",
                     () =>
                     {
-                        var newName = $"{branch.branch.nameBasis.safeName}_{DateTime.Now:yyyyMMddHHmmss}";
+                        var newName = ZString.Format(
+                            "{0}_{1:yyyyMMddHHmmss}",
+                            branch.branch.nameBasis.safeName,
+                            DateTime.Now
+                        );
                         
                         branch.subfolders.ResetEmptyPaths();
                         var folder = branch.subfolders.snapshots;
@@ -74,7 +78,11 @@ namespace Appalachia.Simulation.Trees.UI.Selections.Icons.Branch
                     "Duplicate snapshot",
                     () =>
                     {
-                        var newName = $"{branch.branch.nameBasis.safeName}_{DateTime.Now:yyyyMMddHHmmss}";
+                        var newName = ZString.Format(
+                            "{0}_{1:yyyyMMddHHmmss}",
+                            branch.branch.nameBasis.safeName,
+                            DateTime.Now
+                        );
                         var folder = branch.subfolders.snapshots;
 
                         var snapshot = TreeGUI.Assets.CreateAndSaveInFolder<BranchSnapshotParameters>(folder, newName);

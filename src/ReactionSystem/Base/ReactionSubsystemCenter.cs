@@ -1,6 +1,5 @@
-using System.Collections.Generic;
-using Appalachia.Core.Behaviours;
 using Appalachia.Core.Debugging;
+using Appalachia.Core.Objects.Root;
 using Appalachia.Editing.Debugging.Handle;
 using Unity.Profiling;
 using UnityEngine;
@@ -10,7 +9,7 @@ namespace Appalachia.Simulation.ReactionSystem.Base
 {
     [ExecuteAlways]
     [DisallowMultipleComponent]
-    public class ReactionSubsystemCenter : AppalachiaBehaviour
+    public sealed class ReactionSubsystemCenter : AppalachiaBehaviour<ReactionSubsystemCenter>
     {
         private const string _PRF_PFX = nameof(ReactionSubsystemCenter) + ".";
 

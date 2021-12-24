@@ -1,4 +1,5 @@
 using System;
+using Appalachia.Core.Attributes;
 using Appalachia.Simulation.Trees.Build.Requests;
 using Appalachia.Simulation.Trees.Extensions;
 using Appalachia.Simulation.Trees.ResponsiveUI;
@@ -6,9 +7,18 @@ using Appalachia.Simulation.Trees.UI.Selections.State;
 
 namespace Appalachia.Simulation.Trees.Build.RequestManagers
 {
+    [CallStaticConstructorInEditor]
     public static class BranchBuildRequestManager
     {
-        private static BranchDataContainer CTX => TreeSpeciesEditorSelection.instance.branch.selection.selected;
+        // [CallStaticConstructorInEditor] should be added to the class
+        static BranchBuildRequestManager()
+        {
+            TreeSpeciesEditorSelection.InstanceAvailable += i => _treeSpeciesEditorSelection = i;
+        }
+
+        private static TreeSpeciesEditorSelection _treeSpeciesEditorSelection;
+
+        private static BranchDataContainer CTX => _treeSpeciesEditorSelection.branch.selection.selected;
         
         /// <summary>
         /// Builds all individuals for the species, resetting assets beforehand.

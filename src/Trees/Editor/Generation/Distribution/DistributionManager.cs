@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Appalachia.CI.Constants;
 using Appalachia.Simulation.Core.Metadata.Tree.Types;
 using Appalachia.Simulation.Trees.Build.Execution;
 using Appalachia.Simulation.Trees.Core;
@@ -10,13 +11,51 @@ using Appalachia.Simulation.Trees.Hierarchy;
 using Appalachia.Simulation.Trees.Hierarchy.Options.Properties;
 using Appalachia.Simulation.Trees.Hierarchy.Settings;
 using Appalachia.Simulation.Trees.Shape;
-using Appalachia.Utility.Logging;
+using Appalachia.Utility.Strings;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Generation.Distribution
 {
     public static class DistributionManager
     {
+        [NonSerialized] private static AppaContext _context;
+
+        private static AppaContext Context
+        {
+            get
+            {
+                if (_context == null)
+                {
+                    _context = new AppaContext(typeof(DistributionManager));
+                }
+
+                return _context;
+            }
+        }
+
+        public static float ComputeOffset(
+            int index,
+            int count,
+            float distributionSum,
+            float distributionStep,
+            DistributionSettings distribution)
+        {
+            var current = 0.0f;
+
+            var target = ((index + 1.0f) / (count + 1.0f)) * distributionSum;
+
+            for (var j = 0.0f; j <= 1.0f; j += distributionStep)
+            {
+                current += distribution.distributionCurve.EvaluateClamped01(j);
+                if (current >= target)
+                {
+                    return j;
+                }
+            }
+
+            return target / distributionSum;
+        }
+
         public static void PopulateShapes(
             IHierarchyRead hierarchies,
             IShapeReadWrite shapes,
@@ -26,10 +65,10 @@ namespace Appalachia.Simulation.Trees.Generation.Distribution
             using (BUILD_TIME.DIST_MGR.PopulateShapes.Auto())
             {
                 var parentHierarchy = hierarchies.GetHierarchyData(hierarchy.parentHierarchyID);
-               
+
                 if (!hierarchy.IsEligibleForAge(ageType))
                 {
-                    shapes.UpdateIndividualHierarchyShapeCounts( hierarchy, parentHierarchy, 0);
+                    shapes.UpdateIndividualHierarchyShapeCounts(hierarchy, parentHierarchy, 0);
 
                     return;
                 }
@@ -38,21 +77,24 @@ namespace Appalachia.Simulation.Trees.Generation.Distribution
                 {
                     var definedFrequency = hierarchy.distribution.distributionFrequency;
 
-                    shapes.UpdateIndividualHierarchyShapeCounts( hierarchy, null, definedFrequency);
-
+                    shapes.UpdateIndividualHierarchyShapeCounts(hierarchy, null, definedFrequency);
                 }
                 else
                 {
                     var definedFrequency = hierarchy.distribution.distributionFrequency.Value;
 
-                    var parentShapes = shapes.GetShapesByHierarchy( parentHierarchy);
+                    var parentShapes = shapes.GetShapesByHierarchy(parentHierarchy);
 
                     var parentScale = parentShapes.FirstOrDefault()?.effectiveScale ?? 0f;
 
                     if (parentScale == 0f)
                     {
-                       AppaLog.Warn(
-                            $"Not building shapes for hierarchy {hierarchy.hierarchyID} [{hierarchy.type}] because of parent scale."
+                        Context.Log.Warn(
+                            ZString.Format(
+                                "Not building shapes for hierarchy {0} [{1}] because of parent scale.",
+                                hierarchy.hierarchyID,
+                                hierarchy.type
+                            )
                         );
                     }
 
@@ -70,41 +112,85 @@ namespace Appalachia.Simulation.Trees.Generation.Distribution
                     );
                 }
             }
+        }
 
+        public static void UpdateBreakage(BarkShapeData shape, BarkHierarchyData hierarchy, ISeed seed)
+        {
+            var breakSpot = seed.RandomValue();
+            var breakDeterminant = seed.RandomValue();
+
+            shape.breakOffset = 1.0f;
+
+            if ((breakDeterminant <= hierarchy.limb.breakingChance) &&
+                (hierarchy.limb.breakingChance > 0.001f))
+            {
+                shape.breakOffset = hierarchy.limb.breakingSpot.Value.x +
+                                    ((hierarchy.limb.breakingSpot.Value.y -
+                                      hierarchy.limb.breakingSpot.Value.x) *
+                                     breakSpot);
+
+                if (shape.breakOffset < 0.01f)
+                {
+                    shape.breakOffset = 0.01f;
+                }
+            }
+        }
+
+        public static void UpdateShapeAngles(IShapeReadWrite shapes, HierarchyData hierarchy)
+        {
+            using (BUILD_TIME.DIST_MGR.UpdateShapeAngles.Auto())
+            {
+                var shapeDatas = shapes.GetShapesByHierarchy(hierarchy);
+                var dist = hierarchy.distribution;
+
+                foreach (var shape in shapeDatas)
+                {
+                    //shape.angle = shape.baseAngle;
+
+                    shape.verticalAngle = dist.growthAngle.Value.EvaluateScaledClamped(
+                                              shape.offset,
+                                              -1.0f,
+                                              1.0f
+                                          ) *
+                                          -75.0f /* * dist.growthAngle.Value.value*/;
+                }
+            }
         }
 
         public static void UpdateShapeOffsets(
             IShapeReadWrite shapes,
             IHierarchyRead hierarchies,
             HierarchyData hierarchy,
-            ISeed seed, Vector2 fungiRange)
+            ISeed seed,
+            Vector2 fungiRange)
         {
             using (BUILD_TIME.DIST_MGR.UpdateShapeOffsets.Auto())
             {
                 var distribution = hierarchy.distribution;
 
-                float distributionSum = 0.0f;
+                var distributionSum = 0.0f;
 
-                float[] distributionSamples = new float[100];
+                var distributionSamples = new float[100];
 
-                float distributionStep = 1.0f / distributionSamples.Length;
+                var distributionStep = 1.0f / distributionSamples.Length;
 
-                float distributionDivisor = (float) distributionSamples.Length - 1;
+                var distributionDivisor = (float)distributionSamples.Length - 1;
 
-                for (int i = 0; i < distributionSamples.Length; i++)
+                for (var i = 0; i < distributionSamples.Length; i++)
                 {
-                    float j = i / distributionDivisor;
+                    var j = i / distributionDivisor;
                     distributionSamples[i] = distribution.distributionCurve.EvaluateClamped01(j);
                     distributionSum += distributionSamples[i];
                 }
 
                 var shapeDatas = shapes.GetShapesByHierarchy(hierarchy);
-                
+
                 var randomDistributionOffset = seed.RandomValue(-360f, 360f);
 
                 for (var i = 0; i < shapeDatas.Count; i++)
                 {
                     var shape = shapeDatas[i];
+
                     //shape.seed.Reset();
 
                     if ((i == 0) && (shapeDatas.Count == 1) && (shape.type == TreeComponentType.Trunk))
@@ -113,14 +199,15 @@ namespace Appalachia.Simulation.Trees.Generation.Distribution
                         shape.offset = 0.0f;
                         shape.radialAngle = 0.0f;
                         shape.verticalAngle = 0.0f;
-                        shape.scale = distribution.distributionScale.accessor.EvaluateScaledInverse01(shape.offset);
+                        shape.scale =
+                            distribution.distributionScale.accessor.EvaluateScaledInverse01(shape.offset);
                     }
                     else
                     {
-                        int nodeLocalIndex = 0;
-                        int nodeLocalCount = 0;
+                        var nodeLocalIndex = 0;
+                        var nodeLocalCount = 0;
 
-                        for (int j = 0; j < shapeDatas.Count; j++)
+                        for (var j = 0; j < shapeDatas.Count; j++)
                         {
                             if (shapeDatas[j].parentShapeID == shape.parentShapeID)
                             {
@@ -128,12 +215,13 @@ namespace Appalachia.Simulation.Trees.Generation.Distribution
                                 {
                                     nodeLocalIndex = nodeLocalCount;
                                 }
-                                
+
                                 nodeLocalCount++;
                             }
                         }
 
-                        if ((distribution.vertical.Value == DistributionVerticalMode.Random) || (distribution.vertical.Value == DistributionVerticalMode.Equal))
+                        if ((distribution.vertical.Value == DistributionVerticalMode.Random) ||
+                            (distribution.vertical.Value == DistributionVerticalMode.Equal))
                         {
                             distribution.clusterCount.SetValue(1);
                         }
@@ -142,14 +230,17 @@ namespace Appalachia.Simulation.Trees.Generation.Distribution
                         {
                             case DistributionVerticalMode.Random:
                             {
-                                float offset = 0.0f;
-                                float weight = seed.RandomValue() * distributionSum;
+                                var offset = 0.0f;
+                                var weight = seed.RandomValue() * distributionSum;
 
-                                for (int j = 0; j < distributionSamples.Length; j++)
+                                for (var j = 0; j < distributionSamples.Length; j++)
                                 {
                                     offset = j / distributionDivisor;
                                     weight -= distributionSamples[j];
-                                    if (weight <= 0.0f) break;
+                                    if (weight <= 0.0f)
+                                    {
+                                        break;
+                                    }
                                 }
 
                                 shape.offset = offset;
@@ -183,7 +274,7 @@ namespace Appalachia.Simulation.Trees.Generation.Distribution
                             default:
                                 throw new ArgumentOutOfRangeException();
                         }
-                        
+
                         switch (distribution.radial.Value)
                         {
                             case DistributionRadialMode.Random:
@@ -194,30 +285,32 @@ namespace Appalachia.Simulation.Trees.Generation.Distribution
                             case DistributionRadialMode.Equal:
                             {
                                 var step = nodeLocalIndex / distribution.clusterCount;
-                                
-                                var element = (nodeLocalIndex % distribution.clusterCount) / (float)distribution.clusterCount;
-                                
+
+                                var element = (nodeLocalIndex % distribution.clusterCount) /
+                                              (float)distribution.clusterCount;
+
                                 var elementOffset = 360f * element;
-                                
+
                                 shape.radialAngle = step * distribution.radialStepOffset;
 
                                 if (distribution.radialStepJitter == null)
                                 {
                                     distribution.radialStepJitter = TreeProperty.New(0.1f);
                                 }
+
                                 if (distribution.radialStepJitter > 0.0f)
                                 {
                                     var jitter = seed.RandomValue(-0.5f, 0.5f) *
-                                        distribution.radialStepJitter *
-                                        distribution.radialStepOffset;
+                                                 distribution.radialStepJitter *
+                                                 distribution.radialStepOffset;
 
                                     shape.radialAngle += jitter;
                                 }
-                                
+
                                 shape.radialAngle += elementOffset;
                             }
                                 break;
-                           
+
                             case DistributionRadialMode.Range:
                             {
                                 var range = distribution.growthRange.Value;
@@ -230,9 +323,8 @@ namespace Appalachia.Simulation.Trees.Generation.Distribution
                                 throw new ArgumentOutOfRangeException();
                         }
 
-                        
                         if (distribution.randomDistributionAngleOffset)
-                        {                            
+                        {
                             shape.radialAngle += randomDistributionOffset;
                         }
                         else
@@ -241,37 +333,33 @@ namespace Appalachia.Simulation.Trees.Generation.Distribution
                             {
                                 distribution.distributionAngleOffsetJitter = TreeProperty.New(0.1f);
                             }
-                            
+
                             if (distribution.distributionAngleOffsetJitter > 0.0f)
                             {
                                 var jitter = seed.RandomValue(-360.0f, 360.0f) *
-                                    distribution.distributionAngleOffsetJitter;
+                                             distribution.distributionAngleOffsetJitter;
 
                                 shape.radialAngle += jitter;
                             }
-                            
+
                             shape.radialAngle += distribution.distributionAngleOffset.Value;
-                            
-                            
                         }
-                        
-                        
-                        shape.radialAngle += (distribution.distributionSpin.Value.EvaluateScaled(shape.offset) *
-                            360.0f);
-                        
+
+                        shape.radialAngle +=
+                            distribution.distributionSpin.Value.EvaluateScaled(shape.offset) * 360.0f;
                     }
 
                     if (shape.type == TreeComponentType.Root)
                     {
                         var groundOffset = hierarchies.GetVerticalOffset();
                         var heightRange = new Vector2(-groundOffset, 1f);
-                        
+
                         var parent = shapes.GetShapeData(shape.parentShapeID) as BarkShapeData;
                         var parentLength = SplineModeler.GetApproximateLength(parent.spline);
 
                         var newRange = heightRange.y - heightRange.x;
 
-                        shape.offset *= (newRange / parentLength);
+                        shape.offset *= newRange / parentLength;
                     }
                     else if (shape.type == TreeComponentType.Fungus)
                     {
@@ -286,8 +374,8 @@ namespace Appalachia.Simulation.Trees.Generation.Distribution
                         shape.offset = low + (shape.offset * (high - low));
                     }
                     else if ((hierarchy.type == TreeComponentType.Branch) &&
-                        hierarchy is BranchHierarchyData b &&
-                        b.geometry.forked)
+                             hierarchy is BranchHierarchyData b &&
+                             b.geometry.forked)
                     {
                         shape.offset = 1.0f;
                     }
@@ -295,10 +383,7 @@ namespace Appalachia.Simulation.Trees.Generation.Distribution
             }
         }
 
-        public static void UpdateShapeVisibility(
-            IShapeReadWrite shapes,
-            HierarchyData hierarchy,
-            ISeed seed)
+        public static void UpdateShapeVisibility(IShapeReadWrite shapes, HierarchyData hierarchy, ISeed seed)
         {
             using (BUILD_TIME.DIST_MGR.UpdateShapeVisibility.Auto())
             {
@@ -323,7 +408,6 @@ namespace Appalachia.Simulation.Trees.Generation.Distribution
                     {
                         if ((parentShape != null) && parentShape is BarkShapeData barkShape)
                         {
-
                             if (shape.offset > barkShape.breakOffset)
                             {
                                 shape.visible = false;
@@ -337,71 +421,6 @@ namespace Appalachia.Simulation.Trees.Generation.Distribution
                     }
                 }
             }
-        }
-
-        public static void UpdateShapeAngles(
-            IShapeReadWrite shapes,
-            HierarchyData hierarchy)
-        {
-            using (BUILD_TIME.DIST_MGR.UpdateShapeAngles.Auto())
-            {
-                var shapeDatas = shapes.GetShapesByHierarchy(hierarchy);
-                var dist = hierarchy.distribution;
-
-                foreach (var shape in shapeDatas)
-                {
-                    //shape.angle = shape.baseAngle;
-
-                    shape.verticalAngle = dist.growthAngle.Value.EvaluateScaledClamped(
-                            shape.offset, -1.0f, 1.0f) *
-                        -75.0f/* * dist.growthAngle.Value.value*/;
-                }
-            }
-        }
-
-        public static void UpdateBreakage(BarkShapeData shape, BarkHierarchyData hierarchy,
-                                          ISeed seed)
-        {
-            float breakSpot = seed.RandomValue();
-            float breakDeterminant = seed.RandomValue();
-
-            shape.breakOffset = 1.0f;
-
-            if ((breakDeterminant <= hierarchy.limb.breakingChance) &&
-                (hierarchy.limb.breakingChance > 0.001f))
-            {
-                shape.breakOffset = hierarchy.limb.breakingSpot.Value.x +
-                    ((hierarchy.limb.breakingSpot.Value.y -
-                        hierarchy.limb.breakingSpot.Value.x) * breakSpot);
-
-                if (shape.breakOffset < 0.01f)
-                {
-                    shape.breakOffset = 0.01f;
-                }
-            }
-        }
-
-        public static float ComputeOffset(
-            int index,
-            int count,
-            float distributionSum,
-            float distributionStep,
-            DistributionSettings distribution)
-        {
-            float current = 0.0f;
-
-            float target = ((index + 1.0f) / (count + 1.0f)) * distributionSum;
-
-            for (float j = 0.0f; j <= 1.0f; j += distributionStep)
-            {
-                current += distribution.distributionCurve.EvaluateClamped01(j);
-                if (current >= target)
-                {
-                    return j;
-                }
-            }
-
-            return (target / distributionSum);
         }
     }
 }

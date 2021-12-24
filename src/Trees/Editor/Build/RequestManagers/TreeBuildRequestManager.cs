@@ -1,4 +1,5 @@
 using System;
+using Appalachia.Core.Attributes;
 using Appalachia.Simulation.Trees.Build.Requests;
 using Appalachia.Simulation.Trees.Extensions;
 using Appalachia.Simulation.Trees.ResponsiveUI;
@@ -6,22 +7,52 @@ using Appalachia.Simulation.Trees.UI.Selections.State;
 
 namespace Appalachia.Simulation.Trees.Build.RequestManagers
 {
+    [CallStaticConstructorInEditor]
     public static class TreeBuildRequestManager
     {
-        private static TreeDataContainer CTX => TreeSpeciesEditorSelection.instance.tree.selection.selected;
-        
+        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
+        static TreeBuildRequestManager()
+        {
+            TreeSpeciesEditorSelection.InstanceAvailable += i => _treeSpeciesEditorSelection = i;
+        }
+
+        #region Static Fields and Autoproperties
+
+        private static TreeSpeciesEditorSelection _treeSpeciesEditorSelection;
+
+        #endregion
+
+        private static TreeDataContainer CTX => _treeSpeciesEditorSelection.tree.selection.selected;
+
+        public static void CollidersOnly()
+        {
+            CTX.dataState = TSEDataContainer.DataState.Dirty;
+            CTX.buildState = BuildState.Default;
+            CTX.PushBuildRequestLevel(collision: BuildRequestLevel.FinalPass);
+        }
+
         /// <summary>
-        /// Builds all individuals for the species, resetting assets beforehand.
+        ///     Builds only the current stage, only what needs to be built.
+        /// </summary>
+        public static void Default()
+        {
+            CTX.dataState = TSEDataContainer.DataState.Dirty;
+            CTX.buildState = BuildState.Default;
+            CTX.PushBuildRequestLevelAll(BuildRequestLevel.FinalPass);
+        }
+
+        /// <summary>
+        ///     Builds all individuals for the species, resetting assets beforehand.
         /// </summary>
         public static void ForceFull()
         {
             CTX.dataState = TSEDataContainer.DataState.Dirty;
-            CTX.buildState = BuildState.ForceFull;            
+            CTX.buildState = BuildState.ForceFull;
             CTX.PushBuildRequestLevelAll(BuildRequestLevel.FinalPass);
         }
-        
+
         /// <summary>
-        /// Builds all individuals for the species, only what needs to be built.
+        ///     Builds all individuals for the species, only what needs to be built.
         /// </summary>
         public static void Full()
         {
@@ -30,115 +61,22 @@ namespace Appalachia.Simulation.Trees.Build.RequestManagers
             CTX.PushBuildRequestLevelAll(BuildRequestLevel.FinalPass);
         }
 
-        /// <summary>
-        /// Builds only the current stage, only what needs to be built.
-        /// </summary>
-        public static void Default()
-        {
-            CTX.dataState = TSEDataContainer.DataState.Dirty;
-            CTX.buildState = BuildState.Default;
-            CTX.PushBuildRequestLevelAll(BuildRequestLevel.FinalPass);
-        }
-        
-        public static void TextureOnly()
-        {
-            CTX.dataState = TSEDataContainer.DataState.Dirty;
-            CTX.buildState = BuildState.Default;
-            CTX.PushBuildRequestLevel(BuildRequestLevel.None, BuildRequestLevel.FinalPass, BuildRequestLevel.FinalPass);
-        }     
-        
-        public static void CollidersOnly()
-        {
-            CTX.dataState = TSEDataContainer.DataState.Dirty;
-            CTX.buildState = BuildState.Default;
-            CTX.PushBuildRequestLevel(collision: BuildRequestLevel.FinalPass);
-        }  
-        
         public static void ImpostorsOnly()
         {
             CTX.dataState = TSEDataContainer.DataState.Dirty;
             CTX.buildState = BuildState.Default;
             CTX.PushBuildRequestLevel(impostors: BuildRequestLevel.FinalPass);
         }
-        
-        private static void MaterialGenerationChanged()
-        {
-            CTX.BuildMaterialGeneration(BuildRequestLevel.FinalPass)
-                .BuildMaterialProperties(BuildRequestLevel.FinalPass);
-        }
-        
-        private static void MaterialPropertiesChanged()
-        {
-            CTX.BuildMaterialProperties(BuildRequestLevel.FinalPass);
-        }
-
-        private static void DistributionSettingsChanged()
-        {
-            CTX.BuildDistribution(BuildRequestLevel.FinalPass)
-                /*.BuildMaterialProperties(BuildRequestLevel.FinalPass)*/
-                .BuildStage(BuildRequestLevel.FinalPass);
-        }
-        
-        private static void GeometrySettingsChanged()
-        {
-            CTX.BuildDistribution(BuildRequestLevel.FinalPass)
-                .BuildStage(BuildRequestLevel.FinalPass)
-                /*.BuildLowQualityGeometry(BuildRequestLevel.InitialPass)
-                .BuildUv(BuildRequestLevel.InitialPass)*/;
-        }
-        
-        private static void MeshSettingsChanged()
-        {        
-            CTX.BuildDistribution(BuildRequestLevel.FinalPass).BuildStage(BuildRequestLevel.FinalPass)
-                /*.BuildLowQualityGeometry(BuildRequestLevel.InitialPass)
-                .BuildUv(BuildRequestLevel.InitialPass)*/;
-        }
-
-        
-        private static void AmbientOcclusionSettingsChanged()
-        {
-            CTX//.BuildDistribution(BuildRequestLevel.FinalPass)
-                .BuildStage(BuildRequestLevel.FinalPass);
-        }
-
-        private static void LevelOfDetailSettingsChanged()
-        {
-            CTX//.BuildDistribution(BuildRequestLevel.FinalPass)
-                .BuildStage(BuildRequestLevel.FinalPass);
-        }
-
-        private static void VertexDataSettingsChanged()
-        {
-            CTX//.BuildDistribution(BuildRequestLevel.FinalPass)
-                .BuildMaterialProperties(BuildRequestLevel.FinalPass)
-                .BuildStage(BuildRequestLevel.FinalPass);
-        }
-        
-        private static void ImpostorSettingsChanged()
-        {
-            CTX.BuildImpostor(BuildRequestLevel.FinalPass);
-        }
-        
-        private static void UVSettingsChanged()
-        {
-            CTX//.BuildDistribution(BuildRequestLevel.FinalPass)
-                .BuildStage(BuildRequestLevel.FinalPass);
-        }
-        
-        private static void CollisionSettingsChanged()
-        {
-            CTX.BuildColliders(BuildRequestLevel.FinalPass);
-        }
 
         public static void SettingsChanged(SettingsUpdateTarget type)
         {
             CTX.dataState = TSEDataContainer.DataState.Dirty;
-            
+
             if (CTX.buildState != BuildState.Disabled)
             {
                 CTX.buildState = BuildState.Default;
             }
-            
+
             switch (type)
             {
                 case SettingsUpdateTarget.MaterialGeneration:
@@ -177,6 +115,84 @@ namespace Appalachia.Simulation.Trees.Build.RequestManagers
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }
+        }
+
+        public static void TextureOnly()
+        {
+            CTX.dataState = TSEDataContainer.DataState.Dirty;
+            CTX.buildState = BuildState.Default;
+            CTX.PushBuildRequestLevel(
+                BuildRequestLevel.None,
+                BuildRequestLevel.FinalPass,
+                BuildRequestLevel.FinalPass
+            );
+        }
+
+        private static void AmbientOcclusionSettingsChanged()
+        {
+            CTX //.BuildDistribution(BuildRequestLevel.FinalPass)
+               .BuildStage(BuildRequestLevel.FinalPass);
+        }
+
+        private static void CollisionSettingsChanged()
+        {
+            CTX.BuildColliders(BuildRequestLevel.FinalPass);
+        }
+
+        private static void DistributionSettingsChanged()
+        {
+            CTX.BuildDistribution(BuildRequestLevel.FinalPass)
+                /*.BuildMaterialProperties(BuildRequestLevel.FinalPass)*/
+               .BuildStage(BuildRequestLevel.FinalPass);
+        }
+
+        private static void GeometrySettingsChanged()
+        {
+            CTX.BuildDistribution(BuildRequestLevel.FinalPass).BuildStage(BuildRequestLevel.FinalPass)
+                /*.BuildLowQualityGeometry(BuildRequestLevel.InitialPass)
+                .BuildUv(BuildRequestLevel.InitialPass)*/;
+        }
+
+        private static void ImpostorSettingsChanged()
+        {
+            CTX.BuildImpostor(BuildRequestLevel.FinalPass);
+        }
+
+        private static void LevelOfDetailSettingsChanged()
+        {
+            CTX //.BuildDistribution(BuildRequestLevel.FinalPass)
+               .BuildStage(BuildRequestLevel.FinalPass);
+        }
+
+        private static void MaterialGenerationChanged()
+        {
+            CTX.BuildMaterialGeneration(BuildRequestLevel.FinalPass)
+               .BuildMaterialProperties(BuildRequestLevel.FinalPass);
+        }
+
+        private static void MaterialPropertiesChanged()
+        {
+            CTX.BuildMaterialProperties(BuildRequestLevel.FinalPass);
+        }
+
+        private static void MeshSettingsChanged()
+        {
+            CTX.BuildDistribution(BuildRequestLevel.FinalPass).BuildStage(BuildRequestLevel.FinalPass)
+                /*.BuildLowQualityGeometry(BuildRequestLevel.InitialPass)
+                .BuildUv(BuildRequestLevel.InitialPass)*/;
+        }
+
+        private static void UVSettingsChanged()
+        {
+            CTX //.BuildDistribution(BuildRequestLevel.FinalPass)
+               .BuildStage(BuildRequestLevel.FinalPass);
+        }
+
+        private static void VertexDataSettingsChanged()
+        {
+            CTX //.BuildDistribution(BuildRequestLevel.FinalPass)
+               .BuildMaterialProperties(BuildRequestLevel.FinalPass)
+               .BuildStage(BuildRequestLevel.FinalPass);
         }
     }
 }

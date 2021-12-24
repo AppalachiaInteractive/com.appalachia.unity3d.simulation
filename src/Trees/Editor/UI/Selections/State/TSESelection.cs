@@ -17,7 +17,7 @@ namespace Appalachia.Simulation.Trees.UI.Selections.State
         public int subtab;
         public int id;
 
-        public abstract TS selection { get; set; }
+        public abstract TS selection { get; }
         
         public void DrawAndSelect()
         {

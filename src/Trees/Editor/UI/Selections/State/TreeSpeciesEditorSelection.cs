@@ -1,8 +1,8 @@
-using Appalachia.Core.Scriptables;
+using Appalachia.Simulation.Trees.Core;
 
 namespace Appalachia.Simulation.Trees.UI.Selections.State
 {
-    public class TreeSpeciesEditorSelection : SingletonAppalachiaObject<TreeSpeciesEditorSelection>
+    public class TreeSpeciesEditorSelection : SingletonAppalachiaTreeObject<TreeSpeciesEditorSelection>
     {
         public TreeSelection tree;
         

@@ -1,4 +1,4 @@
-using Appalachia.Core.Scriptables;
+using Appalachia.Core.Objects.Root.Contracts;
 using Appalachia.Simulation.Trees.Core.Shape;
 using UnityEngine;
 

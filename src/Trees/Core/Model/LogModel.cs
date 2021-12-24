@@ -3,12 +3,12 @@
 #region
 
 using Appalachia.CI.Integration.Assets;
+using Appalachia.Core.Attributes;
 using Appalachia.Core.Math.Geometry;
-using Appalachia.Editing.Core.Behaviours;
 using Appalachia.Editing.Debugging.Handle;
 using Appalachia.Simulation.Trees.Core.Interfaces;
 using Appalachia.Simulation.Trees.Core.Shape;
-using Appalachia.Utility.Logging;
+using Appalachia.Utility.Strings;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -17,8 +17,22 @@ using UnityEngine;
 namespace Appalachia.Simulation.Trees.Core.Model
 {
     [ExecuteAlways]
+    [CallStaticConstructorInEditor]
     public class LogModel : EditorOnlyFrustumCulledBehaviour, ILogModel
     {
+        static LogModel()
+        {
+            TreeGizmoStyle.InstanceAvailable += i => _treeGizmoStyle = i;
+        }
+
+        #region Static Fields and Autoproperties
+
+        private static TreeGizmoStyle _treeGizmoStyle;
+
+        #endregion
+
+        #region Fields and Autoproperties
+
         private ILogDataProvider _container;
         [HideInInspector] public RaycastHit[] _hits = new RaycastHit[24];
         [HideInInspector] public ScriptableObject _containerSO;
@@ -32,30 +46,22 @@ namespace Appalachia.Simulation.Trees.Core.Model
 
         [HideInInspector] public bool visible;
 
-        internal bool _missingContainer => container == null;
-        
         [DisableIf(nameof(_missingContainer))]
         [BoxGroup("Log Selection"), InlineProperty, HideLabel]
         public LogModelSelection selection;
 
-        [BoxGroup("SceneView")]
-        public bool autoUpdateSceneView;
-
+        [BoxGroup("SceneView")] public bool autoUpdateSceneView;
 
         [FoldoutGroup("Gizmos")]
         [HideReferenceObjectPicker]
-        [InlineEditor()]
+        [InlineEditor]
         [Title("Gizmo Style")]
         public TreeGizmoStyle style;
-        
-        private bool _showDrawShapeMatrix => selection.HasIndividual;
-        
+
         [BoxGroup("Gizmos/Shape Matrix")]
         [EnableIf(nameof(_showDrawShapeMatrix))]
         public bool drawShapeMatrix;
-        
-        private bool _showDrawParentShapeMatrix => _showDrawShapeMatrix && drawShapeMatrix;
-        
+
         [BoxGroup("Gizmos/Shape Matrix")]
         [EnableIf(nameof(_showDrawParentShapeMatrix))]
         public bool drawParentShapeMatrix;
@@ -71,60 +77,42 @@ namespace Appalachia.Simulation.Trees.Core.Model
         [PropertyRange(0, nameof(maxShapeIndex))]
         public int shapeIndex;
 
-        private int maxShapeIndex =>
-            container.GetMaxShapeIndex(
-                selection.instanceSelection,
-                shapeType
-            );
+        #endregion
 
-        private bool _showShapeMatrixOptions => _showDrawShapeMatrix && drawShapeMatrix;
-
+        public Matrix4x4 parentShapeMatrix => parentShapeData.effectiveMatrix;
 
         [BoxGroup("Shape Info & Matrix Data")]
         [ShowIf(nameof(_showShapeMatrixOptions))]
         [ReadOnly]
         public Matrix4x4 shapeMatrix =>
-            container.GetShapeMatrix(
-                selection.instanceSelection,
-                shapeType,
-                ref shapeIndex
-            );
-        
-        public Matrix4x4 parentShapeMatrix
-        {
-            get { return parentShapeData.effectiveMatrix; }
-        }
-        
+            container.GetShapeMatrix(selection.instanceSelection, shapeType, ref shapeIndex);
+
         [BoxGroup("Shape Info & Matrix Data")]
         [ShowIf(nameof(_showShapeMatrixOptions))]
         [ReadOnly]
-        public ShapeGeometryData shapeGeometry =>
-            container.GetShapeGeometry(
-                selection.instanceSelection,
-                shapeType,
-                ref shapeIndex
-            );
-
+        public ShapeData parentShapeData =>
+            container.GetShapeDataByID(selection.instanceSelection, shapeData.parentShapeID);
 
         [BoxGroup("Shape Info & Matrix Data")]
         [ShowIf(nameof(_showShapeMatrixOptions))]
         [ReadOnly]
         public ShapeData shapeData =>
-            container.GetShapeData(
-                selection.instanceSelection,
-                shapeType,
-                ref shapeIndex
-            );
-        
+            container.GetShapeData(selection.instanceSelection, shapeType, ref shapeIndex);
+
         [BoxGroup("Shape Info & Matrix Data")]
         [ShowIf(nameof(_showShapeMatrixOptions))]
         [ReadOnly]
-        public ShapeData parentShapeData =>
-            container.GetShapeDataByID(
-                selection.instanceSelection,
-                shapeData.parentShapeID
-            );
-        
+        public ShapeGeometryData shapeGeometry =>
+            container.GetShapeGeometry(selection.instanceSelection, shapeType, ref shapeIndex);
+
+        internal bool _missingContainer => container == null;
+
+        private bool _showDrawParentShapeMatrix => _showDrawShapeMatrix && drawShapeMatrix;
+
+        private bool _showDrawShapeMatrix => selection.HasIndividual;
+
+        private bool _showShapeMatrixOptions => _showDrawShapeMatrix && drawShapeMatrix;
+
         private ILogDataProvider container
         {
             get
@@ -143,6 +131,8 @@ namespace Appalachia.Simulation.Trees.Core.Model
             }
         }
 
+        private int maxShapeIndex => container.GetMaxShapeIndex(selection.instanceSelection, shapeType);
+
         private ISpeciesGizmoDelegate gizmos
         {
             get
@@ -160,144 +150,8 @@ namespace Appalachia.Simulation.Trees.Core.Model
                 return _gizmos;
             }
         }
-        
-        [Button(ButtonSizes.Medium)]
-        [GUIColor(0.79f, 0.68f, 0.19f)]
-        [PropertyOrder(-100)]
-        [DisableIf(nameof(_missingContainer))]
-        public void OpenLog()
-        {
-            AssetDatabaseManager.OpenAsset(container as ScriptableObject);
-        }
 
-        public GameObject GameObject => gameObject;
-
-        public bool MissingContainer => _missingContainer;
-
-        private void OnDrawGizmos()
-        {
-            if (container == null)
-            {
-                return;
-            }
-
-            if (visible && container.drawGizmos && (selection != null) && selection.HasIndividual)
-            {
-                gizmos.DrawSpeciesGizmos(container, selection, transform, _visibleMesh);
-
-                if (drawShapeMatrix)
-                {
-                    SmartHandles.DrawWireMatrix(
-                        transform.position,
-                        shapeMatrix,
-                        TreeGizmoStyle.instance.shapeMatrixScale,
-                        TreeGizmoStyle.instance.shapeMatrixSphereScale,
-                        TreeGizmoStyle.instance.shapeMatrixAlpha,
-                        TreeGizmoStyle.instance.shapeMatrixWorldAlpha,
-                        TreeGizmoStyle.instance.shapeMatrixSteps,
-                        TreeGizmoStyle.instance.shapeMatrixDistanceSteps
-                    );
-
-
-                    if (drawParentShapeMatrix)
-                    {
-                        SmartHandles.DrawWireMatrix(
-                            transform.position,
-                            parentShapeMatrix,
-                            TreeGizmoStyle.instance.shapeMatrixScale,
-                            TreeGizmoStyle.instance.shapeMatrixSphereScale,
-                            TreeGizmoStyle.instance.shapeMatrixAlpha,
-                            TreeGizmoStyle.instance.shapeMatrixWorldAlpha,
-                            TreeGizmoStyle.instance.shapeMatrixSteps,
-                            TreeGizmoStyle.instance.shapeMatrixDistanceSteps
-                        );
-                    }
-
-                    var geom = shapeGeometry;
-
-                    if (geom != null)
-                    {
-                        if (TreeGizmoStyle.instance.drawShapeMatrixNormals)
-                        {
-                            _gizmos.DrawNormals(transform, _visibleMesh, geom.modelVertexStart, geom.modelVertexEnd);
-                        }
-
-                        if (TreeGizmoStyle.instance.drawShapeMatrixWeld)
-                        {
-                            var data = container.GetShapeData(
-                                selection.instanceSelection,
-                                shapeType,
-                                ref shapeIndex
-                            );
-                            
-                            var parentShape = container.GetShapeDataByID(
-                                selection.instanceSelection,
-                                data.parentShapeID
-                            );
-
-                            var basePosition = transform.position; 
-                            var origin = basePosition + shapeMatrix.MultiplyPoint(Vector3.zero);
-
-                            var vert = _visibleMesh.vertices;
-                            var tri = _visibleMesh.triangles;
-
-                            var parentGeo = parentShape.geometry[0];
-                            
-                            foreach(var triangle in parentGeo.actualTriangles)
-                            {
-                                var v0 = basePosition + vert[tri[triangle * 3]];
-                                var v1 = basePosition + vert[tri[(triangle * 3) + 1]];
-                                var v2 = basePosition + vert[tri[(triangle * 3) + 2]];
-
-                                _gizmos.DrawWeldGizmo(origin, v0, v1, v2);
-                                
-                                
-                                var center = (v0 + v1 + v2) / 3f;
-                                var direction = (center - origin).normalized;
-                                var edge_ab = v1 - v0;
-                                var edge_ac = v2 - v0;
-                                var normal = Vector3.Cross(edge_ab, edge_ac);
-
-                                float dot = Vector3.Dot(direction, normal);
-                                
-                                //var frontFaceHit = dot < 0.0f;
-                                //var backfaceHit = dot > 0.0f;
-
-                                var plane = new Plane(normal, center);
-
-                                var nearest = plane.ClosestPointOnPlane(origin);
-
-                                var bary = new Barycentric(v0, v1, v2, nearest);
-
-                                if (!bary.IsInside)
-                                {
-                                    var v0D = (v0 - nearest).sqrMagnitude;
-                                    var v1D = (v1 - nearest).sqrMagnitude;
-                                    var v2D = (v2 - nearest).sqrMagnitude;
-
-                                    if ((v0D < v1D) && (v0D < v2D))
-                                    {
-                                        nearest = v0;
-                                    }
-                                    else if ((v1D < v0D) && (v1D < v2D))
-                                    {
-                                        nearest = v1;
-                                    }
-                                    else
-                                    {
-                                        nearest = v2;
-                                    }
-                                }
-                                
-                                SmartHandles.DrawLine(origin, nearest, Color.red);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        
-        
+        #region Event Functions
 
         private void Update()
         {
@@ -305,9 +159,9 @@ namespace Appalachia.Simulation.Trees.Core.Model
 
             if (style == null)
             {
-                style = TreeGizmoStyle.instance;
+                style = _treeGizmoStyle;
             }
-            
+
             if (visible)
             {
                 if (_visible == null)
@@ -332,7 +186,7 @@ namespace Appalachia.Simulation.Trees.Core.Model
                         _visible.transform.SetParent(transform, false);
 
                         RecalculateLODBounds(lodGroup);
-                        
+
                         repaint = true;
                     }
                 }
@@ -340,9 +194,9 @@ namespace Appalachia.Simulation.Trees.Core.Model
                 {
                     if (selection.HasIndividual)
                     {
-                        if ((_visibleLogIndex != selection.instanceSelection))
+                        if (_visibleLogIndex != selection.instanceSelection)
                         {
-                            DestroyImmediate(_visible);
+                            Object.DestroyImmediate(_visible);
 
                             _visible = container.GetLog(selection.instanceSelection);
 
@@ -359,9 +213,8 @@ namespace Appalachia.Simulation.Trees.Core.Model
                                 _visible.transform.SetParent(transform, false);
 
                                 RecalculateLODBounds(lodGroup);
-
                             }
-                            
+
                             repaint = true;
                         }
                     }
@@ -371,7 +224,7 @@ namespace Appalachia.Simulation.Trees.Core.Model
             {
                 for (var i = 0; i < transform.childCount; i++)
                 {
-                    DestroyImmediate(transform.GetChild(i).gameObject);
+                    Object.DestroyImmediate(transform.GetChild(i).gameObject);
                 }
 
                 repaint = true;
@@ -394,8 +247,8 @@ namespace Appalachia.Simulation.Trees.Core.Model
 
                 if (_container == null)
                 {
-                    AppaLog.Error("Need to set containers!");
-                    DestroyImmediate(gameObject);                    
+                    Context.Log.Error("Need to set containers!");
+                    Object.DestroyImmediate(gameObject);
                 }
             }
             else if (selection.container != container)
@@ -436,32 +289,133 @@ namespace Appalachia.Simulation.Trees.Core.Model
             }
         }
 
-        private static string GetLogModelName(ILogDataProvider container)
+        private void OnDrawGizmos()
         {
-            return $"Log Model - {container.GetName()}";
-        }
-
-        public static LogModel Find(ILogDataProvider container)
-        {
-            var gos = FindObjectsOfType<LogModel>();
-
-            for (var i = gos.Length - 1; i >= 0; i--)
+            if (container == null)
             {
-                if (i > 0)
-                {
-                    DestroyImmediate(gos[i]);
-                }
+                return;
+            }
 
-                if (i == 0)
-                {
-                    gos[i]._container = container;
-                    gos[i]._containerSO = container.GetSerializable();
+            if (visible && container.drawGizmos && (selection != null) && selection.HasIndividual)
+            {
+                gizmos.DrawSpeciesGizmos(container, selection, transform, _visibleMesh);
 
-                    return gos[i]; 
+                if (drawShapeMatrix)
+                {
+                    SmartHandles.DrawWireMatrix(
+                        transform.position,
+                        shapeMatrix,
+                        _treeGizmoStyle.shapeMatrixScale,
+                        _treeGizmoStyle.shapeMatrixSphereScale,
+                        _treeGizmoStyle.shapeMatrixAlpha,
+                        _treeGizmoStyle.shapeMatrixWorldAlpha,
+                        _treeGizmoStyle.shapeMatrixSteps,
+                        _treeGizmoStyle.shapeMatrixDistanceSteps
+                    );
+
+                    if (drawParentShapeMatrix)
+                    {
+                        SmartHandles.DrawWireMatrix(
+                            transform.position,
+                            parentShapeMatrix,
+                            _treeGizmoStyle.shapeMatrixScale,
+                            _treeGizmoStyle.shapeMatrixSphereScale,
+                            _treeGizmoStyle.shapeMatrixAlpha,
+                            _treeGizmoStyle.shapeMatrixWorldAlpha,
+                            _treeGizmoStyle.shapeMatrixSteps,
+                            _treeGizmoStyle.shapeMatrixDistanceSteps
+                        );
+                    }
+
+                    var geom = shapeGeometry;
+
+                    if (geom != null)
+                    {
+                        if (_treeGizmoStyle.drawShapeMatrixNormals)
+                        {
+                            _gizmos.DrawNormals(
+                                transform,
+                                _visibleMesh,
+                                geom.modelVertexStart,
+                                geom.modelVertexEnd
+                            );
+                        }
+
+                        if (_treeGizmoStyle.drawShapeMatrixWeld)
+                        {
+                            var data = container.GetShapeData(
+                                selection.instanceSelection,
+                                shapeType,
+                                ref shapeIndex
+                            );
+
+                            var parentShape = container.GetShapeDataByID(
+                                selection.instanceSelection,
+                                data.parentShapeID
+                            );
+
+                            var basePosition = transform.position;
+                            var origin = basePosition + shapeMatrix.MultiplyPoint(Vector3.zero);
+
+                            var vert = _visibleMesh.vertices;
+                            var tri = _visibleMesh.triangles;
+
+                            var parentGeo = parentShape.geometry[0];
+
+                            foreach (var triangle in parentGeo.actualTriangles)
+                            {
+                                var v0 = basePosition + vert[tri[triangle * 3]];
+                                var v1 = basePosition + vert[tri[(triangle * 3) + 1]];
+                                var v2 = basePosition + vert[tri[(triangle * 3) + 2]];
+
+                                _gizmos.DrawWeldGizmo(origin, v0, v1, v2);
+
+                                var center = (v0 + v1 + v2) / 3f;
+                                var direction = (center - origin).normalized;
+                                var edge_ab = v1 - v0;
+                                var edge_ac = v2 - v0;
+                                var normal = Vector3.Cross(edge_ab, edge_ac);
+
+                                var dot = Vector3.Dot(direction, normal);
+
+                                //var frontFaceHit = dot < 0.0f;
+                                //var backfaceHit = dot > 0.0f;
+
+                                var plane = new Plane(normal, center);
+
+                                var nearest = plane.ClosestPointOnPlane(origin);
+
+                                var bary = new Barycentric(v0, v1, v2, nearest);
+
+                                if (!bary.IsInside)
+                                {
+                                    var v0D = (v0 - nearest).sqrMagnitude;
+                                    var v1D = (v1 - nearest).sqrMagnitude;
+                                    var v2D = (v2 - nearest).sqrMagnitude;
+
+                                    if ((v0D < v1D) && (v0D < v2D))
+                                    {
+                                        nearest = v0;
+                                    }
+                                    else if ((v1D < v0D) && (v1D < v2D))
+                                    {
+                                        nearest = v1;
+                                    }
+                                    else
+                                    {
+                                        nearest = v2;
+                                    }
+                                }
+
+                                SmartHandles.DrawLine(origin, nearest, Color.red);
+                            }
+                        }
+                    }
                 }
             }
-            return null;
         }
+
+        #endregion
 
         public static LogModel Create(ILogDataProvider container, ISpeciesGizmoDelegate gizmos)
         {
@@ -475,14 +429,39 @@ namespace Appalachia.Simulation.Trees.Core.Model
             model._gizmos = gizmos;
             model._gizmosSO = gizmos.GetSerializable();
 
-            model.selection = new LogModelSelection(container)
-            {
-                instanceSelection = 0,
-            };
+            model.selection = new LogModelSelection(container) { instanceSelection = 0, };
 
             return model;
         }
-        
+
+        public static LogModel Find(ILogDataProvider container)
+        {
+            var gos = Object.FindObjectsOfType<LogModel>();
+
+            for (var i = gos.Length - 1; i >= 0; i--)
+            {
+                if (i > 0)
+                {
+                    Object.DestroyImmediate(gos[i]);
+                }
+
+                if (i == 0)
+                {
+                    gos[i]._container = container;
+                    gos[i]._containerSO = container.GetSerializable();
+
+                    return gos[i];
+                }
+            }
+
+            return null;
+        }
+
+        private static string GetLogModelName(ILogDataProvider container)
+        {
+            return ZString.Format("Log Model - {0}", container.GetName());
+        }
+
         /*private static void Frame(GameObject go)
         {
             Bounds bounds = new Bounds();
@@ -519,7 +498,23 @@ namespace Appalachia.Simulation.Trees.Core.Model
         {
             lodGroup.RecalculateBounds();
         }
-        public override EditorOnlyExclusionStyle exclusionStyle => EditorOnlyExclusionStyle.ObjectForceConflict;
+
+        #region ILogModel Members
+
+        [Button(ButtonSizes.Medium)]
+        [GUIColor(0.79f, 0.68f, 0.19f)]
+        [PropertyOrder(-100)]
+        [DisableIf(nameof(_missingContainer))]
+        public void OpenLog()
+        {
+            AssetDatabaseManager.OpenAsset(container as ScriptableObject);
+        }
+
+        public GameObject GameObject => gameObject;
+
+        public bool MissingContainer => _missingContainer;
+
+        #endregion
     }
 }
 

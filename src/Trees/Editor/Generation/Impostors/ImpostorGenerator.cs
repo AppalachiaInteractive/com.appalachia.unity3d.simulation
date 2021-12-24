@@ -1,6 +1,9 @@
+using System;
 using System.Linq;
 using AmplifyImpostors;
+using Appalachia.CI.Constants;
 using Appalachia.CI.Integration.Assets;
+using Appalachia.Core.Attributes;
 using Appalachia.Simulation.Trees.Definition;
 using Appalachia.Simulation.Trees.Extensions;
 using Appalachia.Simulation.Trees.Generation.Assets;
@@ -8,13 +11,42 @@ using Appalachia.Simulation.Trees.Generation.Texturing.Materials;
 using Appalachia.Simulation.Trees.Generation.Texturing.Materials.Output;
 using Appalachia.Simulation.Trees.Generation.Texturing.Transmission;
 using Appalachia.Simulation.Trees.Settings;
-using Appalachia.Utility.Logging;
+using Appalachia.Utility.Strings;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Appalachia.Simulation.Trees.Generation.Impostors
 {
+    [CallStaticConstructorInEditor]
     public static class ImpostorGenerator
     {
+        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
+        static ImpostorGenerator()
+        {
+            DefaultShaderResource.InstanceAvailable += i => _defaultShaderResource = i;
+        }
+
+        #region Static Fields and Autoproperties
+
+        [NonSerialized] private static AppaContext _context;
+
+        private static DefaultShaderResource _defaultShaderResource;
+
+        #endregion
+
+        private static AppaContext Context
+        {
+            get
+            {
+                if (_context == null)
+                {
+                    _context = new AppaContext(typeof(ImpostorGenerator));
+                }
+
+                return _context;
+            }
+        }
+
         public static void RefreshImpostorAsset(TreeDataContainer tree, TreeAsset asset, GameObject prefab)
         {
             if (!tree.settings.lod.impostor.impostorAfterLastLevel)
@@ -25,10 +57,9 @@ namespace Appalachia.Simulation.Trees.Generation.Impostors
 
             if (asset.impostor == null)
             {
-
                 var path = tree.subfolders.GetFilePathByType(
                     TreeAssetSubfolderType.Impostors,
-                    $"{prefab.name}_impostor.asset"
+                    ZString.Format("{0}_impostor.asset", prefab.name)
                 );
 
                 var loaded = AssetDatabaseManager.LoadAssetAtPath<AmplifyImpostorAsset>(path);
@@ -47,10 +78,9 @@ namespace Appalachia.Simulation.Trees.Generation.Impostors
                 }
             }
 
-            asset.impostor.Preset = DefaultShaderResource.instance.impostorPreset;
-            asset.impostor.SelectedSize = (int) tree.settings.texture.atlasTextureSize;
+            asset.impostor.Preset = _defaultShaderResource.impostorPreset;
+            asset.impostor.SelectedSize = (int)tree.settings.texture.atlasTextureSize;
             asset.impostor.TexSize = new Vector2(asset.impostor.SelectedSize, asset.impostor.SelectedSize);
-
         }
 
         public static bool RequiresUpdate(TreeStage stage)
@@ -61,37 +91,37 @@ namespace Appalachia.Simulation.Trees.Generation.Impostors
 
             if (impostor == null)
             {
-               AppaLog.Warn("Prefab update required: Missing impostor.");
+                Context.Log.Warn("Prefab update required: Missing impostor.");
                 return true;
             }
 
             if (stage.asset.impostor == null)
             {
-               AppaLog.Warn("Prefab update required: Missing impostor asset.");
+                Context.Log.Warn("Prefab update required: Missing impostor asset.");
                 return true;
             }
 
             if (impostor.Data == null)
             {
-               AppaLog.Warn("Prefab update required: Impostor asset not assigned.");
+                Context.Log.Warn("Prefab update required: Impostor asset not assigned.");
                 return true;
             }
 
             if ((impostor.Renderers == null) || (impostor.Renderers.Length != 1))
             {
-               AppaLog.Warn("Prefab update required: Impostor renderers not set up.");
+                Context.Log.Warn("Prefab update required: Impostor renderers not set up.");
                 return true;
             }
 
             if (impostor.LodGroup == null)
             {
-               AppaLog.Warn("Prefab update required: Impostor LOD group not assigned.");
+                Context.Log.Warn("Prefab update required: Impostor LOD group not assigned.");
                 return true;
             }
 
             if (impostor.RootTransform == null)
             {
-               AppaLog.Warn("Prefab update required: Impostor root transform not assigned.");
+                Context.Log.Warn("Prefab update required: Impostor root transform not assigned.");
                 return true;
             }
 
@@ -101,20 +131,20 @@ namespace Appalachia.Simulation.Trees.Generation.Impostors
 
             if (impostorLOD.renderers.Length != 1)
             {
-               AppaLog.Warn("Prefab update required: Incorrect impostor renderer count.");
+                Context.Log.Warn("Prefab update required: Incorrect impostor renderer count.");
                 return true;
             }
 
             if (impostorLOD.renderers[0].sharedMaterial != impostor.Data.Material)
             {
-               AppaLog.Warn("Prefab update required: Incorrect impostor material.");
+                Context.Log.Warn("Prefab update required: Incorrect impostor material.");
                 return true;
             }
 
             var mf = impostorLOD.renderers[0].GetComponent<MeshFilter>();
             if (mf.sharedMesh != impostor.Data.Mesh)
             {
-               AppaLog.Warn("Prefab update required: Incorrect impostor mesh.");
+                Context.Log.Warn("Prefab update required: Incorrect impostor mesh.");
                 return true;
             }
 
@@ -149,7 +179,7 @@ namespace Appalachia.Simulation.Trees.Generation.Impostors
 
             impostor.Data = stage.asset.impostor;
 
-            impostor.Renderers = new Renderer[] {reference};
+            impostor.Renderers = new Renderer[] { reference };
 
             impostor.LodGroup = prefab.GetComponent<LODGroup>();
 
@@ -185,16 +215,19 @@ namespace Appalachia.Simulation.Trees.Generation.Impostors
                 level.AddComponent<MeshRenderer>();
             }
 
-            impostor.RenderAllDeferredGroups(impostor.Data, true, stage.lods[0].vertices.Max(v => v.wind.primaryRoll));
+            impostor.RenderAllDeferredGroups(
+                impostor.Data,
+                true,
+                stage.lods[0].vertices.Max(v => v.wind.primaryRoll)
+            );
 
             var lods = impostor.LodGroup.GetLODs();
-            lods[lods.Length - 1].renderers = new[] {mr};
+            lods[lods.Length - 1].renderers = new[] { mr };
 
             impostor.LodGroup.SetLODs(lods);
 
             UpdateImpostorMaterialProperties(impostor.Data, impostorSettings, tree.materials.transmission);
         }
-
 
         public static void UpdateImpostorMaterialProperties(
             AmplifyImpostorAsset data,
@@ -251,7 +284,6 @@ namespace Appalachia.Simulation.Trees.Generation.Impostors
                 impostorSettings.useHueVariation ? 1.0f : 0.0f
             );
 
-
             if (impostorSettings.hueVariation == Color.clear)
             {
                 impostorSettings.hueVariation = transmission.automaticTransmissionColor;
@@ -266,18 +298,16 @@ namespace Appalachia.Simulation.Trees.Generation.Impostors
                 TreeMaterialProperties.Impostor_HueVariationStrength,
                 new Color(0, 0, 0, impostorSettings.hueVariationStrength)
             );
-            
-            
+
             data.Material.SetFloatIfNecessary(
                 TreeMaterialProperties.Impostor_CorrectContrast,
                 impostorSettings.correctContrast ? 1.0f : 0.0f
             );
-            
+
             data.Material.SetFloatIfNecessary(
                 TreeMaterialProperties.Impostor_ContrastCorrection,
                 impostorSettings.contrastCorrection
             );
-
         }
     }
 }
@@ -527,7 +557,7 @@ static void ApplyToImpostors(Action<AmplifyImpostor> action, AmplifyImpostor[] i
         }
         catch (Exception ex)
         {
-            AppaLog.Error($"Failed to apply operation to impostor: {ex.Message}", ex, impostor);
+            Context.Log.Error($"Failed to apply operation to impostor: {ex.Message}", ex, impostor);
             EditorUtility.ClearProgressBar();
         }
     }
@@ -535,4 +565,3 @@ static void ApplyToImpostors(Action<AmplifyImpostor> action, AmplifyImpostor[] i
     EditorUtility.ClearProgressBar();
 }
 */
-

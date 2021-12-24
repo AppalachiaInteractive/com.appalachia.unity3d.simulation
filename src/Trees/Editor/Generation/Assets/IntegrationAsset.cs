@@ -33,7 +33,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
             AgeType age)
         {
             var assetName = nameBasis.FileNameAgeSO(individualID, age, "Integration");
-            var instance = LoadOrCreateNew<IntegrationAsset>(folder, assetName);
+            var instance = LoadOrCreateNew(folder, assetName);
 
             return instance;
         }

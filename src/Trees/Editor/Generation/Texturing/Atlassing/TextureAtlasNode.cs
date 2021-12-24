@@ -1,12 +1,13 @@
 using System;
 using System.Diagnostics;
+using Appalachia.Core.Objects.Root;
 using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace Appalachia.Simulation.Trees.Generation.Texturing.Atlassing
 {
     [Serializable]
-    public class TextureAtlasNode
+    public class TextureAtlasNode : AppalachiaSimpleBase
     {
         public TextureAtlasNode(Vector2 size, Vector2 outputSize)
         {

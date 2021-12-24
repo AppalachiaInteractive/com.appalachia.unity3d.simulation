@@ -1,8 +1,8 @@
 using System;
+using Appalachia.CI.Constants;
 using Appalachia.Core.Attributes.Editing;
 using Appalachia.Core.Extensions;
 using Appalachia.Simulation.ReactionSystem.Base;
-using Appalachia.Utility.Logging;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
 using UnityEngine;
@@ -10,8 +10,23 @@ using UnityEngine;
 namespace Appalachia.Simulation.ReactionSystem.Cameras
 {
     [Serializable]
-    public struct SubsystemCameraComponent
+    public struct SubsystemCameraComponent 
     {
+        [NonSerialized] private static AppaContext _context;
+
+        private static AppaContext Context
+        {
+            get
+            {
+                if (_context == null)
+                {
+                    _context = new AppaContext(typeof(SubsystemCameraComponent));
+                }
+
+                return _context;
+            }
+        }
+        
         private const string _PRF_PFX = nameof(SubsystemCameraComponent) + ".";
 
         private static readonly ProfilerMarker _PRF_CreateCamera =
@@ -45,7 +60,7 @@ namespace Appalachia.Simulation.ReactionSystem.Cameras
             {
                 if (cameraName == null)
                 {
-                    AppaLog.Error("Must define camera name.");
+                    Context.Log.Error("Must define camera name.");
                     return null;
                 }
 

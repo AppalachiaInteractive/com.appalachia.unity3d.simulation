@@ -3,9 +3,10 @@
 using System;
 using Appalachia.Core.Attributes;
 using Appalachia.Core.Attributes.Editing;
-using Appalachia.Core.Behaviours;
 using Appalachia.Core.Filtering;
 using Appalachia.Core.Math.Smoothing;
+using Appalachia.Core.Objects.Initialization;
+using Appalachia.Core.Objects.Root;
 using Appalachia.Simulation.Buoyancy.Collections;
 using Appalachia.Simulation.Buoyancy.Jobs;
 using Appalachia.Simulation.Core;
@@ -14,8 +15,9 @@ using Appalachia.Simulation.Physical.Sampling;
 using Appalachia.Spatial.Voxels;
 using Appalachia.Spatial.Voxels.Gizmos;
 using Appalachia.Spatial.Voxels.VoxelTypes;
+using Appalachia.Utility.Async;
+using Appalachia.Utility.Execution;
 using Appalachia.Utility.Extensions;
-using Appalachia.Utility.Logging;
 using Sirenix.OdinInspector;
 using Unity.Jobs;
 using Unity.Mathematics;
@@ -26,15 +28,29 @@ using UnityEngine;
 
 namespace Appalachia.Simulation.Buoyancy
 {
+    [CallStaticConstructorInEditor]
     [ExecuteAlways]
     [ExecutionOrder(ExecutionOrders.Water)]
-    public class Water : AppalachiaBehaviour
+    public sealed class Water : AppalachiaBehaviour<Water>
     {
         #region Constants and Static Readonly
 
         private const float _voxelResolutionMax = 5.0f;
 
         private const float _voxelResolutionMin = .25f;
+
+        #endregion
+
+        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
+        static Water()
+        {
+            MainVoxelDataGizmoSettingsCollection.InstanceAvailable +=
+                i => _mainVoxelDataGizmoSettingsCollection = i;
+        }
+
+        #region Static Fields and Autoproperties
+
+        private static MainVoxelDataGizmoSettingsCollection _mainVoxelDataGizmoSettingsCollection;
 
         #endregion
 
@@ -82,17 +98,7 @@ namespace Appalachia.Simulation.Buoyancy
         public int tracking => _index.Count;
 
         #region Event Functions
-
-        protected override void Start()
-        {
-            using (_PRF_Start.Auto())
-            {
-                base.Start();
-
-                Initialize();
-            }
-        }
-
+        
         private void FixedUpdate()
         {
             using (_PRF_FixedUpdate.Auto())
@@ -195,24 +201,24 @@ namespace Appalachia.Simulation.Buoyancy
             }
         }
 
-        protected override void OnEnable()
+        protected override async AppaTask WhenEnabled()
         {
             using (_PRF_OnEnable.Auto())
             {
-                base.OnEnable();
+                await base.WhenEnabled();
                 Initialize();
             }
         }
 
-        protected override void OnDisable()
+        protected override async AppaTask WhenDisabled()
+
         {
             using (_PRF_OnDisable.Auto())
             {
-                base.OnDisable();
-                
+                await base.WhenDisabled();
+
 #if UNITY_EDITOR
-                if (UnityEditor.EditorApplication.isCompiling ||
-                    UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode)
+                if (AppalachiaApplication.IsCompiling || AppalachiaApplication.IsPlayingOrWillPlay)
                 {
                     CleanUp();
                 }
@@ -220,11 +226,11 @@ namespace Appalachia.Simulation.Buoyancy
             }
         }
 
-        protected override void OnDestroy()
+        protected override async AppaTask WhenDestroyed()
         {
             using (_PRF_OnDestroy.Auto())
             {
-                base.OnDestroy();
+                await base.WhenDestroyed();
                 CleanUp();
             }
         }
@@ -364,6 +370,44 @@ namespace Appalachia.Simulation.Buoyancy
             }
         }
 
+        protected override async AppaTask Initialize(Initializer initializer)
+        {
+            using (_PRF_Initialize.Auto())
+            {
+                await base.Initialize(initializer);
+
+                if (_index == null)
+                {
+                    _index = new BuoyancyLookup();
+                }
+
+                var allColliders = _transform.FilterComponents<Collider>(true).NoTriggers().RunFilter();
+
+                foreach (var c in allColliders)
+                {
+                    if (c.attachedRigidbody)
+                    {
+                        Context.Log.Error("Water should REALLY not have a rigidbody!");
+
+                        c.attachedRigidbody.detectCollisions = false;
+                    }
+
+                    Context.Log.Error("Water should not have real colliders!");
+
+                    c.enabled = false;
+                }
+
+                CheckTriggersAndVoxels();
+#if UNITY_EDITOR
+                if (!AppalachiaApplication.IsPlayingOrWillPlay)
+                {
+                    PhysicsSimulator.onSimulationUpdate -= FixedUpdate;
+                    PhysicsSimulator.onSimulationUpdate += FixedUpdate;
+                }
+#endif
+            }
+        }
+
         private void ApplyBuoyancyForces(Buoyant buoyant)
         {
             using (_PRF_ApplyBuoyancyForces.Auto())
@@ -408,7 +452,7 @@ namespace Appalachia.Simulation.Buoyancy
 
                             using (_PRF_ApplyBuoyancyForces_AddCumulativeForce.Auto())
                             {
-                                cumulativeForce += (Vector3) force;
+                                cumulativeForce += (Vector3)force;
                             }
 
                             using (_PRF_ApplyBuoyancyForces_AddForceAtPosition.Auto())
@@ -432,10 +476,10 @@ namespace Appalachia.Simulation.Buoyancy
 
                 if (buoyant.averagedTorque == null)
                 {
-                    buoyant.averagedTorque = new double3Average {windowSize = 4};
+                    buoyant.averagedTorque = new double3Average { maximumSampleCount = 4 };
                 }
 
-                buoyant.averagedTorque.ComputeAverage(cumulativeTorque);
+                buoyant.averagedTorque.AddSample(cumulativeTorque);
 
                 var body = buoyant.body;
 
@@ -519,47 +563,9 @@ namespace Appalachia.Simulation.Buoyancy
                 _index = default;
 
 #if UNITY_EDITOR
-                if (!Application.isPlaying)
+                if (!AppalachiaApplication.IsPlayingOrWillPlay)
                 {
                     PhysicsSimulator.onSimulationUpdate -= FixedUpdate;
-                }
-#endif
-            }
-        }
-
-        protected override void Initialize()
-        {
-            using (_PRF_Initialize.Auto())
-            {
-                base.Initialize();
-                
-                if (_index == null)
-                {
-                    _index = new BuoyancyLookup();
-                }
-
-                var allColliders = _transform.FilterComponents<Collider>(true).NoTriggers().RunFilter();
-
-                foreach (var c in allColliders)
-                {
-                    if (c.attachedRigidbody)
-                    {
-                        AppaLog.Error("Water should REALLY not have a rigidbody!");
-
-                        c.attachedRigidbody.detectCollisions = false;
-                    }
-
-                    AppaLog.Error("Water should not have real colliders!");
-
-                    c.enabled = false;
-                }
-
-                CheckTriggersAndVoxels();
-#if UNITY_EDITOR
-                if (!Application.isPlaying)
-                {
-                    PhysicsSimulator.onSimulationUpdate -= FixedUpdate;
-                    PhysicsSimulator.onSimulationUpdate += FixedUpdate;
                 }
 #endif
             }
@@ -692,7 +698,7 @@ namespace Appalachia.Simulation.Buoyancy
 
             if (_voxelGizmoSettings == null)
             {
-                var lookup = VoxelDataGizmoSettingsCollection.instance;
+                var lookup = _mainVoxelDataGizmoSettingsCollection.Lookup;
 
                 _voxelGizmoSettings = lookup.GetOrLoadOrCreateNew(
                     VoxelDataGizmoStyle.Water,

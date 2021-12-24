@@ -1,4 +1,5 @@
 using System;
+using Appalachia.Core.Objects.Root;
 using Appalachia.Simulation.Trees.Build.Execution;
 using Appalachia.Simulation.Trees.Core;
 using Appalachia.Simulation.Trees.Core.Geometry;
@@ -11,7 +12,7 @@ using UnityEngine.Serialization;
 namespace Appalachia.Simulation.Trees.Generation.Geometry.Splines
 {
     [Serializable]
-    public class BranchRing
+    public class BranchRing : AppalachiaSimpleBase
     {
         public Vector2 uvOffset;
         public int hierarchyID;

@@ -1,4 +1,5 @@
 using System.Linq;
+using Appalachia.Core.Attributes;
 using Appalachia.Simulation.Trees.Extensions;
 using Appalachia.Simulation.Trees.Generation.Texturing.Materials.Input;
 using Appalachia.Simulation.Trees.Generation.Texturing.Materials.Management;
@@ -6,28 +7,63 @@ using Appalachia.Simulation.Trees.Generation.Texturing.Materials.Rects;
 using Appalachia.Simulation.Trees.Hierarchy;
 using Appalachia.Simulation.Trees.Hierarchy.Settings;
 using Appalachia.Simulation.Trees.Icons;
-using Appalachia.Simulation.Trees.UI.GUI;
 using Appalachia.Simulation.Trees.UI.Selections.Icons;
+using Appalachia.Utility.Strings;
 using Sirenix.OdinInspector.Editor;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.UI.UV
 {
+    [CallStaticConstructorInEditor]
     public class TreeUVSidebarCollection
     {
+        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
+        static TreeUVSidebarCollection()
+        {
+            LeafUVRectCollection.InstanceAvailable += i => _leafUVRectCollection = i;
+        }
+
+        #region Static Fields and Autoproperties
+
+        private static LeafUVRectCollection _leafUVRectCollection;
+
+        #endregion
+
+        #region Fields and Autoproperties
+
         private object _lastLeafHierarchySelection;
         private object _lastLeafRectSelection;
         private TreeEditorSidebarMenu atlasMaterialMenu;
         private TreeEditorSidebarMenu leafRectMenu;
 
+        #endregion
+
         public AtlasInputMaterial SelectedInputMaterial =>
             atlasMaterialMenu?.Selection?.SelectedValue as AtlasInputMaterial;
 
-        public LeafUVRect SelectedLeafRect =>
-            leafRectMenu?.Selection?.SelectedValue as LeafUVRect;
-
         public bool HasSelectedAtlasMaterial => atlasMaterialMenu?.HasSelection ?? false;
         public bool HasSelectedLeafRect => leafRectMenu?.HasSelection ?? false;
+
+        public LeafUVRect SelectedLeafRect => leafRectMenu?.Selection?.SelectedValue as LeafUVRect;
+
+        public void DrawInputMaterialMenu(float menuWidth, float menuHeight, float menuItemHeight)
+        {
+            TreeGUI.Draw.SmallTitle("Leaves");
+            atlasMaterialMenu.Draw(menuItemHeight, maxWidth: menuWidth, maxHeight: menuHeight);
+        }
+
+        public void DrawLeafRectMenu(
+            float menuWidth,
+            float menuHeight,
+            float menuItemHeight,
+            float menuButtonWidth,
+            float menuButtonHeight)
+        {
+            TreeGUI.Draw.SmallTitle("Leaf Rectangles");
+            leafRectMenu.Draw(menuItemHeight, maxWidth: menuWidth, maxHeight: menuHeight);
+
+            DrawUVRectAddRemoveToolbar(menuButtonWidth, menuButtonHeight);
+        }
 
         public void RepopulateMenus(InputMaterialCache inputMaterials, bool force, bool clear)
         {
@@ -77,7 +113,8 @@ namespace Appalachia.Simulation.Trees.UI.UV
                 leafRectMenu.Clear();
             }
 
-            var materialCountValid = atlasMaterialMenu.MenuItems.Count == inputMaterials.atlasInputMaterials.Count;
+            var materialCountValid =
+                atlasMaterialMenu.MenuItems.Count == inputMaterials.atlasInputMaterials.Count;
 
             if (!materialCountValid)
             {
@@ -87,21 +124,23 @@ namespace Appalachia.Simulation.Trees.UI.UV
 
                 atlasMaterialMenu.Clear();
 
-                foreach (var atlasMaterial in inputMaterials.atlasInputMaterials.Where(m => m.material != null).OrderByDescending(l => l.proportionalArea))
+                foreach (var atlasMaterial in inputMaterials.atlasInputMaterials
+                                                            .Where(m => m.material != null)
+                                                            .OrderByDescending(l => l.proportionalArea))
                 {
                     atlasMaterialMenu.Add(
                         atlasMaterial.material.name,
                         atlasMaterial,
                         atlasMaterial.material.primaryTexture()
                     );
-                    
+
                     atlasMaterialMenu.SelectFirst();
                 }
 
                 atlasMaterialMenu.Selection.SelectionChanged += HierarchyOnSelectionChanged;
             }
 
-            var uvRects = LeafUVRectCollection.instance.Get(SelectedInputMaterial.material);
+            var uvRects = _leafUVRectCollection.Get(SelectedInputMaterial.material);
             var uvRectCountValid = leafRectMenu.MenuItems.Count == uvRects.Count;
 
             if (SelectedInputMaterial == null)
@@ -125,8 +164,8 @@ namespace Appalachia.Simulation.Trees.UI.UV
                 for (var index = 0; index < uvRects.Count; index++)
                 {
                     var rect = uvRects[index];
-                    var name = $"{index}: {rect}";
-                    
+                    var name = ZString.Format("{0}: {1}", index, rect);
+
                     leafRectMenu.Add(name, rect);
                 }
 
@@ -149,7 +188,7 @@ namespace Appalachia.Simulation.Trees.UI.UV
                 for (var index = 0; index < uvRects.Count; index++)
                 {
                     var rect = uvRects[index];
-                    var name = $"{index}: {rect}";
+                    var name = ZString.Format("{0}: {1}", index, rect);
 
                     leafRectMenu.Add(name, rect);
                 }
@@ -163,12 +202,51 @@ namespace Appalachia.Simulation.Trees.UI.UV
             }
         }
 
+        public void Select(LeafHierarchyData data)
+        {
+            atlasMaterialMenu.SelectWhere(o => o.Value as LeafHierarchyData == data);
+            leafRectMenu.Clear();
+        }
+
         public void SelectFirst()
         {
             atlasMaterialMenu.SelectFirst();
             leafRectMenu.SelectFirst();
         }
 
+        private void DrawUVRectAddRemoveToolbar(float width, float height)
+        {
+            using (TreeGUI.Layout.Horizontal())
+            {
+                var uvRects = _leafUVRectCollection.Get(SelectedInputMaterial.material);
+
+                if (GUILayout.Button(
+                        TreeIcons.plus.Get("Add new rect"),
+                        TreeGUI.Styles.ButtonLeft,
+                        TreeGUI.Layout.Options /*.MinWidth(width)*/.MaxWidth(width).Height(height)
+                    ))
+                {
+                    uvRects.Add(new LeafUVRect());
+                }
+
+                using (TreeGUI.Enabled.If(SelectedInputMaterial != null))
+                {
+                    if (GUILayout.Button(
+                            (GUI.enabled ? TreeIcons.x : TreeIcons.disabledX).Get("Remove selected rect"),
+                            TreeGUI.Styles.ButtonRight,
+                            TreeGUI.Layout.Options
+
+                                    //.MinWidth(width)
+                                   .MaxWidth(width)
+                                   .Height(height)
+                        ))
+                    {
+                        leafRectMenu.Clear();
+                        uvRects.Remove(SelectedLeafRect);
+                    }
+                }
+            }
+        }
 
         private void HierarchyOnSelectionChanged(SelectionChangedType obj)
         {
@@ -196,74 +274,6 @@ namespace Appalachia.Simulation.Trees.UI.UV
 
                 _lastLeafRectSelection = leafRectMenu.Selection.SelectedValue;
             }
-        }
-
-        public void DrawInputMaterialMenu(
-            float menuWidth, 
-            float menuHeight,
-            float menuItemHeight)
-        {
-            TreeGUI.Draw.SmallTitle("Leaves");
-            atlasMaterialMenu.Draw(menuItemHeight, maxWidth: menuWidth, maxHeight: menuHeight);
-        }
-
-
-        public void DrawLeafRectMenu(
-            float menuWidth, 
-            float menuHeight,
-            float menuItemHeight,
-            float menuButtonWidth,
-            float menuButtonHeight)
-        {
-            TreeGUI.Draw.SmallTitle("Leaf Rectangles");
-            leafRectMenu.Draw(menuItemHeight, maxWidth: menuWidth, maxHeight: menuHeight);
-
-            DrawUVRectAddRemoveToolbar(
-                menuButtonWidth,
-                menuButtonHeight
-            );
-        }
-
-        private void DrawUVRectAddRemoveToolbar(
-            float width,
-            float height)
-        {
-            using(TreeGUI.Layout.Horizontal())
-            {
-                var uvRects = LeafUVRectCollection.instance.Get(SelectedInputMaterial.material);
-
-                if (GUILayout.Button(
-                    TreeIcons.plus.Get("Add new rect"),
-                    TreeGUI.Styles.ButtonLeft,
-                    TreeGUI.Layout.Options /*.MinWidth(width)*/.MaxWidth(width).Height(height)
-                ))
-                {
-                    uvRects.Add(new LeafUVRect());
-                }
-
-                using (TreeGUI.Enabled.If(SelectedInputMaterial != null))
-                {
-                    if (GUILayout.Button(
-                        (UnityEngine.GUI.enabled ? TreeIcons.x : TreeIcons.disabledX).Get("Remove selected rect"),
-                        TreeGUI.Styles.ButtonRight,
-                        TreeGUI.Layout.Options
-
-                            //.MinWidth(width)
-                            .MaxWidth(width)
-                            .Height(height)
-                    ))
-                    {
-                        leafRectMenu.Clear();
-                        uvRects.Remove(SelectedLeafRect);
-                    }
-                }
-            }
-        }
-   
-        public void Select(LeafHierarchyData data)
-        {
-            atlasMaterialMenu.SelectWhere(o => (o.Value as LeafHierarchyData) == data);
-            leafRectMenu.Clear();
         }
     }
 }

@@ -1,5 +1,5 @@
 using Appalachia.Core.Attributes.Editing;
-using Appalachia.Core.Scriptables;
+using Appalachia.Core.Objects.Root;
 using Appalachia.Spatial.Voxels;
 using Sirenix.OdinInspector;
 
@@ -7,6 +7,8 @@ namespace Appalachia.Simulation.Buoyancy.Data
 {
     public class BuoyancyDataDefaults : SingletonAppalachiaObject<BuoyancyDataDefaults>
     {
+        
+            
         [SmartLabel]
         [PropertyRange(0.00001f, 0.01f)]
         public float wetnessAccumulationSpeed = .001f;

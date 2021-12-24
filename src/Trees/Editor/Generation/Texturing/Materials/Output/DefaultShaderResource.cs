@@ -1,11 +1,13 @@
 using AmplifyImpostors;
-using Appalachia.Core.Scriptables;
+using Appalachia.Core.Objects.Initialization;
+using Appalachia.Simulation.Trees.Core;
 using Appalachia.Simulation.Trees.Generation.Texturing.Shading.OutputShaders;
+using Appalachia.Utility.Async;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Output
 {
-    public class DefaultShaderResource : SingletonAppalachiaObject<DefaultShaderResource>
+    public class DefaultShaderResource : SingletonAppalachiaTreeObject<DefaultShaderResource>
     {
         public OutputShaderSelectionSet branchShaderSet;
         public OutputShaderSelectionSet tiledShaderSet;
@@ -14,9 +16,9 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Output
         public Shader logShader;
         public AmplifyImpostorBakePreset impostorPreset;
 
-        protected override void Initialize()
+        protected override async AppaTask Initialize(Initializer initializer)
         {
-            base.Initialize();
+            await base.Initialize(initializer);
             
             for (var i = branchShaderSet.Count - 1; i >= 0; i--)
             {

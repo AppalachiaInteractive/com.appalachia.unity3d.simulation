@@ -1,0 +1,225 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: DefaultMaterialResource
+  m_Shader: {fileID: 4800000, guid: 257b0295a45d2b94e8c3f4a36969130c, type: 3}
+  m_ShaderKeywords: _RENDERTYPEKEY_OPAQUE
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _AlbedoTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BumpMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ColorMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailAlbedoMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailNormalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EmissionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MetallicGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NormalTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _OcclusionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ParallaxMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SurfaceTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _tex3coord:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _tex4coord:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _tex4coord3:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _texcoord:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _ADSStandardLitTreeLeaf: 1
+    - _ADVANCEDD: 0
+    - _AODirect: 0
+    - _AOIndirect: 1
+    - _AOProbeStrength: 0.8
+    - _BACKSHADINGG: 0
+    - _BACKSHADINGG1: 0
+    - _BANNER: 1
+    - _BRANCHMOTIONN: 0
+    - _BackshadingBias: 0
+    - _BackshadingContrast: 3
+    - _BackshadingContrast1: 1
+    - _BackshadingPower: 1
+    - _BatchingInfo: 0
+    - _BranchMotionParameters: 0
+    - _Brightness: 1
+    - _BumpScale: 1
+    - _COLORMAPP: 0
+    - _CUTOFFF: 0
+    - _ColorMapBias: 0
+    - _ColorMapChannel: 0
+    - _ColorMapContrast: 1
+    - _ColorMapScale: 10
+    - _CullMode: 0
+    - _Cutoff: 0.79999995
+    - _CutoffFar: 16
+    - _CutoffHigh: 0
+    - _CutoffHighFar: 0.7
+    - _CutoffHighNear: 0.9
+    - _CutoffLow: 0
+    - _CutoffLowFar: 0.5
+    - _CutoffLowNear: 0.7
+    - _DetailNormalMapScale: 1
+    - _DstBlend: 0
+    - _GLOBALILLUMINATIONN: 0
+    - _GlobalIlluminationAlbedoEffect: 1
+    - _GlobalIlluminationEmissiveEffect: 1
+    - _GlobalTurbulence: 1
+    - _GlossMapScale: 1
+    - _Glossiness: 0.5
+    - _GlossyReflections: 1
+    - _Internal_ADS: 1
+    - _Internal_DebugMask: 1
+    - _Internal_DebugMask2: 1
+    - _Internal_DebugMask3: 1
+    - _Internal_DebugVariation: 1
+    - _Internal_LitStandard: 1
+    - _Internal_SetByScript: 0
+    - _Internal_Translucency: 1
+    - _Internal_TypeTreeLeaf: 1
+    - _Internal_UnityToBoxophobic: 1
+    - _Internal_Version: 232
+    - _IsBark: 0
+    - _IsLeaf: 1
+    - _IsShadow: 0
+    - _LEAFF: 0
+    - _LEAFMOTIONN: 0
+    - _LeafMtionParameters: 0
+    - _Metallic: 0
+    - _Mode: 0
+    - _MotionAmplitude: 1
+    - _MotionAmplitude2: 0.2
+    - _MotionAmplitude3: 0.05
+    - _MotionNoise: 1
+    - _MotionScale: 0.2
+    - _MotionScale2: 5
+    - _MotionScale3: 100
+    - _MotionSpeed: 1
+    - _MotionSpeed2: 2
+    - _MotionSpeed3: 8
+    - _MotionVariation2: 10
+    - _MotionVertical2: 0.4
+    - _NighttimeTranslucencyDamping: 1
+    - _NighttimeTransmissionDamping: 1
+    - _NormalScale: 1
+    - _OCCLUSIONN: 0
+    - _Occlusion: 0.6
+    - _OcclusionStrength: 1
+    - _OcclusionTranslucencyDamping: 1
+    - _OcclusionTransmissionDampening: 1
+    - _OcclusionTransmissionDamping: 0.5
+    - _OcclusionTransmissionLightingScale: 2
+    - _OcclusionTransmissionLightingScale1: 2
+    - _Parallax: 0.02
+    - _RENDERINGG: 0
+    - _RenderFaces: 0
+    - _SETTINGSS: 0
+    - _Saturation: 1
+    - _Smoothness: 0.2
+    - _SmoothnessTextureChannel: 0
+    - _SpecularHighlights: 1
+    - _SrcBlend: 1
+    - _TRANSLUCENCYY: 0
+    - _TRANSMISSIONN: 0
+    - _TRANSMITTANCEE: 0
+    - _TRANSPARENCYY: 0
+    - _TRUNKMOTIONN: 0
+    - _TransAmbient: 0.2
+    - _TransDirect: 1
+    - _TransNormalDistortion: 0.122
+    - _TransScattering: 2
+    - _TransShadow: 0.9
+    - _Translucency: 1
+    - _TranslucencyAlbedoBlend: 0.5
+    - _TranslucencyCutoff: 0.1
+    - _TranslucencyFadeDistance: 256
+    - _TranslucencyFadeOffset: 256
+    - _TransmAmbient: 0
+    - _TransmDirect: 1
+    - _Transmission: 0.5
+    - _TransmissionAlbedoBlend: 0.5
+    - _TransmissionCutoff: 0.5
+    - _TransmissionFadeDistance: 256
+    - _TransmissionFadeOffset: 256
+    - _TransmittanceLimit: 5
+    - _TransmittanceScaling: 1
+    - _TrunkMotionParameters: 0
+    - _UVSec: 0
+    - _VertexOcclusion: 0.5
+    - _ZWrite: 1
+    - __dirty: 1
+    m_Colors:
+    - _Backshade: {r: 0.45283014, g: 0.45283014, b: 0.45283014, a: 1}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color3: {r: 1, g: 1, b: 1, a: 1}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _MainUVs: {r: 1, g: 1, b: 0, a: 0}
+    - _MaskedColor: {r: 0, g: 0, b: 0, a: 0}
+    - _NonLeafColor: {r: 0, g: 0, b: 0, a: 0}
+    - _SecondaryColor: {r: 0, g: 0, b: 0, a: 0}
+    - _SubsurfaceColor: {r: 1, g: 1, b: 1, a: 1}
+    - _TranslucencyColor: {r: 0.8566224, g: 0.887, b: 0.2581168, a: 1}
+    - _TransmissionColor: {r: 0.8069925, g: 0.93, b: 0.4677897, a: 1}
+  m_BuildTextureStacks: []

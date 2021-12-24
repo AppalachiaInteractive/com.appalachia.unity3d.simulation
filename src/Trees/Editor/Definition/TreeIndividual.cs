@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Appalachia.Core.Scriptables;
 using Appalachia.Simulation.Core.Metadata.POI;
 using Appalachia.Simulation.Core.Metadata.Tree.Types;
 using Appalachia.Simulation.Trees.Build;
@@ -16,8 +15,7 @@ using Appalachia.Simulation.Trees.Icons;
 using Appalachia.Simulation.Trees.Interfaces;
 using Appalachia.Simulation.Trees.Settings;
 using Appalachia.Utility.Extensions;
-using Appalachia.Utility.Logging;
-using UnityEditor;
+using Appalachia.Utility.Strings;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Definition
@@ -25,6 +23,7 @@ namespace Appalachia.Simulation.Trees.Definition
     [Serializable]
     public sealed class TreeIndividual : TypeBasedSettings<TreeIndividual>, IMenuItemProvider
     {
+        
         [SerializeField] private List<TreeAge> _ages;
 
         private Dictionary<AgeType, TreeAge> _ageLookupInternal;
@@ -140,7 +139,7 @@ namespace Appalachia.Simulation.Trees.Definition
         public static TreeIndividual Create(string folder, NameBasis nameBasis, int individualID, TreeAsset asset)
         {
             var assetName = nameBasis.FileNameIndividualSO(individualID);
-            var instance = LoadOrCreateNew<TreeIndividual>(folder, assetName);
+            var instance = TreeIndividual.LoadOrCreateNew(folder, assetName);
             
             instance.individualID = individualID;
 
@@ -163,7 +162,7 @@ namespace Appalachia.Simulation.Trees.Definition
         
         public static string GetMenuString(int individualID)
         {
-            return $"{individualID:00}";
+            return ZString.Format("{0:00}", individualID);
         }
 
 
@@ -195,46 +194,48 @@ namespace Appalachia.Simulation.Trees.Definition
 
                     if (stage.runtimeMetadata == null)
                     {
-                        stage.runtimeMetadata =
-                            AppalachiaObject.LoadOrCreateNew<TreeRuntimeInstanceMetadata>(stage.DirectoryPath, $"runtime_{stage.name}");
-                        
-                        stage.runtimeMetadata.MarkAsModified();
+                        stage.runtimeMetadata = TreeRuntimeInstanceMetadata.LoadOrCreateNew(
+                            stage.DirectoryPath,
+                            ZString.Format("runtime_{0}", stage.name)
+                        );
+
+                        Modifications.MarkAsModified(stage.runtimeMetadata);
                     }
 
                     if (stage.runtimeMetadata.age != stage.ageType)
                     {
                         stage.runtimeMetadata.age = stage.ageType;
-                        stage.runtimeMetadata.MarkAsModified();
+                        Modifications.MarkAsModified(stage.runtimeMetadata);
                     }
 
                     if (stage.runtimeMetadata.stage != stage.stageType)
                     {
                         stage.runtimeMetadata.stage = stage.stageType;
-                        stage.runtimeMetadata.MarkAsModified();
+                        Modifications.MarkAsModified(stage.runtimeMetadata);
                     }
 
                     if (Math.Abs(stage.runtimeMetadata.rootDepth - species.hierarchies.verticalOffset) > float.Epsilon)
                     {
                         stage.runtimeMetadata.rootDepth = species.hierarchies.verticalOffset;
-                        stage.runtimeMetadata.MarkAsModified();
+                        Modifications.MarkAsModified(stage.runtimeMetadata);
                     }
 
                     if (stage.runtimeMetadata.speciesName != species.nameBasis.safeName)
                     {
                         stage.runtimeMetadata.speciesName = species.nameBasis.safeName;
-                        stage.runtimeMetadata.MarkAsModified();
+                        Modifications.MarkAsModified(stage.runtimeMetadata);
                     }
 
                     if (stage.runtimeMetadata.individualID != individualID)
                     {
                         stage.runtimeMetadata.individualID = individualID;
-                        stage.runtimeMetadata.MarkAsModified();
+                        Modifications.MarkAsModified(stage.runtimeMetadata);
                     }
 
                     if (stage.runtimeMetadata.pointsOfInterest == null)
                     {
                         stage.runtimeMetadata.pointsOfInterest = new List<RuntimePointOfInterest>();
-                        stage.runtimeMetadata.MarkAsModified();
+                        Modifications.MarkAsModified(stage.runtimeMetadata);
                     }
                 }
             }
@@ -248,19 +249,19 @@ namespace Appalachia.Simulation.Trees.Definition
                     
             if (runtime == null)
             {
-               AppaLog.Warn("Prefab update required: Missing TreeRuntimeInstance.");
+                Context.Log.Warn("Prefab update required: Missing TreeRuntimeInstance.");
                 return true;
             }
 
             if (runtime.metadata == null)
             {
-               AppaLog.Warn("Prefab update required: Missing tree runtime metadata.");
+                Context.Log.Warn("Prefab update required: Missing tree runtime metadata.");
                 return true;
             }
 
             if (runtime.metadata != stage.runtimeMetadata)
             {
-               AppaLog.Warn("Prefab update required: Missing tree runtime metadata.");
+                Context.Log.Warn("Prefab update required: Missing tree runtime metadata.");
                 return true;
             }
             
@@ -277,13 +278,13 @@ namespace Appalachia.Simulation.Trees.Definition
 
             if (childCount != points.Count)
             {
-               AppaLog.Warn("Prefab update required: Wrong point of interest count.");
+                Context.Log.Warn("Prefab update required: Wrong point of interest count.");
                 return true;
             }
             
             if (gameObject.name != "POINTS")
             {
-               AppaLog.Warn("Prefab update required: Wrong POI name.");
+                Context.Log.Warn("Prefab update required: Wrong POI name.");
                 return true;
             }
 
@@ -296,9 +297,9 @@ namespace Appalachia.Simulation.Trees.Definition
             GameObject prefab,
             GameObject points)
         {
-            var globals = TreeGlobalSettings.instance;
-            
-            points.layer = TreeGlobalSettings.instance.interactionLayer.layer;
+            var globals = _treeGlobalSettings;
+
+            points.layer = _treeGlobalSettings.interactionLayer.layer;
             points.name = "POINTS";
             
             var runtime = prefab.GetComponent<TreeRuntimeInstance>();
@@ -359,7 +360,7 @@ namespace Appalachia.Simulation.Trees.Definition
 
                     var poi = new RuntimePointOfInterest()
                     {
-                        layer = TreeGlobalSettings.instance.interactionLayer,
+                        layer = _treeGlobalSettings.interactionLayer,
                         radius = sphereCollider.radius,
                         position = trunkCenter,
                         sphereCollider = sphereCollider,

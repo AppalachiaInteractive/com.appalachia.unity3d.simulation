@@ -1,6 +1,6 @@
 using System;
 using Appalachia.Core.Layers;
-using Appalachia.Core.Scriptables;
+using Appalachia.Simulation.Trees.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -12,7 +12,7 @@ namespace Appalachia.Simulation.Trees.Settings
         "Control the generation of all tree species.",
         titleAlignment: TitleAlignments.Split
     )]
-    public class TreeGlobalSettings : SingletonAppalachiaObject<TreeGlobalSettings>
+    public class TreeGlobalSettings : SingletonAppalachiaTreeObject<TreeGlobalSettings>
     {
         [TitleGroup("Layers")]
         [BoxGroup("Layers/Trees")]

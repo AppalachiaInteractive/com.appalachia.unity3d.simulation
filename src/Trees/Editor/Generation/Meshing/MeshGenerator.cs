@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Appalachia.Core.Attributes;
 using Appalachia.Simulation.Trees.Build.Execution;
 using Appalachia.Simulation.Trees.Core.Geometry;
 using Appalachia.Simulation.Trees.Core.Shape;
@@ -14,8 +15,16 @@ using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Generation.Meshing
 {
+    [CallStaticConstructorInEditor]
     public static class MeshGenerator
     {
+        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
+        static MeshGenerator()
+        {
+            DefaultMaterialResource.InstanceAvailable += i => _defaultMaterialResource = i;
+        }
+
+        private static DefaultMaterialResource _defaultMaterialResource;
         public static List<Material> GenerateMeshes(
             LODGenerationOutput output,
             Dictionary<int, ShapeData> shapeLookup,
@@ -172,7 +181,7 @@ namespace Appalachia.Simulation.Trees.Generation.Meshing
                 {
                     if ((mArray == null) || (mArray.Length == 0))
                     {
-                        submeshMaterials.Add(DefaultMaterialResource.instance.material);
+                        submeshMaterials.Add(_defaultMaterialResource.material);
                     }
                     else
                     {

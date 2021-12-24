@@ -12,6 +12,7 @@ using Appalachia.Simulation.Trees.Generation.Texturing.Materials.Output;
 using Appalachia.Simulation.Trees.Generation.Texturing.Output;
 using Appalachia.Simulation.Trees.Generation.Texturing.Specifications;
 using Appalachia.Simulation.Trees.Settings;
+using Appalachia.Utility.Strings;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -96,13 +97,17 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Operations
 
                         foreach (var texture in textures)
                         {
-                            var fileName = $"{material.First().asset.name}{texture.profile.fileNameSuffix}";
+                            var fileName = ZString.Format(
+                                "{0}{1}",
+                                material.First().asset.name,
+                                texture.profile.fileNameSuffix
+                            );
 
                             texture.texture.name = fileName;
 
                             var targetSavePath = subfolders.GetFilePathByType(
                                 folder,
-                                $"{fileName}.png"
+                                ZString.Format("{0}.png", fileName)
                             );
 
                             filePaths.Add(targetSavePath);
@@ -211,7 +216,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Operations
                                     {
                                         path = subfolders.GetFilePathByType(
                                             folder,
-                                            $"{asset.name}.mat"
+                                            ZString.Format("{0}.mat", asset.name)
                                         );
 
                                         existingPath = AssetDatabaseManager.GetAssetPath(asset);
@@ -325,13 +330,17 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Operations
 
                     foreach (var texture in textures)
                     {
-                        var fileName = $"{material.First().asset.name}{texture.profile.fileNameSuffix}";
+                        var fileName = ZString.Format(
+                            "{0}{1}",
+                            material.First().asset.name,
+                            texture.profile.fileNameSuffix
+                        );
 
                         texture.texture.name = fileName;
 
                         var targetSavePath = subfolders.GetFilePathByType(
                             folder,
-                            $"{fileName}.png"
+                            ZString.Format("{0}.png", fileName)
                         );
 
                         filePaths.Add(targetSavePath);
@@ -378,7 +387,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Operations
                     {
                         path = subfolders.GetFilePathByType(
                             folder,
-                            $"{mat.name}.mat"
+                            ZString.Format("{0}.mat", mat.name)
                         );
 
                         existingPath = AssetDatabaseManager.GetAssetPath(mat);

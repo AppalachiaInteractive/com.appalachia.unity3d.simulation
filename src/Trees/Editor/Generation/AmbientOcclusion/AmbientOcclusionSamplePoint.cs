@@ -1,10 +1,11 @@
 using System;
+using Appalachia.Core.Objects.Root;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Generation.AmbientOcclusion
 {
     [Serializable]
-    public class AmbientOcclusionSamplePoint
+    public class AmbientOcclusionSamplePoint : AppalachiaSimpleBase
     {
         public float area;
         public float density;

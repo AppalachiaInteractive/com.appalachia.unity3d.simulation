@@ -1,4 +1,4 @@
-using Appalachia.Core.Scriptables;
+using Appalachia.Core.Objects.Scriptables;
 using Appalachia.Simulation.Core.Metadata.Collections;
 
 namespace Appalachia.Simulation.Core.Metadata.Wood
@@ -7,5 +7,6 @@ namespace Appalachia.Simulation.Core.Metadata.Wood
         WoodSimulationDataCollection : AppalachiaMetadataCollection<WoodSimulationDataCollection,
             WoodSimulationData, AppaList_WoodSimulationData>
     {
+        
     }
 }

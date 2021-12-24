@@ -6,7 +6,9 @@ namespace Appalachia.Simulation.Buoyancy.Voxels
 {
     public class BuoyancyVoxelsDataStoreLookup : VoxelDataStoreLookup<BuoyancyVoxels,
         VoxelRaycastHit<BuoyancyVoxel>, BuoyancyVoxelsDataStoreLookup, BuoyancyVoxelsLookup,
-        BuoyancyVoxelsDataStore, AppaList_BuoyancyVoxelsDataStore>
+        BuoyancyVoxelsDataStore, BuoyancyVoxelsDataStoreList>
     {
+        
+        
     }
 }

@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35ef660c663d495eb26c63109280c285, type: 3}
+  m_Name: BranchDataContainerSelection
+  m_EditorClassIdentifier: 
+  objects:
+  - {fileID: 11400000, guid: fceb98961219b764ba0ea7fc16875279, type: 2}
+  - {fileID: 11400000, guid: 3bc68f938876c5742923b856855a75af, type: 2}
+  - {fileID: 11400000, guid: a75d641e967136a4a86b43650996368f, type: 2}
+  - {fileID: 11400000, guid: e6d3f05055b8ffa459c9f2f415c67c34, type: 2}
+  - {fileID: 11400000, guid: 1c7039c88860279418e1574a4fa06101, type: 2}
+  - {fileID: 11400000, guid: 6b2abd79de69631418398405391d7784, type: 2}
+  - {fileID: 11400000, guid: f1d0ecbf722f3a347af56a847b5d6b3f, type: 2}
+  - {fileID: 11400000, guid: a04230c39d814054781c66ee67ec3896, type: 2}
+  - {fileID: 11400000, guid: 1637649a9a01d1144bba450fcbb6aebe, type: 2}
+  - {fileID: 11400000, guid: 6b8941c25b4b07c4f85c76dd5de97b9d, type: 2}
+  - {fileID: 11400000, guid: 9687b74943dcb5244b428ebc488f06e4, type: 2}
+  - {fileID: 11400000, guid: 083d8ccc6325fe4438a0b2b425bc713d, type: 2}
+  - {fileID: 11400000, guid: b8c2645c534dbef4c91782cfd5a3a12d, type: 2}
+  - {fileID: 11400000, guid: b98d1a6e16144184580cbd78cfc4af63, type: 2}
+  - {fileID: 11400000, guid: 5533b4bb843d10d40a45f92a1d851c65, type: 2}
+  - {fileID: 11400000, guid: ed3e2dbd028f03e4c9641cf2ef98d60d, type: 2}
+  - {fileID: 11400000, guid: 589f6569d416a4843b0c55cddc9b36f6, type: 2}
+  - {fileID: 11400000, guid: 99e78cb3906ad12408ead75ded0a9c6a, type: 2}
+  objectNames:
+  - Ash-White-Branch
+  - Beech-Branch
+  - Birch-Black-Branch
+  - Birch-Yellow-Branch
+  - Buckeye-Yellow-Branch
+  - Dogwood-Flowering-Branch
+  - Hemlock-Eastern-Branch
+  - Hickory-Bitternut-Branch
+  - Hickory-Mockernut-Branch
+  - Linden-Branch
+  - Maple-Moosewood-Branch
+  - Maple-Red-Branch
+  - Maple-Silver-Branch
+  - Maple-Sugar-Branch
+  - Oak-Red-Branch
+  - Oak-White-Branch
+  - SycamoreBranch1
+  - Tuliptree-Branch
+  _selected: {fileID: 11400000, guid: b8c2645c534dbef4c91782cfd5a3a12d, type: 2}

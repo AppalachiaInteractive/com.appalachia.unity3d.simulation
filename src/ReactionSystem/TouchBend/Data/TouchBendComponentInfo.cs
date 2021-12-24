@@ -1,15 +1,17 @@
 using System;
 using System.Diagnostics;
-using Appalachia.Core.Scriptables;
+using Appalachia.Core.Objects.Root;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Appalachia.Simulation.ReactionSystem.TouchBend.Data
 {
     [Serializable]
-    public class TouchBendComponentInfo  : AppalachiaObject,
+    public class TouchBendComponentInfo : AppalachiaObject<>,
                                           IEquatable<TouchBendComponentInfo>
     {
+        
+        
         public Texture2D texture;
 
         [ReadOnly] public float size;

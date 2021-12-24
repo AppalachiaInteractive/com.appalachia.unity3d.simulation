@@ -3,12 +3,14 @@ using System.Linq;
 using System.Text;
 using Appalachia.CI.Integration.Assets;
 using Appalachia.CI.Integration.FileSystem;
+using Appalachia.Core.Objects.Root;
 using Appalachia.Simulation.Trees.Extensions;
+using Appalachia.Utility.Strings;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Icons
 {
-    public class TreeIcon
+    public class TreeIcon : AppalachiaSimpleBase
     {
         private string _fieldName;
         private string _assetPath;
@@ -63,14 +65,19 @@ namespace Appalachia.Simulation.Trees.Icons
 
                     foreach (var nameVariant in nameVariants)
                     {
-                        var found = AssetDatabaseManager.FindAssets($"icon_{nameVariant} t:Texture2D")
-                            .Where(
-                                fa => (nameVariant.Contains("small") && fa.Contains("small")) ||
-                                    (!nameVariant.Contains("small") && !fa.Contains("small"))
-                            )
-                            .Select(AssetDatabaseManager.GUIDToAssetPath)
-                            .OrderBy(fa => fa.Length)
-                            .ToArray();
+                        var found = AssetDatabaseManager.FindAssets(
+                                                             ZString.Format(
+                                                                 "icon_{0} t:Texture2D",
+                                                                 nameVariant
+                                                             )
+                                                         )
+                                                        .Where(
+                                                             fa => (nameVariant.Contains("small") && fa.Contains("small")) ||
+                                                                   (!nameVariant.Contains("small") && !fa.Contains("small"))
+                                                         )
+                                                        .Select(AssetDatabaseManager.GUIDToAssetPath)
+                                                        .OrderBy(fa => fa.Length)
+                                                        .ToArray();
 
                         if (found.Length > 0)
                         {

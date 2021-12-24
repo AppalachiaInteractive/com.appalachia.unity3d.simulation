@@ -2,6 +2,7 @@
 
 using System;
 using Appalachia.Core.Extensions;
+using Appalachia.Core.Objects.Root;
 using Appalachia.Simulation.Trees.Build.Execution;
 using Appalachia.Simulation.Trees.Generation.Texturing.Specifications;
 using Sirenix.OdinInspector;
@@ -13,7 +14,7 @@ using UnityEngine;
 namespace Appalachia.Simulation.Trees.Generation.Texturing.Input
 {
     [Serializable]
-    public class InputTexture
+    public class InputTexture : AppalachiaSimpleBase
     {
         [PreviewField(ObjectFieldAlignment.Left, Height = 82f), HideLabel, InlineProperty]
         [HorizontalGroup("TEX", MaxWidth = 96f)]

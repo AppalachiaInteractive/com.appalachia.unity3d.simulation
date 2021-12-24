@@ -1,8 +1,8 @@
 using System;
 using System.Diagnostics;
-using Appalachia.Core.Extensions;
 using Appalachia.Simulation.Trees.Hierarchy.Options;
 using Appalachia.Utility.Extensions;
+using Appalachia.Utility.Strings;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -236,7 +236,15 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Rects
 
         [DebuggerStepThrough] public override string ToString()
         {
-            return $"{nameof(center).ToTitleCase()}: {center}, {nameof(coordinates).ToTitleCase()}: {coordinates}, {nameof(size).ToTitleCase()}: {size}";
+            return ZString.Format(
+                "{0}: {1}, {2}: {3}, {4}: {5}",
+                nameof(center).ToTitleCase(),
+                center,
+                nameof(coordinates).ToTitleCase(),
+                coordinates,
+                nameof(size).ToTitleCase(),
+                size
+            );
         }
 
         [SerializeField] private float _modifierRotation;

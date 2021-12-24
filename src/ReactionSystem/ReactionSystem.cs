@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Appalachia.Core.Behaviours;
+using Appalachia.Core.Objects.Root;
 using Unity.Profiling;
 using UnityEngine;
 
@@ -7,8 +7,10 @@ namespace Appalachia.Simulation.ReactionSystem
 {
     [ExecuteAlways]
     [DisallowMultipleComponent]
-    public class ReactionSystem : AppalachiaBehaviour
+    public sealed class ReactionSystem : AppalachiaBehaviour<ReactionSystem>
     {
+        
+        
         private const string _PRF_PFX = nameof(ReactionSystem) + ".";
 
         private static readonly ProfilerMarker _PRF_Awake = new(_PRF_PFX + nameof(Awake));
@@ -19,8 +21,6 @@ namespace Appalachia.Simulation.ReactionSystem
 
         private static readonly ProfilerMarker _PRF_Initialize = new(_PRF_PFX + nameof(Initialize));
         public List<ReactionSubsystemGroup> groups;
-
-        protected override bool InitializeAlways => true;
 
         protected override void Initialize()
         {

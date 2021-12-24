@@ -1,7 +1,7 @@
 using System;
 using Sirenix.OdinInspector.Editor;
 
-namespace Appalachia.Simulation.Trees.UI.GUI
+namespace Appalachia.Simulation.Trees.UI
 {
     public static partial class TreeGUI
     {

@@ -1,23 +1,27 @@
 #region
 
 using Appalachia.Core.Attributes.Editing;
-using Appalachia.Core.Scriptables;
+using Appalachia.Core.Objects.Root;
 using Sirenix.OdinInspector;
 
 #endregion
 
 namespace Appalachia.Simulation.Buoyancy
 {
-    public class
-        BuoyancyVoxelDataGizmoSettings : SingletonAppalachiaObject<
-            BuoyancyVoxelDataGizmoSettings>
+    public class BuoyancyVoxelDataGizmoSettings : SingletonAppalachiaObject<BuoyancyVoxelDataGizmoSettings>
     {
+        #region Constants and Static Readonly
+
         private const string _GC = "Cumulative";
         private const string _GS = "Selected";
         private const string _GSC = "Selected/Center Of Mass";
-        private const string _GSS = "Selected/Submersion";
         private const string _GSF = "Selected/Force";
         private const string _GSFL = "Selected/Force/Lines";
+        private const string _GSS = "Selected/Submersion";
+
+        #endregion
+
+        #region Fields and Autoproperties
 
         [SmartLabel(Postfix = true)]
         public bool drawGizmos;
@@ -121,5 +125,9 @@ namespace Appalachia.Simulation.Buoyancy
         [BoxGroup(_GSFL)]
         [SmartLabel(Postfix = true)]
         public bool drawSelectedSlammingForceLines;
+
+        #endregion
+
+        
     }
 }

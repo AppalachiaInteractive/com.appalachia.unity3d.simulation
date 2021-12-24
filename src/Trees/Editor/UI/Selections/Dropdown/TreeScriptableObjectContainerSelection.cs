@@ -1,20 +1,53 @@
 using System;
 using System.Linq;
 using Appalachia.CI.Integration.Assets;
-using Appalachia.Core.Scriptables;
+using Appalachia.Simulation.Trees.Core;
+using Appalachia.Utility.Async;
+using Appalachia.Utility.Execution;
 using Appalachia.Utility.Reflection.Extensions;
+using Appalachia.Utility.Strings;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.UI.Selections.Dropdown
 {
     [Serializable]
-    public abstract class TreeScriptableObjectContainerSelection <T, TS> : SingletonAppalachiaObject<TS>
-        where TS : SingletonAppalachiaObject<TS> 
+    public abstract class TreeScriptableObjectContainerSelection<T, TS> : SingletonAppalachiaTreeObject<TS>
+        where TS : SingletonAppalachiaTreeObject<TS>
         where T : ScriptableObject
     {
-        [SerializeField, HideInInspector] private T[] objects;
-        [SerializeField, HideInInspector] private string[] objectNames;
+        #region Fields and Autoproperties
+
+        [SerializeField, HideInInspector]
+        private T[] objects;
+
+        [SerializeField, HideInInspector]
+        private string[] objectNames;
+
+        [SerializeField, HideLabel]
+        [TitleGroup(@"@""Selected "" + typeName", Alignment = TitleAlignments.Centered)]
+        [ValueDropdown(
+            nameof(objects),
+            NumberOfItemsBeforeEnablingSearch = 5,
+            AppendNextDrawer = false,
+            IsUniqueList = true,
+            SortDropdownItems = true,
+            DoubleClickToConfirm = false,
+            ExpandAllMenuItems = true,
+            FlattenTreeView = false
+        )]
+        private T _selected;
+
+        #endregion
+
+        public bool NeedsRefresh =>
+            (objects == null) ||
+            (objects.Length == 0) ||
+            (objectNames == null) ||
+            (objectNames.Length == 0) ||
+            objects.Any(o => o == null);
+
+        public T selected => _selected;
 
         private string typeName
         {
@@ -24,35 +57,34 @@ namespace Appalachia.Simulation.Trees.UI.Selections.Dropdown
                 {
                     return "Branch";
                 }
-                else if (typeof(T) == typeof(TreeDataContainer))
+
+                if (typeof(T) == typeof(TreeDataContainer))
                 {
                     return "Tree";
                 }
-                else
-                {
-                    return typeof(T).GetReadableName();
-                }
+
+                return typeof(T).GetReadableName();
             }
         }
-        
-        [SerializeField, HideLabel]
-        [TitleGroup(@"@""Selected "" + typeName", Alignment = TitleAlignments.Centered)]
-        [ValueDropdown(nameof(objects),
-            NumberOfItemsBeforeEnablingSearch = 5,
-            AppendNextDrawer = false,
-            IsUniqueList = true,
-            SortDropdownItems = true, 
-            DoubleClickToConfirm = false,
-            ExpandAllMenuItems = true, 
-            FlattenTreeView = false)
-        ]
-        private T _selected;
 
-        public T selected => _selected;
+        #region Event Functions
+
+        protected override async AppaTask WhenEnabled()
+        {
+            if (AppalachiaApplication.IsPlayingOrWillPlay)
+            {
+                return;
+            }
+
+            await base.WhenEnabled();
+            Refresh();
+        }
+
+        #endregion
 
         public void Refresh()
         {
-            var searchString = $"t: {typeof(T).GetReadableName()}";
+            var searchString = ZString.Format("t: {0}", typeof(T).GetReadableName());
             var assetGuids = AssetDatabaseManager.FindAssets(searchString);
 
             objects = new T[assetGuids.Length];
@@ -76,21 +108,8 @@ namespace Appalachia.Simulation.Trees.UI.Selections.Dropdown
             {
                 return;
             }
-            
+
             _selected = t;
-            Refresh();
-        }
-
-        public bool NeedsRefresh =>
-            (objects == null) ||
-            (objects.Length == 0) ||
-            (objectNames == null) ||
-            (objectNames.Length == 0) ||
-            objects.Any(o => o == null);
-
-        protected override void OnEnable()
-        {
-            base.OnEnable();
             Refresh();
         }
     }

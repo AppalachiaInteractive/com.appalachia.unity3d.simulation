@@ -2,6 +2,7 @@ using System;
 using Appalachia.Simulation.Trees.Core;
 using Appalachia.Simulation.Trees.Core.Settings;
 using Appalachia.Simulation.Trees.ResponsiveUI;
+using Appalachia.Utility.Strings;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -162,7 +163,7 @@ namespace Appalachia.Simulation.Trees.Settings
         [OnValueChanged(nameof(LevelOfDetailSettingsChanged))]
         public float childResampleThreshold = .001f;
 
-        private string title => $"LOD{level} Geometry Quality";
+        private string title => ZString.Format("LOD{0} Geometry Quality", level);
 
 
         public int level { get; internal set; }

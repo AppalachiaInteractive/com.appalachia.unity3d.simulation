@@ -1,26 +1,28 @@
 using System;
+using Appalachia.Core.Attributes;
 using Appalachia.Simulation.Trees.UI.Selections.Dropdown;
 
 namespace Appalachia.Simulation.Trees.UI.Selections.State
 {
     [Serializable]
-    public class BranchSettingsSelection : TSESelection<BranchDataContainer, BranchSettingsDataContainerSelection>
+    [CallStaticConstructorInEditor]
+    public class
+        BranchSettingsSelection : TSESelection<BranchDataContainer, BranchSettingsDataContainerSelection>
     {
-        public override BranchSettingsDataContainerSelection selection 
+        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
+        static BranchSettingsSelection()
         {
-            get
-            {
-                if (_selection == null)
-                {
-                    _selection = BranchSettingsDataContainerSelection.instance;
-                }
-
-                return _selection;
-            }
-            set
-            {
-                _selection = value;
-            }
+            BranchSettingsDataContainerSelection.InstanceAvailable +=
+                i => _branchSettingsDataContainerSelection = i;
         }
+
+        #region Static Fields and Autoproperties
+
+        private static BranchSettingsDataContainerSelection _branchSettingsDataContainerSelection;
+
+        #endregion
+
+        public override BranchSettingsDataContainerSelection selection =>
+            _branchSettingsDataContainerSelection;
     }
 }

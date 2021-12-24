@@ -1,11 +1,11 @@
 using System.Collections.Generic;
-using Appalachia.Core.Scriptables;
+using Appalachia.Simulation.Trees.Core;
 using Appalachia.Simulation.Trees.Hierarchy.Settings;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Rects
 {
-    public class LeafUVRectCollection : SingletonAppalachiaObject<LeafUVRectCollection>
+    public class LeafUVRectCollection : SingletonAppalachiaTreeObject<LeafUVRectCollection>
     {
         public List<LeafUVRectSet> leafUVRectSets = new List<LeafUVRectSet>();
         

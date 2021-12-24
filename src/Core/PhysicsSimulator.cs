@@ -2,7 +2,9 @@
 
 #region
 
+using Appalachia.Core.Attributes;
 using Appalachia.Utility.Constants;
+using Appalachia.Utility.Execution;
 using Unity.Profiling;
 using UnityEngine;
 
@@ -10,6 +12,7 @@ using UnityEngine;
 
 namespace Appalachia.Simulation.Core
 {
+    [CallStaticConstructorInEditor]
     public static class PhysicsSimulator
     {
         #region Profiling And Tracing Markers
@@ -69,7 +72,7 @@ namespace Appalachia.Simulation.Core
         {
             using (_PRF_Update.Auto())
             {
-                if (Application.isPlaying)
+                if (AppalachiaApplication.IsPlayingOrWillPlay)
                 {
                     SetEnabled(false);
 

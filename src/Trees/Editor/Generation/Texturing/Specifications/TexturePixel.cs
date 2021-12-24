@@ -1,8 +1,9 @@
+using Appalachia.Core.Objects.Root;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Generation.Texturing.Specifications
 {
-    public class TexturePixel
+    public class TexturePixel : AppalachiaSimpleBase
     {
         public Color color;
         public int height;

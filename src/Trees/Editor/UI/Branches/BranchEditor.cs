@@ -2,7 +2,9 @@
 
 using System;
 using System.Collections.Generic;
+using Appalachia.CI.Constants;
 using Appalachia.CI.Integration.Assets;
+using Appalachia.Core.Attributes;
 using Appalachia.Simulation.Trees.Build.Execution;
 using Appalachia.Simulation.Trees.Build.RequestManagers;
 using Appalachia.Simulation.Trees.Core.Settings;
@@ -11,13 +13,11 @@ using Appalachia.Simulation.Trees.Generation.Texturing.Specifications;
 using Appalachia.Simulation.Trees.Icons;
 using Appalachia.Simulation.Trees.Settings;
 using Appalachia.Simulation.Trees.Snapshot;
-using Appalachia.Simulation.Trees.UI.GUI;
 using Appalachia.Simulation.Trees.UI.Selections;
 using Appalachia.Simulation.Trees.UI.Selections.Dropdown;
 using Appalachia.Simulation.Trees.UI.Selections.Icons.Branch;
 using Appalachia.Simulation.Trees.UI.Selections.State;
-using Appalachia.Utility.Extensions;
-using Appalachia.Utility.Logging;
+using Appalachia.Utility.Strings;
 using Sirenix.OdinInspector.Editor;
 using Sirenix.Utilities.Editor;
 using Unity.EditorCoroutines.Editor;
@@ -29,13 +29,21 @@ using Object = UnityEngine.Object;
 
 namespace Appalachia.Simulation.Trees.UI.Branches
 {
+    [CallStaticConstructorInEditor]
     [CustomEditor(typeof(BranchDataContainer))]
     public class BranchEditor : OdinEditor
     {
+        static BranchEditor()
+        {
+            TreeSpeciesEditorSelection.InstanceAvailable += i => _treeSpeciesEditorSelection = i;
+        }
+
         #region Static Fields and Autoproperties
 
         public static BranchDataContainer branchData;
         private static int _previewRenderUtilityCount;
+
+        private static TreeSpeciesEditorSelection _treeSpeciesEditorSelection;
 
         #endregion
 
@@ -68,6 +76,8 @@ namespace Appalachia.Simulation.Trees.UI.Branches
 
         private readonly float smallButtonScale = .75f;
         private readonly int initialButtonHeight = 32;
+
+        [NonSerialized] private AppaContext _context;
         private int _previewRenderUtilityID;
 
         private PreviewRenderUtility _previewRenderUtility;
@@ -76,7 +86,7 @@ namespace Appalachia.Simulation.Trees.UI.Branches
 
         private SnapshotRenderer.SnapshotMode[][] modeGroups =
         {
-            new[] {SnapshotRenderer.SnapshotMode.Lit, SnapshotRenderer.SnapshotMode.Sample},
+            new[] { SnapshotRenderer.SnapshotMode.Lit, SnapshotRenderer.SnapshotMode.Sample },
             new[]
             {
                 SnapshotRenderer.SnapshotMode.Albedo,
@@ -86,6 +96,19 @@ namespace Appalachia.Simulation.Trees.UI.Branches
         };
 
         #endregion
+
+        protected AppaContext Context
+        {
+            get
+            {
+                if (_context == null)
+                {
+                    _context = new AppaContext(this);
+                }
+
+                return _context;
+            }
+        }
 
         private float buttonHeight =>
             Mathf.Min(initialButtonHeight, EditorGUIUtility.currentViewWidth * buttonHeightMultiplier);
@@ -112,7 +135,7 @@ namespace Appalachia.Simulation.Trees.UI.Branches
         {
             if (_previewRenderUtility != null)
             {
-                //AppaLog.Warn($"Cleaning up preview utility {_previewRenderUtilityID} from branch editor.");
+                //Context.Log.Warn($"Cleaning up preview utility {_previewRenderUtilityID} from branch editor.");
                 _previewRenderUtility.Cleanup();
                 _previewRenderUtility = null;
             }
@@ -142,7 +165,7 @@ namespace Appalachia.Simulation.Trees.UI.Branches
         {
             if (_previewRenderUtility != null)
             {
-                //AppaLog.Warn($"Cleaning up preview utility {_previewRenderUtilityID} from branch editor.");
+                //Context.Log.Warn($"Cleaning up preview utility {_previewRenderUtilityID} from branch editor.");
                 _previewRenderUtility.Cleanup();
                 _previewRenderUtility = null;
             }
@@ -176,14 +199,13 @@ namespace Appalachia.Simulation.Trees.UI.Branches
 
                 if (branchData.subfolders == null)
                 {
-                    branchData.subfolders =
-                        TreeAssetSubfolders.CreateNested<TreeAssetSubfolders>(branchData, false);
+                    branchData.subfolders = TreeAssetSubfolders.CreateNested(branchData, false);
                 }
 
                 branchData.subfolders.nameBasis = branchData.GetNameBasis();
                 branchData.subfolders.Initialize(branchData);
 
-                TreeSpeciesEditorSelection.instance.branch.selection.Set(branchData);
+                _treeSpeciesEditorSelection.branch.selection.Set(branchData);
 
                 if (branchData.snapshots == null)
                 {
@@ -224,7 +246,7 @@ namespace Appalachia.Simulation.Trees.UI.Branches
                     _previewRenderUtilityCount += 1;
                     _previewRenderUtilityID = _previewRenderUtilityCount;
 
-                    //AppaLog.Warn($"Creating new preview utility {_previewRenderUtilityID} for branch editor.");
+                    //Context.Log.Warn($"Creating new preview utility {_previewRenderUtilityID} for branch editor.");
                     _previewRenderUtility = new PreviewRenderUtility();
                 }
 
@@ -233,13 +255,13 @@ namespace Appalachia.Simulation.Trees.UI.Branches
                 using (TreeGUI.Layout.Horizontal())
                 {
                     using (TreeGUI.Layout.Vertical(
-                        true,
-                        TreeGUI.Layout.Options.ExpandWidth(false)
-                               .MinWidth(sideToolbarWidth)
-                               .MaxWidth(sideToolbarWidth)
-                    ))
+                               true,
+                               TreeGUI.Layout.Options.ExpandWidth(false)
+                                      .MinWidth(sideToolbarWidth)
+                                      .MaxWidth(sideToolbarWidth)
+                           ))
                     {
-                        //TreeSpeciesEditorSelection.instance.branch.DrawAndSelect();
+                        //_treeSpeciesEditorSelection.branch.DrawAndSelect();
 
                         _sidebar.snapshotMenu.DrawMenu(
                             sideToolbarWidth,
@@ -286,7 +308,7 @@ namespace Appalachia.Simulation.Trees.UI.Branches
                            .DrawCopyToolbar<BranchDataContainer, BranchSettingsSelection,
                                 BranchSettingsDataContainerSelection>(
                                 branchData,
-                                TreeSpeciesEditorSelection.instance.branchCopySettings,
+                                _treeSpeciesEditorSelection.branchCopySettings,
                                 !_sidebar.snapshotMenu.Selected.locked,
                                 null
                             );
@@ -305,9 +327,9 @@ namespace Appalachia.Simulation.Trees.UI.Branches
                         var size = .9f * editWindowWidth * previewSize;
 
                         using (TreeGUI.Layout.Vertical(
-                            false,
-                            TreeGUI.Layout.Options.ExpandWidth(false).Width(size)
-                        ))
+                                   false,
+                                   TreeGUI.Layout.Options.ExpandWidth(false).Width(size)
+                               ))
                         {
                             var aspectRect = GUILayoutUtility.GetAspectRect(1);
 
@@ -336,7 +358,7 @@ namespace Appalachia.Simulation.Trees.UI.Branches
                                     if (string.IsNullOrWhiteSpace(matAssetPath))
                                     {
                                         var assetGUIDs = AssetDatabaseManager.FindAssets(
-                                            $"t:Material {snapshot.name}_snapshot"
+                                            ZString.Format("t:Material {0}_snapshot", snapshot.name)
                                         );
 
                                         if (assetGUIDs.Length > 0)
@@ -351,8 +373,7 @@ namespace Appalachia.Simulation.Trees.UI.Branches
                                         }
                                     }
 
-                                    if (
-                                        (snapshot.branchOutputMaterial.textureSet.outputTextures.Count ==
+                                    if ((snapshot.branchOutputMaterial.textureSet.outputTextures.Count ==
                                          0) &&
                                         (branchData.branchAsset != null) &&
                                         (branchData.branchAsset.materials != null) &&
@@ -368,7 +389,7 @@ namespace Appalachia.Simulation.Trees.UI.Branches
 
                                 if (_sidebar.snapshotMenu.HasSelection && snapshot.locked)
                                 {
-                                    UnityEngine.GUI.DrawTexture(
+                                    GUI.DrawTexture(
                                         aspectRect,
                                         snapshot.branchOutputMaterial.textureSet.outputTextures[0].texture,
                                         ScaleMode.StretchToFill,
@@ -407,12 +428,7 @@ namespace Appalachia.Simulation.Trees.UI.Branches
                                         );
                                     }
 
-                                    UnityEngine.GUI.DrawTexture(
-                                        aspectRect,
-                                        resultRender,
-                                        ScaleMode.StretchToFill,
-                                        false
-                                    );
+                                    GUI.DrawTexture(aspectRect, resultRender, ScaleMode.StretchToFill, false);
                                 }
                                 else
                                 {
@@ -454,9 +470,9 @@ namespace Appalachia.Simulation.Trees.UI.Branches
                                 else if (_sidebar.hierarchyMenu.HasSelection)
                                 {
                                     if (!ReferenceEquals(
-                                        _sidebar.hierarchyMenu.Selected,
-                                        hierarchyProperty.WeakTargets[0]
-                                    ))
+                                            _sidebar.hierarchyMenu.Selected,
+                                            hierarchyProperty.WeakTargets[0]
+                                        ))
                                     {
                                         hierarchyProperty =
                                             PropertyTree.Create(_sidebar.hierarchyMenu.Selected);
@@ -568,7 +584,7 @@ namespace Appalachia.Simulation.Trees.UI.Branches
             }
             catch (Exception ex)
             {
-                AppaLog.Error(ex);
+                Context.Log.Error(ex);
 
                 if ((branchData != null) &&
                     (branchData.branch != null) &&
@@ -582,6 +598,7 @@ namespace Appalachia.Simulation.Trees.UI.Branches
             }
         }
 
+        // ReSharper disable once UnusedParameter.Global
         public void HandlePreviewInput(Mesh mesh, Rect rect)
         {
             var controlID = GUIUtility.GetControlID("Slider".GetHashCode(), FocusType.Passive);
@@ -677,7 +694,7 @@ namespace Appalachia.Simulation.Trees.UI.Branches
                         }
 
                         useEvent = true;
-                        UnityEngine.GUI.changed = true;
+                        GUI.changed = true;
                     }
 
                     break;
@@ -735,7 +752,7 @@ namespace Appalachia.Simulation.Trees.UI.Branches
                                 _previewRenderUtility != null,
                                 renderMode == mode,
                                 mode.ToString(),
-                                $"Show {mode.ToString().ToLower()}",
+                                ZString.Format("Show {0}", mode.ToString().ToLower()),
                                 () => { renderMode = mode; },
                                 TreeGUI.Styles.ButtonSelected,
                                 TreeGUI.Styles.Button,
@@ -796,8 +813,8 @@ namespace Appalachia.Simulation.Trees.UI.Branches
 
                 EditorGUILayout.Space();
 
-                var old = UnityEngine.GUI.backgroundColor;
-                UnityEngine.GUI.backgroundColor = TreeGUI.Colors.LightGreen;
+                var old = GUI.backgroundColor;
+                GUI.backgroundColor = TreeGUI.Colors.LightGreen;
 
                 TreeGUI.Button.EnableDisable(
                     (_sidebar.snapshotMenu.Selected != null) && !_sidebar.snapshotMenu.Selected.locked,
@@ -812,7 +829,7 @@ namespace Appalachia.Simulation.Trees.UI.Branches
                     TreeGUI.Layout.Options.None
                 );
 
-                UnityEngine.GUI.backgroundColor = TreeGUI.Colors.BurntLightOrange;
+                GUI.backgroundColor = TreeGUI.Colors.BurntLightOrange;
 
                 TreeGUI.Button.ContextEnableDisable(
                     _sidebar.snapshotMenu.Selected != null,
@@ -822,7 +839,7 @@ namespace Appalachia.Simulation.Trees.UI.Branches
                     () =>
                     {
                         _sidebar.snapshotMenu.Selected.locked = true;
-                        branchData.dataState = TSEDataContainer.DataState.PendingSave;                        
+                        branchData.dataState = TSEDataContainer.DataState.PendingSave;
                         _sidebar.snapshotMenu.Selected.MarkAsModified();
                         branchData.MarkAsModified();
 
@@ -848,7 +865,7 @@ namespace Appalachia.Simulation.Trees.UI.Branches
                     (Selection.objects.Length != 1) || (Selection.objects[0] != branchData),
                     "Select",
                     "Select the branch data container",
-                    () => { Selection.objects = new Object[] {branchData}; },
+                    () => { Selection.objects = new Object[] { branchData }; },
                     TreeGUI.Styles.Button,
                     TreeGUI.Layout.Options.None
                 );
@@ -894,7 +911,7 @@ namespace Appalachia.Simulation.Trees.UI.Branches
 
                 EditorGUILayout.Space();
 
-                UnityEngine.GUI.backgroundColor = old;
+                GUI.backgroundColor = old;
             }
         }
     }

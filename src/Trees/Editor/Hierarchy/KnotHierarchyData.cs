@@ -3,6 +3,7 @@ using Appalachia.Simulation.Trees.Core;
 using Appalachia.Simulation.Trees.Core.Settings;
 using Appalachia.Simulation.Trees.Hierarchy.Options.Attributes;
 using Appalachia.Simulation.Trees.Hierarchy.Settings;
+using Appalachia.Utility.Strings;
 using Sirenix.OdinInspector;
 using Object = UnityEngine.Object;
 
@@ -51,7 +52,7 @@ namespace Appalachia.Simulation.Trees.Hierarchy
                 return geometry.prefab.prefab.name;
             }
 
-            return $"{hierarchyID:0000}";
+            return ZString.Format("{0:0000}", hierarchyID);
         }
     }
 }

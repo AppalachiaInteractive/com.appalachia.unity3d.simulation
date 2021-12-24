@@ -1,6 +1,5 @@
 #region
 
-using Appalachia.Core.Scriptables;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -10,7 +9,7 @@ namespace Appalachia.Simulation.Trees.Core.Model
 {
 #if UNITY_EDITOR
 
-    public class TreeGizmoStyle : SingletonAppalachiaObject<TreeGizmoStyle>
+    public class TreeGizmoStyle : SingletonAppalachiaTreeObject<TreeGizmoStyle>
     {
        
         

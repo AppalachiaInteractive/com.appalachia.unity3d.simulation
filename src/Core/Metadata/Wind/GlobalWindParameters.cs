@@ -1,8 +1,10 @@
 #region
 
+using Appalachia.Core.Attributes;
 using Appalachia.Core.Attributes.Editing;
-using Appalachia.Core.Scriptables;
+using Appalachia.Core.Objects.Root;
 using Appalachia.Simulation.Core.Metadata.Density;
+using Appalachia.Utility.Async;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -10,8 +12,23 @@ using UnityEngine;
 
 namespace Appalachia.Simulation.Core.Metadata.Wind
 {
-    public class GlobalWindParameters  : AppalachiaObject
+    [CallStaticConstructorInEditor]
+    public class GlobalWindParameters : AppalachiaObject<GlobalWindParameters>
     {
+        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
+        static GlobalWindParameters()
+        {
+            RegisterDependency<DensityMetadataCollection>(i => _densityMetadataCollection = i);
+        }
+
+        #region Static Fields and Autoproperties
+
+        private static DensityMetadataCollection _densityMetadataCollection;
+
+        #endregion
+
+        #region Fields and Autoproperties
+
         [FoldoutGroup("System")]
         [SmartLabel]
         public bool realtimeUpdate = true;
@@ -124,14 +141,16 @@ namespace Appalachia.Simulation.Core.Metadata.Wind
         [HideLabel]
         public WindParameterCategory grass;
 
+        #endregion
+
         [BoxGroup("System/Physics")]
         [ShowInInspector]
         [SmartLabel]
-        public DensityMetadata airDensity => DensityMetadataCollection.instance.air;
+        public DensityMetadata airDensity => _densityMetadataCollection.air;
 
-        protected override void OnEnable()
+        protected override async AppaTask WhenEnabled()
         {
-            base.OnEnable();
+            await base.WhenEnabled();
             if (maximumWindSpeed == 0f)
             {
                 maximumWindSpeed = 25f;

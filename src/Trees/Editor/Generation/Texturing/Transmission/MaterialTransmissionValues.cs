@@ -1,11 +1,12 @@
 using System;
+using Appalachia.Core.Objects.Root;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Generation.Texturing.Transmission
 {
     [Serializable, ReadOnly]
-    public class MaterialTransmissionValues
+    public class MaterialTransmissionValues : AppalachiaSimpleBase
     {
         public float lastAutoTransmissionBrightness;
         

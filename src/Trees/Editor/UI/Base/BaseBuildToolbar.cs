@@ -4,10 +4,11 @@ using Appalachia.Simulation.Trees.Build.Requests;
 using Appalachia.Simulation.Trees.Core.Editing;
 using Appalachia.Simulation.Trees.Icons;
 using Appalachia.Simulation.Trees.Settings;
-using Appalachia.Simulation.Trees.UI.GUI;
 using Sirenix.Utilities.Editor;
 using UnityEditor;
 using UnityEngine;
+
+// ReSharper disable UnusedParameter.Global
 
 namespace Appalachia.Simulation.Trees.UI.Base
 {

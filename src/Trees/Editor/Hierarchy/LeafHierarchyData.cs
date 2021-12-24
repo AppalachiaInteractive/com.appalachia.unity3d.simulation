@@ -6,6 +6,7 @@ using Appalachia.Simulation.Trees.Generation.Geometry.Leaves;
 using Appalachia.Simulation.Trees.Hierarchy.Options.Attributes;
 using Appalachia.Simulation.Trees.Hierarchy.Options.Properties;
 using Appalachia.Simulation.Trees.Hierarchy.Settings;
+using Appalachia.Utility.Strings;
 using Sirenix.OdinInspector;
 using TreeEditor;
 using UnityEngine;
@@ -77,15 +78,15 @@ namespace Appalachia.Simulation.Trees.Hierarchy
         {
             if (geometry.leafMaterial)
             {
-                return $"{hierarchyID}: {geometry.leafMaterial.name}";
+                return ZString.Format("{0}: {1}", hierarchyID, geometry.leafMaterial.name);
             }
 
             if (geometry.prefab.prefab)
             {
-                return $"{hierarchyID}: {geometry.prefab.prefab.name}";
+                return ZString.Format("{0}: {1}", hierarchyID, geometry.prefab.prefab.name);
             }
 
-            return $"{hierarchyID}";
+            return ZString.Format("{0}", hierarchyID);
         }
         
         /*public override void ToggleCheckboxes(bool enabled)
@@ -106,7 +107,7 @@ namespace Appalachia.Simulation.Trees.Hierarchy
                 return geometry.prefab.prefab.name;
             }
 
-            return $"{hierarchyID:0000}";
+            return ZString.Format("{0:0000}", hierarchyID);
         }
     }
 }

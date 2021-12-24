@@ -17,7 +17,6 @@ namespace Appalachia.Simulation.Physical
             previous = current;
 
             current = new PositiongDataInstant(body, ltw);
-            ;
         }
 
 #region IEquatable

@@ -7,9 +7,7 @@ using UnityEngine;
 namespace Appalachia.Simulation.Buoyancy.Data
 {
     [Serializable]
-    public class
-        BuoyancyDataLookup : AppaLookup<string, BuoyancyData, AppaList_string,
-            AppaList_BuoyancyData>
+    public class BuoyancyDataLookup : AppaLookup<string, BuoyancyData, stringList, BuoyancyDataList>
     {
         protected override string GetDisplayTitle(string key, BuoyancyData value)
         {

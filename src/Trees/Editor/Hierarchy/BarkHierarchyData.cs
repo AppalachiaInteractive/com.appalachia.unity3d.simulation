@@ -6,6 +6,7 @@ using Appalachia.Simulation.Trees.Generation.Geometry.Splines;
 using Appalachia.Simulation.Trees.Hierarchy.Options.Attributes;
 using Appalachia.Simulation.Trees.Hierarchy.Options.Curves;
 using Appalachia.Simulation.Trees.Hierarchy.Settings;
+using Appalachia.Utility.Strings;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -153,7 +154,7 @@ namespace Appalachia.Simulation.Trees.Hierarchy
                 return geometry.barkMaterial.name;
             }
 
-            return $"{hierarchyID:0000}";
+            return ZString.Format("{0:0000}", hierarchyID);
         }
     }
 }

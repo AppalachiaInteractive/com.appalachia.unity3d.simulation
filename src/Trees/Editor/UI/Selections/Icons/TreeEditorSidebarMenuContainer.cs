@@ -1,15 +1,25 @@
 using System.Collections.Generic;
 using System.Linq;
+using Appalachia.Core.Attributes;
 using Appalachia.Simulation.Trees.Icons;
-using Appalachia.Simulation.Trees.UI.GUI;
+using Appalachia.Simulation.Trees.UI.Selections.State;
 using Sirenix.OdinInspector.Editor;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.UI.Selections.Icons
 {
+    [CallStaticConstructorInEditor]
     public abstract class TreeEditorSidebarMenuContainer<T>
         where T : class
     {
+        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
+        static TreeEditorSidebarMenuContainer()
+        {
+            TreeSpeciesEditorSelection.InstanceAvailable += i => _treeSpeciesEditorSelection = i;
+        }
+
+        protected static TreeSpeciesEditorSelection _treeSpeciesEditorSelection;
+        
         protected TreeEditorSidebarMenuContainer(
             OdinMenuStyle menuStyle,
             OdinMenuTreeDrawingConfig menuConfig,

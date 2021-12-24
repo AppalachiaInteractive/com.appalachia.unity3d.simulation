@@ -26,7 +26,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Management
         public static TreeMaterialCollection Create(string folder, NameBasis nameBasis)
         {
             var assetName = nameBasis.FileNameSO("materials");
-            var instance = LoadOrCreateNew<TreeMaterialCollection>(folder, assetName);
+            var instance = TreeMaterialCollection.LoadOrCreateNew(folder, assetName);
             instance.transmission = new MaterialTransmissionValues();
             instance.Initialize(ResponsiveSettingsType.Tree);
             return instance;

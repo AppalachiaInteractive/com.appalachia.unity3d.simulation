@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using Appalachia.Simulation.Trees.UI.GUI;
 using Sirenix.OdinInspector.Editor;
 using Sirenix.Utilities.Editor;
 using UnityEngine;

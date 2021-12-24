@@ -6,7 +6,7 @@ namespace Appalachia.Core.Runtime.TouchBend
 {
     [ExecuteAlways]
     [DisallowMultipleComponent]
-    public class TouchBendSystem: AppalachiaBehaviour
+    public sealed class TouchBendSystem : AppalachiaBehaviour<TouchBendSystem>
     {
         private static TouchBendSystem _instance;
 

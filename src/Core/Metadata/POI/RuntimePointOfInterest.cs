@@ -1,11 +1,12 @@
 using System;
 using Appalachia.Core.Layers;
+using Appalachia.Core.Objects.Root;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Core.Metadata.POI
 {
     [Serializable]
-    public class RuntimePointOfInterest
+    public class RuntimePointOfInterest : AppalachiaBase<RuntimePointOfInterest>
     {
         public string name;
 

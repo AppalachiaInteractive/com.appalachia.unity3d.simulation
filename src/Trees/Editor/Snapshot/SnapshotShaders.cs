@@ -1,9 +1,9 @@
-using Appalachia.Core.Scriptables;
+using Appalachia.Simulation.Trees.Core;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Snapshot
 {
-    public class SnapshotShaders : SingletonAppalachiaObject<SnapshotShaders>
+    public class SnapshotShaders : SingletonAppalachiaTreeObject<SnapshotShaders>
     {
         public Shader albedo;
         public Shader normal;

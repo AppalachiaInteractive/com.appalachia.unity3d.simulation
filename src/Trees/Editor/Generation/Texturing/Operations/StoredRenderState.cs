@@ -1,9 +1,10 @@
+using Appalachia.Core.Objects.Root;
 using UnityEditor;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Generation.Texturing.Operations
 {
-    public class StoredRenderState
+    public class StoredRenderState : AppalachiaSimpleBase
     {
         private bool fogState;
         private bool srgbWrite;

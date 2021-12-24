@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Appalachia.CI.Integration.Assets;
+using Appalachia.Core.Objects.Initialization;
 using Appalachia.Core.Types;
 using Appalachia.Simulation.Trees.Core;
 using Appalachia.Simulation.Trees.Data;
@@ -9,6 +10,7 @@ using Appalachia.Simulation.Trees.Definition.Interfaces;
 using Appalachia.Simulation.Trees.Generation.Geometry.Leaves;
 using Appalachia.Simulation.Trees.Hierarchy.Options.Properties;
 using Appalachia.Simulation.Trees.Settings;
+using Appalachia.Utility.Async;
 using Unity.Profiling;
 using UnityEngine;
 
@@ -131,8 +133,6 @@ namespace Appalachia.Simulation.Trees.Prefabs
 
         public void ResetPrefabs()
         {
-            Initialize();
-
             _prefabsByGUIDAndType.Clear();
             _prefabsByID.Clear();
             _prefabIDs.SetNextID(0);
@@ -335,11 +335,14 @@ namespace Appalachia.Simulation.Trees.Prefabs
             }
         }
 
-        protected override void Initialize()
+        private static readonly ProfilerMarker _PRF_Initialize =
+            new ProfilerMarker(_PRF_PFX + nameof(Initialize));
+
+        protected override async AppaTask Initialize(Initializer initializer)
         {
             using (_PRF_Initialize.Auto())
             {
-                base.Initialize();
+                await base.Initialize(initializer);
                 
                 if (_prefabsByGUIDAndType == null)
                 {
@@ -421,8 +424,7 @@ namespace Appalachia.Simulation.Trees.Prefabs
         private static readonly ProfilerMarker _PRF_UpdatePrefabs =
             new ProfilerMarker(_PRF_PFX + nameof(UpdatePrefabs));
 
-        private static readonly ProfilerMarker _PRF_Initialize =
-            new ProfilerMarker(_PRF_PFX + nameof(Initialize));
+        
 
         private static readonly ProfilerMarker _PRF_RebuildLookups =
             new ProfilerMarker(_PRF_PFX + nameof(RebuildLookups));

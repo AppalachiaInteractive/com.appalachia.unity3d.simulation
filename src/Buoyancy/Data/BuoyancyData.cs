@@ -1,7 +1,8 @@
 using System;
 using Appalachia.CI.Integration.Assets;
+using Appalachia.Core.Attributes;
 using Appalachia.Core.Attributes.Editing;
-using Appalachia.Core.Scriptables;
+using Appalachia.Core.Objects.Root;
 using Appalachia.Spatial.Voxels;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -9,8 +10,21 @@ using UnityEngine;
 namespace Appalachia.Simulation.Buoyancy.Data
 {
     [Serializable]
-    public class BuoyancyData : AppalachiaObject
+    [CallStaticConstructorInEditor]
+    public class BuoyancyData : AppalachiaObject<BuoyancyData>
     {
+        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
+        static BuoyancyData()
+        {
+            RegisterDependency<BuoyancyDataDefaults>(i => _buoyancyDataDefaults = i);
+        }
+
+        #region Static Fields and Autoproperties
+
+        private static BuoyancyDataDefaults _buoyancyDataDefaults;
+
+        #endregion
+
         #region Fields and Autoproperties
 
         [SmartLabel(Postfix = true)]
@@ -162,52 +176,52 @@ namespace Appalachia.Simulation.Buoyancy.Data
         {
             if (!overrideDefaultWetnessAccumulationSpeed)
             {
-                wetnessAccumulationSpeed = BuoyancyDataDefaults.instance.wetnessAccumulationSpeed;
+                wetnessAccumulationSpeed = _buoyancyDataDefaults.wetnessAccumulationSpeed;
             }
 
             if (!overrideDefaultWetnessDispersalSpeed)
             {
-                wetnessDispersalSpeed = BuoyancyDataDefaults.instance.wetnessDispersalSpeed;
+                wetnessDispersalSpeed = _buoyancyDataDefaults.wetnessDispersalSpeed;
             }
 
             if (!overrideDefaultSubmergednessAccumulationSpeed)
             {
-                submergednessAccumulationSpeed = BuoyancyDataDefaults.instance.submergednessAccumulationSpeed;
+                submergednessAccumulationSpeed = _buoyancyDataDefaults.submergednessAccumulationSpeed;
             }
 
             if (!overrideDefaultSubmergednessDispersalSpeed)
             {
-                submergednessDispersalSpeed = BuoyancyDataDefaults.instance.submergednessDispersalSpeed;
+                submergednessDispersalSpeed = _buoyancyDataDefaults.submergednessDispersalSpeed;
             }
 
             if (!overrideDefaultBuoyancyType)
             {
-                buoyancyType = BuoyancyDataDefaults.instance.buoyancyType;
+                buoyancyType = _buoyancyDataDefaults.buoyancyType;
             }
 
             if (!overrideVoxelPopulationStyle)
             {
-                voxelPopulationStyle = BuoyancyDataDefaults.instance.voxelPopulationStyle;
+                voxelPopulationStyle = _buoyancyDataDefaults.voxelPopulationStyle;
             }
 
             if (!overrideDefaultVoxelResolution)
             {
-                voxelResolution = BuoyancyDataDefaults.instance.voxelResolution;
+                voxelResolution = _buoyancyDataDefaults.voxelResolution;
             }
 
             if (!overrideDefaultSubmersionEngageSmoothing)
             {
-                submersionEngageSmoothing = BuoyancyDataDefaults.instance.submersionEngageSmoothing;
+                submersionEngageSmoothing = _buoyancyDataDefaults.submersionEngageSmoothing;
             }
 
             if (!overrideDefaultSubmersionDisengageSmoothing)
             {
-                submersionDisengageSmoothing = BuoyancyDataDefaults.instance.submersionDisengageSmoothing;
+                submersionDisengageSmoothing = _buoyancyDataDefaults.submersionDisengageSmoothing;
             }
 
             if (!overrideDefaultWaterLevelOffset)
             {
-                waterLevelOffset = BuoyancyDataDefaults.instance.waterLevelOffset;
+                waterLevelOffset = _buoyancyDataDefaults.waterLevelOffset;
             }
 
             /*if (mesh == null)

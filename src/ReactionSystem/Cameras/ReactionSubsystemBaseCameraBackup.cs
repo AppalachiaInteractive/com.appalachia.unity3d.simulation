@@ -151,14 +151,14 @@ namespace Appalachia.Core.ReactionSystem.Base
             
             if (center == null)
             {
-                AppaLog.Error("Must assign system center.");
+                Context.Log.Error("Must assign system center.");
                 
                 return;
             }
             
             if (string.IsNullOrWhiteSpace(SubsystemName))
             {
-                AppaLog.Error("Must define system name.");
+                Context.Log.Error("Must define system name.");
             }
             
             gameObject.name = SubsystemName;
@@ -184,7 +184,7 @@ namespace Appalachia.Core.ReactionSystem.Base
         {
             if (cameraName == null)
             {
-                AppaLog.Error("Must define camera name.");
+                Context.Log.Error("Must define camera name.");
                 return null;
             }
             

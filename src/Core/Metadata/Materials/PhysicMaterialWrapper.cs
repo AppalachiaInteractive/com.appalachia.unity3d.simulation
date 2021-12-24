@@ -1,9 +1,10 @@
 using Appalachia.CI.Integration.Assets;
 using Appalachia.Core.Attributes.Editing;
-using Appalachia.Core.Scriptables;
+using Appalachia.Core.Objects.Scriptables;
 using Appalachia.Simulation.Core.Metadata.Density;
+using Appalachia.Utility.Async;
 using Appalachia.Utility.Extensions;
-using Appalachia.Utility.Logging;
+using Appalachia.Utility.Strings;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -11,8 +12,10 @@ using UnityEngine.Serialization;
 namespace Appalachia.Simulation.Core.Metadata.Materials
 {
     [SmartLabel]
-    public class PhysicMaterialWrapper : CategorizableAppalachiaObject
+    public class PhysicMaterialWrapper : CategorizableAppalachiaObject<PhysicMaterialWrapper>
     {
+        
+        
         #region Fields and Autoproperties
 
         [SmartLabel] public Color labelBackgroundColor;
@@ -42,9 +45,9 @@ namespace Appalachia.Simulation.Core.Metadata.Materials
 
         #region Event Functions
 
-        protected override void OnEnable()
+        protected override async AppaTask WhenEnabled()
         {
-            base.OnEnable();
+            await base.WhenEnabled();
 #if UNITY_EDITOR
             if (defaultDensity == null)
             {
@@ -56,7 +59,7 @@ namespace Appalachia.Simulation.Core.Metadata.Materials
 
             if (defaultDensity == null)
             {
-                AppaLog.Warn($"Need default density for material {name}", this);
+                Context.Log.Warn(ZString.Format("Need default density for material {0}", name), this);
             }
 #endif
         }
@@ -97,7 +100,8 @@ namespace Appalachia.Simulation.Core.Metadata.Materials
 
             var surfaces = AssetDatabaseManager.FindAssets<Material>();
 
-            var foundSurface = surfaces.FirstOrDefault_NoAlloc(m => m.name == $"physics_{name}");
+            var foundSurface =
+                surfaces.FirstOrDefault_NoAlloc(m => m.name == ZString.Format("physics_{0}", name));
 
             if (foundSurface != null)
             {

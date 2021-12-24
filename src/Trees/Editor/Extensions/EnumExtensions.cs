@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Appalachia.Utility.Strings;
 
 namespace Appalachia.Simulation.Trees.Extensions
 {
@@ -10,8 +11,11 @@ namespace Appalachia.Simulation.Trees.Extensions
         public static T Next<T>(this T src) where T : Enum
         {
             var type = typeof(T);
-            
-            if (!type.IsEnum) throw new ArgumentException($"Argument {type.FullName} is not an Enum");
+
+            if (!type.IsEnum)
+            {
+                throw new ArgumentException(ZString.Format("Argument {0} is not an Enum", type.FullName));
+            }
 
             if (_enumLookup == null)
             {

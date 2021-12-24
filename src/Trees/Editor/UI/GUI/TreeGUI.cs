@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Appalachia.CI.Integration.Assets;
+using Appalachia.Core.Attributes;
 using Appalachia.Editor.Layout;
 using Appalachia.Simulation.Trees.Icons;
 using Appalachia.Utility.Extensions;
@@ -13,8 +14,9 @@ using UnityEditorInternal;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace Appalachia.Simulation.Trees.UI.GUI
+namespace Appalachia.Simulation.Trees.UI
 {
+    [CallStaticConstructorInEditor]
     public static partial class TreeGUI
     {
         public static void Repaint()

@@ -1,5 +1,6 @@
 using System;
 using Appalachia.CI.Integration.Assets;
+using Appalachia.Core.Objects.Root;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -7,7 +8,7 @@ using Object = UnityEngine.Object;
 namespace Appalachia.Simulation.Trees.Generation.Texturing.Output
 {
     [Serializable]
-    public class OutputTexture
+    public class OutputTexture : AppalachiaSimpleBase
     {
         public OutputTexture(
             OutputTextureProfile profile, 

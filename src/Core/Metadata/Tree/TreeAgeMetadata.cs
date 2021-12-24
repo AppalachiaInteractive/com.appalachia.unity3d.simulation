@@ -1,10 +1,11 @@
 using System;
+using Appalachia.Core.Objects.Root;
 using Appalachia.Simulation.Core.Metadata.Tree.Types;
 
 namespace Appalachia.Simulation.Core.Metadata.Tree
 {
     [Serializable]
-    public class TreeAgeMetadata
+    public class TreeAgeMetadata : AppalachiaSimpleBase
     {
         public TreeStageMetadata normal;
         public TreeStageMetadata stump;

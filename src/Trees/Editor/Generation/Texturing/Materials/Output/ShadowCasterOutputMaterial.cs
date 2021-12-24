@@ -14,7 +14,6 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Output
 
         public override MaterialContext MaterialContext => MaterialContext.ShadowCaster;
 
-
-        protected override OutputShaderSelectionSet defaultShaders => DefaultShaderResource.instance.shadowShaderSet;
+        protected override OutputShaderSelectionSet defaultShaders => _defaultShaderResource.shadowShaderSet;
     }
 }

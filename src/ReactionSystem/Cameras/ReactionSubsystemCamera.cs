@@ -18,57 +18,57 @@ namespace Appalachia.Simulation.ReactionSystem.Cameras
         [SerializeField]
         [FoldoutGroup("Camera")]
         [SmartLabel]
-        [OnValueChanged(nameof(Initialize))]
+        [OnValueChanged(nameof(InitializeSynchronous))]
         public Shader replacementShader;
 
         [SerializeField]
         [FoldoutGroup("Camera")]
         [SmartLabel]
-        [OnValueChanged(nameof(Initialize))]
+        [OnValueChanged(nameof(InitializeSynchronous))]
         public string replacementShaderTag;
 
         [SerializeField]
         [FoldoutGroup("Camera")]
         [SmartLabel]
-        [OnValueChanged(nameof(Initialize))]
+        [OnValueChanged(nameof(InitializeSynchronous))]
         public LayerMask cullingMask;
 
         [SerializeField]
         [FoldoutGroup("Camera")]
         [SmartLabel]
-        [OnValueChanged(nameof(Initialize))]
+        [OnValueChanged(nameof(InitializeSynchronous))]
         public Vector3 cameraOffset = new(0f, -1000f, 0f);
 
         [SerializeField]
         [FoldoutGroup("Camera")]
         [SmartLabel]
-        [OnValueChanged(nameof(Initialize))]
+        [OnValueChanged(nameof(InitializeSynchronous))]
         public Vector3 cameraDirection = Vector3.up;
 
         [SerializeField]
         [FoldoutGroup("Camera")]
         [SmartLabel]
-        [OnValueChanged(nameof(Initialize))]
+        [OnValueChanged(nameof(InitializeSynchronous))]
         public Color backgroundColor;
 
         [SerializeField]
         [FoldoutGroup("Camera")]
         [SmartLabel]
-        [OnValueChanged(nameof(Initialize))]
+        [OnValueChanged(nameof(InitializeSynchronous))]
         public CameraClearFlags clearFlags;
 
         [SerializeField]
         [FoldoutGroup("Camera")]
         [PropertyRange(1, 4096)]
         [SmartLabel]
-        [OnValueChanged(nameof(Initialize))]
+        [OnValueChanged(nameof(InitializeSynchronous))]
         [ReadOnly]
         public int orthographicSize = 50;
 
         [SerializeField]
         [FoldoutGroup("Camera")]
         [SmartLabel]
-        [OnValueChanged(nameof(Initialize))]
+        [OnValueChanged(nameof(InitializeSynchronous))]
         public bool hideCamera = true;
 
         public abstract bool AutomaticRender { get; }

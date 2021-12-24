@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Appalachia.Utility.Logging;
+using Appalachia.Utility.Strings;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
 using UnityEngine;
@@ -60,17 +60,17 @@ namespace Appalachia.Simulation.ReactionSystem.Cameras
 
                     if (cameraComponent.center == null)
                     {
-                        AppaLog.Error("Must assign system center.");
+                        Context.Log.Error("Must assign system center.");
 
                         return;
                     }
 
                     if (string.IsNullOrWhiteSpace(SubsystemName))
                     {
-                        AppaLog.Error("Must define system name.");
+                        Context.Log.Error("Must define system name.");
                     }
 
-                    var objName = $"{SubsystemName}_{i}";
+                    var objName = ZString.Format("{0}_{1}", SubsystemName, i);
 
                     gameObject.name = objName;
 

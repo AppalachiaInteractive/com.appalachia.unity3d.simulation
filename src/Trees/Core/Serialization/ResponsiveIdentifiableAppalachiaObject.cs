@@ -1,4 +1,4 @@
-using Appalachia.Core.Scriptables;
+using Appalachia.Core.Objects.Scriptables;
 using Appalachia.Simulation.Trees.Core.Editing;
 using Appalachia.Simulation.Trees.Core.Settings;
 using Appalachia.Utility.Extensions;
@@ -6,9 +6,9 @@ using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Core.Serialization
 {
-    public abstract class ResponsiveIdentifiableAppalachiaObject<T> : IdentifiableAppalachiaObject,
+    public abstract class ResponsiveIdentifiableAppalachiaObject<T> : IdentifiableAppalachiaObject<T>,
                                                                       IResponsive
-        where T : IdentifiableAppalachiaObject
+        where T : IdentifiableAppalachiaObject<T>
     {
 #if UNITY_EDITOR
 

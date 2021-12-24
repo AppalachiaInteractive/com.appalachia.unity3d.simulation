@@ -1,32 +1,43 @@
 using System;
+using Appalachia.Core.Attributes;
 using Appalachia.Editor.Windows;
 using Appalachia.Simulation.Trees.Extensions;
 using Appalachia.Simulation.Trees.Generation.Texturing.Materials.Management;
 using Appalachia.Simulation.Trees.Generation.Texturing.Materials.Rects;
 using Appalachia.Simulation.Trees.Icons;
-using Appalachia.Simulation.Trees.UI.GUI;
-using Appalachia.Utility.Extensions;
-using Appalachia.Utility.Logging;
 using UnityEditor;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.UI.UV
 {
-    public abstract class UVEditor</*TT, */TD> : AppalachiaEditorWindow
+    [CallStaticConstructorInEditor]
+    public abstract class UVEditor< /*TT, */TD> : AppalachiaEditorWindow
+
         //where TT : IBranch
         where TD : TSEDataContainer
     {
-        public static UVEditor</*TT, */TD> instance;
+        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
+        static UVEditor()
+        {
+            LeafUVRectCollection.InstanceAvailable += i => _leafUVRectCollection = i;
+        }
 
-        public abstract TD container { get; set; }
+        #region Static Fields and Autoproperties
+
+        public static UVEditor< /*TT, */TD> instance;
+
+        private static LeafUVRectCollection _leafUVRectCollection;
+
+        #endregion
+
+        #region Fields and Autoproperties
 
         public bool _first = true;
-        public TreeUVSidebarCollection _sidebar;
-        public Texture2D _previewTexture;
         public Material _previewMaterial;
+        public Texture2D _previewTexture;
+        public TreeUVSidebarCollection _sidebar;
 
         private readonly float buttonHeightMultiplier = .06f;
-        private readonly int initialButtonHeight = 32;
         private readonly float initialMenu1Width = 295f;
 
         private readonly float menu1AHeight = 120f;
@@ -34,43 +45,39 @@ namespace Appalachia.Simulation.Trees.UI.UV
 
         private readonly float menuWidthMultiplier = .50f;
 
-        private readonly float smallButtonScale = .75f;
-
         private readonly float miniButtonScale = .65f;
 
-        private Rect uvGraph;
-        private float uvGraphScale = 1f;
-        private Vector2 uvGraphOffset = Vector2.zero;
-        private bool modifyingUVs;
+        private readonly float smallButtonScale = .75f;
+        private readonly int initialButtonHeight = 32;
         private bool eatNextKeyUp;
-
-        private bool m_mouseDragging;
-        private bool needsRepaint;
+        private bool m_draggingCanvas;
 
         private bool m_ignore;
+
+        private bool m_mouseDragging;
         private bool m_rightMouseDrag;
-        private bool m_draggingCanvas;
+        private bool modifyingUVs;
+        private bool needsRepaint;
+        private float uvGraphScale = 1f;
+
+        private Rect uvGraph;
+        private Vector2 uvGraphOffset = Vector2.zero;
+
+        #endregion
+
+        public abstract TD container { get; set; }
 
         private float buttonHeight =>
             Mathf.Min(initialButtonHeight, EditorGUIUtility.currentViewWidth * buttonHeightMultiplier);
 
         private float miniButtonHeight => miniButtonScale * buttonHeight;
 
-        private float smallButtonHeight => smallButtonScale * buttonHeight;
-
         private float sideToolbarWidth =>
             Mathf.Min(initialMenu1Width, EditorGUIUtility.currentViewWidth * menuWidthMultiplier);
 
-        protected void ResetState()
-        {
-            container = null;
-            _first = true;
-            _sidebar = null;
-        }
+        private float smallButtonHeight => smallButtonScale * buttonHeight;
 
-        protected abstract TD GetContainer();
-        
-        protected abstract InputMaterialCache GetData();
+        #region Event Functions
 
         protected void OnGUI()
         {
@@ -91,7 +98,7 @@ namespace Appalachia.Simulation.Trees.UI.UV
                 }
 
                 var data = GetData();
-                
+
                 _sidebar.RepopulateMenus(data, false, false);
 
                 EditorGUILayout.Space();
@@ -99,17 +106,14 @@ namespace Appalachia.Simulation.Trees.UI.UV
                 using (TreeGUI.Layout.Horizontal())
                 {
                     using (TreeGUI.Layout.Vertical(
-                        true,
-                        TreeGUI.Layout.Options.ExpandWidth(false).MinWidth(sideToolbarWidth).MaxWidth(sideToolbarWidth)
-                    ))
+                               true,
+                               TreeGUI.Layout.Options.ExpandWidth(false)
+                                      .MinWidth(sideToolbarWidth)
+                                      .MaxWidth(sideToolbarWidth)
+                           ))
                     {
-                        _sidebar.DrawInputMaterialMenu(
-                            sideToolbarWidth,
-                            menu1AHeight,
-                            buttonHeight
-                        );
+                        _sidebar.DrawInputMaterialMenu(sideToolbarWidth, menu1AHeight, buttonHeight);
 
-                      
                         _sidebar.DrawLeafRectMenu(
                             sideToolbarWidth,
                             menu1AHeight,
@@ -158,125 +162,14 @@ namespace Appalachia.Simulation.Trees.UI.UV
                     _tree.dataState = TSEDataContainer.DataState.Normal;
                 }*/
 
-                AppaLog.Error(ex);
+                Context.Log.Error(ex);
 
                 throw;
             }
         }
 
-        private void MoveTool(Rect rect, UVRect uvRect)
-        {
-            var e = Event.current;
+        #endregion
 
-            EditorHandleUtility.limitToLeftButton = false; // enable right click drag
-
-            var point = TreeUV.UVToGUIPoint(uvRect.center, rect.center, uvGraphOffset, uvGraphScale);
-            //var point = TreeUV.UVToGUIPoint(handlePosition, rect.center, uvGraphOffset, uvGraphScale);
-            
-            var pos = EditorHandleUtility.PositionHandle2d(1, point, TreeUV.HANDLE_SIZE);
-            uvRect.center = TreeUV.GUIToUVPoint(pos, rect.center, uvGraphOffset, uvGraphScale);
-
-            EditorHandleUtility.limitToLeftButton = true;
-
-            if (!e.isMouse)
-            {
-                return;
-            }
-
-            // Setting a custom pivot
-            if (((e.button == TreeUV.RIGHT_MOUSE_BUTTON) || (e.alt && (e.button == TreeUV.LEFT_MOUSE_BUTTON))) &&
-                !pos.Approx2(uvRect.center))
-            {
-                //userPivot = true; // flag the handle as having been user set.
-
-                if (TreeUV.ControlKey)
-                {
-                    uvRect.center = Snapping.SnapValue(pos, TreeUV.GRID_SNAP_INCREMENT);
-                }
-                
-                uvRect.center = TreeUV.GUIToUVPoint(pos, rect.center, uvGraphOffset, uvGraphScale);
-
-                //SetHandlePosition(handlePosition, true);
-
-                return;
-            }
-            
-            if (!pos.Approx2(point))
-            {
-                // Start of move UV operation
-                if (!modifyingUVs)
-                {
-                    modifyingUVs = true;
-                }
-
-                needsRepaint = true;
-            }
-        }
-
-        private void RotateTool(Rect rect, UVRect uvRect)
-        {
-            var handlePoint = TreeUV.UVToGUIPoint(uvRect.center, rect.center, uvGraphOffset, uvGraphScale);
-
-            var modifier = _sidebar.SelectedLeafRect.rect.GetRotationModifier();
-            
-            var newRotation = EditorHandleUtility.RotationHandle2d(0, handlePoint, modifier, TreeUV.HANDLE_SIZE);
-
-            var diff = newRotation - modifier;
-
-            if (Mathf.Abs(diff) > 1f)
-            {
-                if (!modifyingUVs)
-                {
-                    modifyingUVs = true;
-                }
-
-                if (TreeUV.ControlKey)
-                {
-                    newRotation = Snapping.SnapValue(newRotation, 15f);
-                }
-                
-                _sidebar.SelectedLeafRect.rect.SetRotationModifier(newRotation);
-            }
-
-            needsRepaint = true;
-        }
-
-        private void ScaleTool(Rect rect, UVRect uvRect)
-        {
-            var point = TreeUV.UVToGUIPoint(uvRect.center, rect.center, uvGraphOffset, uvGraphScale);
-
-            var modifier = _sidebar.SelectedLeafRect.rect.GetScaleModifier();
-
-            var uvScale = EditorHandleUtility.ScaleHandle2d(2, point, modifier, TreeUV.HANDLE_SIZE);
-            
-            if (TreeUV.ControlKey)
-            {
-                uvScale = Snapping.SnapValue(uvScale, TreeUV.GRID_SNAP_INCREMENT);
-            }
-
-            if (uvScale.x.Approx(0f, Mathf.Epsilon))
-            {
-                uvScale.x = .0001f;
-            }
-
-            if (uvScale.y.Approx(0f, Mathf.Epsilon))
-            {
-                uvScale.y = .0001f;
-            }
-
-            if (modifier != uvScale)
-            {
-                if (!modifyingUVs)
-                {
-                    modifyingUVs = true;
-                }
-
-                _sidebar.SelectedLeafRect.rect.SetScaleModifier(uvScale);
-                    
-                needsRepaint = true;
-            }
-        }
-        
         // Internal because pb_Editor needs to call this sometimes.
         internal void OnFinishUVModification(UVRect uvRect)
         {
@@ -287,10 +180,91 @@ namespace Appalachia.Simulation.Trees.UI.UV
                     uvRect.Finish();
                 }
 
-                LeafUVRectCollection.instance.MarkAsModified();
+                _leafUVRectCollection.MarkAsModified();
             }
-            
+
             modifyingUVs = false;
+        }
+
+        protected abstract TD GetContainer();
+
+        protected abstract InputMaterialCache GetData();
+
+        protected void ResetState()
+        {
+            container = null;
+            _first = true;
+            _sidebar = null;
+        }
+
+        private void DrawActionSection(UVRect uvRect)
+        {
+            GUI.enabled = uvRect != null;
+
+            GUILayout.Space(4);
+            TreeGUI.Draw.Title("Actions");
+
+            GUILayout.Space(4);
+
+            TreeGUI.Button.Standard(
+                "Flip Horizontal",
+                "Flip Horizontal",
+                () => uvRect.flipX = !uvRect.flipX,
+                TreeGUI.Styles.Button,
+                TreeGUI.Layout.Options.None
+            );
+            GUILayout.Space(4);
+
+            TreeGUI.Button.Standard(
+                "Flip Vertical",
+                "Flip Vertical",
+                () => uvRect.flipY = !uvRect.flipY,
+                TreeGUI.Styles.Button,
+                TreeGUI.Layout.Options.None
+            );
+
+            GUILayout.Space(4);
+
+            TreeGUI.Button.Standard(
+                "Fit UVs Snug",
+                "Fit UVs Snug",
+                () =>
+                {
+                    var rect = FitUVs(.01f, _previewTexture);
+                    uvRect.center = rect.center;
+                    uvRect.size = rect.size;
+                    uvRect.rotation = 0;
+                },
+                TreeGUI.Styles.Button,
+                TreeGUI.Layout.Options.None
+            );
+
+            TreeGUI.Button.Standard(
+                "Fit UVs Relaxed",
+                "Fit UVs Relaxed",
+                () =>
+                {
+                    var rect = FitUVs(.05f, _previewTexture);
+                    uvRect.center = rect.center;
+                    uvRect.size = rect.size;
+                    uvRect.rotation = 0;
+                },
+                TreeGUI.Styles.Button,
+                TreeGUI.Layout.Options.None
+            );
+
+            TreeGUI.Button.Standard(
+                "Reset UVs",
+                "Reset UVs",
+                () =>
+                {
+                    uvRect.center = Vector2.one * .5f;
+                    uvRect.rotation = 0f;
+                    uvRect.size = Vector2.one;
+                },
+                TreeGUI.Styles.Button,
+                TreeGUI.Layout.Options.None
+            );
         }
 
         private void DrawUVGraph(Rect rect)
@@ -312,7 +286,7 @@ namespace Appalachia.Simulation.Trees.UI.UV
 
             TreeGridDrawer.DrawUVGridTexture(_previewTexture, rect.center, uvGraphScale, uvGraphOffset);
             TreeGridDrawer.DrawUVGrid(rect.center, uvGraphScale, uvGraphOffset);
-            
+
             TreeGridDrawer.DrawUVGridTextureLabels();
 
             if (_sidebar.SelectedInputMaterial == null)
@@ -320,8 +294,8 @@ namespace Appalachia.Simulation.Trees.UI.UV
                 return;
             }
 
-            var uvRects = LeafUVRectCollection.instance.Get(_sidebar.SelectedInputMaterial.material);
-            
+            var uvRects = _leafUVRectCollection.Get(_sidebar.SelectedInputMaterial.material);
+
             foreach (var uvRect in uvRects)
             {
                 var outlineColor = TreeUV.UVColorSecondary;
@@ -335,12 +309,19 @@ namespace Appalachia.Simulation.Trees.UI.UV
                     drawLabels = true;
                 }
 
-                TreeGridDrawer.DrawUVGraph(rect.center, uvGraphScale, uvGraphOffset, uvRect, outlineColor, handleColor, drawLabels);
+                TreeGridDrawer.DrawUVGraph(
+                    rect.center,
+                    uvGraphScale,
+                    uvGraphOffset,
+                    uvRect,
+                    outlineColor,
+                    handleColor,
+                    drawLabels
+                );
             }
 
             if (_sidebar.HasSelectedLeafRect)
             {
-
                 switch (TreeGridToolbar.tool)
                 {
                     case Tool.Move:
@@ -356,11 +337,14 @@ namespace Appalachia.Simulation.Trees.UI.UV
                         break;
                 }
 
-                if (m_mouseDragging && (EditorHandleUtility.CurrentID < 0) && !m_draggingCanvas && !m_rightMouseDrag)
+                if (m_mouseDragging &&
+                    (EditorHandleUtility.CurrentID < 0) &&
+                    !m_draggingCanvas &&
+                    !m_rightMouseDrag)
                 {
-                    var oldColor = UnityEngine.GUI.backgroundColor;
-                    UnityEngine.GUI.backgroundColor = TreeUV.DRAG_BOX_COLOR;
-                    UnityEngine.GUI.backgroundColor = oldColor;
+                    var oldColor = GUI.backgroundColor;
+                    GUI.backgroundColor = TreeUV.DRAG_BOX_COLOR;
+                    GUI.backgroundColor = oldColor;
                 }
             }
 
@@ -369,6 +353,83 @@ namespace Appalachia.Simulation.Trees.UI.UV
                 Repaint();
                 needsRepaint = false;
             }
+        }
+
+        private Rect FitUVs(float padding, Texture2D tex)
+        {
+            var minX = -1f;
+            var maxX = -1f;
+            var minY = -1f;
+            var maxY = -1f;
+
+            for (var y = 0; y < tex.height; y++) // bottom to top
+            {
+                var pixels = tex.GetPixels(0, y, tex.width, 1);
+
+                for (var x = 0; x < tex.width; x++) // left to right
+                {
+                    var pixel = pixels[x];
+
+                    if (pixel.a > .005f)
+                    {
+                        if (Mathf.Abs(minY - -1) < float.Epsilon)
+                        {
+                            minY = y;
+                        }
+
+                        if ((Mathf.Abs(minX - -1) < float.Epsilon) || (x < minX))
+                        {
+                            minX = x;
+                        }
+
+                        maxY = y;
+
+                        if (x > maxX)
+                        {
+                            maxX = x;
+                        }
+                    }
+                }
+            }
+
+            var paddingX = padding * tex.width;
+            var paddingY = padding * tex.height;
+
+            minX -= paddingX;
+            minY -= paddingY;
+            maxX += paddingX;
+            maxY += paddingY;
+
+            minX /= tex.width;
+            minY /= tex.height;
+            maxX /= tex.width;
+            maxY /= tex.height;
+
+            minX = Mathf.Clamp01(minX);
+            minY = Mathf.Clamp01(minY);
+            maxX = Mathf.Clamp01(maxX);
+            maxY = Mathf.Clamp01(maxY);
+
+            return new Rect(minX, minY, maxX - minX, maxY - minY);
+        }
+
+        // Zooms in on the current UV selection
+        private void FrameSelection(Rect rect, UVRect uvRect)
+        {
+            needsRepaint = true;
+
+            if (uvRect == null)
+            {
+                SetCanvasCenter(Event.current.mousePosition - rect.center - uvGraphOffset);
+                SetCanvasScale(1f);
+                return;
+            }
+
+            SetCanvasScale(2f - uvRect.size.magnitude);
+
+            var center = new Vector2(.5f, -.5f) * (TreeUV.UV_GRID_SIZE * uvGraphScale);
+            center.y *= 2f;
+            SetCanvasCenter(center);
         }
 
         private void HandleInput(Rect rect)
@@ -392,7 +453,8 @@ namespace Appalachia.Simulation.Trees.UI.UV
 
                     m_mouseDragging = true;
 
-                    if ((e.button == TreeUV.RIGHT_MOUSE_BUTTON) || ((e.button == TreeUV.LEFT_MOUSE_BUTTON) && e.alt))
+                    if ((e.button == TreeUV.RIGHT_MOUSE_BUTTON) ||
+                        ((e.button == TreeUV.LEFT_MOUSE_BUTTON) && e.alt))
                     {
                         m_rightMouseDrag = true;
                     }
@@ -414,7 +476,8 @@ namespace Appalachia.Simulation.Trees.UI.UV
                             SetCanvasScale(
                                 uvGraphScale +
                                 ((e.delta.x - e.delta.y) *
-                                    ((uvGraphScale / TreeUV.MAX_GRAPH_SCALE_SCROLL) * TreeUV.ALT_SCROLL_MODIFIER))
+                                 ((uvGraphScale / TreeUV.MAX_GRAPH_SCALE_SCROLL) *
+                                  TreeUV.ALT_SCROLL_MODIFIER))
                             );
                         }
                     }
@@ -456,7 +519,7 @@ namespace Appalachia.Simulation.Trees.UI.UV
                     {
                         OnFinishUVModification(_sidebar.SelectedLeafRect.rect);
                     }
-                    
+
                     needsRepaint = true;
                     break;
 
@@ -464,7 +527,8 @@ namespace Appalachia.Simulation.Trees.UI.UV
 
                     SetCanvasScale(
                         uvGraphScale -
-                        (e.delta.y * ((uvGraphScale / TreeUV.MAX_GRAPH_SCALE_SCROLL) * TreeUV.SCROLL_MODIFIER))
+                        (e.delta.y *
+                         ((uvGraphScale / TreeUV.MAX_GRAPH_SCALE_SCROLL) * TreeUV.SCROLL_MODIFIER))
                     );
                     e.Use();
                     needsRepaint = true;
@@ -495,7 +559,7 @@ namespace Appalachia.Simulation.Trees.UI.UV
                 case KeyCode.Alpha0:
                     uvGraphScale = 1f;
                     SetCanvasCenter(new Vector2(.5f, -.5f) * (TreeUV.UV_GRID_SIZE * uvGraphScale));
-                    
+
                     e.Use();
                     needsRepaint = true;
                     break;
@@ -526,31 +590,124 @@ namespace Appalachia.Simulation.Trees.UI.UV
             }
         }
 
-        // Zooms in on the current UV selection
-        private void FrameSelection(Rect rect, UVRect uvRect)
+        private void MoveTool(Rect rect, UVRect uvRect)
         {
-            needsRepaint = true;
+            var e = Event.current;
 
-            if (uvRect == null)
+            EditorHandleUtility.limitToLeftButton = false; // enable right click drag
+
+            var point = TreeUV.UVToGUIPoint(uvRect.center, rect.center, uvGraphOffset, uvGraphScale);
+
+            //var point = TreeUV.UVToGUIPoint(handlePosition, rect.center, uvGraphOffset, uvGraphScale);
+
+            var pos = EditorHandleUtility.PositionHandle2d(1, point, TreeUV.HANDLE_SIZE);
+            uvRect.center = TreeUV.GUIToUVPoint(pos, rect.center, uvGraphOffset, uvGraphScale);
+
+            EditorHandleUtility.limitToLeftButton = true;
+
+            if (!e.isMouse)
             {
-                SetCanvasCenter(Event.current.mousePosition - rect.center - uvGraphOffset);
-                SetCanvasScale(1f);
                 return;
             }
 
-            SetCanvasScale(2f - uvRect.size.magnitude);
+            // Setting a custom pivot
+            if (((e.button == TreeUV.RIGHT_MOUSE_BUTTON) ||
+                 (e.alt && (e.button == TreeUV.LEFT_MOUSE_BUTTON))) &&
+                !pos.Approx2(uvRect.center))
+            {
+                //userPivot = true; // flag the handle as having been user set.
 
-            var center = new Vector2(.5f, -.5f) * (TreeUV.UV_GRID_SIZE * uvGraphScale);
-            center.y *= 2f;
-            SetCanvasCenter(center);
+                if (TreeUV.ControlKey)
+                {
+                    uvRect.center = Snapping.SnapValue(pos, TreeUV.GRID_SNAP_INCREMENT);
+                }
+
+                uvRect.center = TreeUV.GUIToUVPoint(pos, rect.center, uvGraphOffset, uvGraphScale);
+
+                //SetHandlePosition(handlePosition, true);
+
+                return;
+            }
+
+            if (!pos.Approx2(point))
+            {
+                // Start of move UV operation
+                if (!modifyingUVs)
+                {
+                    modifyingUVs = true;
+                }
+
+                needsRepaint = true;
+            }
         }
 
-        // Sets the canvas scale.  1 is full size, .1 is super zoomed, and 2 would be 2x out.
-        private void SetCanvasScale(float zoom)
+        private void RotateTool(Rect rect, UVRect uvRect)
         {
-            var center = -(uvGraphOffset / uvGraphScale);
-            uvGraphScale = Mathf.Clamp(zoom, TreeUV.MIN_GRAPH_SCALE, TreeUV.MAX_GRAPH_SCALE);
-            SetCanvasCenter(center * uvGraphScale);
+            var handlePoint = TreeUV.UVToGUIPoint(uvRect.center, rect.center, uvGraphOffset, uvGraphScale);
+
+            var modifier = _sidebar.SelectedLeafRect.rect.GetRotationModifier();
+
+            var newRotation = EditorHandleUtility.RotationHandle2d(
+                0,
+                handlePoint,
+                modifier,
+                TreeUV.HANDLE_SIZE
+            );
+
+            var diff = newRotation - modifier;
+
+            if (Mathf.Abs(diff) > 1f)
+            {
+                if (!modifyingUVs)
+                {
+                    modifyingUVs = true;
+                }
+
+                if (TreeUV.ControlKey)
+                {
+                    newRotation = Snapping.SnapValue(newRotation, 15f);
+                }
+
+                _sidebar.SelectedLeafRect.rect.SetRotationModifier(newRotation);
+            }
+
+            needsRepaint = true;
+        }
+
+        private void ScaleTool(Rect rect, UVRect uvRect)
+        {
+            var point = TreeUV.UVToGUIPoint(uvRect.center, rect.center, uvGraphOffset, uvGraphScale);
+
+            var modifier = _sidebar.SelectedLeafRect.rect.GetScaleModifier();
+
+            var uvScale = EditorHandleUtility.ScaleHandle2d(2, point, modifier, TreeUV.HANDLE_SIZE);
+
+            if (TreeUV.ControlKey)
+            {
+                uvScale = Snapping.SnapValue(uvScale, TreeUV.GRID_SNAP_INCREMENT);
+            }
+
+            if (uvScale.x.Approx(0f, Mathf.Epsilon))
+            {
+                uvScale.x = .0001f;
+            }
+
+            if (uvScale.y.Approx(0f, Mathf.Epsilon))
+            {
+                uvScale.y = .0001f;
+            }
+
+            if (modifier != uvScale)
+            {
+                if (!modifyingUVs)
+                {
+                    modifyingUVs = true;
+                }
+
+                _sidebar.SelectedLeafRect.rect.SetScaleModifier(uvScale);
+
+                needsRepaint = true;
+            }
         }
 
         // Center the canvas on this point.  Should be in GUI coordinates.
@@ -561,133 +718,12 @@ namespace Appalachia.Simulation.Trees.UI.UV
             uvGraphOffset.y = -uvGraphOffset.y;
         }
 
-        private void DrawActionSection(UVRect uvRect)
+        // Sets the canvas scale.  1 is full size, .1 is super zoomed, and 2 would be 2x out.
+        private void SetCanvasScale(float zoom)
         {
-            UnityEngine.GUI.enabled = uvRect != null;
-
-            GUILayout.Space(4);
-            TreeGUI.Draw.Title("Actions");
-
-            GUILayout.Space(4);
-
-            TreeGUI.Button.Standard(
-                "Flip Horizontal",
-                "Flip Horizontal",
-                () => uvRect.flipX = !uvRect.flipX,
-                TreeGUI.Styles.Button,
-                TreeGUI.Layout.Options.None
-            );
-            GUILayout.Space(4);
-
-            TreeGUI.Button.Standard(
-                "Flip Vertical",
-                "Flip Vertical",
-                () => uvRect.flipY = !uvRect.flipY,
-                TreeGUI.Styles.Button,
-                TreeGUI.Layout.Options.None
-            );
-
-            GUILayout.Space(4);
-
-            TreeGUI.Button.Standard(
-                "Fit UVs Snug",
-                "Fit UVs Snug",
-                () =>
-                {
-                    var rect = FitUVs(.01f, _previewTexture);
-                    uvRect.center = rect.center;
-                    uvRect.size = rect.size;
-                    uvRect.rotation = 0;
-                },
-                TreeGUI.Styles.Button,
-                TreeGUI.Layout.Options.None
-            );
-            
-            TreeGUI.Button.Standard(
-                "Fit UVs Relaxed",
-                "Fit UVs Relaxed",
-                () =>
-                {
-                    var rect = FitUVs(.05f, _previewTexture);
-                    uvRect.center = rect.center;
-                    uvRect.size = rect.size;
-                    uvRect.rotation = 0;
-                },
-                TreeGUI.Styles.Button,
-                TreeGUI.Layout.Options.None
-            );
-            
-            TreeGUI.Button.Standard(
-                "Reset UVs",
-                "Reset UVs",
-                () =>
-                {
-                    uvRect.center = Vector2.one * .5f;
-                    uvRect.rotation = 0f;
-                    uvRect.size = Vector2.one;
-                },
-                TreeGUI.Styles.Button,
-                TreeGUI.Layout.Options.None
-            );
-        }
-        
-        private Rect FitUVs(float padding, Texture2D tex)
-        {
-            float minX = -1f;
-            float maxX = -1f;
-            float minY = -1f;
-            float maxY = -1f;
-            
-            for (var y = 0; y < tex.height; y++) // bottom to top
-            {
-                var pixels = tex.GetPixels(0, y, tex.width, 1);
-                
-                for (var x = 0; x < tex.width; x++) // left to right
-                {
-                    var pixel = pixels[x];
-                    
-                    if (pixel.a > .005f)
-                    {
-                        if (System.Math.Abs(minY - (-1)) < float.Epsilon)
-                        {
-                            minY = y;
-                        }
-
-                        if ((System.Math.Abs(minX - (-1)) < float.Epsilon) || (x < minX))
-                        {
-                            minX = x;
-                        }
-
-                        maxY = y;
-
-                        if (x > maxX)
-                        {
-                            maxX = x;
-                        }
-                    }
-                }
-            }
-
-            var paddingX = padding * tex.width;
-            var paddingY = padding * tex.height;
-
-            minX -= paddingX;
-            minY -= paddingY;
-            maxX += paddingX;
-            maxY += paddingY;
-
-            minX /= tex.width;
-            minY /= tex.height;
-            maxX /= tex.width;
-            maxY /= tex.height;
-
-            minX = Mathf.Clamp01(minX);
-            minY = Mathf.Clamp01(minY);
-            maxX = Mathf.Clamp01(maxX);
-            maxY = Mathf.Clamp01(maxY);
-
-            return new Rect(minX, minY, maxX - minX, maxY - minY);
-
+            var center = -(uvGraphOffset / uvGraphScale);
+            uvGraphScale = Mathf.Clamp(zoom, TreeUV.MIN_GRAPH_SCALE, TreeUV.MAX_GRAPH_SCALE);
+            SetCanvasCenter(center * uvGraphScale);
         }
     }
 }

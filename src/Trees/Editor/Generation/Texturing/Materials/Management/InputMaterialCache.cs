@@ -18,7 +18,7 @@ using Appalachia.Simulation.Trees.Generation.Texturing.Materials.Input;
 using Appalachia.Simulation.Trees.Hierarchy;
 using Appalachia.Simulation.Trees.Prefabs;
 using Appalachia.Simulation.Trees.Settings;
-using Appalachia.Utility.Logging;
+using Appalachia.Utility.Strings;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -29,6 +29,8 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Management
     [Serializable]
     public class InputMaterialCache
     {
+        
+        
         private Dictionary<Material, int> _atlasInputIDsByMaterial;
 
         private Dictionary<Material, int> _atlasMaterialIndexLookup;
@@ -319,7 +321,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Management
                 }
                 catch (Exception ex)
                 {
-                    AppaLog.Error(ex);
+                    Context.Log.Error(ex);
                     throw;
                 }
             }
@@ -356,7 +358,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Management
                 }
                 catch (Exception ex)
                 {
-                    AppaLog.Error(ex);
+                    Context.Log.Error(ex);
                     throw;
                 }
             }
@@ -975,7 +977,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Management
                         builder.Append(tex.name);
                         builder.Append(tex.GetInstanceID());
                         builder.Append(AppaFile.GetLastWriteTime(path).ToString("s"));
-                        builder.Append(AppaFile.ReadAllText($"{path}.meta"));
+                        builder.Append(AppaFile.ReadAllText(ZString.Format("{0}.meta", path)));
                     }
                 }
 

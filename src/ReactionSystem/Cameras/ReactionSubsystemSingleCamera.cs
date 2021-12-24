@@ -1,6 +1,5 @@
 using System;
 using Appalachia.Core.Attributes.Editing;
-using Appalachia.Utility.Logging;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
 using UnityEngine;
@@ -23,7 +22,7 @@ namespace Appalachia.Simulation.ReactionSystem.Cameras
 
         [FoldoutGroup("Camera")]
         [SmartLabel]
-        [OnValueChanged(nameof(Initialize))]
+        [OnValueChanged(nameof(InitializeSynchronous))]
         public SubsystemCameraComponent cameraComponent;
 
         public override RenderTexture renderTexture =>
@@ -41,14 +40,14 @@ namespace Appalachia.Simulation.ReactionSystem.Cameras
 
                 if (cameraComponent.center == null)
                 {
-                    AppaLog.Error("Must assign system center.");
+                    Context.Log.Error("Must assign system center.");
 
                     return;
                 }
 
                 if (string.IsNullOrWhiteSpace(SubsystemName))
                 {
-                    AppaLog.Error("Must define system name.");
+                    Context.Log.Error("Must define system name.");
                 }
 
                 gameObject.name = SubsystemName;

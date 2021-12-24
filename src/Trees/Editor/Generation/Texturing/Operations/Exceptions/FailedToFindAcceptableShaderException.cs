@@ -1,4 +1,5 @@
 using System;
+using Appalachia.Utility.Strings;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Generation.Texturing.Operations.Exceptions
@@ -6,7 +7,11 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Operations.Exceptions
     public class FailedToFindAcceptableShaderException : Exception
     {
         public FailedToFindAcceptableShaderException(Material m) : base(
-            $"Failed to find an input shader that could handle shader [{m.shader.name}] from material [{m?.name}]"
+            ZString.Format(
+                "Failed to find an input shader that could handle shader [{0}] from material [{1}]",
+                m.shader.name,
+                m?.name
+            )
         )
         {
             this.m = m;

@@ -110,7 +110,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Operations
                 if (outputMaterialCache.atlasOutputMaterial != null)
                 {
                     /*AssignTransmissionMaterialProperties_Atlas(
-                        DefaultMaterialResource.instance.material,
+                        _defaultMaterialResource.material,
                         materialSettings
                     );
                 }
@@ -296,7 +296,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Operations
             {
                 if (materials.outputMaterialCache.tiledOutputMaterials.Count == 0)
                 {
-                    AssignMaterialWindProperties_Tiled(windSettings, DefaultMaterialResource.instance.material);
+                    AssignMaterialWindProperties_Tiled(windSettings, _defaultMaterialResource.material);
                 }
                 else
                 {
@@ -311,7 +311,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Operations
 
                 if (materials.outputMaterialCache.atlasOutputMaterial == null)
                 {
-                    AssignMaterialWindProperties_Atlas(windSettings, DefaultMaterialResource.instance.material);
+                    AssignMaterialWindProperties_Atlas(windSettings, _defaultMaterialResource.material);
                 }
                 else
                 {
@@ -568,7 +568,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Operations
             {
                 if (outputMaterialCache.tiledOutputMaterials.Count == 0)
                 {
-                    AssignDefaultMaterialProperties_Tiled(DefaultMaterialResource.instance.material, materialSettings);
+                    AssignDefaultMaterialProperties_Tiled(_defaultMaterialResource.material, materialSettings);
                 }
                 else
                 {
@@ -590,7 +590,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Operations
 
                 if (outputMaterialCache.atlasOutputMaterial == null)
                 {
-                    AssignDefaultMaterialProperties_Atlas(DefaultMaterialResource.instance.material, materialSettings);
+                    AssignDefaultMaterialProperties_Atlas(_defaultMaterialResource.material, materialSettings);
                 }
                 else
                 {

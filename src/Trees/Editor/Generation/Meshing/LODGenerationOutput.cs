@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Appalachia.Core.Objects.Root;
 using Appalachia.Simulation.Trees.Core.Geometry;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Generation.Meshing
 {
     [Serializable]
-    public class LODGenerationOutput
+    public class LODGenerationOutput : AppalachiaSimpleBase
     {
         [SerializeField] private int _lodLevel;
         public int lodLevel => _lodLevel;

@@ -11,6 +11,7 @@ using Appalachia.Simulation.Trees.Generation.Geometry;
 using Appalachia.Simulation.Trees.Generation.Spline;
 using Appalachia.Simulation.Trees.Hierarchy;
 using Appalachia.Simulation.Trees.Shape;
+using Appalachia.Utility.Strings;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Generation
@@ -392,7 +393,9 @@ namespace Appalachia.Simulation.Trees.Generation
 
                 if (shape.matrix.isIdentity && (shape.parentShapeID != -1))
                 {
-                    throw new NotSupportedException($"Bad matrix for shape {shape.shapeID}!");
+                    throw new NotSupportedException(
+                        ZString.Format("Bad matrix for shape {0}!", shape.shapeID)
+                    );
                 }
             }
         }

@@ -2,6 +2,7 @@
 
 using System;
 using Appalachia.Core.Attributes.Editing;
+using Appalachia.Core.Objects.Root;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
 using UnityEngine;
@@ -11,7 +12,7 @@ using UnityEngine;
 namespace Appalachia.Simulation.Core
 {
     [Serializable]
-    public class RigidbodyData
+    public class RigidbodyData : AppalachiaSimpleBase
     {
         private const string _PRF_PFX = nameof(RigidbodyData) + ".";
 

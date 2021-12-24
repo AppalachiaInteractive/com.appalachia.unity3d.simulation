@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Appalachia.Core.Objects.Root;
 using Appalachia.Simulation.Trees.Generation.Texturing.Specifications;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -8,7 +9,7 @@ using UnityEngine;
 namespace Appalachia.Simulation.Trees.Generation.Texturing.Output
 {
     [Serializable]
-    public class OutputTextureProfile
+    public class OutputTextureProfile : AppalachiaSimpleBase
     {
         private sealed class OutputTextureProfileEqualityComparer : IEqualityComparer<OutputTextureProfile>
         {

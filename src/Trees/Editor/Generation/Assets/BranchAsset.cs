@@ -24,7 +24,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
         public static BranchAsset Create(string folder, NameBasis nameBasis)
         {
             var assetName = nameBasis.FileNameSO("asset");
-            var instance = LoadOrCreateNew<BranchAsset>(folder, assetName);
+            var instance = BranchAsset.LoadOrCreateNew(folder, assetName);
 
             return instance;
         }

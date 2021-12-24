@@ -2,14 +2,12 @@
 
 using System;
 using Appalachia.Core.Attributes.Editing;
-using Appalachia.Core.Behaviours;
+using Appalachia.Core.Objects.Root;
 using Appalachia.Simulation.Core.Metadata.Tree;
 using Appalachia.Simulation.Trees.Core.Model;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using Object = UnityEngine.Object;
-
-
 
 #endregion
 
@@ -17,8 +15,10 @@ namespace Appalachia.Simulation.Trees.Core
 {
     [DisallowMultipleComponent]
     [ExecuteAlways]
-    public class TreeRuntimeInstance: AppalachiaBehaviour
+    public sealed class TreeRuntimeInstance : AppalachiaBehaviour<TreeRuntimeInstance>
     {
+        #region Fields and Autoproperties
+
         [InlineEditor]
         [SmartLabel]
         public TreeSpeciesMetadata speciesMetadata;
@@ -37,20 +37,13 @@ namespace Appalachia.Simulation.Trees.Core
 
         [NonSerialized] private TreeStageMetadata _stageMetadata;
 
-        public TreeIndividualMetadata individualMetadata
-        {
-            get
-            {
-                if (_individualMetadata != null)
-                {
-                    return _individualMetadata;
-                }
+        #endregion
 
-                _individualMetadata = speciesMetadata.GetIndividual(metadata.individualID);
+        public bool CanBare => (ageMetadata != null) && ageMetadata.CanBare(metadata.stage);
 
-                return _individualMetadata;
-            }
-        }
+        public bool CanCut => (ageMetadata != null) && ageMetadata.CanCut(metadata.stage);
+
+        public bool CanRot => (ageMetadata != null) && ageMetadata.CanRot(metadata.stage);
 
         public TreeAgeMetadata ageMetadata
         {
@@ -67,6 +60,21 @@ namespace Appalachia.Simulation.Trees.Core
                 }
 
                 return _ageMetadata;
+            }
+        }
+
+        public TreeIndividualMetadata individualMetadata
+        {
+            get
+            {
+                if (_individualMetadata != null)
+                {
+                    return _individualMetadata;
+                }
+
+                _individualMetadata = speciesMetadata.GetIndividual(metadata.individualID);
+
+                return _individualMetadata;
             }
         }
 
@@ -88,11 +96,7 @@ namespace Appalachia.Simulation.Trees.Core
             }
         }
 
-        public bool CanCut => (ageMetadata != null) && ageMetadata.CanCut(metadata.stage);
-
-        public bool CanBare => (ageMetadata != null) && ageMetadata.CanBare(metadata.stage);
-
-        public bool CanRot => (ageMetadata != null) && ageMetadata.CanRot(metadata.stage);
+        
 
 #if UNITY_EDITOR
         [SerializeField]
@@ -116,7 +120,7 @@ namespace Appalachia.Simulation.Trees.Core
         [DisableIf(nameof(_missingModel))]
         public void SelectModel()
         {
-            UnityEditor.Selection.objects = new Object[] {_model.GameObject};
+            UnityEditor.Selection.objects = new Object[] { _model.GameObject };
         }
 
         private void Update()

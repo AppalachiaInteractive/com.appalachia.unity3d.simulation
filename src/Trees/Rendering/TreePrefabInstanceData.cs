@@ -1,11 +1,12 @@
 using System;
+using Appalachia.Core.Objects.Root;
 using Appalachia.Simulation.Core.Metadata.Tree.Types;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Rendering
 {
     [Serializable]
-    public class TreePrefabInstanceData
+    public class TreePrefabInstanceData : AppalachiaSimpleBase
     {
         public Matrix4x4 originalTransform;
         public Matrix4x4 currentTransform;

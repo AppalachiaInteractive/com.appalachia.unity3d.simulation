@@ -3,7 +3,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Appalachia.Simulation.Trees.Generation.Texturing.Shading.OutputShaders;
-using Appalachia.Simulation.Trees.UI.GUI;
+using Appalachia.Simulation.Trees.UI;
 using Sirenix.OdinInspector.Editor;
 
 #endregion

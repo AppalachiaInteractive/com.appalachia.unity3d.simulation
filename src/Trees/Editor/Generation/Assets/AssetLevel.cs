@@ -1,10 +1,11 @@
 using System;
+using Appalachia.Core.Objects.Root;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Generation.Assets
 {
     [Serializable]
-    public class AssetLevel
+    public class AssetLevel : AppalachiaSimpleBase
     {
         public Mesh mesh;
 

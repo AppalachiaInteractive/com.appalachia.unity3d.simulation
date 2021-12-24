@@ -1,4 +1,5 @@
 using System;
+using Appalachia.Core.Attributes;
 using Appalachia.Core.Preferences;
 using Appalachia.Core.Preferences.Globals;
 using Appalachia.Simulation.Core.Metadata.Density;
@@ -7,14 +8,41 @@ using UnityEngine;
 
 namespace Appalachia.Simulation.Core.Selections
 {
+    [CallStaticConstructorInEditor]
     public static class LookupSelectionGenerator
     {
+        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
+        static LookupSelectionGenerator()
+        {
+            PhysicsMaterialsCollection.InstanceAvailable += i => _physicsMaterialsCollection = i;
+            DensityMetadataCollection.InstanceAvailable += i => _densityMetadataCollection = i;
+        }
+
+        #region Static Fields and Autoproperties
+
+        private static PhysicsMaterialsCollection _physicsMaterialsCollection;
+        private static DensityMetadataCollection _densityMetadataCollection;
+
+        #endregion
+
+        public static DensityMetadataLookupSelection CreateDensityMetadataSelector(
+            Action<DensityMetadata> select)
+        {
+            return ScriptableObject.CreateInstance<DensityMetadataLookupSelection>()
+                                   .Prepare(
+                                        _densityMetadataCollection,
+                                        select,
+                                        ColorPrefs.Instance.DensitySelectorButton,
+                                        ColorPrefs.Instance.DensitySelectorColorDrop
+                                    );
+        }
+
         public static PhysicMaterialLookupSelection CreatePhysicMaterialSelector(
             Action<PhysicMaterialWrapper> select)
         {
             return ScriptableObject.CreateInstance<PhysicMaterialLookupSelection>()
-                                   .Initialize(
-                                        PhysicsMaterialsCollection.instance,
+                                   .Prepare(
+                                        _physicsMaterialsCollection,
                                         select,
                                         ColorPrefs.Instance.PhysicMaterialSelectorButton,
                                         ColorPrefs.Instance.PhysicMaterialSelectorColorDrop
@@ -26,25 +54,12 @@ namespace Appalachia.Simulation.Core.Selections
             PREF<Color> buttonColor)
         {
             return ScriptableObject.CreateInstance<PhysicMaterialLookupSelection>()
-                                   .Initialize(
-                                        PhysicsMaterialsCollection.instance,
+                                   .Prepare(
+                                        _physicsMaterialsCollection,
                                         select,
                                         buttonColor,
                                         ColorPrefs.Instance.PhysicMaterialSelectorColorDrop
                                     );
         }
-
-        public static DensityMetadataLookupSelection CreateDensityMetadataSelector(
-            Action<DensityMetadata> select)
-        {
-            return ScriptableObject.CreateInstance<DensityMetadataLookupSelection>()
-                                   .Initialize(
-                                        DensityMetadataCollection.instance,
-                                        select,
-                                        ColorPrefs.Instance.DensitySelectorButton,
-                                        ColorPrefs.Instance.DensitySelectorColorDrop
-                                    );
-        }
-
     }
 }

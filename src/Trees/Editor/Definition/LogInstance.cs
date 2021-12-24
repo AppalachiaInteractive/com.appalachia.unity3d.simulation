@@ -11,12 +11,12 @@ using Appalachia.Simulation.Trees.Core.Seeds;
 using Appalachia.Simulation.Trees.Data;
 using Appalachia.Simulation.Trees.Generation.Assets;
 using Appalachia.Simulation.Trees.Generation.Meshing;
-using Appalachia.Simulation.Trees.Generation.Texturing.Materials.Output;
 using Appalachia.Simulation.Trees.Icons;
 using Appalachia.Simulation.Trees.Interfaces;
 using Appalachia.Simulation.Trees.ResponsiveUI;
 using Appalachia.Simulation.Trees.Settings;
 using Appalachia.Simulation.Trees.Shape.Collections;
+using Appalachia.Utility.Strings;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -80,7 +80,7 @@ namespace Appalachia.Simulation.Trees.Definition
         public static LogInstance Create(string folder, NameBasis nameBasis, int logID, LogAsset asset)
         {
             var assetName = nameBasis.FileNameLogSO(logID);
-            var instance = LoadOrCreateNew<LogInstance>(folder, assetName);
+            var instance = LogInstance.LoadOrCreateNew(folder, assetName);
 
             instance.asset = asset;
             instance.logID = logID;
@@ -93,7 +93,7 @@ namespace Appalachia.Simulation.Trees.Definition
 
         public static string GetMenuString(int logID)
         {
-            return $"{logID:00}";
+            return ZString.Format("{0:00}", logID);
         }
 
         public void ClearGeometry(LevelOfDetailSettingsCollection lodSettings)
@@ -220,7 +220,7 @@ namespace Appalachia.Simulation.Trees.Definition
         {
             if (materials.Length == 0)
             {
-                asset.levels[level].materials = new[] {DefaultMaterialResource.instance.material};
+                asset.levels[level].materials = new[] { _defaultMaterialResource.material };
             }
             else
             {

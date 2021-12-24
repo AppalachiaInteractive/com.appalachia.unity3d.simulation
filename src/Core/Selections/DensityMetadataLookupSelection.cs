@@ -8,5 +8,6 @@ namespace Appalachia.Simulation.Core.Selections
         DensityMetadataLookupSelection : MetadataLookupSelection<DensityMetadataLookupSelection, DensityMetadataCollection,
             DensityMetadata, AppaList_DensityMetadata>
     {
+        
     }
 }

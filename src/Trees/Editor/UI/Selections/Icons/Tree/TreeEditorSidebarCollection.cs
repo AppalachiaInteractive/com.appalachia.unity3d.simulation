@@ -1,14 +1,14 @@
 using System.Linq;
+using Appalachia.Core.Objects.Root;
 using Appalachia.Simulation.Core.Metadata.Tree.Types;
 using Appalachia.Simulation.Trees.Definition;
 using Appalachia.Simulation.Trees.Icons;
-using Appalachia.Simulation.Trees.UI.GUI;
 using Sirenix.OdinInspector.Editor;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.UI.Selections.Icons.Tree
 {
-    public class TreeEditorSidebarCollection
+    public class TreeEditorSidebarCollection : AppalachiaSimpleBase
     {
         private bool _changing;
         private object _lastAgeSelection;

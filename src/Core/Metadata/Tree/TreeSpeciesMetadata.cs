@@ -1,11 +1,13 @@
 using System.Collections.Generic;
-using Appalachia.Core.Scriptables;
+using Appalachia.Core.Objects.Scriptables;
 using Appalachia.Simulation.Core.Metadata.Wood;
 
 namespace Appalachia.Simulation.Core.Metadata.Tree
 {
-    public class TreeSpeciesMetadata : IdentifiableAppalachiaObject
+    public class TreeSpeciesMetadata : IdentifiableAppalachiaObject<TreeSpeciesMetadata>
     {
+        
+        
         public string speciesName;
 
         public WoodSimulationData woodData;

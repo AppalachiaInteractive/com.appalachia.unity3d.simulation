@@ -2,6 +2,7 @@ using System;
 using Appalachia.CI.Integration.Assets;
 using Appalachia.Editing.Scene.Prefabs;
 using Appalachia.Simulation.Trees.Settings;
+using Appalachia.Utility.Strings;
 using UnityEditor;
 using UnityEngine;
 
@@ -30,12 +31,12 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
 
         public string GetMeshName(int meshLevel)
         {
-            return $"{CleanName}_LOD{meshLevel}";
+            return ZString.Format("{0}_LOD{1}", CleanName, meshLevel);
         }
 
         public string GetShadowCasterMeshName()
         {
-            return $"{CleanName}_SHADOW";
+            return ZString.Format("{0}_SHADOW", CleanName);
         }
     }
 }

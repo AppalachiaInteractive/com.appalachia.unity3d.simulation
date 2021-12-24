@@ -1,12 +1,14 @@
 using System;
 using System.Diagnostics;
+using Appalachia.Core.Objects.Root;
 using Appalachia.Simulation.Trees.Generation.Texturing.Materials.Rects;
+using Appalachia.Utility.Strings;
 using Sirenix.OdinInspector;
 
 namespace Appalachia.Simulation.Trees.Hierarchy.Settings
 {
     [Serializable]
-    public class LeafUVRect
+    public class LeafUVRect : AppalachiaSimpleBase
     {
         public UVRect rect = new UVRect();
 
@@ -14,11 +16,10 @@ namespace Appalachia.Simulation.Trees.Hierarchy.Settings
 
         [DebuggerStepThrough] public override string ToString()
         {
-            return 
-            $"{100f*probability:F0}% | " + 
-            $"cen ({rect.center.x:F1},{rect.center.y:F1}) | " +
-            $"{rect.rotation:F0}° | " +
-            $"sz ({rect.size.x:F1},{rect.size.y:F1})";
+            return ZString.Format("{0:F0}% | ",             100f * probability) +
+                   ZString.Format("cen ({0:F1},{1:F1}) | ", rect.center.x, rect.center.y) +
+                   ZString.Format("{0:F0}° | ",             rect.rotation) +
+                   ZString.Format("sz ({0:F1},{1:F1})",     rect.size.x, rect.size.y);
         }
 
         public LeafUVRect Clone()

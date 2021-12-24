@@ -1,4 +1,5 @@
 using System;
+using Appalachia.Core.Objects.Root;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -6,7 +7,7 @@ using Object = UnityEngine.Object;
 namespace Appalachia.Simulation.Trees.UI.Species
 {
     [Serializable]
-    public class EditorInstanceState
+    public class EditorInstanceState : AppalachiaSimpleBase
     {
         public bool last;
         public int instanceID;

@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Appalachia.Core.Attributes;
 using Appalachia.Editing.Debugging.Handle;
 using Appalachia.Simulation.Trees.Core;
 using Appalachia.Simulation.Trees.Core.Model;
@@ -11,16 +12,26 @@ using Appalachia.Simulation.Trees.Generation.Spline;
 using Appalachia.Simulation.Trees.Hierarchy.Collections;
 using Appalachia.Simulation.Trees.Shape;
 using Appalachia.Simulation.Trees.UI.Graph;
-using Appalachia.Simulation.Trees.UI.GUI;
 using Appalachia.Simulation.Trees.UI.Selections.State;
+using Appalachia.Utility.Strings;
 using UnityEngine;
 
 #endregion
 
 namespace Appalachia.Simulation.Trees.UI.Gizmos
 {
+    [CallStaticConstructorInEditor]
     public static class TreeGizmoDrawer
     {
+        static TreeGizmoDrawer()
+        {
+            TreeGizmoStyle.InstanceAvailable += i => _treeGizmoStyle = i;
+            TreeSpeciesEditorSelection.InstanceAvailable += i => _treeSpeciesEditorSelection = i;
+        }
+
+        private static TreeGizmoStyle _treeGizmoStyle;
+        private static TreeSpeciesEditorSelection _treeSpeciesEditorSelection;
+        
         public static void Draw(
             IHierarchyRead hierarchies,
             IShapeRead shapes,
@@ -44,9 +55,9 @@ namespace Appalachia.Simulation.Trees.UI.Gizmos
                     // Draw Spline
                     var previousPosition = branchMatrix.MultiplyPoint(SplineModeler.GetPositionAtTime(spline, 0.0f));
 
-                    for (var i = 0; i < TreeGizmoStyle.instance.splineAccuracy; i++)
+                    for (var i = 0; i < _treeGizmoStyle.splineAccuracy; i++)
                     {
-                        var t = i / (float) TreeGizmoStyle.instance.splineAccuracy;
+                        var t = i / (float)_treeGizmoStyle.splineAccuracy;
 
                         var position = branchMatrix.MultiplyPoint(SplineModeler.GetPositionAtTime(spline, t));
 
@@ -55,29 +66,29 @@ namespace Appalachia.Simulation.Trees.UI.Gizmos
 
                         var rotation = SplineModeler.GetRotationAtTime(spline, t);
 
-                        if (TreeGizmoStyle.instance.drawSplines)
+                        if (_treeGizmoStyle.drawSplines)
                         {
-                            var splineColor = TreeGizmoStyle.instance.splineColor;
-                            splineColor.a = TreeGizmoStyle.instance.splineTransparency;
+                            var splineColor = _treeGizmoStyle.splineColor;
+                            splineColor.a = _treeGizmoStyle.splineTransparency;
 
                             SmartHandles.DrawLine(position, previousPosition, splineColor);
                         }
 
-                        if (((i % TreeGizmoStyle.instance.splineDiscInterval) == 0) &&
-                            TreeGizmoStyle.instance.drawSplineDisks)
+                        if (((i % _treeGizmoStyle.splineDiscInterval) == 0) &&
+                            _treeGizmoStyle.drawSplineDisks)
                         {
-                            var diskInner = TreeGizmoStyle.instance.diskInnerColor;
-                            diskInner.a = TreeGizmoStyle.instance.diskInnerTransparency;
+                            var diskInner = _treeGizmoStyle.diskInnerColor;
+                            diskInner.a = _treeGizmoStyle.diskInnerTransparency;
 
-                            var diskOuter = TreeGizmoStyle.instance.diskOuterColor;
-                            diskOuter.a = TreeGizmoStyle.instance.diskOuterTransparency;
+                            var diskOuter = _treeGizmoStyle.diskOuterColor;
+                            diskOuter.a = _treeGizmoStyle.diskOuterTransparency;
 
                             SmartHandles.DrawWireDisc(position, rotation.eulerAngles, radius, diskInner);
 
                             SmartHandles.DrawWireDisc(
                                 position,
                                 rotation.eulerAngles,
-                                TreeGizmoStyle.instance.diskOuterRadiusMultiplier * radius,
+                                _treeGizmoStyle.diskOuterRadiusMultiplier * radius,
                                 diskOuter
                             );
                         }
@@ -86,8 +97,8 @@ namespace Appalachia.Simulation.Trees.UI.Gizmos
                     }
                 }
             );
-            
-            if (TreeGizmoStyle.instance.drawNodes)
+
+            if (_treeGizmoStyle.drawNodes)
             {
                 shapes.RecurseShapes(
                     hierarchies,
@@ -103,75 +114,73 @@ namespace Appalachia.Simulation.Trees.UI.Gizmos
                         switch (data.type)
                         {
                             case TreeComponentType.Root:
-                                cNode = TreeGizmoStyle.instance.rootColor;
+                                cNode = _treeGizmoStyle.rootColor;
                                 break;
                             case TreeComponentType.Trunk:
-                                cNode = TreeGizmoStyle.instance.trunkColor;
+                                cNode = _treeGizmoStyle.trunkColor;
                                 break;
                             case TreeComponentType.Branch:
-                                cNode = TreeGizmoStyle.instance.branchColor;
+                                cNode = _treeGizmoStyle.branchColor;
                                 break;
                             case TreeComponentType.Leaf:
-                                cNode = TreeGizmoStyle.instance.leafColor;
+                                cNode = _treeGizmoStyle.leafColor;
                                 break;
                             case TreeComponentType.Fruit:
-                                cNode = TreeGizmoStyle.instance.fruitColor;
+                                cNode = _treeGizmoStyle.fruitColor;
                                 break;
                             case TreeComponentType.Knot:
-                                cNode = TreeGizmoStyle.instance.knotColor;
+                                cNode = _treeGizmoStyle.knotColor;
                                 break;
                             case TreeComponentType.Fungus:
-                                cNode = TreeGizmoStyle.instance.fungusColor;
+                                cNode = _treeGizmoStyle.fungusColor;
                                 break;
                             default:
                                 throw new ArgumentOutOfRangeException();
                         }
 
                         var nodeMatrix = treeMatrix * data.shape.effectiveMatrix;
-                        cNode.a = TreeGizmoStyle.instance.nodeOpacity;
+                        cNode.a = _treeGizmoStyle.nodeOpacity;
 
                         SmartHandles.DrawWireCube(
                             nodeMatrix.MultiplyPoint(Vector3.zero),
-                            Vector3.one * (TreeGizmoStyle.instance.nodeSize * data.shape.effectiveSize),
+                            Vector3.one * (_treeGizmoStyle.nodeSize * data.shape.effectiveSize),
                             cNode
                         );
                     }
                 );
             }
 
-            if (TreeGizmoStyle.instance.drawGroundOffset)
+            if (_treeGizmoStyle.drawGroundOffset)
             {
-                var baseColor = TreeGizmoStyle.instance.groundOffsetBaseColor;
-                baseColor.a = TreeGizmoStyle.instance.groundOffsetBaseOpacity;
+                var baseColor = _treeGizmoStyle.groundOffsetBaseColor;
+                baseColor.a = _treeGizmoStyle.groundOffsetBaseOpacity;
 
                 SmartHandles.DrawSolidDisc(
                     transform.position,
                     Vector3.up,
-                    TreeGizmoStyle.instance.groundOffsetRadius,
+                    _treeGizmoStyle.groundOffsetRadius,
                     baseColor
                 );
 
-                var ringColor = TreeGizmoStyle.instance.groundOffsetRingColor;
-                ringColor.a = TreeGizmoStyle.instance.groundOffsetRingOpacity;
+                var ringColor = _treeGizmoStyle.groundOffsetRingColor;
+                ringColor.a = _treeGizmoStyle.groundOffsetRingOpacity;
 
-                for (var i = 0; i < TreeGizmoStyle.instance.groundOffsetRings; i++)
+                for (var i = 0; i < _treeGizmoStyle.groundOffsetRings; i++)
                 {
-                    var time = i / TreeGizmoStyle.instance.groundOffsetRings;
-                    var radiusStep = TreeGizmoStyle.instance.groundOffsetRadius /
-                        TreeGizmoStyle.instance.groundOffsetRings;
+                    var time = i / _treeGizmoStyle.groundOffsetRings;
+                    var radiusStep = _treeGizmoStyle.groundOffsetRadius / _treeGizmoStyle.groundOffsetRings;
                     var radius = i * radiusStep;
 
                     SmartHandles.DrawWireDisc(transform.position, Vector3.up, radius, ringColor * (1 - time));
                 }
             }
 
-            if (TreeGizmoStyle.instance.drawNormals && (mesh != null))
+            if (_treeGizmoStyle.drawNormals && (mesh != null))
             {
                 DrawNormals(hierarchies, shapes, transform, mesh);
             }
-            
 
-            if (TreeGizmoStyle.instance.drawShapeLabels)
+            if (_treeGizmoStyle.drawShapeLabels)
             {
                 DrawShapeLabels(hierarchies, shapes, transform, mesh);
             }
@@ -303,13 +312,13 @@ namespace Appalachia.Simulation.Trees.UI.Gizmos
 
                       if (hierarchies is LogHierarchies)
                       {
-                          var id = TreeSpeciesEditorSelection.instance.log.id;
-                          var log = TreeSpeciesEditorSelection.instance.log.selection.selected;
+                          var id = _treeSpeciesEditorSelection.log.id;
+                          var log = _treeSpeciesEditorSelection.log.selection.selected;
                           var instance = log.GetLogInstance(id);
-                              
-                          builder.AppendLine($"Diameter: {instance.actualDiameter:0.00}m");
-                          builder.AppendLine($"Length: {instance.actualLength:0.00}m");
-                          builder.Append($"Volume: {instance.volume:0.000}m");
+
+                          builder.AppendLine(ZString.Format("Diameter: {0:0.00}m", instance.actualDiameter));
+                          builder.AppendLine(ZString.Format("Length: {0:0.00}m",   instance.actualLength));
+                          builder.Append(ZString.Format("Volume: {0:0.000}m",      instance.volume));
                           
                           var centerP = rootPosition +  instance.center;
                           var centerMassP = rootPosition + instance.centerOfMass;
@@ -321,8 +330,8 @@ namespace Appalachia.Simulation.Trees.UI.Gizmos
                       }
                       else
                       {
-                          builder.AppendLine($"Diameter: {(shape.effectiveSize*2):0.00}m");
-                          builder.Append($"Length: {shape.effectiveLength:0.00}m");                          
+                          builder.AppendLine(ZString.Format("Diameter: {0:0.00}m", shape.effectiveSize * 2));
+                          builder.Append(ZString.Format("Length: {0:0.00}m", shape.effectiveLength));                          
                       }
                       
                       UnityEditor.Handles.Label(position, builder.ToString(), TreeGUI.Styles.TreeLabel);
@@ -341,8 +350,8 @@ namespace Appalachia.Simulation.Trees.UI.Gizmos
             IShapeRead shapes,
             Transform transform,
             Mesh mesh)
-        {            
-            switch (TreeGizmoStyle.instance.normalStyle)
+        {
+            switch (_treeGizmoStyle.normalStyle)
             {
                 case TreeGizmoStyle.DrawNormalStyle.All:
                     DrawNormals_All(transform, mesh);
@@ -358,13 +367,18 @@ namespace Appalachia.Simulation.Trees.UI.Gizmos
 
         public static void DrawNormals_All(Transform transform, Mesh mesh)
         {
-            DrawNormals_Range(transform, mesh, TreeGizmoStyle.instance.normalOffset, TreeGizmoStyle.instance.normalOffset+TreeGizmoStyle.instance.normalLimit);
+            DrawNormals_Range(
+                transform,
+                mesh,
+                _treeGizmoStyle.normalOffset,
+                _treeGizmoStyle.normalOffset + _treeGizmoStyle.normalLimit
+            );
         }
         
         public static void DrawNormals_Range(
             Transform transform, Mesh mesh, int vertexStart, int vertexEnd)
         {
-            vertexEnd = Mathf.Clamp(vertexEnd, vertexStart, vertexStart + TreeGizmoStyle.instance.normalLimit);
+            vertexEnd = Mathf.Clamp(vertexEnd, vertexStart, vertexStart + _treeGizmoStyle.normalLimit);
 
             var vertices = mesh.vertices;
             var normals = mesh.normals;
@@ -379,11 +393,11 @@ namespace Appalachia.Simulation.Trees.UI.Gizmos
                 var point = vertices[i];
                 var position = point + transform.position;
                 var normal = normals[i];
-                var target = position + (normal * TreeGizmoStyle.instance.normalLength);
+                var target = position + (normal * _treeGizmoStyle.normalLength);
 
-                var color = TreeGizmoStyle.instance.useNormalAsColor
+                var color = _treeGizmoStyle.useNormalAsColor
                     ? new Color((normal.x * .5f) + .5f, (normal.y * .5f) + .5f, (normal.z * .5f) + .5f, 1)
-                    : TreeGizmoStyle.instance.normalColor;
+                    : _treeGizmoStyle.normalColor;
 
                 SmartHandles.DrawLine(position, target, color);
             }
@@ -410,11 +424,11 @@ namespace Appalachia.Simulation.Trees.UI.Gizmos
                         var point = vertices[vertex];
                         var position = point + pos;
                         var normal = normals[vertex];
-                        var target = position + (normal * TreeGizmoStyle.instance.normalLength);
-                
-                        var color = TreeGizmoStyle.instance.useNormalAsColor
+                        var target = position + (normal * _treeGizmoStyle.normalLength);
+
+                        var color = _treeGizmoStyle.useNormalAsColor
                             ? new Color((normal.x * .5f) + .5f, (normal.y * .5f) + .5f, (normal.z * .5f) + .5f, 1)
-                            : TreeGizmoStyle.instance.normalColor;
+                            : _treeGizmoStyle.normalColor;
 
                         SmartHandles.DrawLine(position, target, color);
                     }
@@ -437,10 +451,30 @@ namespace Appalachia.Simulation.Trees.UI.Gizmos
             var tan = mesh.tangents[selectedVertex];
             var col = mesh.colors[selectedVertex];
 
-            builder.AppendLine($"Position: {pos.x:0.000}, {pos.y:0.000}, {pos.z:0.000}");
-            builder.AppendLine($"Normal:   {nor.x:0.000}, {nor.y:0.000}, {nor.z:0.000}");
-            builder.AppendLine($"Tangent:  {tan.x:0.000}, {tan.y:0.000}, {tan.z:0.000}, {tan.w:0.000}");
-            builder.AppendLine($"Color:    {col.r:0.000}, {col.g:0.000}, {col.b:0.000}, {col.a:0.000}");
+            builder.AppendLine(
+                ZString.Format("Position: {0:0.000}, {1:0.000}, {2:0.000}", pos.x, pos.y, pos.z)
+            );
+            builder.AppendLine(
+                ZString.Format("Normal:   {0:0.000}, {1:0.000}, {2:0.000}", nor.x, nor.y, nor.z)
+            );
+            builder.AppendLine(
+                ZString.Format(
+                    "Tangent:  {0:0.000}, {1:0.000}, {2:0.000}, {3:0.000}",
+                    tan.x,
+                    tan.y,
+                    tan.z,
+                    tan.w
+                )
+            );
+            builder.AppendLine(
+                ZString.Format(
+                    "Color:    {0:0.000}, {1:0.000}, {2:0.000}, {3:0.000}",
+                    col.r,
+                    col.g,
+                    col.b,
+                    col.a
+                )
+            );
             
             var uv = new List<Vector4>();
             
@@ -452,7 +486,16 @@ namespace Appalachia.Simulation.Trees.UI.Gizmos
                 {
                     var uvid = i == 0 ? 0 : i + 1;
                     var uvx = uv[selectedVertex];
-                    builder.AppendLine($"UV{uvid}:      {uvx.x:0.000}, {uvx.y:0.000}, {uvx.z:0.000}, {uvx.w:0.000}");
+                    builder.AppendLine(
+                        ZString.Format(
+                            "UV{0}:      {1:0.000}, {2:0.000}, {3:0.000}, {4:0.000}",
+                            uvid,
+                            uvx.x,
+                            uvx.y,
+                            uvx.z,
+                            uvx.w
+                        )
+                    );
                 }
             }
 

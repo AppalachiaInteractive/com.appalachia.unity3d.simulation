@@ -1,13 +1,14 @@
 using System;
-using Appalachia.Core.Scriptables;
+using Appalachia.Core.Objects.Scriptables;
 using Appalachia.Simulation.Core.Metadata.Tree.Types;
 
 namespace Appalachia.Simulation.Core.Metadata.Tree
 {
     [Serializable]
-    public class
-        TreeIndividualMetadata : IdentifiableAppalachiaObject
+    public class TreeIndividualMetadata : IdentifiableAppalachiaObject<TreeIndividualMetadata>
     {
+        
+        
         public int individualID;
 
         public TreeAgeMetadata sapling;

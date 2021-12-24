@@ -3,7 +3,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Appalachia.Core.Comparisons;
-using Appalachia.Core.Scriptables;
+using Appalachia.Core.Objects.Scriptables;
 using Appalachia.Simulation.Core.Metadata.Collections;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -14,6 +14,8 @@ namespace Appalachia.Simulation.Core.Metadata.Materials
 {
     public class PhysicsMaterialsCollection : AppalachiaMetadataCollection<PhysicsMaterialsCollection, PhysicMaterialWrapper, AppaList_PhysicMaterialWrapper>
     {
+        
+        
         [FoldoutGroup("Misc")] public Material physicsVisualizationMaterial;
 
         private Dictionary<PhysicMaterial, PhysicMaterialWrapper> _lookup;

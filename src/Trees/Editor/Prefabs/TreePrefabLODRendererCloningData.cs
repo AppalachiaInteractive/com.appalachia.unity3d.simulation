@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Appalachia.Core.Objects.Root;
 using Appalachia.Simulation.Trees.Core;
 using Appalachia.Simulation.Trees.Core.Geometry;
 using Appalachia.Simulation.Trees.Core.Shape;
@@ -9,13 +10,11 @@ using Appalachia.Simulation.Trees.Generation.Texturing.Materials.Management;
 using Appalachia.Simulation.Trees.Generation.Texturing.Operations;
 using UnityEngine;
 using Object = UnityEngine.Object;
-using TreeTriangle = Appalachia.Simulation.Trees.Core.Geometry.TreeTriangle;
-using TreeVertex = Appalachia.Simulation.Trees.Core.Geometry.TreeVertex;
 
 namespace Appalachia.Simulation.Trees.Prefabs
 {
     [Serializable]
-    public class TreePrefabLODRendererCloningData
+    public class TreePrefabLODRendererCloningData : AppalachiaSimpleBase
     {
         [SerializeField] private bool? _canMergeIntoTree;
         [SerializeField] private Material[] materials;

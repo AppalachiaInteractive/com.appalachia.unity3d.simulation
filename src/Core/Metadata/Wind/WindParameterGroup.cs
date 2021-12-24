@@ -2,6 +2,7 @@
 
 using System;
 using Appalachia.Core.Attributes.Editing;
+using Appalachia.Core.Objects.Root;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -10,7 +11,7 @@ using UnityEngine;
 namespace Appalachia.Simulation.Core.Metadata.Wind
 {
     [Serializable]
-    public class WindParameterGroup
+    public class WindParameterGroup : AppalachiaSimpleBase
     {
         public enum WindParameterGroupType
         {

@@ -1,12 +1,14 @@
 using System.Collections.Generic;
 using Appalachia.CI.Integration.Assets;
-using Appalachia.Core.Scriptables;
+using Appalachia.Core.Objects.Initialization;
+using Appalachia.Utility.Async;
+using Appalachia.Utility.Execution;
 using Sirenix.OdinInspector;
-using UnityEngine;
+using Unity.Profiling;
 
 namespace Appalachia.Simulation.Trees.Core
 {
-    public class TreeRuntimeMetadataCollection : SingletonAppalachiaObject<TreeRuntimeMetadataCollection>
+    public class TreeRuntimeMetadataCollection : SingletonAppalachiaTreeObject<TreeRuntimeMetadataCollection>
     {
         #region Fields and Autoproperties
 
@@ -14,31 +16,50 @@ namespace Appalachia.Simulation.Trees.Core
 
         #endregion
 
-#if UNITY_EDITOR
-        protected override void OnEnable()
+        protected override async AppaTask Initialize(Initializer initializer)
         {
-            base.OnEnable();
-
-            if (Application.isPlaying)
+            using (_PRF_Initialize.Auto())
             {
-                return;
-            }
+                await base.Initialize(initializer);
 
-            UpdateLists();
+#if UNITY_EDITOR
+                if (!AppalachiaApplication.IsPlayingOrWillPlay)
+                {
+                    UpdateLists();
+                }
+#endif
+            }
         }
+
+        #region Profiling
+
+        private const string _PRF_PFX = nameof(TreeRuntimeMetadataCollection) + ".";
+
+        private static readonly ProfilerMarker _PRF_Initialize =
+            new ProfilerMarker(_PRF_PFX + nameof(Initialize));
+
+        #endregion
+
+#if UNITY_EDITOR
+
+        private static readonly ProfilerMarker _PRF_UpdateLists =
+            new ProfilerMarker(_PRF_PFX + nameof(UpdateLists));
 
         [Button]
         private void UpdateLists()
         {
-            treeRuntimeInstanceMetadatas.Clear();
-
-            var ts = AssetDatabaseManager.FindAssets("t: TreeRuntimeInstanceMetadata");
-
-            foreach (var t in ts)
+            using (_PRF_UpdateLists.Auto())
             {
-                var path = AssetDatabaseManager.GUIDToAssetPath(t);
-                var i = AssetDatabaseManager.LoadAssetAtPath<TreeRuntimeInstanceMetadata>(path);
-                treeRuntimeInstanceMetadatas.Add(i);
+                treeRuntimeInstanceMetadatas.Clear();
+
+                var ts = AssetDatabaseManager.FindAssets("t: TreeRuntimeInstanceMetadata");
+
+                foreach (var t in ts)
+                {
+                    var path = AssetDatabaseManager.GUIDToAssetPath(t);
+                    var i = AssetDatabaseManager.LoadAssetAtPath<TreeRuntimeInstanceMetadata>(path);
+                    treeRuntimeInstanceMetadatas.Add(i);
+                }
             }
         }
 
@@ -48,7 +69,7 @@ namespace Appalachia.Simulation.Trees.Core
         )]
         public static void CreateAsset()
         {
-            CreateNew<TreeRuntimeMetadataCollection>();
+            CreateNew();
         }
 #endif
     }

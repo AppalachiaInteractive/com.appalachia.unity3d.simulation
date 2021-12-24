@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Appalachia.Core.Attributes;
 using Appalachia.Simulation.Trees.Build.Execution;
 using Appalachia.Simulation.Trees.Core;
 using Appalachia.Simulation.Trees.Core.Geometry;
@@ -25,11 +26,44 @@ using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Generation.Texturing.Operations
 {
+    [CallStaticConstructorInEditor]
     public static class UVManager
     {
-           
-        public static void RemapUVCoordinates(LODGenerationOutput output, TreeMaterialCollection materials,
-                                              TreeVariantSettings variantSettings)
+        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
+        static UVManager()
+        {
+            LeafUVRectCollection.InstanceAvailable += i => _leafUVRectCollection = i;
+        }
+
+        #region Static Fields and Autoproperties
+
+        private static LeafUVRectCollection _leafUVRectCollection;
+
+        #endregion
+
+        public static void ApplyLeafRects(
+            IHierarchyRead readStructure,
+            IShapeRead shapes,
+            InputMaterialCache inputMaterials,
+            LODGenerationOutput output,
+            BaseSeed seed)
+        {
+            using (BUILD_TIME.UV_MGR.ApplyLeafRects.Auto())
+            {
+                ApplyLeafRectsInternal(
+                    readStructure,
+                    shapes.GetShapes(TreeComponentType.Leaf).Cast<LeafShapeData>(),
+                    inputMaterials,
+                    output,
+                    seed
+                );
+            }
+        }
+
+        public static void RemapUVCoordinates(
+            LODGenerationOutput output,
+            TreeMaterialCollection materials,
+            TreeVariantSettings variantSettings)
         {
             using (BUILD_TIME.UV_MGR.RemapUVCoordinates.Auto())
             {
@@ -38,32 +72,28 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Operations
                     i => (materials.GetOutputMaterialByInputID(i) as TiledOutputMaterial).uvScale,
                     i => (materials.inputMaterialCache.GetByMaterialID(i) as AtlasInputMaterial).atlasUVRect,
                     variantSettings
-                    
                 );
             }
         }
-        
-        public static void RemapUVCoordinates(
-            LODGenerationOutput output, 
-            BranchMaterialCollection materials)
+
+        public static void RemapUVCoordinates(LODGenerationOutput output, BranchMaterialCollection materials)
         {
             using (BUILD_TIME.UV_MGR.RemapUVCoordinates.Auto())
             {
                 RemapUVCoordinates(
                     output,
-                    i => new UVScale(), 
+                    i => new UVScale(),
                     i => (materials.inputMaterialCache.GetByMaterialID(i) as AtlasInputMaterial).atlasUVRect,
                     null
                 );
             }
         }
 
-            public static void RemapUVCoordinates(
-            LODGenerationOutput output, 
+        public static void RemapUVCoordinates(
+            LODGenerationOutput output,
             Func<int, UVScale> outputMaterialScaleByInputID,
             Func<int, Rect> getRectByMaterialID,
-            TreeVariantSettings variantSettings 
-            )
+            TreeVariantSettings variantSettings)
         {
             using (BUILD_TIME.UV_MGR.RemapUVCoordinates.Auto())
             {
@@ -77,7 +107,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Operations
                 for (var index = 0; index < output.triangles.Count; index++)
                 {
                     var triangle = output.triangles[index];
-                    
+
                     if (triangle.inputMaterialID == -1)
                     {
                         continue;
@@ -123,10 +153,10 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Operations
                     {
                         var uvRect = getRectByMaterialID(triangle.inputMaterialID);
 
-                        uvRect.x += (uvRect.width * .02f);
-                        uvRect.width -= (uvRect.width * .04f);
-                        uvRect.y += (uvRect.height * .02f);
-                        uvRect.height -= (uvRect.height * .04f);
+                        uvRect.x += uvRect.width * .02f;
+                        uvRect.width -= uvRect.width * .04f;
+                        uvRect.y += uvRect.height * .02f;
+                        uvRect.height -= uvRect.height * .04f;
 
                         for (var vertexIndex = 0; vertexIndex < 3; vertexIndex++)
                         {
@@ -142,23 +172,6 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Operations
                 }
             }
         }
-        
-        public static void ApplyLeafRects(
-            IHierarchyRead readStructure, 
-            IShapeRead shapes,
-            InputMaterialCache inputMaterials,
-            LODGenerationOutput output,
-            BaseSeed seed)
-        {
-            using (BUILD_TIME.UV_MGR.ApplyLeafRects.Auto())
-            {
-                
-                ApplyLeafRectsInternal(readStructure, 
-                    shapes.GetShapes(TreeComponentType.Leaf).Cast<LeafShapeData>(), 
-                    inputMaterials,
-                    output, seed);
-            }
-        }
 
         private static void ApplyLeafRectsInternal(
             IHierarchyRead readStructure,
@@ -170,28 +183,31 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Operations
             using (BUILD_TIME.UV_MGR.ApplyLeafRects.Auto())
             {
                 var materialRects = new Dictionary<int, AtlasInputMaterial>();
-                
+
                 foreach (var leafHierarchy in readStructure.GetHierarchies(TreeComponentType.Leaf)
-                    .Cast<LeafHierarchyData>()
-                    .Where(l => l.geometry.geometryMode != LeafGeometryMode.Mesh))
+                                                           .Cast<LeafHierarchyData>()
+                                                           .Where(
+                                                                l => l.geometry.geometryMode !=
+                                                                     LeafGeometryMode.Mesh
+                                                            ))
                 {
                     var mat = inputMaterials.GetInputMaterialData(
                         leafHierarchy.geometry.leafMaterial,
                         TreeMaterialUsage.LeafPlane
-                    ) as  AtlasInputMaterial;
+                    ) as AtlasInputMaterial;
 
                     if (mat == null)
                     {
                         return;
                     }
-                    
-                    var rects = LeafUVRectCollection.instance.Get(mat.material);
+
+                    var rects = _leafUVRectCollection.Get(mat.material);
 
                     if (rects.Count == 0)
                     {
                         rects.Add(new LeafUVRect());
                     }
-                    
+
                     if (!materialRects.ContainsKey(leafHierarchy.hierarchyID))
                     {
                         materialRects.Add(leafHierarchy.hierarchyID, mat);
@@ -209,11 +225,12 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Operations
 
                 foreach (var leafShape in leaves)
                 {
-                    var leafHierarchy = readStructure.GetHierarchyData(leafShape.hierarchyID) as LeafHierarchyData;
-                    
+                    var leafHierarchy =
+                        readStructure.GetHierarchyData(leafShape.hierarchyID) as LeafHierarchyData;
+
                     var seed = new VirtualSeed(baseSeed, leafHierarchy.seed);
 
-                    var rects = LeafUVRectCollection.instance.Get(materialRects[leafShape.hierarchyID].material);
+                    var rects = _leafUVRectCollection.Get(materialRects[leafShape.hierarchyID].material);
 
                     LeafUVRect rect = null;
 
@@ -250,7 +267,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Operations
                 for (var index = 0; index < output.vertices.Count; index++)
                 {
                     var vertex = output.vertices[index];
-                    
+
                     if (shapeIDRects.ContainsKey(vertex.shapeID))
                     {
                         var rect = shapeIDRects[vertex.shapeID];

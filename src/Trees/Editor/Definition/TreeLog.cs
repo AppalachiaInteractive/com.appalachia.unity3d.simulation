@@ -46,7 +46,7 @@ namespace Appalachia.Simulation.Trees.Definition
         public static TreeLog Create(string folder, NameBasis nameBasis)
         {
             var assetName = nameBasis.FileNameSO("log");
-            var instance = LoadOrCreateNew<TreeLog>(folder, assetName);
+            var instance = TreeLog.LoadOrCreateNew(folder, assetName);
             
             instance.nameBasis = nameBasis;
             instance.hierarchies = new LogHierarchies();

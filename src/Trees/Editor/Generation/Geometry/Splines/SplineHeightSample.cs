@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using Appalachia.Utility.Strings;
 
 namespace Appalachia.Simulation.Trees.Generation.Geometry.Splines
 {
@@ -77,7 +78,11 @@ namespace Appalachia.Simulation.Trees.Generation.Geometry.Splines
                 return 1;
             }
 
-            return obj is SplineHeightSample other ? CompareTo(other) : throw new ArgumentException($"Object must be of type {nameof(SplineHeightSample)}");
+            return obj is SplineHeightSample other
+                ? CompareTo(other)
+                : throw new ArgumentException(
+                    ZString.Format("Object must be of type {0}", nameof(SplineHeightSample))
+                );
         }
 
         [DebuggerStepThrough] public static bool operator <(SplineHeightSample left, SplineHeightSample right)
@@ -102,7 +107,7 @@ namespace Appalachia.Simulation.Trees.Generation.Geometry.Splines
 
         [DebuggerStepThrough] public override string ToString()
         {
-            return $"{height:0.000}";
+            return ZString.Format("{0:0.000}", height);
         }
     }
 }

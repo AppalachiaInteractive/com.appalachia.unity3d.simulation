@@ -6,6 +6,8 @@ namespace Appalachia.Simulation.Trees.UI.Selections.Dropdown
     [Serializable]
     public class TreeSettingsDataContainerSelection : TreeScriptableObjectContainerSelection<TreeDataContainer, TreeSettingsDataContainerSelection>
     {
+        
+        
         [TreeProperty]
         public bool enabled;
     }

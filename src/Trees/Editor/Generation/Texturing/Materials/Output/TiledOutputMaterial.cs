@@ -35,6 +35,6 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Output
 
         public override MaterialContext MaterialContext => MaterialContext.TiledOutputMaterial;
 
-        protected override OutputShaderSelectionSet defaultShaders => DefaultShaderResource.instance.tiledShaderSet;
+        protected override OutputShaderSelectionSet defaultShaders => _defaultShaderResource.tiledShaderSet;
     }
 }

@@ -15,7 +15,6 @@ using Appalachia.Simulation.Trees.Generation.Meshing;
 using Appalachia.Simulation.Trees.Generation.Spline;
 using Appalachia.Simulation.Trees.Generation.Texturing.Materials.Input;
 using Appalachia.Simulation.Trees.Generation.Texturing.Materials.Management;
-using Appalachia.Simulation.Trees.Generation.Texturing.Materials.Output;
 using Appalachia.Simulation.Trees.Hierarchy;
 using Appalachia.Simulation.Trees.Icons;
 using Appalachia.Simulation.Trees.Interfaces;
@@ -87,7 +86,7 @@ namespace Appalachia.Simulation.Trees.Definition
             TreeAsset asset)
         {
             var assetName = nameBasis.FileNameStageSO(individualID, ageType, stageType);
-            var instance = LoadOrCreateNew<TreeStage>(folder, assetName);
+            var instance = TreeStage.LoadOrCreateNew(folder, assetName);
 
             instance.ageType = ageType;
             instance.asset = asset;
@@ -366,7 +365,7 @@ namespace Appalachia.Simulation.Trees.Definition
         {
             if (materials.Length == 0)
             {
-                asset.levels[level].materials = new[] {DefaultMaterialResource.instance.material};
+                asset.levels[level].materials = new[] { _defaultMaterialResource.material };
             }
             else
             {

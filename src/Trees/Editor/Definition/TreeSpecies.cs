@@ -50,7 +50,7 @@ namespace Appalachia.Simulation.Trees.Definition
         public static TreeSpecies Create(string folder, NameBasis nameBasis)
         {
             var assetName = nameBasis.FileNameSO("species");
-            var instance = LoadOrCreateNew<TreeSpecies>(folder, assetName);
+            var instance = TreeSpecies.LoadOrCreateNew(folder, assetName);
 
             instance.nameBasis = nameBasis;
             instance.hierarchies = new TreeHierarchies();
@@ -61,7 +61,7 @@ namespace Appalachia.Simulation.Trees.Definition
         public static TreeSpecies Create(TreeEditor.TreeData data, string folder, NameBasis nameBasis)
         {
             var assetName = nameBasis.FileNameSO("species");
-            var instance = LoadOrCreateNew<TreeSpecies>(folder, assetName);
+            var instance = TreeSpecies.LoadOrCreateNew(folder, assetName);
 
             instance.nameBasis = nameBasis;
             instance.seed = new ExternalDualSeed(0, 0, Mathf.Clamp(data.root.seed, 0, BaseSeed.HIGH_ELEMENT));

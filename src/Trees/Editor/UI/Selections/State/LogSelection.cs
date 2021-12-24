@@ -6,18 +6,29 @@ namespace Appalachia.Simulation.Trees.UI.Selections.State
     [Serializable]
     public class LogSelection : TSESelection<LogDataContainer, LogDataContainerSelection>
     {
-        public override LogDataContainerSelection selection 
+        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
+        static LogSelection()
+        {
+            LogDataContainerSelection.InstanceAvailable += i => _logDataContainerSelection = i;
+        }
+
+        #region Static Fields and Autoproperties
+
+        private static LogDataContainerSelection _logDataContainerSelection;
+
+        #endregion
+
+        public override LogDataContainerSelection selection
         {
             get
             {
                 if (_selection == null)
                 {
-                    _selection = LogDataContainerSelection.instance;
+                    _selection = _logDataContainerSelection;
                 }
 
                 return _selection;
             }
-            set { _selection = value; }
         }
     }
 }

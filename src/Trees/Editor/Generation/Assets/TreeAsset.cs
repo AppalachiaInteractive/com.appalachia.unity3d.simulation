@@ -30,7 +30,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
             StageType stage)
         {
             var assetName = nameBasis.FileNameAssetSO(individualID, age, stage);
-            var instance = LoadOrCreateNew<TreeAsset>(folder, assetName);
+            var instance = TreeAsset.LoadOrCreateNew(folder, assetName);
 
             instance.levels = new List<AssetLevel>();
 

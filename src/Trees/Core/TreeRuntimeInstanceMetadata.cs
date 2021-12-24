@@ -1,13 +1,14 @@
 using System.Collections.Generic;
-using Appalachia.Core.Scriptables;
+using Appalachia.Core.Objects.Scriptables;
 using Appalachia.Simulation.Core.Metadata.POI;
 using Appalachia.Simulation.Core.Metadata.Tree.Types;
 
 namespace Appalachia.Simulation.Trees.Core
 {
-    public class
-        TreeRuntimeInstanceMetadata : IdentifiableAppalachiaObject
+    public class TreeRuntimeInstanceMetadata : IdentifiableAppalachiaObject<TreeRuntimeInstanceMetadata>
     {
+        #region Fields and Autoproperties
+
         public string speciesName;
 
         public int individualID;
@@ -19,5 +20,9 @@ namespace Appalachia.Simulation.Trees.Core
         public float rootDepth;
 
         public List<RuntimePointOfInterest> pointsOfInterest = new();
+
+        #endregion
+
+        
     }
 }

@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Appalachia.CI.Integration.Assets;
+using Appalachia.Core.Attributes;
+using Appalachia.Core.Objects.Initialization;
 using Appalachia.Editing.Labels;
 using Appalachia.Rendering.Prefabs.Core;
 using Appalachia.Rendering.Prefabs.Rendering;
@@ -26,8 +28,8 @@ using Appalachia.Simulation.Trees.Prefabs;
 using Appalachia.Simulation.Trees.ResponsiveUI;
 using Appalachia.Simulation.Trees.Seeds;
 using Appalachia.Simulation.Trees.Settings;
+using Appalachia.Utility.Async;
 using Appalachia.Utility.Extensions;
-using Appalachia.Utility.Logging;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
 using UnityEngine;
@@ -36,8 +38,27 @@ using Random = UnityEngine.Random;
 namespace Appalachia.Simulation.Trees
 {
     [Serializable]
-    public class TreeDataContainer : TSEDataContainer, ISpeciesDataProvider
+    [CallStaticConstructorInEditor]
+    public sealed class TreeDataContainer : TSEDataContainer, ISpeciesDataProvider
     {
+        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
+        static TreeDataContainer()
+        {
+            LabelSets.InstanceAvailable += i => _labelSets = i;
+            PrefabRenderingSetCollection.InstanceAvailable += i => _prefabRenderingSetCollection = i;
+            PrefabReplacementCollection.InstanceAvailable += i => _prefabReplacementCollection = i;
+            PrefabRenderingManager.InstanceAvailable += i => _prefabRenderingManager = i;
+        }
+
+        #region Static Fields and Autoproperties
+
+        private static LabelSets _labelSets;
+        private static PrefabRenderingManager _prefabRenderingManager;
+        private static PrefabRenderingSetCollection _prefabRenderingSetCollection;
+        private static PrefabReplacementCollection _prefabReplacementCollection;
+
+        #endregion
+
         #region Fields and Autoproperties
 
         [HideInInspector] public bool _drawGizmos;
@@ -67,6 +88,12 @@ namespace Appalachia.Simulation.Trees
         [HideInInspector] public TreeSpeciesMetadata runtimeSpeciesMetadata;
 
         #endregion
+
+        private static bool DependenciesAreReady =>
+            (_labelSets != null) &&
+            (_prefabRenderingSetCollection != null) &&
+            (_prefabReplacementCollection != null) &&
+            (_prefabRenderingManager != null);
 
         public override ResponsiveSettingsType settingsType => ResponsiveSettingsType.Tree;
 
@@ -98,41 +125,6 @@ namespace Appalachia.Simulation.Trees
             }
         }
 
-        #region Event Functions
-
-        protected override void OnEnable()
-        {
-            base.OnEnable();
-            if (HasAssetPath(out _))
-            {
-                if (HasSubAssets(out var subAssets))
-                {
-                    var nameBasisFound = false;
-
-                    for (var i = subAssets.Length - 1; i >= 0; i--)
-                    {
-                        var basis = subAssets[i] as NameBasis;
-
-                        if (basis == null)
-                        {
-                            continue;
-                        }
-
-                        if (!nameBasisFound)
-                        {
-                            nameBasisFound = true;
-                            species.nameBasis = basis;
-                            continue;
-                        }
-
-                        AssetDatabaseManager.RemoveObjectFromAsset(basis);
-                    }
-                }
-            }
-        }
-
-        #endregion
-
         public override void BuildDefault()
         {
             TreeBuildRequestManager.Default();
@@ -148,17 +140,17 @@ namespace Appalachia.Simulation.Trees
             TreeBuildRequestManager.Full();
         }
 
-        public override void CopyHierarchiesFrom(TSEDataContainer tsd)
+        public override void CopyHierarchiesFrom(TSEDataContainer tse)
         {
-            if (tsd is TreeDataContainer dc)
+            if (tse is TreeDataContainer dc)
             {
                 dc.species.hierarchies.CopyHierarchiesTo(species.hierarchies);
             }
         }
 
-        public override void CopySettingsFrom(TSEDataContainer tsd)
+        public override void CopySettingsFrom(TSEDataContainer tse)
         {
-            if (tsd is TreeDataContainer dc)
+            if (tse is TreeDataContainer dc)
             {
                 dc.settings.CopySettingsTo(settings);
             }
@@ -172,106 +164,6 @@ namespace Appalachia.Simulation.Trees
             }
 
             return null;
-        }
-
-        [Button]
-        [HideIf(nameof(initialized))]
-        [EnableIf(nameof(canInitialize))]
-        protected override void Initialize()
-        {
-            using (_PRF_Initialize.Auto())
-            {
-                try
-                {
-                    if (initialized)
-                    {
-                        return;
-                    }
-
-                    base.Initialize();
-
-                    ResetInitialization();
-
-                    var basis = NameBasis.CreateNested<NameBasis>(this);
-                    basis.nameBasis = initializationSettings.name.ToSafe().TrimEnd(',', '.', '_', '-');
-
-                    UpdateNameAndMove(basis.nameBasis);
-
-                    subfolders = TreeAssetSubfolders.CreateNested<TreeAssetSubfolders>(this, false);
-
-                    subfolders.nameBasis = basis;
-                    subfolders.Initialize(this);
-
-                    subfolders.CreateFolders();
-
-                    if (initializationSettings.convertTreeData)
-                    {
-                        species = TreeSpecies.Create(initializationSettings.original, subfolders.main, basis);
-                        species.hierarchies.verticalOffset =
-                            initializationSettings.original.root.groundOffset;
-                    }
-                    else
-                    {
-                        species = TreeSpecies.Create(subfolders.data, basis);
-                        species.seed.value = Random.Range(1, BaseSeed.HIGH_ELEMENT);
-                        species.seed.SetInternalSeed(
-                            Random.Range(1, BaseSeed.HIGH_ELEMENT),
-                            Random.Range(1, BaseSeed.HIGH_ELEMENT)
-                        );
-                    }
-
-                    if (settings == null)
-                    {
-                        settings = TreeSettings.Create(subfolders.data, basis);
-                    }
-
-                    if (settings.lod.impostor.impostorAfterLastLevel)
-                    {
-                        subfolders.CreateImpostorFolder();
-                    }
-
-                    individuals = new List<TreeIndividual>();
-
-                    hierarchyPrefabs = TreePrefabCollection.Create(subfolders.data, basis);
-                    hierarchyPrefabs.ResetPrefabs();
-                    hierarchyPrefabs.UpdatePrefabs(species);
-
-                    materials = TreeMaterialCollection.Create(subfolders.data, basis);
-                    materials.UpdateMaterials(
-                        species,
-                        hierarchyPrefabs,
-                        settings.lod.levels,
-                        settings.lod.shadowCaster
-                    );
-                    materials.inputMaterialCache.SetDefaultMaterials(settings.material.defaultMaterials);
-                    materials.inputMaterialCache.UpdateDefaultMaterials();
-
-                    if (!initializationSettings.convertTreeData)
-                    {
-                        species.hierarchies.CreateTrunkHierarchy(materials.inputMaterialCache);
-                    }
-
-                    SeedManager.UpdateSeeds(species);
-
-                    AddNewIndividual();
-
-                    buildRequest = new TreeBuildRequest();
-
-                    initialized = true;
-                    basis.Lock();
-                    dataState = DataState.Dirty;
-
-                    SetDirtyStates();
-
-                    AssetDatabaseManager.SaveAssets();
-                }
-                catch (Exception ex)
-                {
-                    AppaLog.Error(ex.Message, this);
-                    initialized = false;
-                    throw;
-                }
-            }
         }
 
         public override void RebuildStructures()
@@ -294,7 +186,7 @@ namespace Appalachia.Simulation.Trees
 
         public override void SetDirtyStates()
         {
-            this.MarkAsModified();
+            MarkAsModified();
             settings.MarkAsModified();
             species.MarkAsModified();
             materials.MarkAsModified();
@@ -395,15 +287,14 @@ namespace Appalachia.Simulation.Trees
         public void CreateRuntimeMetadata()
         {
             runtimeSpeciesMetadata.name = species.nameBasis.nameBasis;
-            runtimeSpeciesMetadata =
-                LoadOrCreateNew<TreeSpeciesMetadata>(GetNameBasis().safeName, false, false);
+            runtimeSpeciesMetadata = TreeSpeciesMetadata.LoadOrCreateNew(GetNameBasis().safeName);
             runtimeSpeciesMetadata.individuals = new List<TreeIndividualMetadata>();
 
             foreach (var individual in individuals)
             {
                 var assetName = species.nameBasis.FileNameIndividualMetadataSO(individual.individualID);
 
-                var instance = LoadOrCreateNew<TreeIndividualMetadata>(subfolders.data, assetName);
+                var instance = TreeIndividualMetadata.LoadOrCreateNew(subfolders.data, assetName);
 
                 foreach (var age in individual.ages)
                 {
@@ -674,7 +565,7 @@ namespace Appalachia.Simulation.Trees
 
             foreach (var individual in individuals)
             {
-                var tim = CreateNew<TreeIndividualMetadata>();
+                var tim = TreeIndividualMetadata.CreateNew();
 
                 tim.individualID = individual.individualID;
 
@@ -700,11 +591,142 @@ namespace Appalachia.Simulation.Trees
             UpdateIntegrationData();
         }
 
+        [Button]
+        [HideIf(nameof(initialized))]
+        [EnableIf(nameof(canInitialize))]
+        protected override async AppaTask Initialize(Initializer initializer)
+        {
+            using (_PRF_Initialize.Auto())
+            {
+                try
+                {
+                    if (initialized)
+                    {
+                        return;
+                    }
+
+                    await base.Initialize(initializer);
+
+                    ResetInitialization();
+
+                    var basis = NameBasis.CreateNested(this);
+                    basis.nameBasis = initializationSettings.name.ToSafe().TrimEnd(',', '.', '_', '-');
+
+                    UpdateNameAndMove(basis.nameBasis);
+
+                    subfolders = TreeAssetSubfolders.CreateNested(this, false);
+
+                    subfolders.nameBasis = basis;
+                    subfolders.Initialize(this);
+
+                    subfolders.CreateFolders();
+
+                    if (initializationSettings.convertTreeData)
+                    {
+                        species = TreeSpecies.Create(initializationSettings.original, subfolders.main, basis);
+                        species.hierarchies.verticalOffset =
+                            initializationSettings.original.root.groundOffset;
+                    }
+                    else
+                    {
+                        species = TreeSpecies.Create(subfolders.data, basis);
+                        species.seed.value = Random.Range(1, BaseSeed.HIGH_ELEMENT);
+                        species.seed.SetInternalSeed(
+                            Random.Range(1, BaseSeed.HIGH_ELEMENT),
+                            Random.Range(1, BaseSeed.HIGH_ELEMENT)
+                        );
+                    }
+
+                    if (settings == null)
+                    {
+                        settings = TreeSettings.Create(subfolders.data, basis);
+                    }
+
+                    if (settings.lod.impostor.impostorAfterLastLevel)
+                    {
+                        subfolders.CreateImpostorFolder();
+                    }
+
+                    individuals = new List<TreeIndividual>();
+
+                    hierarchyPrefabs = TreePrefabCollection.Create(subfolders.data, basis);
+                    hierarchyPrefabs.ResetPrefabs();
+                    hierarchyPrefabs.UpdatePrefabs(species);
+
+                    materials = TreeMaterialCollection.Create(subfolders.data, basis);
+                    materials.UpdateMaterials(
+                        species,
+                        hierarchyPrefabs,
+                        settings.lod.levels,
+                        settings.lod.shadowCaster
+                    );
+                    materials.inputMaterialCache.SetDefaultMaterials(settings.material.defaultMaterials);
+                    materials.inputMaterialCache.UpdateDefaultMaterials();
+
+                    if (!initializationSettings.convertTreeData)
+                    {
+                        species.hierarchies.CreateTrunkHierarchy(materials.inputMaterialCache);
+                    }
+
+                    SeedManager.UpdateSeeds(species);
+
+                    AddNewIndividual();
+
+                    buildRequest = new TreeBuildRequest();
+
+                    initialized = true;
+                    basis.Lock();
+                    dataState = DataState.Dirty;
+
+                    SetDirtyStates();
+
+                    AssetDatabaseManager.SaveAssets();
+                }
+                catch (Exception ex)
+                {
+                    Context.Log.Error(ex.Message, this);
+                    initialized = false;
+                    throw;
+                }
+            }
+        }
+
         protected override void SaveAllAssets(bool saveImpostors)
         {
             UpdateRuntimeMetadata();
 
             AssetManager.SaveAllAssets(this, saveImpostors);
+        }
+
+        protected override async AppaTask WhenEnabled()
+        {
+            await base.WhenEnabled();
+            if (HasAssetPath(out _))
+            {
+                if (HasSubAssets(out var subAssets))
+                {
+                    var nameBasisFound = false;
+
+                    for (var i = subAssets.Length - 1; i >= 0; i--)
+                    {
+                        var basis = subAssets[i] as NameBasis;
+
+                        if (basis == null)
+                        {
+                            continue;
+                        }
+
+                        if (!nameBasisFound)
+                        {
+                            nameBasisFound = true;
+                            species.nameBasis = basis;
+                            continue;
+                        }
+
+                        AssetDatabaseManager.RemoveObjectFromAsset(basis);
+                    }
+                }
+            }
         }
 
         private void AddToPrefabRenderingCollection()
@@ -721,23 +743,23 @@ namespace Appalachia.Simulation.Trees
 
                         var t = PrefabModelType.TreeLarge;
 
-                        if (magnitude < LabelSets.instance.trees.terms[0].allowedMagnitude)
+                        if (magnitude < _labelSets.trees.terms[0].allowedMagnitude)
                         {
                             t = PrefabModelType.TreeSmall;
                         }
-                        else if (magnitude < LabelSets.instance.trees.terms[1].allowedMagnitude)
+                        else if (magnitude < _labelSets.trees.terms[1].allowedMagnitude)
                         {
                             t = PrefabModelType.TreeMedium;
                         }
 
-                        var prefabSetCollection = PrefabRenderingSetCollection.instance;
+                        var prefabSetCollection = _prefabRenderingSetCollection;
                         var prefab = stage.asset.prefab;
 
                         PrefabRenderingSet set;
 
                         if (!prefabSetCollection.Sets.TryGet(prefab, out set))
                         {
-                            set = PrefabRenderingManager.instance.ManageNewPrefabRegistration(prefab);
+                            set = _prefabRenderingManager.ManageNewPrefabRegistration(prefab);
                         }
 
                         set.modelType = t;
@@ -756,7 +778,7 @@ namespace Appalachia.Simulation.Trees
                 {
                     foreach (var stage in age.stages)
                     {
-                        PrefabReplacementCollection.instance.State.AddOrUpdate(
+                        _prefabReplacementCollection.State.AddOrUpdate(
                             stage.asset.prefab,
                             age.integrationAsset.prefab
                         );
@@ -1008,18 +1030,26 @@ namespace Appalachia.Simulation.Trees
 
         #endregion
 
+        #region Menu Items
+
 #if UNITY_EDITOR
 
         #region Menu Items
 
-        [UnityEditor.MenuItem(PKG.Menu.Assets.Base + nameof(TreeDataContainer), priority = PKG.Menu.Assets.Priority)]
+        [UnityEditor.MenuItem(
+            PKG.Menu.Assets.Base + nameof(TreeDataContainer),
+            priority = PKG.Menu.Assets.Priority
+        )]
         public static void CreateAsset()
         {
-            CreateNew<TreeDataContainer>();
+            CreateNew(typeof(TreeDataContainer));
         }
 
-#endregion
+        #endregion
+
 #endif
+
+        #endregion
 
         #region Profiling
 

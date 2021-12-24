@@ -1,5 +1,4 @@
 using Appalachia.Simulation.Trees.Icons;
-using Appalachia.Simulation.Trees.UI.GUI;
 using UnityEditor;
 
 namespace Appalachia.Simulation.Trees.UI.UV

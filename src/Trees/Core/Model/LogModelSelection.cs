@@ -1,4 +1,5 @@
 using System;
+using Appalachia.Core.Objects.Root;
 using Appalachia.Simulation.Trees.Core.Interfaces;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -6,7 +7,7 @@ using UnityEngine;
 namespace Appalachia.Simulation.Trees.Core.Model
 {
     [Serializable]
-    public class LogModelSelection
+    public class LogModelSelection : AppalachiaSimpleBase
     {
         #if UNITY_EDITOR
         

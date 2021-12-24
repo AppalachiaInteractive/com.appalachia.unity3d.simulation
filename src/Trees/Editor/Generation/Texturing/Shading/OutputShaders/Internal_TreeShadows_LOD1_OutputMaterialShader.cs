@@ -8,10 +8,10 @@ namespace Appalachia.Simulation.Trees.Metadata.Texturing.Shading.OutputShaders
 {
     public class Internal_TreeShadows_LOD1_OutputMaterialShader : OutputMaterialShader
     {
-        public static string Key = GSR.instance.shadowShaders[1].name;
+        public static string Key = _GSR.shadowShaders[1].name;
         public override string Name { get; } = Key;
         
-        public override LazyShader Shader { get; } = new LazyShader(GSR.instance.shadowShaders[1]);
+        public override LazyShader Shader { get; } = new LazyShader(_GSR.shadowShaders[1]);
 
         public override IEnumerable<OutputTextureProfile> GetOutputProfiles(bool atlas) =>
             new[]

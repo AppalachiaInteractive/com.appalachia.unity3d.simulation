@@ -1,9 +1,9 @@
-using Appalachia.Core.Scriptables;
+using Appalachia.Simulation.Trees.Core;
 using Sirenix.OdinInspector;
 
 namespace Appalachia.Simulation.Trees.UI.Graph
 {
-    public class TreeGraphSettings : SingletonAppalachiaObject<TreeGraphSettings>
+    public class TreeGraphSettings : SingletonAppalachiaTreeObject<TreeGraphSettings>
     {
         [BoxGroup("Graph")]
         public float graphSize = 250f;

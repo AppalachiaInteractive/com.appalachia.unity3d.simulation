@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
+using Appalachia.Core.Objects.Root;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Generation.Texturing.Input
 {
     [Serializable]
-    public class InputTextureSet
+    public class InputTextureSet : AppalachiaSimpleBase
     {
         [ListDrawerSettings(DraggableItems = false, ShowPaging = true, NumberOfItemsPerPage = 1, Expanded = true,
             HideAddButton = true, HideRemoveButton =  true)]

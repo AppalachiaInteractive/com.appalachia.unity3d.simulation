@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Appalachia.CI.Constants;
 using Appalachia.Simulation.Core.Metadata.Tree.Types;
 using Appalachia.Simulation.Trees.Build.Execution;
 using Appalachia.Simulation.Trees.Core;
@@ -15,14 +16,27 @@ using Appalachia.Simulation.Trees.Hierarchy;
 using Appalachia.Simulation.Trees.Hierarchy.Options.Properties;
 using Appalachia.Simulation.Trees.Settings;
 using Appalachia.Simulation.Trees.Shape;
-using Appalachia.Utility.Logging;
 using UnityEngine;
-using Vector3 = UnityEngine.Vector3;
 
 namespace Appalachia.Simulation.Trees.Generation.VertexData
 {
     public static class WindGenerator
     {
+        [NonSerialized] private static AppaContext _context;
+
+        private static AppaContext Context
+        {
+            get
+            {
+                if (_context == null)
+                {
+                    _context = new AppaContext(typeof(WindGenerator));
+                }
+
+                return _context;
+            }
+        }
+        
         public static void ApplyMeshWindData(
             IShapeRead shapes,
             IHierarchyRead hierarchies,
@@ -527,7 +541,7 @@ namespace Appalachia.Simulation.Trees.Generation.VertexData
                 if (!branchVectorsByShapeID.ContainsKey(vertex.shapeID))
                 {
                     var message = "Could not find vertex's shape in wind shape lookup!";
-                    AppaLog.Error(message);
+                    Context.Log.Error(message);
                     throw new NotSupportedException(message);
                 }
 
@@ -788,7 +802,7 @@ namespace Appalachia.Simulation.Trees.Generation.VertexData
                     if (!phaseValuesByShapeID.ContainsKey(vertex.shapeID))
                     {
                         var message = "Could not find vertex's shape in wind shape lookup!";
-                        AppaLog.Error(message);
+                        Context.Log.Error(message);
                         throw new NotSupportedException(message);
                     }
 

@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
+using Appalachia.Core.Objects.Root;
 
 namespace Appalachia.Simulation.Trees.Core.Shape
 {
     [Serializable]
-    public class ShapeGeometryData
+    public class ShapeGeometryData : AppalachiaSimpleBase
     {
         public int modelTriangleEnd;
         public int modelTriangleStart;

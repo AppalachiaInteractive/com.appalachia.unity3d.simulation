@@ -13,7 +13,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Output
         }
 
         public override MaterialContext MaterialContext => MaterialContext.AtlasOutputMaterial;
-        
-        protected override OutputShaderSelectionSet defaultShaders => DefaultShaderResource.instance.atlasShaderSet;
+
+        protected override OutputShaderSelectionSet defaultShaders => _defaultShaderResource.atlasShaderSet;
     }
 }

@@ -1,10 +1,9 @@
-﻿using Appalachia.Core.Scriptables;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Appalachia.Simulation.Core.Metadata.Fuel
 {
-    public class FuelBurnScale : AppalachiaObject
-    {
+    public class FuelBurnScale : AppalachiaSimulationObject
+    {        
         #region Fields and Autoproperties
 
         public Vector3 burnScale;

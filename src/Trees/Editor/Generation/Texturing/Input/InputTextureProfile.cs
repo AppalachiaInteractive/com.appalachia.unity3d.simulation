@@ -1,4 +1,5 @@
 using System;
+using Appalachia.Core.Objects.Root;
 using Appalachia.Simulation.Trees.Generation.Texturing.Specifications;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -6,7 +7,7 @@ using UnityEngine;
 namespace Appalachia.Simulation.Trees.Generation.Texturing.Input
 {
     [Serializable]
-    public class InputTextureProfile
+    public class InputTextureProfile : AppalachiaSimpleBase
     {
         public InputTextureProfile(TextureMap map)
         {

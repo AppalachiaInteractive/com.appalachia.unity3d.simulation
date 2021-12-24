@@ -17,7 +17,7 @@ namespace Appalachia.Simulation.ReactionSystem.Cameras
         private static readonly ProfilerMarker _PRF_OnRenderStart =
             new(_PRF_PFX + nameof(OnRenderStart));
 
-        [OnValueChanged(nameof(Initialize))]
+        [OnValueChanged(nameof(InitializeSynchronous))]
         public List<ReactionSubsystemCenter> centers = new();
 
         protected override void OnRenderStart()

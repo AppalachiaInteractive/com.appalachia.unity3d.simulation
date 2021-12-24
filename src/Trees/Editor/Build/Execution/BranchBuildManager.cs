@@ -4,7 +4,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Appalachia.CI.Constants;
 using Appalachia.CI.Integration.Assets;
+using Appalachia.Core.Attributes;
 using Appalachia.Simulation.Core.Metadata.Tree.Types;
 using Appalachia.Simulation.Trees.Build.Cost;
 using Appalachia.Simulation.Trees.Build.Requests;
@@ -24,7 +26,8 @@ using Appalachia.Simulation.Trees.Seeds;
 using Appalachia.Simulation.Trees.Settings;
 using Appalachia.Simulation.Trees.Snapshot;
 using Appalachia.Simulation.Trees.UI.Selections.State;
-using Appalachia.Utility.Logging;
+using Appalachia.Utility.Execution;
+using Appalachia.Utility.Strings;
 using Unity.EditorCoroutines.Editor;
 using Unity.Profiling;
 using UnityEditor;
@@ -36,8 +39,15 @@ using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Build.Execution
 {
+    [CallStaticConstructorInEditor]
     public static class BranchBuildManager
     {
+        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
+        static BranchBuildManager()
+        {
+            TreeSpeciesEditorSelection.InstanceAvailable += i => _treeSpeciesEditorSelection = i;
+        }
+
         #region Static Fields and Autoproperties
 
         public static bool _autobuilding;
@@ -45,10 +55,26 @@ namespace Appalachia.Simulation.Trees.Build.Execution
         public static bool _executing;
         public static EditorCoroutine _coroutine;
 
+        [NonSerialized] private static AppaContext _context;
+
+        private static TreeSpeciesEditorSelection _treeSpeciesEditorSelection;
+
         #endregion
 
-        private static BranchDataContainer CTX =>
-            TreeSpeciesEditorSelection.instance.branch.selection.selected;
+        private static AppaContext Context
+        {
+            get
+            {
+                if (_context == null)
+                {
+                    _context = new AppaContext(typeof(BranchBuildManager));
+                }
+
+                return _context;
+            }
+        }
+
+        private static BranchDataContainer CTX => _treeSpeciesEditorSelection.branch.selection.selected;
 
         public static IEnumerator ExecuteAllBuildsEnumerator(
             QualityMode quality,
@@ -67,7 +93,7 @@ namespace Appalachia.Simulation.Trees.Build.Execution
         {
             try
             {
-                if (EditorApplication.isCompiling || EditorApplication.isPlayingOrWillChangePlaymode)
+                if (EditorApplication.isCompiling || AppalachiaApplication.IsPlayingOrWillPlay)
                 {
                     EditorCoroutineUtility.StopCoroutine(_coroutine);
                     yield break; // ========================================================== BREAK
@@ -82,7 +108,7 @@ namespace Appalachia.Simulation.Trees.Build.Execution
                         snapshot.active = true;
                     }
 
-                    TreeSpeciesEditorSelection.instance.branch.selection.Set(branch);
+                    _treeSpeciesEditorSelection.branch.selection.Set(branch);
 
                     buildAction();
 
@@ -108,6 +134,11 @@ namespace Appalachia.Simulation.Trees.Build.Execution
         [InitializeOnLoadMethod]
         public static void Initialize()
         {
+            if (AppalachiaApplication.IsPlayingOrWillPlay)
+            {
+                return;
+            }
+
             EditorApplication.update += Update;
         }
 
@@ -135,7 +166,7 @@ namespace Appalachia.Simulation.Trees.Build.Execution
                     if (_executing ||
                         _autobuilding ||
                         EditorApplication.isCompiling ||
-                        EditorApplication.isPlayingOrWillChangePlaymode ||
+                        AppalachiaApplication.IsPlayingOrWillPlay ||
                         (CTX == null) ||
                         !CTX.initialized ||
                         (CTX.dataState == TSEDataContainer.DataState.Normal) ||
@@ -151,7 +182,7 @@ namespace Appalachia.Simulation.Trees.Build.Execution
                 }
                 catch (Exception ex)
                 {
-                    AppaLog.Error(ex);
+                    Context.Log.Error(ex);
                 }
             }
         }
@@ -318,22 +349,22 @@ namespace Appalachia.Simulation.Trees.Build.Execution
 
                 if (r)
                 {
-                    pixel.r = (byte) (255 * (rRange == 0.0f ? 0.0f : (pixel.r - minimums.x) / rRange));
+                    pixel.r = (byte)(255 * (rRange == 0.0f ? 0.0f : (pixel.r - minimums.x) / rRange));
                 }
 
                 if (g)
                 {
-                    pixel.g = (byte) (255 * (gRange == 0.0f ? 0.0f : (pixel.g - minimums.y) / gRange));
+                    pixel.g = (byte)(255 * (gRange == 0.0f ? 0.0f : (pixel.g - minimums.y) / gRange));
                 }
 
                 if (b)
                 {
-                    pixel.b = (byte) (255 * (bRange == 0.0f ? 0.0f : (pixel.b - minimums.z) / bRange));
+                    pixel.b = (byte)(255 * (bRange == 0.0f ? 0.0f : (pixel.b - minimums.z) / bRange));
                 }
 
                 if (a)
                 {
-                    pixel.a = (byte) (255 * (aRange == 0.0f ? 0.0f : (pixel.a - minimums.w) / aRange));
+                    pixel.a = (byte)(255 * (aRange == 0.0f ? 0.0f : (pixel.a - minimums.w) / aRange));
                 }
 
                 pixels[i] = pixel;
@@ -353,7 +384,7 @@ namespace Appalachia.Simulation.Trees.Build.Execution
 
             try
             {
-                if (EditorApplication.isCompiling || EditorApplication.isPlayingOrWillChangePlaymode)
+                if (EditorApplication.isCompiling || AppalachiaApplication.IsPlayingOrWillPlay)
                 {
                     EditorCoroutineUtility.StopCoroutine(_coroutine);
                     completed = true;
@@ -503,7 +534,7 @@ namespace Appalachia.Simulation.Trees.Build.Execution
                     {
                         using (BUILD_TIME.TREE_BUILD_MGR.HandleBuildError.Auto())
                         {
-                            AppaLog.Error("Tree build failed.");
+                            Context.Log.Error("Tree build failed.");
 
                             if (branchData != null)
                             {
@@ -570,9 +601,13 @@ namespace Appalachia.Simulation.Trees.Build.Execution
                     var outputTextures = new List<OutputTexture>();
 
                     foreach (var outputProfile in
-                        snapshot.branchOutputMaterial.GetOutputTextureProfiles(true))
+                             snapshot.branchOutputMaterial.GetOutputTextureProfiles(true))
                     {
-                        var newTextureName = $"{material.asset.name}_{outputProfile.fileNameSuffix}";
+                        var newTextureName = ZString.Format(
+                            "{0}_{1}",
+                            material.asset.name,
+                            outputProfile.fileNameSuffix
+                        );
 
                         var adjustedTextuerSize = snapshot.textureSizeV2;
 
@@ -612,7 +647,7 @@ namespace Appalachia.Simulation.Trees.Build.Execution
                         );
 
                         var rt = RenderTexture.active;
-                        RenderTexture.active = (RenderTexture) renderTexture;
+                        RenderTexture.active = (RenderTexture)renderTexture;
 
                         try
                         {

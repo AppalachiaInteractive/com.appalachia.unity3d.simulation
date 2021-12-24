@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 66a8dcf723a340d0a46a01f3977130e0, type: 3}
+  m_Name: PhysicsMaterialsCollection
+  m_EditorClassIdentifier: 
+  _initializationData:
+    _tags: []
+    _resetToken: 
+  _cachedName: 
+  _niceName: 
+  defaultValue: {fileID: 11400000, guid: 99987a58ac8d53c41be8082bb47054f3, type: 2}
+  _all:
+    _capacityIncreaseMultiplier: 2
+    _values:
+    - {fileID: 11400000, guid: 6af244fba04ab5c49852cb49307aaf05, type: 2}
+    - {fileID: 11400000, guid: 53a51e8de038461439b86eec2acc1523, type: 2}
+    - {fileID: 11400000, guid: 9280b5935879f034db319f8df5eeb083, type: 2}
+    - {fileID: 11400000, guid: 0135371f91ffcc34f9fbdaa37e5e8b4b, type: 2}
+    - {fileID: 11400000, guid: 1d1c72ad9cfb61a4a89af0d2febe2dda, type: 2}
+    - {fileID: 11400000, guid: 2501a41125757224f885981786052827, type: 2}
+    - {fileID: 11400000, guid: ddb40490d7659a74d90dc9db957c7cdb, type: 2}
+    - {fileID: 11400000, guid: d6c4f560f7517f34bbb354080cc263ef, type: 2}
+    - {fileID: 11400000, guid: 6aedaa41ef8ef9646ad9fcf4f16a24f0, type: 2}
+    - {fileID: 11400000, guid: 045a2e1c2b4ae4c449e462826b4df674, type: 2}
+    - {fileID: 11400000, guid: 639b219556e29fc459ecd9f00e101b53, type: 2}
+    - {fileID: 11400000, guid: 130dec582a8d4b843b5617c79b127cf1, type: 2}
+    - {fileID: 11400000, guid: c3d9f4d26cfc57142bf9f671abfc74ea, type: 2}
+    - {fileID: 11400000, guid: 0c799d273797e9d4eb9f8ad876e9d062, type: 2}
+    - {fileID: 11400000, guid: 6dda3f7283cf4d64c82b6f0490e7c6ca, type: 2}
+    - {fileID: 11400000, guid: b2e2893528dfbc245bc474bad5538fa0, type: 2}
+    - {fileID: 11400000, guid: 5f5bd025b0e133240a87661fe02c77a6, type: 2}
+    - {fileID: 11400000, guid: bbb26021c3af8ab44964c5e7aaf6b9f0, type: 2}
+    - {fileID: 11400000, guid: e3ccdedae63d84947aa829788e5290ab, type: 2}
+    - {fileID: 11400000, guid: fe78f0df99c6faa4a9a75794b05770ee, type: 2}
+    - {fileID: 11400000, guid: 4c6a7696b93d39649a94dc8054557883, type: 2}
+    - {fileID: 11400000, guid: 8db426ab6a62b8d409a1d337108649b6, type: 2}
+    - {fileID: 11400000, guid: bbfc6faa9711527429dbb41a23b8194e, type: 2}
+    - {fileID: 11400000, guid: 85710b3d3392a794d84f1232979afd29, type: 2}
+    - {fileID: 11400000, guid: 99987a58ac8d53c41be8082bb47054f3, type: 2}
+    - {fileID: 11400000, guid: cf13dc2c132c3454fb0fa8bd6daaf9f6, type: 2}
+    - {fileID: 11400000, guid: 86d1a636eaae405488bced6c40207c86, type: 2}
+    - {fileID: 11400000, guid: 8f8a3873e1d4466468b8f57afb34a287, type: 2}
+    - {fileID: 11400000, guid: 5b28572fb4bcb844e951894d3c181a4b, type: 2}
+    - {fileID: 11400000, guid: 2e59f69177a4991468619104887a5fea, type: 2}
+    - {fileID: 11400000, guid: 4a7cd9ddb95d7134581f127562cb8973, type: 2}
+    - {fileID: 0}
+    noTracking: 0
+    _count: 31
+  physicsVisualizationMaterial: {fileID: 2100000, guid: 71c0ec0095f097c4db33688ff6fc78af, type: 2}

@@ -1,10 +1,11 @@
 using System;
+using Appalachia.Core.Objects.Root;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Generation.Spline
 {
     [Serializable]
-    public class SplineDataPoint
+    public class SplineDataPoint : AppalachiaSimpleBase
     {
         public Vector3 normal;
 

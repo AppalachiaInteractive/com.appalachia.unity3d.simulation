@@ -1,10 +1,11 @@
 using System;
+using Appalachia.Core.Objects.Root;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Generation.Texturing.Geometry
 {
     [Serializable]
-    public class TextureHullData
+    public class TextureHullData : AppalachiaSimpleBase
     {
         public float baseHeightOffset0To1;
         public float baseWidth;

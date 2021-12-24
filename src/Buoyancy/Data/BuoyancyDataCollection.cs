@@ -1,14 +1,16 @@
 using System;
 using Appalachia.Core.Collections.Implementations.Lists;
-using Appalachia.Core.Scriptables;
+using Appalachia.Core.Objects.Scriptables;
 using Appalachia.Simulation.Buoyancy.Collections;
 
 namespace Appalachia.Simulation.Buoyancy.Data
 {
     [Serializable]
-    public class BuoyancyDataCollection : AppalachiaObjectLookupCollection<string, BuoyancyData,
-        AppaList_string, AppaList_BuoyancyData, BuoyancyDataLookup, BuoyancyDataCollection>
+    public class BuoyancyDataCollection : AppalachiaObjectLookupCollection<string, BuoyancyData, stringList,
+        BuoyancyDataList, BuoyancyDataLookup, BuoyancyDataCollection>
     {
+        
+        
         public override bool HasDefault => false;
 
         protected override string GetUniqueKeyFromValue(BuoyancyData value)

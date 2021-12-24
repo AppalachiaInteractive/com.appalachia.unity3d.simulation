@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
+using Appalachia.Core.Attributes;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Extensions
 {
+    [CallStaticConstructorInEditor]
     public static class MaterialExtensions
     {
         static MaterialExtensions()

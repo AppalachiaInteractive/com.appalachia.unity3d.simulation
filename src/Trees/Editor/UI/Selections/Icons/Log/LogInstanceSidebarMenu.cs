@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Appalachia.Simulation.Trees.Definition;
 using Appalachia.Simulation.Trees.Icons;
-using Appalachia.Simulation.Trees.UI.GUI;
 using Sirenix.OdinInspector.Editor;
 using UnityEngine;
 

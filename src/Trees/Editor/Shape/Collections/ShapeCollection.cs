@@ -8,6 +8,8 @@ using Appalachia.Simulation.Trees.Core.Shape;
 using Appalachia.Simulation.Trees.Definition.Interfaces;
 using Appalachia.Simulation.Trees.Hierarchy;
 using Appalachia.Simulation.Trees.Recursion;
+using Appalachia.Utility.Constants;
+using Appalachia.Utility.Strings;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Shape.Collections
@@ -16,21 +18,23 @@ namespace Appalachia.Simulation.Trees.Shape.Collections
     public abstract class ShapeCollection<T> : ISerializationCallbackReceiver, IShapeReadWrite
         where T : ShapeCollection<T>
     {
-        [NonSerialized] public Dictionary<int, ShapeData> byID;
-        [NonSerialized] public Dictionary<int, List<ShapeData>> byHierarchyID;
-        [NonSerialized] public Dictionary<int, Dictionary<int, List<ShapeData>>> byHierarchyIDAndParentID;
-        [NonSerialized] public Dictionary<int, List<ShapeData>> byParentID;
-
-        [HideInInspector] public IDIncrementer idGenerator;
-        
-        public abstract void CopyPropertiesToClone(T clone);
-
         protected ShapeCollection()
         {
             InitializeSelf();
         }
 
-        public abstract IList this[int i] { get; }
+        #region Fields and Autoproperties
+
+        [NonSerialized] public Dictionary<int, Dictionary<int, List<ShapeData>>> byHierarchyIDAndParentID;
+        [NonSerialized] public Dictionary<int, List<ShapeData>> byHierarchyID;
+        [NonSerialized] public Dictionary<int, List<ShapeData>> byParentID;
+        [NonSerialized] public Dictionary<int, ShapeData> byID;
+
+        [HideInInspector] public IDIncrementer idGenerator;
+
+        #endregion
+
+        public abstract void CopyPropertiesToClone(T clone);
 
         public void Clear()
         {
@@ -38,270 +42,7 @@ namespace Appalachia.Simulation.Trees.Shape.Collections
             ClearInternal();
         }
 
-        private void ClearSelf()
-        {
-            //idGenerator.SetNextID(0);
-            byID.Clear();
-            byHierarchyID.Clear();
-            byHierarchyIDAndParentID.Clear();
-            byParentID.Clear();
-        }
-        
-        private void InitializeSelf()
-        {
-            if (idGenerator == null)
-            {
-                idGenerator = new IDIncrementer(true);
-            }
-            
-            if (byID == null)
-            {
-                byID = new Dictionary<int, ShapeData>();
-            }
-            
-            if (byHierarchyID == null)
-            {
-                byHierarchyID = new Dictionary<int, List<ShapeData>>();
-            }
-            
-            if (byHierarchyIDAndParentID == null)
-            {
-                byHierarchyIDAndParentID = new Dictionary<int, Dictionary<int, List<ShapeData>>>();
-            }
-            
-            if (byParentID == null)
-            {
-                byParentID = new Dictionary<int, List<ShapeData>>();
-            }
-        }
-
-        protected abstract void ClearInternal();
-        
-        public void Rebuild()
-        {
-            InitializeSelf();
-            ClearSelf();
-       
-            var shp = byHierarchyIDAndParentID;
-
-            var tempShapeIDs = new HashSet<int>();
-            tempShapeIDs.Add(-1);
-
-            foreach (var shape in this)
-            {
-                tempShapeIDs.Add(shape.shapeID);
-            }
-            
-            var removals = new HashSet<int>();
-
-            foreach (var shape in this)
-            {
-                if ((shape.parentShapeID == -1) && (shape.type != TreeComponentType.Trunk))
-                {
-                    removals.Add(shape.shapeID);
-                }
-
-                if (!tempShapeIDs.Contains(shape.parentShapeID))
-                {
-                    removals.Add(shape.shapeID);
-                }
-
-                if (removals.Contains(shape.parentShapeID))
-                {
-                    removals.Add(shape.shapeID);
-                }
-            }    
-            
-            foreach (var shape in this)
-            {
-                
-                if (!byID.ContainsKey(shape.shapeID))
-                {
-                    byID.Add(shape.shapeID, shape);
-                }
-                
-                if (!byHierarchyID.ContainsKey(shape.hierarchyID))
-                {
-                    byHierarchyID.Add(shape.hierarchyID, new List<ShapeData>());
-                }
-
-                byHierarchyID[shape.hierarchyID].Add(shape);
-                
-                if (shape.shapeID != shape.parentShapeID)
-                {
-                    if (!byParentID.ContainsKey(shape.parentShapeID))
-                    {
-                        byParentID.Add(shape.parentShapeID, new List<ShapeData>());
-                    }
-
-                    byParentID[shape.parentShapeID].Add(shape);
-                }
-                
-                if (!shp.ContainsKey(shape.hierarchyID))
-                {
-                    shp.Add(shape.hierarchyID, new Dictionary<int, List<ShapeData>>());
-                }
-
-                if (!shp[shape.hierarchyID].ContainsKey(shape.parentShapeID))
-                {
-                    shp[shape.hierarchyID].Add(shape.parentShapeID, new List<ShapeData>());
-                }
-
-                shp[shape.hierarchyID][shape.parentShapeID].Add(shape);
-            }            
-
-            foreach (var shape in removals)
-            {
-                DeleteShapeChain(shape, false);
-            }
-        }
-        
-        public void RemoveOrphanedShapes(IHierarchyRead hierarchies)
-        {
-            InitializeSelf();
-       
-            var removals = new HashSet<ShapeData>();
-
-            foreach (var shape in this)
-            {
-                if (!hierarchies.DoesHierarchyExist(shape.hierarchyID))
-                {
-                    removals.Add(shape);
-                }
-            }
-
-            foreach (var shape in removals)
-            {
-                DeleteShapeChain(shape.shapeID, false);
-            }
-        }
-
-        public void OnBeforeSerialize()
-        {
-        }
-
-        public void OnAfterDeserialize()
-        {
-            Rebuild();
-        }
-
-        public abstract IEnumerator<ShapeData> GetEnumerator();
-        
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        
-         public void RecurseSplines(IHierarchyRead read, Action<BarkRecursionData> action)
-        {
-            RecurseSplines(read, null, action);
-        }
-
-        public void RecurseLeaves(IHierarchyRead read, Action<LeafRecursionData> action)
-        {
-            foreach (var hierarchy in read.GetHierarchies(TreeComponentType.Leaf))
-            {
-                if (!byHierarchyID.ContainsKey(hierarchy.hierarchyID))
-                {
-                    continue;
-                }
-
-                var childShapes = byHierarchyID[hierarchy.hierarchyID];
-
-                var childLeaves = new List<LeafShapeData>();
-
-                foreach (var childShape in childShapes)
-                {
-                    if (childShape is LeafShapeData leafShape)
-                    {
-                        childLeaves.Add(leafShape);
-                    }
-                }
-
-                for (var j = 0; j < childLeaves.Count; j++)
-                {
-                    var shape = childLeaves[j];
-
-                    if (shape == null) continue;
-
-                    var parentHierarchy = read.GetHierarchyData(hierarchy.parentHierarchyID) as BarkHierarchyData;
-                    var parentShape = GetShapeData(shape.parentShapeID) as BarkShapeData;
-
-                    var recursion = new LeafRecursionData(
-                        shape,
-                        hierarchy as LeafHierarchyData, 
-                        j,
-                        childLeaves.Count,
-                        parentHierarchy,
-                        parentShape
-                    );
-
-                    action(recursion);
-                }
-            }
-        }
-
-        public void RecurseShapes(IHierarchyRead read, Action<GenericRecursionData> action)
-        {
-            RecurseShapes(read, null, action);
-        }
-
-        private void RecurseSplines(
-            IHierarchyRead read,
-            BarkHierarchyData hierarchy,
-            Action<BarkRecursionData> action)
-        {
-            if (hierarchy == null)
-            {
-                foreach (var trunk in read.GetHierarchies(TreeComponentType.Trunk))
-                {
-                    RecurseSplines(read, trunk as BarkHierarchyData, action);
-                }
-            }
-            else
-            {
-                var s = byHierarchyID[hierarchy.hierarchyID];
-
-                for (var i = 0; i < s.Count; i++)
-                {
-                    var shape = s[i] as BarkShapeData;
-
-                    if (shape == null) continue;
-
-                    var parentHierarchy = read.GetHierarchyData(hierarchy.parentHierarchyID);
-                    var parentShape = GetShapeData(shape.parentShapeID) as BarkShapeData;
-
-                    var recursion = new BarkRecursionData(
-                        shape,
-                        hierarchy,
-                        i,
-                        s.Count,
-                        parentHierarchy,
-                        parentShape
-                    );
-
-                    action(recursion);
-                }
-
-                var childHierarchies = read.GetHierarchiesByParent(hierarchy.parentHierarchyID);
-
-                if (childHierarchies == null) return;
-                
-                foreach (var childHierarchy in childHierarchies)
-                {
-                    if (childHierarchy is BarkHierarchyData barkHierarchy)
-                    {
-                        RecurseSplines(read, barkHierarchy, action);
-                    }
-                }
-            }
-        }
-
-        public void RecurseShapes(
-            IHierarchyRead read,
-            List<ShapeData> s,
-            Action<GenericRecursionData> action)
+        public void RecurseShapes(IHierarchyRead read, List<ShapeData> s, Action<GenericRecursionData> action)
         {
             if (s == null)
             {
@@ -309,11 +50,7 @@ namespace Appalachia.Simulation.Trees.Shape.Collections
                 {
                     if (byHierarchyID.ContainsKey(trunk.hierarchyID))
                     {
-                        RecurseShapes(
-                                read,
-                                byHierarchyID[trunk.hierarchyID],
-                            action
-                        );
+                        RecurseShapes(read, byHierarchyID[trunk.hierarchyID], action);
                     }
                 }
             }
@@ -349,13 +86,305 @@ namespace Appalachia.Simulation.Trees.Shape.Collections
             }
         }
 
+        public void RemoveOrphanedShapes(IHierarchyRead hierarchies)
+        {
+            InitializeSelf();
+
+            var removals = new HashSet<ShapeData>();
+
+            foreach (var shape in this)
+            {
+                if (!hierarchies.DoesHierarchyExist(shape.hierarchyID))
+                {
+                    removals.Add(shape);
+                }
+            }
+
+            foreach (var shape in removals)
+            {
+                DeleteShapeChain(shape.shapeID, false);
+            }
+        }
+
         public int TotalShapeCount()
         {
-            if (byID == null) return 0;
+            if (byID == null)
+            {
+                return 0;
+            }
 
             return byID.Count;
         }
-        
+
+        protected abstract void ClearInternal();
+
+        protected abstract ShapeData CreateNewShape(
+            TreeComponentType type,
+            int hierarchyID,
+            int shapeID,
+            int parentShapeID);
+
+        protected abstract IEnumerable<ShapeData> GetShapesInternal(TreeComponentType type);
+
+        protected abstract void RemoveShape(ShapeData shape);
+
+        private void ClearSelf()
+        {
+            //idGenerator.SetNextID(0);
+            byID.Clear();
+            byHierarchyID.Clear();
+            byHierarchyIDAndParentID.Clear();
+            byParentID.Clear();
+        }
+
+        private void InitializeSelf()
+        {
+            if (idGenerator == null)
+            {
+                idGenerator = new IDIncrementer(true);
+            }
+
+            if (byID == null)
+            {
+                byID = new Dictionary<int, ShapeData>();
+            }
+
+            if (byHierarchyID == null)
+            {
+                byHierarchyID = new Dictionary<int, List<ShapeData>>();
+            }
+
+            if (byHierarchyIDAndParentID == null)
+            {
+                byHierarchyIDAndParentID = new Dictionary<int, Dictionary<int, List<ShapeData>>>();
+            }
+
+            if (byParentID == null)
+            {
+                byParentID = new Dictionary<int, List<ShapeData>>();
+            }
+        }
+
+        private void RecurseSplines(
+            IHierarchyRead read,
+            BarkHierarchyData hierarchy,
+            Action<BarkRecursionData> action)
+        {
+            if (hierarchy == null)
+            {
+                foreach (var trunk in read.GetHierarchies(TreeComponentType.Trunk))
+                {
+                    RecurseSplines(read, trunk as BarkHierarchyData, action);
+                }
+            }
+            else
+            {
+                var s = byHierarchyID[hierarchy.hierarchyID];
+
+                for (var i = 0; i < s.Count; i++)
+                {
+                    var shape = s[i] as BarkShapeData;
+
+                    if (shape == null)
+                    {
+                        continue;
+                    }
+
+                    var parentHierarchy = read.GetHierarchyData(hierarchy.parentHierarchyID);
+                    var parentShape = GetShapeData(shape.parentShapeID) as BarkShapeData;
+
+                    var recursion = new BarkRecursionData(
+                        shape,
+                        hierarchy,
+                        i,
+                        s.Count,
+                        parentHierarchy,
+                        parentShape
+                    );
+
+                    action(recursion);
+                }
+
+                var childHierarchies = read.GetHierarchiesByParent(hierarchy.parentHierarchyID);
+
+                if (childHierarchies == null)
+                {
+                    return;
+                }
+
+                foreach (var childHierarchy in childHierarchies)
+                {
+                    if (childHierarchy is BarkHierarchyData barkHierarchy)
+                    {
+                        RecurseSplines(read, barkHierarchy, action);
+                    }
+                }
+            }
+        }
+
+        #region ISerializationCallbackReceiver Members
+
+        public void OnBeforeSerialize()
+        {
+            using var scope = APPASERIALIZE.OnBeforeSerialize();
+        }
+
+        public void OnAfterDeserialize()
+        {
+            using var scope = APPASERIALIZE.OnAfterDeserialize();
+
+            Rebuild();
+        }
+
+        #endregion
+
+        #region IShapeReadWrite Members
+
+        public abstract IList this[int i] { get; }
+
+        public void Rebuild()
+        {
+            InitializeSelf();
+            ClearSelf();
+
+            var shp = byHierarchyIDAndParentID;
+
+            var tempShapeIDs = new HashSet<int>();
+            tempShapeIDs.Add(-1);
+
+            foreach (var shape in this)
+            {
+                tempShapeIDs.Add(shape.shapeID);
+            }
+
+            var removals = new HashSet<int>();
+
+            foreach (var shape in this)
+            {
+                if ((shape.parentShapeID == -1) && (shape.type != TreeComponentType.Trunk))
+                {
+                    removals.Add(shape.shapeID);
+                }
+
+                if (!tempShapeIDs.Contains(shape.parentShapeID))
+                {
+                    removals.Add(shape.shapeID);
+                }
+
+                if (removals.Contains(shape.parentShapeID))
+                {
+                    removals.Add(shape.shapeID);
+                }
+            }
+
+            foreach (var shape in this)
+            {
+                if (!byID.ContainsKey(shape.shapeID))
+                {
+                    byID.Add(shape.shapeID, shape);
+                }
+
+                if (!byHierarchyID.ContainsKey(shape.hierarchyID))
+                {
+                    byHierarchyID.Add(shape.hierarchyID, new List<ShapeData>());
+                }
+
+                byHierarchyID[shape.hierarchyID].Add(shape);
+
+                if (shape.shapeID != shape.parentShapeID)
+                {
+                    if (!byParentID.ContainsKey(shape.parentShapeID))
+                    {
+                        byParentID.Add(shape.parentShapeID, new List<ShapeData>());
+                    }
+
+                    byParentID[shape.parentShapeID].Add(shape);
+                }
+
+                if (!shp.ContainsKey(shape.hierarchyID))
+                {
+                    shp.Add(shape.hierarchyID, new Dictionary<int, List<ShapeData>>());
+                }
+
+                if (!shp[shape.hierarchyID].ContainsKey(shape.parentShapeID))
+                {
+                    shp[shape.hierarchyID].Add(shape.parentShapeID, new List<ShapeData>());
+                }
+
+                shp[shape.hierarchyID][shape.parentShapeID].Add(shape);
+            }
+
+            foreach (var shape in removals)
+            {
+                DeleteShapeChain(shape, false);
+            }
+        }
+
+        public abstract IEnumerator<ShapeData> GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        public void RecurseSplines(IHierarchyRead read, Action<BarkRecursionData> action)
+        {
+            RecurseSplines(read, null, action);
+        }
+
+        public void RecurseLeaves(IHierarchyRead read, Action<LeafRecursionData> action)
+        {
+            foreach (var hierarchy in read.GetHierarchies(TreeComponentType.Leaf))
+            {
+                if (!byHierarchyID.ContainsKey(hierarchy.hierarchyID))
+                {
+                    continue;
+                }
+
+                var childShapes = byHierarchyID[hierarchy.hierarchyID];
+
+                var childLeaves = new List<LeafShapeData>();
+
+                foreach (var childShape in childShapes)
+                {
+                    if (childShape is LeafShapeData leafShape)
+                    {
+                        childLeaves.Add(leafShape);
+                    }
+                }
+
+                for (var j = 0; j < childLeaves.Count; j++)
+                {
+                    var shape = childLeaves[j];
+
+                    if (shape == null)
+                    {
+                        continue;
+                    }
+
+                    var parentHierarchy =
+                        read.GetHierarchyData(hierarchy.parentHierarchyID) as BarkHierarchyData;
+                    var parentShape = GetShapeData(shape.parentShapeID) as BarkShapeData;
+
+                    var recursion = new LeafRecursionData(
+                        shape,
+                        hierarchy as LeafHierarchyData,
+                        j,
+                        childLeaves.Count,
+                        parentHierarchy,
+                        parentShape
+                    );
+
+                    action(recursion);
+                }
+            }
+        }
+
+        public void RecurseShapes(IHierarchyRead read, Action<GenericRecursionData> action)
+        {
+            RecurseShapes(read, null, action);
+        }
+
         public int GetHierarchyShapeCount(int hierarchyID, bool visibleOnly)
         {
             if (!byHierarchyID.ContainsKey(hierarchyID))
@@ -376,25 +405,19 @@ namespace Appalachia.Simulation.Trees.Shape.Collections
         {
             if (!byHierarchyIDAndParentID.ContainsKey(hierarchy.hierarchyID))
             {
-                byHierarchyIDAndParentID.Add(
-                    hierarchy.hierarchyID,
-                    new Dictionary<int, List<ShapeData>>()
-                );
+                byHierarchyIDAndParentID.Add(hierarchy.hierarchyID, new Dictionary<int, List<ShapeData>>());
             }
 
             if (!byHierarchyIDAndParentID.ContainsKey(hierarchy.hierarchyID))
             {
                 byHierarchyIDAndParentID.Add(hierarchy.hierarchyID, new Dictionary<int, List<ShapeData>>());
             }
-            
-            var individualShapesByHierarchyAndParent =
-                byHierarchyIDAndParentID[hierarchy.hierarchyID];
 
-            if ((parentHierarchy != null) &&
-                byHierarchyID.ContainsKey(parentHierarchy.hierarchyID))
+            var individualShapesByHierarchyAndParent = byHierarchyIDAndParentID[hierarchy.hierarchyID];
+
+            if ((parentHierarchy != null) && byHierarchyID.ContainsKey(parentHierarchy.hierarchyID))
             {
-                var individualParentHierarchyShapes =
-                    byHierarchyID[parentHierarchy.hierarchyID];
+                var individualParentHierarchyShapes = byHierarchyID[parentHierarchy.hierarchyID];
 
                 for (var i = 0; i < individualParentHierarchyShapes.Count; i++)
                 {
@@ -424,7 +447,7 @@ namespace Appalachia.Simulation.Trees.Shape.Collections
                         individualCurrentShapes[0].parentShapeID = parentShape.shapeID;
 
                         var excessShapeIDs = new List<int>();
-                        
+
                         for (var j = individualCurrentShapes.Count - 1; j >= 0; j--)
                         {
                             excessShapeIDs.Add(individualCurrentShapes[j].shapeID);
@@ -455,7 +478,6 @@ namespace Appalachia.Simulation.Trees.Shape.Collections
 
                 if ((shapeCount == 0) && (currentHierarchyShapes.Count == 0))
                 {
-
                 }
                 else if (currentHierarchyShapes.Count == shapeCount)
                 {
@@ -477,10 +499,7 @@ namespace Appalachia.Simulation.Trees.Shape.Collections
                         excessShapeIDs.Add(currentHierarchyShapes[j].shapeID);
                     }
 
-                    DeleteManyShapeChains(
-                        excessShapeIDs,
-                        false
-                    );
+                    DeleteManyShapeChains(excessShapeIDs, false);
                 }
             }
 
@@ -489,7 +508,7 @@ namespace Appalachia.Simulation.Trees.Shape.Collections
                 Rebuild();
             }
         }
-        
+
         public List<ShapeData> GetShapesByHierarchy(HierarchyData hierarchy)
         {
             return GetShapesByHierarchy(hierarchy.hierarchyID);
@@ -516,10 +535,10 @@ namespace Appalachia.Simulation.Trees.Shape.Collections
                     hit.RemoveAt(i);
                 }
             }
-            
+
             return hit;
         }
-        
+
         public List<ShapeData> GetShapesByParentShape(int parentShapeID)
         {
             if (parentShapeID == -1)
@@ -531,7 +550,7 @@ namespace Appalachia.Simulation.Trees.Shape.Collections
             {
                 return byParentID[parentShapeID];
             }
-            
+
             return null;
         }
 
@@ -544,18 +563,12 @@ namespace Appalachia.Simulation.Trees.Shape.Collections
 
             if (!byHierarchyIDAndParentID.ContainsKey(hierarchyID))
             {
-                byHierarchyIDAndParentID.Add(
-                    hierarchyID,
-                    new Dictionary<int, List<ShapeData>>()
-                );
+                byHierarchyIDAndParentID.Add(hierarchyID, new Dictionary<int, List<ShapeData>>());
             }
 
             if (!byHierarchyIDAndParentID[hierarchyID].ContainsKey(parentShapeID))
             {
-                byHierarchyIDAndParentID[hierarchyID].Add(
-                    parentShapeID,
-                    new List<ShapeData>()
-                );
+                byHierarchyIDAndParentID[hierarchyID].Add(parentShapeID, new List<ShapeData>());
             }
 
             var shapeID = idGenerator.GetNextIdAndIncrement();
@@ -563,15 +576,13 @@ namespace Appalachia.Simulation.Trees.Shape.Collections
             return CreateNewShape(type, hierarchyID, shapeID, parentShapeID);
         }
 
-        protected abstract ShapeData CreateNewShape(TreeComponentType type, int hierarchyID, int shapeID, int parentShapeID);
-
         public bool ShapeExists(int shapeID)
         {
             if (shapeID == -1)
             {
                 return false;
             }
-            
+
             return byID.ContainsKey(shapeID);
         }
 
@@ -586,7 +597,7 @@ namespace Appalachia.Simulation.Trees.Shape.Collections
             {
                 return false;
             }
-            
+
             return byID[shapeID].type == type;
         }
 
@@ -601,7 +612,7 @@ namespace Appalachia.Simulation.Trees.Shape.Collections
             {
                 return default;
             }
-            
+
             return byID[shapeID].type;
         }
 
@@ -609,8 +620,6 @@ namespace Appalachia.Simulation.Trees.Shape.Collections
         {
             return GetShapesInternal(type);
         }
-
-        protected abstract IEnumerable<ShapeData> GetShapesInternal(TreeComponentType type);
 
         public ShapeData GetShapeData(ShapeData shape)
         {
@@ -627,10 +636,10 @@ namespace Appalachia.Simulation.Trees.Shape.Collections
             if (!byID.ContainsKey(shapeID))
             {
                 throw new KeyNotFoundException(
-                    $"Could not find shape {shapeID} in the collection."
+                    ZString.Format("Could not find shape {0} in the collection.", shapeID)
                 );
             }
-            
+
             return byID[shapeID];
         }
 
@@ -647,7 +656,7 @@ namespace Appalachia.Simulation.Trees.Shape.Collections
             {
                 return null;
             }
-            
+
             return byID[shapeID] as TS;
         }
 
@@ -657,14 +666,11 @@ namespace Appalachia.Simulation.Trees.Shape.Collections
             {
                 return null;
             }
-            
+
             return GetShapeData(shape.parentShapeID);
         }
 
-        public void DeleteShapeChain(
-            int shapeID,
-            bool rebuildState = true,
-            int depth = 0)
+        public void DeleteShapeChain(int shapeID, bool rebuildState = true, int depth = 0)
         {
             if (shapeID == -1)
             {
@@ -675,13 +681,18 @@ namespace Appalachia.Simulation.Trees.Shape.Collections
             {
                 return;
             }
-            
+
             var shape = byID[shapeID];
 
             if (depth > 100)
             {
                 throw new NotSupportedException(
-                    $"Preventing stack overflow...shape {shapeID} in hierarchy {shape.hierarchyID}, parent shape {shape.parentShapeID}."
+                    ZString.Format(
+                        "Preventing stack overflow...shape {0} in hierarchy {1}, parent shape {2}.",
+                        shapeID,
+                        shape.hierarchyID,
+                        shape.parentShapeID
+                    )
                 );
             }
 
@@ -693,10 +704,9 @@ namespace Appalachia.Simulation.Trees.Shape.Collections
                 {
                     if (child.shapeID != shape.shapeID)
                     {
-                        DeleteShapeChain(child.shapeID, rebuildState, depth + 1);                        
+                        DeleteShapeChain(child.shapeID, rebuildState, depth + 1);
                     }
                 }
-                
             }
 
             byID.Remove(shapeID);
@@ -708,8 +718,6 @@ namespace Appalachia.Simulation.Trees.Shape.Collections
                 Rebuild();
             }
         }
-
-        protected abstract void RemoveShape(ShapeData shape);
 
         public void DeleteManyShapeChains(IEnumerable<int> shapeIDs, bool rebuildState = true)
         {
@@ -726,13 +734,16 @@ namespace Appalachia.Simulation.Trees.Shape.Collections
 
         public void DeleteAllShapeChainsInHierarchy(int hierarchyID, bool rebuildState = true)
         {
-            if (hierarchyID == -1) return;
+            if (hierarchyID == -1)
+            {
+                return;
+            }
 
             if (!byHierarchyID.ContainsKey(hierarchyID))
             {
                 return;
             }
-            
+
             var s = byHierarchyID[hierarchyID];
 
             for (var i = 0; i < s.Count; i++)
@@ -745,5 +756,7 @@ namespace Appalachia.Simulation.Trees.Shape.Collections
                 Rebuild();
             }
         }
+
+        #endregion
     }
 }

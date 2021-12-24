@@ -1,7 +1,7 @@
 using System;
-using Appalachia.Core.Behaviours;
+using Appalachia.Core.Objects.Root;
 using Appalachia.Core.Types.Enums;
-using Appalachia.Utility.Logging;
+using Appalachia.Utility.Async;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
 using UnityEngine;
@@ -10,7 +10,8 @@ namespace Appalachia.Simulation.ReactionSystem.Base
 {
     [ExecuteAlways]
     [Serializable]
-    public abstract class ReactionSubsystemBase : AppalachiaBehaviour
+    public abstract class ReactionSubsystemBase<T> : AppalachiaBehaviour<T>
+        where T : ReactionSubsystemBase<T>
     {
         #region Fields and Autoproperties
 
@@ -20,22 +21,22 @@ namespace Appalachia.Simulation.ReactionSystem.Base
 
         [SerializeField]
         [FoldoutGroup("Texture")]
-        [OnValueChanged(nameof(Initialize))]
+        [OnValueChanged(nameof(InitializeSynchronous))]
         public RenderTextureFormat renderTextureFormat;
 
         [SerializeField]
         [FoldoutGroup("Texture")]
-        [OnValueChanged(nameof(Initialize))]
+        [OnValueChanged(nameof(InitializeSynchronous))]
         public RenderQuality renderTextureQuality = RenderQuality.High_1024;
 
         [SerializeField]
         [FoldoutGroup("Texture")]
-        [OnValueChanged(nameof(Initialize))]
+        [OnValueChanged(nameof(InitializeSynchronous))]
         public FilterMode filterMode;
 
         [SerializeField]
         [FoldoutGroup("Texture")]
-        [OnValueChanged(nameof(Initialize))]
+        [OnValueChanged(nameof(InitializeSynchronous))]
         [ValueDropdown(nameof(depths))]
         public int depth;
 
@@ -99,27 +100,28 @@ namespace Appalachia.Simulation.ReactionSystem.Base
                 }
                 catch (Exception ex)
                 {
-                    AppaLog.Error(ex);
+                    Context.Log.Error(ex);
                 }
             }
         }
 
-        protected override void OnEnable()
+        protected override async AppaTask WhenEnabled()
         {
             using (_PRF_OnEnable.Auto())
             {
-                base.OnEnable();
+                await base.WhenEnabled();
 
                 updateLoopInitialized = false;
                 Initialize();
             }
         }
 
-        protected override void OnDisable()
+        protected override async AppaTask WhenDisabled()
+
         {
             using (_PRF_OnDisable.Auto())
             {
-                base.OnDisable();
+                await base.WhenDisabled();
 
                 TeardownSubsystem();
                 updateLoopInitialized = false;

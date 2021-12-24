@@ -1,11 +1,12 @@
 using Appalachia.Core.Extensions;
+using Appalachia.Core.Objects.Root;
 using Appalachia.Simulation.Trees.Generation.Texturing.Materials.Input;
 using UnityEditor;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Generation.Texturing.Input
 {
-    public class InputTextureUsageElement
+    public class InputTextureUsageElement : AppalachiaSimpleBase
     {
         public InputTextureUsageElement(
             InputTextureProfileChannel profileChannel, 

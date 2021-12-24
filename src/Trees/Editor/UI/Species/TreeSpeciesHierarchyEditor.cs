@@ -1,3 +1,4 @@
+using Appalachia.Core.Attributes;
 using Appalachia.Simulation.Core.Metadata.Tree.Types;
 using Appalachia.Simulation.Trees.Build.RequestManagers;
 using Appalachia.Simulation.Trees.Core;
@@ -9,41 +10,30 @@ using Appalachia.Simulation.Trees.UI.Selections.State;
 
 namespace Appalachia.Simulation.Trees.UI.Species
 {
+    [CallStaticConstructorInEditor]
     public class TreeSpeciesHierarchyEditor : HierarchyBaseEditor<TreeDataContainer>
     {
-        protected override HierarchyData CreateTrunkHierarchy(IHierarchyWrite hierarchies)
+        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
+        static TreeSpeciesHierarchyEditor()
         {
-            var h = hierarchies.CreateTrunkHierarchy(
-                TreeSpeciesEditorSelection.instance.tree.selection.selected.materials.inputMaterialCache
-            );
-            
-            return h;
+            TreeSpeciesEditorSelection.InstanceAvailable += i => _treeSpeciesEditorSelection = i;
         }
 
-        protected override HierarchyData CreateHierarchy(IHierarchyWrite hierarchies, TreeComponentType type, HierarchyData parent)
-        {
-            var h = hierarchies.CreateHierarchy(
-                type, parent,
-                TreeSpeciesEditorSelection.instance.tree.selection.selected.materials.inputMaterialCache
-            );
-            
-            return h;
-        }
+        #region Static Fields and Autoproperties
 
-        protected override void SettingsChanged()
-        {
-            TreeBuildRequestManager.SettingsChanged(SettingsUpdateTarget.Distribution);
-        }
+        private static TreeSpeciesEditorSelection _treeSpeciesEditorSelection;
+
+        #endregion
 
         protected override bool AreHierarchyButtonsEnabled()
         {
-            var s = TreeSpeciesEditorSelection.instance.tree;
+            var s = _treeSpeciesEditorSelection.tree;
 
             if ((s.selection == null) || (s.selection.selected == null))
             {
                 return false;
             }
-            
+
             if ((s.stage == StageType.Normal) && s.selection.selected.initialized)
             {
                 return true;
@@ -52,9 +42,37 @@ namespace Appalachia.Simulation.Trees.UI.Species
             return false;
         }
 
+        protected override HierarchyData CreateHierarchy(
+            IHierarchyWrite hierarchies,
+            TreeComponentType type,
+            HierarchyData parent)
+        {
+            var h = hierarchies.CreateHierarchy(
+                type,
+                parent,
+                _treeSpeciesEditorSelection.tree.selection.selected.materials.inputMaterialCache
+            );
+
+            return h;
+        }
+
+        protected override HierarchyData CreateTrunkHierarchy(IHierarchyWrite hierarchies)
+        {
+            var h = hierarchies.CreateTrunkHierarchy(
+                _treeSpeciesEditorSelection.tree.selection.selected.materials.inputMaterialCache
+            );
+
+            return h;
+        }
+
         protected override IBasicSelection GetSelection()
         {
-            return TreeSpeciesEditorSelection.instance.tree;
+            return _treeSpeciesEditorSelection.tree;
+        }
+
+        protected override void SettingsChanged()
+        {
+            TreeBuildRequestManager.SettingsChanged(SettingsUpdateTarget.Distribution);
         }
     }
 }

@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Appalachia.Simulation.ReactionSystem.Base;
+using Appalachia.Core.Objects.Root;
 using Appalachia.Simulation.ReactionSystem.Cameras;
 using Appalachia.Utility.Reflection.Extensions;
 using Sirenix.OdinInspector;
@@ -11,7 +11,7 @@ using Object = UnityEngine.Object;
 namespace Appalachia.Simulation.ReactionSystem
 {
     [Serializable]
-    public class ReactionSubsystemGroup
+    public class ReactionSubsystemGroup : AppalachiaSimpleBase
     {
         private const string _PRF_PFX = nameof(ReactionSubsystemGroup) + ".";
 
