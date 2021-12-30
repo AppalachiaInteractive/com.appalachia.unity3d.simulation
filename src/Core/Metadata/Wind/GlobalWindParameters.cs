@@ -15,7 +15,6 @@ namespace Appalachia.Simulation.Core.Metadata.Wind
     [CallStaticConstructorInEditor]
     public class GlobalWindParameters : AppalachiaObject<GlobalWindParameters>
     {
-        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
         static GlobalWindParameters()
         {
             RegisterDependency<DensityMetadataCollection>(i => _densityMetadataCollection = i);

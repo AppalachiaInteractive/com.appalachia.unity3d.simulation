@@ -27,19 +27,23 @@ namespace Appalachia.Simulation.Trees
     [CallStaticConstructorInEditor]
     public abstract class TSEDataContainer : ResponsiveAppalachiaObject
     {
-        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
-        static TSEDataContainer()
-        {
-            DefaultShaderResource.InstanceAvailable += i => _defaultShaderResource = i;
-        }
-
-        protected static DefaultShaderResource _defaultShaderResource;
         public enum DataState
         {
             Normal = 0,
             Dirty = 10,
             PendingSave = 20
         }
+
+        static TSEDataContainer()
+        {
+            DefaultShaderResource.InstanceAvailable += i => _defaultShaderResource = i;
+        }
+
+        #region Static Fields and Autoproperties
+
+        protected static DefaultShaderResource _defaultShaderResource;
+
+        #endregion
 
         #region Fields and Autoproperties
 

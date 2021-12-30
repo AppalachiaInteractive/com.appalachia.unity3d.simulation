@@ -17,7 +17,6 @@ namespace Appalachia.Simulation.Trees.UI.UV
     [CallStaticConstructorInEditor]
     public class TreeUVSidebarCollection
     {
-        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
         static TreeUVSidebarCollection()
         {
             LeafUVRectCollection.InstanceAvailable += i => _leafUVRectCollection = i;

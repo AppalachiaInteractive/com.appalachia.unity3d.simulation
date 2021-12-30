@@ -28,7 +28,6 @@ namespace Appalachia.Simulation.Wind
     [CallStaticConstructorInEditor]
     public class GlobalWindManager : SingletonAppalachiaBehaviour<GlobalWindManager>
     {
-        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
         static GlobalWindManager()
         {
             GSR.InstanceAvailable += i => _GSR = i;

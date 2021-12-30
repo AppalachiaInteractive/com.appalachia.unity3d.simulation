@@ -115,7 +115,7 @@ namespace Appalachia.Simulation.Trees.Definition
             TreeAsset asset)
         {
             var assetName = nameBasis.FileNameAgeSO(individualID, ageType);
-            var instance = TreeAge.LoadOrCreateNew(folder, assetName);
+            var instance = LoadOrCreateNew<TreeAge>(folder, assetName);
 
             instance.individualID = individualID;
             instance.ageType = ageType;
@@ -184,7 +184,7 @@ namespace Appalachia.Simulation.Trees.Definition
 
         public OdinMenuItem GetMenuItem(OdinMenuTree tree)
         {
-            var item = new OdinMenuItem(tree, GetMenuString(), this) {Icon = GetIcon(true).icon};
+            var item = new OdinMenuItem(tree, GetMenuString(), this) { Icon = GetIcon(true).icon };
 
             return item;
         }

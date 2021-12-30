@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Appalachia.Core.Attributes;
 using Appalachia.Globals.Shading;
 using Appalachia.Simulation.Trees.Generation.Texturing.Input;
 using Appalachia.Simulation.Trees.Generation.Texturing.Specifications;
@@ -6,9 +7,9 @@ using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading.InputShaders
 {
+    [CallStaticConstructorInEditor]
     public class Internal_Tree_InputMaterialShader : IInputMaterialShader
     {
-        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
         static Internal_Tree_InputMaterialShader()
         {
             GSR.InstanceAvailable += i => _GSR = i;

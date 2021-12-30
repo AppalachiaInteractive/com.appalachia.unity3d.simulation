@@ -27,13 +27,17 @@ namespace Appalachia.Simulation.ReactionSystem.TouchBend.Data
     [CallStaticConstructorInEditor]
     public sealed class TouchBendQuad : AppalachiaBehaviour<TouchBendQuad>
     {
-        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
         static TouchBendQuad()
         {
             GSR.InstanceAvailable += i => _GSR = i;
         }
 
+        #region Static Fields and Autoproperties
+
         private static GSR _GSR;
+
+        #endregion
+
         #region Runtime
 
         [FoldoutGroup("Runtime")]

@@ -41,7 +41,6 @@ namespace Appalachia.Simulation.Buoyancy
 
         #endregion
 
-        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
         static Water()
         {
             MainVoxelDataGizmoSettingsCollection.InstanceAvailable +=
@@ -98,7 +97,7 @@ namespace Appalachia.Simulation.Buoyancy
         public int tracking => _index.Count;
 
         #region Event Functions
-        
+
         private void FixedUpdate()
         {
             using (_PRF_FixedUpdate.Auto())
@@ -144,8 +143,6 @@ namespace Appalachia.Simulation.Buoyancy
                         {
                             continue;
                         }
-
-                        buoyant.InitializeExternal();
 
                         if (buoyant.buoyancyData.buoyancyType == BuoyancyType.NonPhysical)
                         {
@@ -198,40 +195,6 @@ namespace Appalachia.Simulation.Buoyancy
                 {
                     JobHandle.ScheduleBatchedJobs();
                 }
-            }
-        }
-
-        protected override async AppaTask WhenEnabled()
-        {
-            using (_PRF_OnEnable.Auto())
-            {
-                await base.WhenEnabled();
-                Initialize();
-            }
-        }
-
-        protected override async AppaTask WhenDisabled()
-
-        {
-            using (_PRF_OnDisable.Auto())
-            {
-                await base.WhenDisabled();
-
-#if UNITY_EDITOR
-                if (AppalachiaApplication.IsCompiling || AppalachiaApplication.IsPlayingOrWillPlay)
-                {
-                    CleanUp();
-                }
-#endif
-            }
-        }
-
-        protected override async AppaTask WhenDestroyed()
-        {
-            using (_PRF_OnDestroy.Auto())
-            {
-                await base.WhenDestroyed();
-                CleanUp();
             }
         }
 
@@ -403,6 +366,31 @@ namespace Appalachia.Simulation.Buoyancy
                 {
                     PhysicsSimulator.onSimulationUpdate -= FixedUpdate;
                     PhysicsSimulator.onSimulationUpdate += FixedUpdate;
+                }
+#endif
+            }
+        }
+
+        protected override async AppaTask WhenDestroyed()
+        {
+            using (_PRF_OnDestroy.Auto())
+            {
+                await base.WhenDestroyed();
+                CleanUp();
+            }
+        }
+
+        protected override async AppaTask WhenDisabled()
+
+        {
+            using (_PRF_OnDisable.Auto())
+            {
+                await base.WhenDisabled();
+
+#if UNITY_EDITOR
+                if (AppalachiaApplication.IsCompiling || AppalachiaApplication.IsPlayingOrWillPlay)
+                {
+                    CleanUp();
                 }
 #endif
             }

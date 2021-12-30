@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Appalachia.Core.Objects.Root;
+using Appalachia.Simulation.ReactionSystem.Base;
 using Appalachia.Simulation.ReactionSystem.Cameras;
 using Appalachia.Utility.Reflection.Extensions;
 using Sirenix.OdinInspector;
@@ -13,35 +14,20 @@ namespace Appalachia.Simulation.ReactionSystem
     [Serializable]
     public class ReactionSubsystemGroup : AppalachiaSimpleBase
     {
-        private const string _PRF_PFX = nameof(ReactionSubsystemGroup) + ".";
+        #region Constants and Static Readonly
 
-        private const string titleGroupName = "Group Profile";
-        private const string titleGroupDetailName = titleGroupName + "/Details";
+        private const string cameraFoldoutName = cameraHideName + "/Camera";
+        private const string cameraHideName = nameof(lockSize);
         private const string subsystemGroupName = "Create New Subsystems";
         private const string subsystemHorizontalGroupName = subsystemGroupName + "/Create";
         private const string subsystemsName = "Subsystems";
-        private const string cameraHideName = nameof(lockSize);
-        private const string cameraFoldoutName = cameraHideName + "/Camera";
+        private const string titleGroupDetailName = titleGroupName + "/Details";
 
-        private static readonly ProfilerMarker _PRF_Initialize = new(_PRF_PFX + nameof(Initialize));
+        private const string titleGroupName = "Group Profile";
 
-        private static readonly ProfilerMarker _PRF_InitializeAll =
-            new(_PRF_PFX + nameof(InitializeAll));
+        #endregion
 
-        private static readonly ProfilerMarker _PRF_InitializeRoot =
-            new(_PRF_PFX + nameof(InitializeRoot));
-
-        private static readonly ProfilerMarker _PRF_InitializeCamera =
-            new(_PRF_PFX + nameof(InitializeCamera));
-
-        private static readonly ProfilerMarker _PRF_UpdateActive =
-            new(_PRF_PFX + nameof(UpdateActive));
-
-        private static readonly ProfilerMarker _PRF_UpdateSubsystems =
-            new(_PRF_PFX + nameof(UpdateSubsystems));
-
-        private static readonly ProfilerMarker _PRF_CreateNewSubsystem =
-            new(_PRF_PFX + nameof(CreateNewSubsystem));
+        #region Fields and Autoproperties
 
         [TitleGroup(titleGroupName)]
         [OnValueChanged(nameof(InitializeRoot))]
@@ -85,6 +71,10 @@ namespace Appalachia.Simulation.ReactionSystem
         [ShowInInspector]
         public Type createSubsystemType;
 
+        #endregion
+
+        private bool _canCreateSubsystem => (_mainSystem != null) && (createSubsystemType != null);
+
         private ValueDropdownList<Type> SubsystemTypeList
         {
             get
@@ -110,7 +100,24 @@ namespace Appalachia.Simulation.ReactionSystem
             }
         }
 
-        private bool _canCreateSubsystem => (_mainSystem != null) && (createSubsystemType != null);
+        [BoxGroup(subsystemGroupName)]
+        [HorizontalGroup(subsystemHorizontalGroupName, .1f)]
+        [Button("Create")]
+        [EnableIf(nameof(_canCreateSubsystem))]
+        public void CreateNewSubsystem()
+        {
+            using (_PRF_CreateNewSubsystem.Auto())
+            {
+                var name = createSubsystemType.GetReadableName();
+
+                var child = new GameObject(name);
+                child.transform.SetParent(_root, false);
+
+                var subsystem = child.AddComponent(createSubsystemType);
+
+                subsystems.Add(subsystem as ReactionSubsystemBase);
+            }
+        }
 
         public void Initialize(ReactionSystem mainSystem, int groupIndex)
         {
@@ -131,19 +138,19 @@ namespace Appalachia.Simulation.ReactionSystem
             }
         }
 
-        private void InitializeRoot()
-        {
-            using (_PRF_InitializeRoot.Auto())
-            {
-                UpdateSubsystems(true, false, false, false, enabled);
-            }
-        }
-
         private void InitializeCamera()
         {
             using (_PRF_InitializeCamera.Auto())
             {
                 UpdateSubsystems(true, false, true, true, enabled);
+            }
+        }
+
+        private void InitializeRoot()
+        {
+            using (_PRF_InitializeRoot.Auto())
+            {
+                UpdateSubsystems(true, false, false, false, enabled);
             }
         }
 
@@ -250,23 +257,27 @@ namespace Appalachia.Simulation.ReactionSystem
             }
         }
 
-        [BoxGroup(subsystemGroupName)]
-        [HorizontalGroup(subsystemHorizontalGroupName, .1f)]
-        [Button("Create")]
-        [EnableIf(nameof(_canCreateSubsystem))]
-        public void CreateNewSubsystem()
-        {
-            using (_PRF_CreateNewSubsystem.Auto())
-            {
-                var name = createSubsystemType.GetReadableName();
+        #region Profiling
 
-                var child = new GameObject(name);
-                child.transform.SetParent(_root, false);
+        private const string _PRF_PFX = nameof(ReactionSubsystemGroup) + ".";
 
-                var subsystem = child.AddComponent(createSubsystemType);
+        private static readonly ProfilerMarker _PRF_Initialize = new(_PRF_PFX + nameof(Initialize));
 
-                subsystems.Add(subsystem as ReactionSubsystemBase);
-            }
-        }
+        private static readonly ProfilerMarker _PRF_InitializeAll = new(_PRF_PFX + nameof(InitializeAll));
+
+        private static readonly ProfilerMarker _PRF_InitializeRoot = new(_PRF_PFX + nameof(InitializeRoot));
+
+        private static readonly ProfilerMarker _PRF_InitializeCamera =
+            new(_PRF_PFX + nameof(InitializeCamera));
+
+        private static readonly ProfilerMarker _PRF_UpdateActive = new(_PRF_PFX + nameof(UpdateActive));
+
+        private static readonly ProfilerMarker _PRF_UpdateSubsystems =
+            new(_PRF_PFX + nameof(UpdateSubsystems));
+
+        private static readonly ProfilerMarker _PRF_CreateNewSubsystem =
+            new(_PRF_PFX + nameof(CreateNewSubsystem));
+
+        #endregion
     }
 }

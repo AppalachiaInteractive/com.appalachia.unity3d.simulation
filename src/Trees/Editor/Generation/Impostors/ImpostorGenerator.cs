@@ -20,7 +20,6 @@ namespace Appalachia.Simulation.Trees.Generation.Impostors
     [CallStaticConstructorInEditor]
     public static class ImpostorGenerator
     {
-        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
         static ImpostorGenerator()
         {
             DefaultShaderResource.InstanceAvailable += i => _defaultShaderResource = i;

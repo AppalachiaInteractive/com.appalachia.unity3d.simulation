@@ -10,7 +10,6 @@ namespace Appalachia.Simulation.Trees.Build.RequestManagers
     [CallStaticConstructorInEditor]
     public static class LogBuildRequestManager
     {
-        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
         static LogBuildRequestManager()
         {
             TreeSpeciesEditorSelection.InstanceAvailable += i => _treeSpeciesEditorSelection = i;

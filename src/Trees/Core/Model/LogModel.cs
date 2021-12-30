@@ -5,6 +5,7 @@
 using Appalachia.CI.Integration.Assets;
 using Appalachia.Core.Attributes;
 using Appalachia.Core.Math.Geometry;
+using Appalachia.Editing.Core.Behaviours;
 using Appalachia.Editing.Debugging.Handle;
 using Appalachia.Simulation.Trees.Core.Interfaces;
 using Appalachia.Simulation.Trees.Core.Shape;
@@ -18,7 +19,7 @@ namespace Appalachia.Simulation.Trees.Core.Model
 {
     [ExecuteAlways]
     [CallStaticConstructorInEditor]
-    public class LogModel : EditorOnlyFrustumCulledBehaviour, ILogModel
+    public class LogModel : EditorOnlyFrustumCulledBehaviour<LogModel>, ILogModel
     {
         static LogModel()
         {
@@ -196,7 +197,7 @@ namespace Appalachia.Simulation.Trees.Core.Model
                     {
                         if (_visibleLogIndex != selection.instanceSelection)
                         {
-                            Object.DestroyImmediate(_visible);
+                            DestroyImmediate(_visible);
 
                             _visible = container.GetLog(selection.instanceSelection);
 
@@ -224,7 +225,7 @@ namespace Appalachia.Simulation.Trees.Core.Model
             {
                 for (var i = 0; i < transform.childCount; i++)
                 {
-                    Object.DestroyImmediate(transform.GetChild(i).gameObject);
+                    DestroyImmediate(transform.GetChild(i).gameObject);
                 }
 
                 repaint = true;
@@ -248,7 +249,7 @@ namespace Appalachia.Simulation.Trees.Core.Model
                 if (_container == null)
                 {
                     Context.Log.Error("Need to set containers!");
-                    Object.DestroyImmediate(gameObject);
+                    DestroyImmediate(gameObject);
                 }
             }
             else if (selection.container != container)
@@ -436,13 +437,13 @@ namespace Appalachia.Simulation.Trees.Core.Model
 
         public static LogModel Find(ILogDataProvider container)
         {
-            var gos = Object.FindObjectsOfType<LogModel>();
+            var gos = FindObjectsOfType<LogModel>();
 
             for (var i = gos.Length - 1; i >= 0; i--)
             {
                 if (i > 0)
                 {
-                    Object.DestroyImmediate(gos[i]);
+                    DestroyImmediate(gos[i]);
                 }
 
                 if (i == 0)

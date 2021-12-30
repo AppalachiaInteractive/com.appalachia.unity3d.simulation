@@ -12,7 +12,6 @@ namespace Appalachia.Simulation.Trees.UI.Log
     [CallStaticConstructorInEditor]
     public class LogHierarchyEditor : HierarchyBaseEditor<LogDataContainer>
     {
-        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
         static LogHierarchyEditor()
         {
             TreeSpeciesEditorSelection.InstanceAvailable += i => _treeSpeciesEditorSelection = i;

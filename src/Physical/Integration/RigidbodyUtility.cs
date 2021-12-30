@@ -141,22 +141,6 @@ namespace Appalachia.Simulation.Physical.Integration
 
         #region Event Functions
 
-        [ButtonGroup("A")]
-        [EnableIf(nameof(Reset_enable))]
-        protected override void Reset()
-        {
-            using (_PRF_Reset.Auto())
-            {
-                if (_rigidbody == null)
-                {
-                    _rigidbody = _transform.GetComponent<Rigidbody>();
-                }
-
-                StopMovement();
-                ResetPosition();
-            }
-        }
-
         private void Update()
         {
             using (_PRF_Update.Auto())
@@ -470,6 +454,22 @@ namespace Appalachia.Simulation.Physical.Integration
             }
         }
 
+        [ButtonGroup("A")]
+        [EnableIf(nameof(Reset_enable))]
+        private void ResetUtility()
+        {
+            using (_PRF_ResetUtility.Auto())
+            {
+                if (_rigidbody == null)
+                {
+                    _rigidbody = _transform.GetComponent<Rigidbody>();
+                }
+
+                StopMovement();
+                ResetPosition();
+            }
+        }
+
         #region Profiling
 
         private const string _PRF_PFX = nameof(RigidbodyUtility) + ".";
@@ -515,7 +515,8 @@ namespace Appalachia.Simulation.Physical.Integration
         private static readonly ProfilerMarker _PRF_StopMovement =
             new ProfilerMarker(_PRF_PFX + nameof(StopMovement));
 
-        private static readonly ProfilerMarker _PRF_Reset = new ProfilerMarker(_PRF_PFX + nameof(Reset));
+        private static readonly ProfilerMarker _PRF_ResetUtility =
+            new ProfilerMarker(_PRF_PFX + nameof(ResetUtility));
 
         #endregion
     }

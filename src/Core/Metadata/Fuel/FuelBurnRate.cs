@@ -1,7 +1,9 @@
-﻿namespace Appalachia.Simulation.Core.Metadata.Fuel
+﻿using Appalachia.Core.Objects.Root;
+
+namespace Appalachia.Simulation.Core.Metadata.Fuel
 {
-    public class FuelBurnRate : AppalachiaSimulationObject
-    {        
+    public class FuelBurnRate : AppalachiaObject<FuelBurnRate>
+    {
         #region Fields and Autoproperties
 
         public float ignitionRate = 0.05f;

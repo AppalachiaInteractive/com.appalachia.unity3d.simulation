@@ -15,7 +15,6 @@ namespace Appalachia.Simulation.Trees.Hierarchy.Collections
     [CallStaticConstructorInEditor]
     public class TreeHierarchies : HierarchyCollection<TreeHierarchies>
     {
-        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
         static TreeHierarchies()
         {
             TreeSpeciesEditorSelection.InstanceAvailable += i => _treeSpeciesEditorSelection = i;

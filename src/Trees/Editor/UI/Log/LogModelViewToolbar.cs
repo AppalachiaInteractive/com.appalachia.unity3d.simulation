@@ -15,7 +15,6 @@ namespace Appalachia.Simulation.Trees.UI.Log
     [CallStaticConstructorInEditor]
     public static class LogModelViewToolbar
     {
-        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
         static LogModelViewToolbar()
         {
             TreeGizmoStyle.InstanceAvailable += i => _treeGizmoStyle = i;

@@ -1,12 +1,13 @@
 using System;
+using Appalachia.Core.Attributes;
 using Appalachia.Simulation.Trees.UI.Selections.Dropdown;
 
 namespace Appalachia.Simulation.Trees.UI.Selections.State
 {
     [Serializable]
+    [CallStaticConstructorInEditor]
     public class TreeSettingsSelection : TSESelection<TreeDataContainer, TreeSettingsDataContainerSelection>
     {
-        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
         static TreeSettingsSelection()
         {
             TreeSettingsDataContainerSelection.InstanceAvailable +=

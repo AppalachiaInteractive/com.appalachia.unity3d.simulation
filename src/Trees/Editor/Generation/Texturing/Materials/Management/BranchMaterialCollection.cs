@@ -19,7 +19,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Management
         public static BranchMaterialCollection Create(string folder, NameBasis nameBasis)
         {
             var assetName = nameBasis.FileNameSO("materials");
-            var instance = BranchMaterialCollection.LoadOrCreateNew(folder, assetName);
+            var instance = LoadOrCreateNew<BranchMaterialCollection>(folder, assetName);
 
             instance.Initialize(ResponsiveSettingsType.Branch);
 

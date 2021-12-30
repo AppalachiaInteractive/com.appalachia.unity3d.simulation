@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using Appalachia.CI.Integration.Assets;
 using Appalachia.CI.Integration.FileSystem;
+using Appalachia.Core.Objects.Root;
 using Appalachia.Core.Types;
 using Appalachia.Simulation.Trees.Build.Execution;
 using Appalachia.Simulation.Trees.Core.Settings;
@@ -20,10 +21,17 @@ using UnityEngine;
 namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Management
 {
     [Serializable]
-    public class OutputMaterialCache
+    public class OutputMaterialCache : AppalachiaSimpleBase
     {
-        
-        
+        public OutputMaterialCache(IDIncrementer ids, ResponsiveSettingsType type)
+        {
+            _tiledOutputMaterials = new List<TiledOutputMaterial>();
+
+            _atlasOutputMaterial = new AtlasOutputMaterial(ids.GetNextIdAndIncrement(), type);
+        }
+
+        #region Fields and Autoproperties
+
         [SerializeField]
         [TabGroup("Atlas", Paddingless = true)]
         [HideLabel, InlineProperty, PropertyOrder(-1100)]
@@ -51,17 +59,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Management
         [ShowIf(nameof(_showShadowCasterOutputMaterial))]
         private ShadowCasterOutputMaterial _shadowCasterOutputMaterial;
 
-        public OutputMaterialCache(IDIncrementer ids, ResponsiveSettingsType type)
-        {
-            _tiledOutputMaterials = new List<TiledOutputMaterial>();
-
-            _atlasOutputMaterial = new AtlasOutputMaterial(ids.GetNextIdAndIncrement(), type);
-        }
-
-        private bool _showAtlasOutputMaterial => _atlasOutputMaterial != null;
-        private bool _showTiledOutputMaterial => _tiledOutputMaterials.Count > 0;
-        
-        private bool _showShadowCasterOutputMaterial => _shadowCasterOutputMaterial != null;
+        #endregion
 
         public AtlasOutputMaterial atlasOutputMaterial => _atlasOutputMaterial;
 
@@ -69,111 +67,17 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Management
 
         public ShadowCasterOutputMaterial shadowCasterOutputMaterial => _shadowCasterOutputMaterial;
 
+        private bool _showAtlasOutputMaterial => _atlasOutputMaterial != null;
 
-        public void Reset()
-        {
-            _atlasOutputMaterial = null;
-            _tiledOutputMaterials.Clear();
-            _shadowCasterOutputMaterial = null;
-        }
+        private bool _showShadowCasterOutputMaterial => _shadowCasterOutputMaterial != null;
+        private bool _showTiledOutputMaterial => _tiledOutputMaterials.Count > 0;
 
-        
-        public void Update(IDIncrementer ids, InputMaterialCache inputs, ResponsiveSettingsType type, int lodCount, bool shadowCaster)
-        {
-            using (BUILD_TIME.TREE_MAT_CACHE.Update.Auto())
-            {
-                try
-                {
-                    CreateOutputMaterials(ids, inputs.tiledInputMaterials, type, lodCount, shadowCaster);
-
-                    for (var i = _tiledOutputMaterials.Count - 1; i >= 0; i--)
-                    {
-                        var om = _tiledOutputMaterials[i];
-
-                        var imi = om.inputMaterialID;
-
-                        if (!inputs.materialsByID.ContainsKey(imi))
-                        {
-                            _tiledOutputMaterials.RemoveAt(i);
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Context.Log.Error(ex);
-                    throw;
-                }
-            }
-        }
-
-        private void CreateOutputMaterials(
-            IDIncrementer ids, 
-            IEnumerable<TiledInputMaterial> tiledInputMaterials, 
-            ResponsiveSettingsType type, 
-            int lodCount,
-            bool shadowCaster)
-        {
-            if (_atlasOutputMaterial == null)
-            {
-                _atlasOutputMaterial = new AtlasOutputMaterial(ids.GetNextIdAndIncrement(), type);
-            }
-            
-            _atlasOutputMaterial.EnsureCreated(lodCount);
-            
-            if (shadowCaster)
-            {
-                if (_shadowCasterOutputMaterial == null)
-                {
-                    _shadowCasterOutputMaterial = new ShadowCasterOutputMaterial(ids.GetNextIdAndIncrement());
-                }
-                
-                _shadowCasterOutputMaterial.EnsureCreated(lodCount);
-            }
-
-            if (_tiledOutputMaterials == null)
-            {
-                _tiledOutputMaterials = new List<TiledOutputMaterial>();
-            }
-
-            foreach (var tiledInputMaterial in tiledInputMaterials)
-            {
-                var found = false;
-
-                foreach (var tiledOutputMaterial in _tiledOutputMaterials)
-                {
-                    if (tiledOutputMaterial.inputMaterialID == tiledInputMaterial.materialID)
-                    {
-                        found = true;
-                        break;
-                    }
-                }
-
-                if (found)
-                {
-                    continue;
-                }
-
-                var newTiledOutputMaterial = new TiledOutputMaterial(
-                    ids.GetNextIdAndIncrement(),
-                    tiledInputMaterial.materialID,
-                    new UVScale(), type
-                );
-
-                _tiledOutputMaterials.Add(newTiledOutputMaterial);
-            }
-
-            foreach (var tiledMat in _tiledOutputMaterials)
-            {
-                tiledMat.EnsureCreated(lodCount);
-            }
-        }
-        
         public string CalculateHash()
         {
             using (BUILD_TIME.TREE_MAT_COLL.CalculateHash.Auto())
             {
                 var materials = tiledOutputMaterials.SelectMany(m => m.Select(e => e.asset))
-                    .Concat(atlasOutputMaterial.Select(a => a.asset));
+                                                    .Concat(atlasOutputMaterial.Select(a => a.asset));
 
                 var builder = new StringBuilder();
 
@@ -216,6 +120,109 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Management
                 }
 
                 return builder.ToString().GetHashCode().ToString();
+            }
+        }
+
+        public void Reset()
+        {
+            _atlasOutputMaterial = null;
+            _tiledOutputMaterials.Clear();
+            _shadowCasterOutputMaterial = null;
+        }
+
+        public void Update(
+            IDIncrementer ids,
+            InputMaterialCache inputs,
+            ResponsiveSettingsType type,
+            int lodCount,
+            bool shadowCaster)
+        {
+            using (BUILD_TIME.TREE_MAT_CACHE.Update.Auto())
+            {
+                try
+                {
+                    CreateOutputMaterials(ids, inputs.tiledInputMaterials, type, lodCount, shadowCaster);
+
+                    for (var i = _tiledOutputMaterials.Count - 1; i >= 0; i--)
+                    {
+                        var om = _tiledOutputMaterials[i];
+
+                        var imi = om.inputMaterialID;
+
+                        if (!inputs.materialsByID.ContainsKey(imi))
+                        {
+                            _tiledOutputMaterials.RemoveAt(i);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Context.Log.Error(ex);
+                    throw;
+                }
+            }
+        }
+
+        private void CreateOutputMaterials(
+            IDIncrementer ids,
+            IEnumerable<TiledInputMaterial> tiledInputMaterials,
+            ResponsiveSettingsType type,
+            int lodCount,
+            bool shadowCaster)
+        {
+            if (_atlasOutputMaterial == null)
+            {
+                _atlasOutputMaterial = new AtlasOutputMaterial(ids.GetNextIdAndIncrement(), type);
+            }
+
+            _atlasOutputMaterial.EnsureCreated(lodCount);
+
+            if (shadowCaster)
+            {
+                if (_shadowCasterOutputMaterial == null)
+                {
+                    _shadowCasterOutputMaterial = new ShadowCasterOutputMaterial(ids.GetNextIdAndIncrement());
+                }
+
+                _shadowCasterOutputMaterial.EnsureCreated(lodCount);
+            }
+
+            if (_tiledOutputMaterials == null)
+            {
+                _tiledOutputMaterials = new List<TiledOutputMaterial>();
+            }
+
+            foreach (var tiledInputMaterial in tiledInputMaterials)
+            {
+                var found = false;
+
+                foreach (var tiledOutputMaterial in _tiledOutputMaterials)
+                {
+                    if (tiledOutputMaterial.inputMaterialID == tiledInputMaterial.materialID)
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (found)
+                {
+                    continue;
+                }
+
+                var newTiledOutputMaterial = new TiledOutputMaterial(
+                    ids.GetNextIdAndIncrement(),
+                    tiledInputMaterial.materialID,
+                    new UVScale(),
+                    type
+                );
+
+                _tiledOutputMaterials.Add(newTiledOutputMaterial);
+            }
+
+            foreach (var tiledMat in _tiledOutputMaterials)
+            {
+                tiledMat.EnsureCreated(lodCount);
             }
         }
     }

@@ -25,7 +25,6 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Operations
     [CallStaticConstructorInEditor]
     public static class TextureCombiner
     {
-        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
         static TextureCombiner()
         {
             GSR.InstanceAvailable += i => _GSR = i;

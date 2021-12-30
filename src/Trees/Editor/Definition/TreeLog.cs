@@ -18,50 +18,49 @@ namespace Appalachia.Simulation.Trees.Definition
     [Serializable]
     public sealed class TreeLog : TypeBasedSettings<TreeLog>, ILog
     {
+        #region Fields and Autoproperties
+
         [FormerlySerializedAs("name")]
         [TitleGroup("Log Information", Alignment = TitleAlignments.Centered)]
         [PropertyOrder(0)]
         public NameBasis nameBasis;
-
-        public ExternalDualSeed Seed
-        {
-            get
-            {
-                return seed;
-            }
-            set
-            {
-                seed = value;
-            }
-        }
 
         [PropertySpace]
         [PropertyOrder(1), InlineProperty, HideLabel]
         [OnValueChanged(nameof(DistributionSettingsChanged), true)]
         public ExternalDualSeed seed;
 
-        [HideInInspector]
-        public LogHierarchies hierarchies;
+        [HideInInspector] public LogHierarchies hierarchies;
+
+        #endregion
+
+        public ExternalDualSeed Seed
+        {
+            get => seed;
+            set => seed = value;
+        }
 
         public static TreeLog Create(string folder, NameBasis nameBasis)
         {
             var assetName = nameBasis.FileNameSO("log");
-            var instance = TreeLog.LoadOrCreateNew(folder, assetName);
-            
+            var instance = LoadOrCreateNew<TreeLog>(folder, assetName);
+
             instance.nameBasis = nameBasis;
             instance.hierarchies = new LogHierarchies();
-            
+
             return instance;
         }
 
-        public List<BranchHierarchyData> Branches => hierarchies.branches;
-
-        public List<TrunkHierarchyData> Trunks => hierarchies.trunks;
-        
         private void DistributionSettingsChanged()
         {
             LogBuildRequestManager.SettingsChanged(SettingsUpdateTarget.Distribution);
         }
+
+        #region ILog Members
+
+        public List<BranchHierarchyData> Branches => hierarchies.branches;
+
+        public List<TrunkHierarchyData> Trunks => hierarchies.trunks;
 
         public IEnumerator<HierarchyData> GetEnumerator()
         {
@@ -72,8 +71,7 @@ namespace Appalachia.Simulation.Trees.Definition
         {
             return GetEnumerator();
         }
+
+        #endregion
     }
 }
-
-
-

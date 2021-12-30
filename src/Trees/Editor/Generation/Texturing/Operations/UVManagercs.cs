@@ -29,7 +29,6 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Operations
     [CallStaticConstructorInEditor]
     public static class UVManager
     {
-        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
         static UVManager()
         {
             LeafUVRectCollection.InstanceAvailable += i => _leafUVRectCollection = i;

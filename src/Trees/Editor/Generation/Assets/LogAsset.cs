@@ -33,7 +33,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
         public static LogAsset Create(string folder, NameBasis nameBasis, int logID)
         {
             var assetName = nameBasis.FileNameLogAssetSO(logID);
-            var instance = LogAsset.LoadOrCreateNew(folder, assetName);
+            var instance = LoadOrCreateNew<LogAsset>(folder, assetName);
 
             instance.levels = new List<AssetLevel>();
 

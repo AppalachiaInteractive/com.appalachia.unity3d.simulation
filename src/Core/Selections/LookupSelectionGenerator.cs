@@ -11,7 +11,6 @@ namespace Appalachia.Simulation.Core.Selections
     [CallStaticConstructorInEditor]
     public static class LookupSelectionGenerator
     {
-        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
         static LookupSelectionGenerator()
         {
             PhysicsMaterialsCollection.InstanceAvailable += i => _physicsMaterialsCollection = i;
@@ -20,8 +19,9 @@ namespace Appalachia.Simulation.Core.Selections
 
         #region Static Fields and Autoproperties
 
-        private static PhysicsMaterialsCollection _physicsMaterialsCollection;
         private static DensityMetadataCollection _densityMetadataCollection;
+
+        private static PhysicsMaterialsCollection _physicsMaterialsCollection;
 
         #endregion
 

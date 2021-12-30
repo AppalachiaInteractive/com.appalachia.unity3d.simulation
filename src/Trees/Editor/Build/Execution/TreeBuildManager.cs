@@ -50,7 +50,6 @@ namespace Appalachia.Simulation.Trees.Build.Execution
     [CallStaticConstructorInEditor]
     public static class TreeBuildManager
     {
-        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
         static TreeBuildManager()
         {
             TreeSpeciesEditorSelection.InstanceAvailable += i => _treeSpeciesEditorSelection = i;
@@ -248,7 +247,7 @@ namespace Appalachia.Simulation.Trees.Build.Execution
 
                 if (tree.subfolders == null)
                 {
-                    tree.subfolders = TreeAssetSubfolders.CreateNested<TreeAssetSubfolders>(tree);
+                    tree.subfolders = TreeAssetSubfolders.CreateNested(tree);
                 }
 
                 tree.subfolders.CreateFolders();

@@ -9,7 +9,6 @@ namespace Appalachia.Simulation.Trees.UI.Selections.State
     public class
         BranchSettingsSelection : TSESelection<BranchDataContainer, BranchSettingsDataContainerSelection>
     {
-        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
         static BranchSettingsSelection()
         {
             BranchSettingsDataContainerSelection.InstanceAvailable +=

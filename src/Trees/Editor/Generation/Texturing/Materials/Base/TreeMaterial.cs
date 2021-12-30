@@ -12,32 +12,39 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Base
     [CallStaticConstructorInEditor]
     public abstract class TreeMaterial : ResponsiveSettings
     {
-        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
         static TreeMaterial()
         {
             DefaultShaderResource.InstanceAvailable += i => _defaultShaderResource = i;
         }
 
+        protected TreeMaterial(int materialID, ResponsiveSettingsType settingsType) : base(settingsType)
+        {
+            _materialID = materialID;
+        }
+
+        #region Static Fields and Autoproperties
+
         protected static DefaultShaderResource _defaultShaderResource;
-        
+
+        #endregion
+
+        #region Fields and Autoproperties
+
         [SerializeField]
         [VerticalGroup("RIGHT", Order = 10)]
         [ReadOnly, LabelWidth(110), HideInInspector, PropertyOrder(-1000)]
         private int _materialID;
-        
-        public int materialID => _materialID;
-        
+
+        #endregion
+
         public abstract MaterialContext MaterialContext { get; }
+
+        public bool isInputMaterial => !isOutputMaterial;
 
         public bool isOutputMaterial =>
             (MaterialContext == MaterialContext.AtlasOutputMaterial) ||
             (MaterialContext == MaterialContext.TiledOutputMaterial);
 
-        public bool isInputMaterial => !isOutputMaterial;
-
-        protected TreeMaterial(int materialID, ResponsiveSettingsType settingsType) : base(settingsType)
-        {
-            _materialID = materialID;
-        }
+        public int materialID => _materialID;
     }
 }

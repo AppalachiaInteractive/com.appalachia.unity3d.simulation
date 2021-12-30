@@ -9,14 +9,19 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading.OutputShaders
     [CallStaticConstructorInEditor]
     public abstract class OutputMaterialShader : IOutputMaterialShader
     {
-        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
         static OutputMaterialShader()
         {
             GSR.InstanceAvailable += i => _GSR = i;
         }
 
+        #region Static Fields and Autoproperties
+
         protected static GSR _GSR;
-        
+
+        #endregion
+
+        #region IOutputMaterialShader Members
+
         public abstract string Name { get; }
 
         public abstract LazyShader Shader { get; }
@@ -24,6 +29,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading.OutputShaders
         public abstract IEnumerable<OutputTextureProfile> GetOutputProfiles(bool atlas);
 
         public abstract void FinalizeSettings(Material material, bool atlas);
-        
+
+        #endregion
     }
 }

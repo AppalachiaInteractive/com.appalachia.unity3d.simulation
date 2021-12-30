@@ -30,7 +30,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
             StageType stage)
         {
             var assetName = nameBasis.FileNameAssetSO(individualID, age, stage);
-            var instance = TreeAsset.LoadOrCreateNew(folder, assetName);
+            var instance = LoadOrCreateNew<TreeAsset>(folder, assetName);
 
             instance.levels = new List<AssetLevel>();
 
@@ -56,7 +56,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
             {
                 if (shadowCasterMesh == null)
                 {
-                    shadowCasterMesh = new Mesh {name = GetShadowCasterMeshName()};
+                    shadowCasterMesh = new Mesh { name = GetShadowCasterMeshName() };
                 }
 
                 shadowCasterMesh.name = GetShadowCasterMeshName();

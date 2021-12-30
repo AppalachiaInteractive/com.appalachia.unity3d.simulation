@@ -19,7 +19,6 @@ namespace Appalachia.Simulation.Trees.Snapshot
             Sample
         }
 
-        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
         static SnapshotRenderer()
         {
             SnapshotShaders.InstanceAvailable += i => _snapshotShaders = i;

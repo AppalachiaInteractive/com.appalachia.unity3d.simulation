@@ -1,11 +1,12 @@
 using System;
-using Appalachia.CI.Constants;
 using Appalachia.Core.Attributes;
 using Appalachia.Core.Attributes.Editing;
 using Appalachia.Core.Filtering;
+using Appalachia.Core.Objects.Initialization;
 using Appalachia.Core.Objects.Root;
 using Appalachia.Simulation.Core.Metadata.Density;
 using Appalachia.Simulation.Core.Metadata.Materials;
+using Appalachia.Utility.Async;
 using Appalachia.Utility.Extensions;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
@@ -18,15 +19,12 @@ namespace Appalachia.Simulation.Physical.Integration
     [CallStaticConstructorInEditor]
     public sealed class RigidbodyDensityManager : AppalachiaBehaviour<RigidbodyDensityManager>
     {
-        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
         static RigidbodyDensityManager()
         {
-            PhysicsMaterialsCollection.InstanceAvailable += i => _physicsMaterialsCollection = i;
+            RegisterDependency<PhysicsMaterialsCollection>(i => _physicsMaterialsCollection = i);
         }
 
         #region Static Fields and Autoproperties
-
-        [NonSerialized] private static AppaContext _context;
 
         private static PhysicsMaterialsCollection _physicsMaterialsCollection;
 
@@ -71,19 +69,6 @@ namespace Appalachia.Simulation.Physical.Integration
         public Rigidbody rb;
 
         #endregion
-
-        private static AppaContext StaticContext
-        {
-            get
-            {
-                if (_context == null)
-                {
-                    _context = new AppaContext(typeof(RigidbodyDensityManager));
-                }
-
-                return _context;
-            }
-        }
 
         [BoxGroup("Runtime")]
         [ReadOnly]
@@ -169,8 +154,6 @@ namespace Appalachia.Simulation.Physical.Integration
                     densityManager.density = material.defaultDensity;
                 }
 
-                densityManager.Initialize();
-
                 return densityManager;
             }
         }
@@ -188,12 +171,11 @@ namespace Appalachia.Simulation.Physical.Integration
 #endif
         }
 
-        [Button]
-        protected override void Initialize()
+        protected override async AppaTask Initialize(Initializer initializer)
         {
             using (_PRF_Initialize.Auto())
             {
-                base.Initialize();
+                await base.Initialize(initializer);
 
                 if (rb == null)
                 {

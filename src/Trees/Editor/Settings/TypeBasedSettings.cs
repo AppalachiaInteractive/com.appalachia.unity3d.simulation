@@ -10,7 +10,6 @@ namespace Appalachia.Simulation.Trees.Settings
     public abstract class TypeBasedSettings<T> : ResponsiveAppalachiaObject
         where T : TypeBasedSettings<T>
     {
-        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
         static TypeBasedSettings()
         {
             DefaultMaterialResource.InstanceAvailable += i => _defaultMaterialResource = i;
@@ -18,10 +17,14 @@ namespace Appalachia.Simulation.Trees.Settings
             TreeGlobalSettings.InstanceAvailable += i => _treeGlobalSettings = i;
         }
 
+        #region Static Fields and Autoproperties
+
         protected static DefaultMaterialResource _defaultMaterialResource;
         protected static DefaultShaderResource _defaultShaderResource;
         protected static TreeGlobalSettings _treeGlobalSettings;
-        
+
+        #endregion
+
         public virtual void CopySettingsTo(T t)
         {
         }

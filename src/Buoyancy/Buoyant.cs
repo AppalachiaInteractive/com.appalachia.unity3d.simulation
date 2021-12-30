@@ -8,6 +8,7 @@ using Appalachia.Core.Collections.Native;
 using Appalachia.Core.Filtering;
 using Appalachia.Core.Math.Smoothing;
 using Appalachia.Core.Objects.Behaviours;
+using Appalachia.Core.Objects.Initialization;
 using Appalachia.Core.Preferences.Globals;
 using Appalachia.Core.Shading;
 using Appalachia.Editing.Debugging.Handle;
@@ -34,6 +35,7 @@ using Unity.Burst;
 using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Profiling;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -48,84 +50,33 @@ namespace Appalachia.Simulation.Buoyancy
     [CallStaticConstructorInEditor]
     public class Buoyant : InstancedAppalachiaBehaviour<Buoyant>
     {
-        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
         static Buoyant()
         {
-            BuoyancyDataDefaults.InstanceAvailable += i => _buoyancyDataDefaults = i;
-            WaterPhysicsCoefficients.InstanceAvailable += i => _waterPhysicsCoefficients = i;
-            DensityMetadataCollection.InstanceAvailable += i => _densityMetadataCollection = i;
-            MainBuoyancyVoxelsDataStoreLookup.InstanceAvailable +=
-                i => _mainBuoyancyVoxelsDataStoreLookup = i;
-            MainBuoyancyDataCollection.InstanceAvailable += i => _mainBuoyancyDataCollection = i;
-            BuoyancyVoxelDataGizmoSettings.InstanceAvailable += i => _buoyancyVoxelDataGizmoSettings = i;
-            MainVoxelDataGizmoSettingsCollection.InstanceAvailable +=
-                i => _mainVoxelDataGizmoSettingsCollection = i;
+            RegisterDependency<BuoyancyDataDefaults>(i => _buoyancyDataDefaults = i);
+            RegisterDependency<WaterPhysicsCoefficients>(i => _waterPhysicsCoefficients = i);
+            RegisterDependency<DensityMetadataCollection>(i => _densityMetadataCollection = i);
+            RegisterDependency<MainBuoyancyVoxelsDataStoreLookup>(
+                i => _mainBuoyancyVoxelsDataStoreLookup = i
+            );
+            RegisterDependency<MainBuoyancyDataCollection>(i => _mainBuoyancyDataCollection = i);
+            RegisterDependency<BuoyancyVoxelDataGizmoSettings>(i => _buoyancyVoxelDataGizmoSettings = i);
+            RegisterDependency<MainVoxelDataGizmoSettingsCollection>(
+                i => _mainVoxelDataGizmoSettingsCollection = i
+            );
+            RegisterDependency<GlobalWindManager>(i => _globalWindManager = i);
+            RegisterDependency<MeshObjectManager>(i => _meshObjectManager = i);
         }
 
         #region Static Fields and Autoproperties
 
         private static BuoyancyDataDefaults _buoyancyDataDefaults;
         private static DensityMetadataCollection _densityMetadataCollection;
+        private static GlobalWindManager _globalWindManager;
         private static MainBuoyancyDataCollection _mainBuoyancyDataCollection;
         private static MainBuoyancyVoxelsDataStoreLookup _mainBuoyancyVoxelsDataStoreLookup;
         private static MainVoxelDataGizmoSettingsCollection _mainVoxelDataGizmoSettingsCollection;
 
-        private static readonly ProfilerMarker _PRF_OnEnable = new(_PRF_PFX + nameof(OnEnable));
-        private static readonly ProfilerMarker _PRF_Initialize = new(_PRF_PFX + nameof(Initialize));
-
-        private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs =
-            new(_PRF_PFX + nameof(ScheduleBuoyancyJobs));
-
-        private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_Initialize =
-            new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".Initialize");
-
-        private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_PositionDataUpdate =
-            new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".PositionDataUpdate");
-
-        private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_CompletePhysical =
-            new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".CompletePhysical");
-
-        private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_Synchronize =
-            new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".Synchronize");
-
-        private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_JobHandleComplete =
-            new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".JobHandleComplete");
-
-        private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_ResetCenterOfMass =
-            new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".ResetCenterOfMass");
-
-        private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_WaterUpdateSamples =
-            new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".WaterUpdateSamples");
-
-        private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_CalculateForcesJob =
-            new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".CalculateForcesJob");
-
-        private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_CalculateSubmersionJob =
-            new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".CalculateSubmersionJob");
-
-        private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_InitializeParameters =
-            new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".InitializeParameters");
-
-        private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_MaterialVariables =
-            new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".MaterialVariables");
-
-        private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_UpdatePhysical =
-            new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".UpdatePhysical");
-
-        private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_AggregateForceAndTorqueJob =
-            new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".AggregateForceAndTorqueJob");
-
-        private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_ResetForceAndTorqueJob =
-            new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".ResetForceAndTorqueJob");
-
-        private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_CombinedDependencies =
-            new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".CombinedDependencies");
-
-        private static readonly ProfilerMarker _PRF_Update = new(_PRF_PFX + nameof(Update));
-        private static readonly ProfilerMarker _PRF_OnDisable = new(_PRF_PFX + nameof(OnDisable));
-        private static readonly ProfilerMarker _PRF_OnDestroy = new(_PRF_PFX + nameof(OnDestroy));
-        private static readonly ProfilerMarker _PRF_CleanUp = new(_PRF_PFX + nameof(CleanUp));
-        private static readonly ProfilerMarker _PRF_UpdateDrag = new(_PRF_PFX + nameof(UpdateDrag));
+        private static MeshObjectManager _meshObjectManager;
 
         [FoldoutGroup("Setup")]
         [SmartLabel]
@@ -297,88 +248,6 @@ namespace Appalachia.Simulation.Buoyancy
             }
         }
 
-        protected override async AppaTask WhenEnabled()
-        {
-            using (_PRF_OnEnable.Auto())
-            {
-                await base.WhenEnabled();
-
-                if (_water == null)
-                {
-                    enabled = false;
-                }
-
-#if UNITY_EDITOR
-                PhysicsSimulator.onSimulationEnd -= Disable;
-                PhysicsSimulator.onSimulationEnd += Disable;
-#endif
-
-                if (body == null)
-                {
-                    body = GetComponent<Rigidbody>();
-                }
-
-                if (body == null)
-                {
-                    return;
-                }
-
-                if (originalBodyData == null)
-                {
-                    originalBodyData = new RigidbodyData(body);
-                }
-                else if (Math.Abs(body.mass - originalBodyData.mass) > float.Epsilon)
-                {
-                    originalBodyData.GetFrom(body);
-                }
-
-                _airDensityMetadata = airDensityMetadata;
-                _waterDensityMetadata = waterDensityMetadata;
-                _defaultBuoyancyData = buoyancyDataDefaults;
-
-                body.drag += waterPhysicsCoefficients.data.additionalDrag;
-                body.angularDrag += waterPhysicsCoefficients.data.additionalAngularDrag;
-
-                if (waterPhysicsCoefficients.data.disableGravity)
-                {
-                    body.useGravity = false;
-                }
-            }
-        }
-
-        protected override async AppaTask WhenDisabled()
-
-        {
-            using (_PRF_OnDisable.Auto())
-            {
-                await base.WhenDisabled();
-
-#if UNITY_EDITOR
-
-                if (AppalachiaApplication.IsCompiling || AppalachiaApplication.IsPlayingOrWillPlay)
-                {
-                    CleanUp();
-                }
-#endif
-                if ((originalBodyData == null) || (body == null))
-                {
-                    return;
-                }
-
-                originalBodyData.ApplyTo(body);
-            }
-        }
-
-        protected override async AppaTask WhenDestroyed()
-        {
-            using (_PRF_OnDestroy.Auto())
-            {
-                await base.WhenDestroyed();
-
-                CleanUp();
-            }
-        }
-
         #endregion
 
         /// <summary>
@@ -424,11 +293,6 @@ namespace Appalachia.Simulation.Buoyancy
 
                     _water = water;
 
-                    using (_PRF_ScheduleBuoyancyJobs_Initialize.Auto())
-                    {
-                        Initialize();
-                    }
-
                     int voxelCount;
                     WaterPhysicsCoefficentData metadata;
                     float4x4 localToWorldMatrix;
@@ -446,7 +310,7 @@ namespace Appalachia.Simulation.Buoyancy
                         waterDensity = waterDensityMetadata.densityKGPerCubicMeter;
                         airDensity = airDensityMetadata.densityKGPerCubicMeter;
                         var gravity = Physics.gravity;
-                        windDynamicPressure = GlobalWindManager.instance.WindDynamicPressure;
+                        windDynamicPressure = _globalWindManager.WindDynamicPressure;
                         worldWaterHeight = water.GetWorldHeightAt(body.worldCenterOfMass);
                         var archimedesForceMagnitude = waterDensityMetadata.densityKGPerCubicMeter *
                                                        Mathf.Abs(gravity.y) *
@@ -644,21 +508,16 @@ namespace Appalachia.Simulation.Buoyancy
             }
         }
 
-        protected override void Initialize()
+        protected override async AppaTask Initialize(Initializer initializer)
         {
             using (_PRF_Initialize.Auto())
             {
-                if (_initialized)
-                {
-                    return;
-                }
-
-                base.Initialize();
+                await base.Initialize(initializer);
 
 #if UNITY_EDITOR
                 if (buoyancyData == null)
                 {
-                    var mesh = MeshObjectManager.instance.GetCheapestMesh(gameObject);
+                    var mesh = _meshObjectManager.GetCheapestMesh(gameObject);
 
                     AssetDatabaseManager.TryGetGUIDAndLocalFileIdentifier(mesh, out var key, out var _);
 
@@ -670,14 +529,14 @@ namespace Appalachia.Simulation.Buoyancy
                     buoyancyData.mesh = mesh;
 
                     buoyancyData.MarkAsModified();
-                    UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(gameObject.scene);
+                    EditorSceneManager.MarkSceneDirty(gameObject.scene);
                 }
                 else if (buoyancyData.mesh == null)
                 {
-                    buoyancyData.mesh = MeshObjectManager.instance.GetCheapestMesh(gameObject);
+                    buoyancyData.mesh = _meshObjectManager.GetCheapestMesh(gameObject);
 
                     buoyancyData.MarkAsModified();
-                    UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(gameObject.scene);
+                    EditorSceneManager.MarkSceneDirty(gameObject.scene);
                 }
 #endif
 
@@ -697,8 +556,6 @@ namespace Appalachia.Simulation.Buoyancy
                 }
 
                 gameObject.GetOrCreateComponent(ref densityManager);
-
-                densityManager.InitializeExternal();
 
                 if (voxels != null)
                 {
@@ -777,6 +634,88 @@ namespace Appalachia.Simulation.Buoyancy
             }
         }
 
+        protected override async AppaTask WhenDestroyed()
+        {
+            using (_PRF_OnDestroy.Auto())
+            {
+                await base.WhenDestroyed();
+
+                CleanUp();
+            }
+        }
+
+        protected override async AppaTask WhenDisabled()
+
+        {
+            using (_PRF_OnDisable.Auto())
+            {
+                await base.WhenDisabled();
+
+#if UNITY_EDITOR
+
+                if (AppalachiaApplication.IsCompiling || AppalachiaApplication.IsPlayingOrWillPlay)
+                {
+                    CleanUp();
+                }
+#endif
+                if ((originalBodyData == null) || (body == null))
+                {
+                    return;
+                }
+
+                originalBodyData.ApplyTo(body);
+            }
+        }
+
+        protected override async AppaTask WhenEnabled()
+        {
+            using (_PRF_OnEnable.Auto())
+            {
+                await base.WhenEnabled();
+
+                if (_water == null)
+                {
+                    enabled = false;
+                }
+
+#if UNITY_EDITOR
+                PhysicsSimulator.onSimulationEnd -= Disable;
+                PhysicsSimulator.onSimulationEnd += Disable;
+#endif
+
+                if (body == null)
+                {
+                    body = GetComponent<Rigidbody>();
+                }
+
+                if (body == null)
+                {
+                    return;
+                }
+
+                if (originalBodyData == null)
+                {
+                    originalBodyData = new RigidbodyData(body);
+                }
+                else if (Math.Abs(body.mass - originalBodyData.mass) > float.Epsilon)
+                {
+                    originalBodyData.GetFrom(body);
+                }
+
+                _airDensityMetadata = airDensityMetadata;
+                _waterDensityMetadata = waterDensityMetadata;
+                _defaultBuoyancyData = buoyancyDataDefaults;
+
+                body.drag += waterPhysicsCoefficients.data.additionalDrag;
+                body.angularDrag += waterPhysicsCoefficients.data.additionalAngularDrag;
+
+                if (waterPhysicsCoefficients.data.disableGravity)
+                {
+                    body.useGravity = false;
+                }
+            }
+        }
+
         private void CleanUp()
         {
             using (_PRF_CleanUp.Auto())
@@ -839,6 +778,66 @@ namespace Appalachia.Simulation.Buoyancy
         #region Profiling
 
         private const string _PRF_PFX = nameof(Buoyant) + ".";
+
+        private static readonly ProfilerMarker _PRF_Initialize =
+            new ProfilerMarker(_PRF_PFX + nameof(Initialize));
+
+        private static readonly ProfilerMarker _PRF_OnEnable = new(_PRF_PFX + nameof(OnEnable));
+
+        private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs =
+            new(_PRF_PFX + nameof(ScheduleBuoyancyJobs));
+
+        private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_Initialize =
+            new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".Initialize");
+
+        private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_PositionDataUpdate =
+            new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".PositionDataUpdate");
+
+        private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_CompletePhysical =
+            new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".CompletePhysical");
+
+        private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_Synchronize =
+            new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".Synchronize");
+
+        private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_JobHandleComplete =
+            new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".JobHandleComplete");
+
+        private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_ResetCenterOfMass =
+            new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".ResetCenterOfMass");
+
+        private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_WaterUpdateSamples =
+            new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".WaterUpdateSamples");
+
+        private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_CalculateForcesJob =
+            new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".CalculateForcesJob");
+
+        private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_CalculateSubmersionJob =
+            new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".CalculateSubmersionJob");
+
+        private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_InitializeParameters =
+            new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".InitializeParameters");
+
+        private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_MaterialVariables =
+            new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".MaterialVariables");
+
+        private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_UpdatePhysical =
+            new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".UpdatePhysical");
+
+        private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_AggregateForceAndTorqueJob =
+            new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".AggregateForceAndTorqueJob");
+
+        private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_ResetForceAndTorqueJob =
+            new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".ResetForceAndTorqueJob");
+
+        private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_CombinedDependencies =
+            new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".CombinedDependencies");
+
+        private static readonly ProfilerMarker _PRF_Update = new(_PRF_PFX + nameof(Update));
+        private static readonly ProfilerMarker _PRF_OnDisable = new(_PRF_PFX + nameof(OnDisable));
+        private static readonly ProfilerMarker _PRF_OnDestroy = new(_PRF_PFX + nameof(OnDestroy));
+        private static readonly ProfilerMarker _PRF_CleanUp = new(_PRF_PFX + nameof(CleanUp));
+
+        private static readonly ProfilerMarker _PRF_UpdateDrag = new(_PRF_PFX + nameof(UpdateDrag));
 
         #endregion
 

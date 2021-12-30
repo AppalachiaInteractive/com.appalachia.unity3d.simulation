@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using Appalachia.CI.Integration.Assets;
 using Appalachia.CI.Integration.FileSystem;
+using Appalachia.Core.Objects.Root;
 using Appalachia.Core.Types;
 using Appalachia.Simulation.Trees.Build.Execution;
 using Appalachia.Simulation.Trees.Core;
@@ -27,10 +28,22 @@ using UnityEngine;
 namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Management
 {
     [Serializable]
-    public class InputMaterialCache
+    public class InputMaterialCache : AppalachiaSimpleBase
     {
-        
-        
+        public InputMaterialCache()
+        {
+            _atlasInputIDsByMaterial = new Dictionary<Material, int>();
+            _atlasMaterialIndexLookup = new Dictionary<Material, int>();
+            _tiledInputIDsByMaterial = new Dictionary<Material, int>();
+            _tiledMaterialIndexLookup = new Dictionary<Material, int>();
+            _atlasInputMaterials = new List<AtlasInputMaterial>();
+            _tiledInputMaterials = new List<TiledInputMaterial>();
+            defaultMaterials = new DefaultMaterialSettings();
+            _materialsByID = new Dictionary<int, InputMaterial>();
+        }
+
+        #region Fields and Autoproperties
+
         private Dictionary<Material, int> _atlasInputIDsByMaterial;
 
         private Dictionary<Material, int> _atlasMaterialIndexLookup;
@@ -40,7 +53,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Management
         private Dictionary<Material, int> _tiledMaterialIndexLookup;
 
         private Dictionary<int, InputMaterial> _materialsByID;
-        
+
         [SerializeField]
         [TabGroup("Atlas", Paddingless = true)]
         [InlineProperty, PropertyOrder(-800)]
@@ -75,36 +88,14 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Management
         [InlineProperty, HideLabel]
         public DefaultMaterialSettings defaultMaterials;
 
-        public InputMaterialCache()
-        {
-            _atlasInputIDsByMaterial = new Dictionary<Material, int>();
-            _atlasMaterialIndexLookup = new Dictionary<Material, int>();
-            _tiledInputIDsByMaterial = new Dictionary<Material, int>();
-            _tiledMaterialIndexLookup = new Dictionary<Material, int>();
-            _atlasInputMaterials = new List<AtlasInputMaterial>();
-            _tiledInputMaterials = new List<TiledInputMaterial>();
-            defaultMaterials = new DefaultMaterialSettings();
-            _materialsByID = new Dictionary<int, InputMaterial>();
-        }
+        #endregion
 
-        private bool _showAtlasInputMaterials => _atlasInputMaterials.Count > 0;
-        private bool _showTiledInputMaterials => _tiledInputMaterials.Count > 0;
-
-        public Dictionary<Material, int> tiledInputIDsByMaterial
+        public Dictionary<int, InputMaterial> materialsByID
         {
             get
             {
                 RebuildCache();
-                return _tiledInputIDsByMaterial;
-            }
-        }
-
-        public Dictionary<Material, int> tiledMaterialIndexLookup
-        {
-            get
-            {
-                RebuildCache();
-                return _tiledMaterialIndexLookup;
+                return _materialsByID;
             }
         }
 
@@ -126,18 +117,150 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Management
             }
         }
 
-        public Dictionary<int, InputMaterial> materialsByID
+        public Dictionary<Material, int> tiledInputIDsByMaterial
         {
             get
             {
                 RebuildCache();
-                return _materialsByID;
+                return _tiledInputIDsByMaterial;
+            }
+        }
+
+        public Dictionary<Material, int> tiledMaterialIndexLookup
+        {
+            get
+            {
+                RebuildCache();
+                return _tiledMaterialIndexLookup;
             }
         }
 
         public IReadOnlyList<AtlasInputMaterial> atlasInputMaterials => _atlasInputMaterials;
 
         public IReadOnlyList<TiledInputMaterial> tiledInputMaterials => _tiledInputMaterials;
+
+        private bool _showAtlasInputMaterials => _atlasInputMaterials.Count > 0;
+        private bool _showTiledInputMaterials => _tiledInputMaterials.Count > 0;
+
+        public void AddAtlasMaterial(AtlasInputMaterial material)
+        {
+            _atlasInputMaterials.Add(material);
+            RebuildCache();
+        }
+
+        public void AddTiledMaterial(TiledInputMaterial material)
+        {
+            _tiledInputMaterials.Add(material);
+            RebuildCache();
+        }
+
+        public string CalculateHash()
+        {
+            using (BUILD_TIME.TREE_MAT_COLL.CalculateHash.Auto())
+            {
+                var materials = tiledInputMaterials.Select(tm => tm.material)
+                                                   .Concat(atlasInputMaterials.Select(tm => tm.material));
+
+                var builder = new StringBuilder();
+
+                foreach (var material in materials)
+                {
+                    if (material == null)
+                    {
+                        continue;
+                    }
+
+                    builder.Append(material.name);
+                    builder.Append(material.shader.name);
+                    builder.Append(material.GetInstanceID());
+
+                    foreach (var prop in material.GetTexturePropertyNames())
+                    {
+                        var tex = material.GetTexture(prop) as Texture2D;
+                        if (tex == null)
+                        {
+                            continue;
+                        }
+
+                        var path = AssetDatabaseManager.GetAssetPath(tex);
+
+                        if (path.StartsWith("Assets"))
+                        {
+                            path = path.Replace("Assets", Application.dataPath);
+                        }
+
+                        if (path.StartsWith("Assets"))
+                        {
+                            path = path.Replace("Assets", Application.dataPath);
+                        }
+
+                        builder.Append(tex.name);
+                        builder.Append(tex.GetInstanceID());
+                        builder.Append(AppaFile.GetLastWriteTime(path).ToString("s"));
+                        builder.Append(AppaFile.ReadAllText(ZString.Format("{0}.meta", path)));
+                    }
+                }
+
+                return builder.ToString().GetHashCode().ToString();
+            }
+        }
+
+        public void ClearCache()
+        {
+            _materialsByID.Clear();
+            _atlasMaterialIndexLookup.Clear();
+            _tiledMaterialIndexLookup.Clear();
+            _atlasInputIDsByMaterial.Clear();
+            _tiledInputIDsByMaterial.Clear();
+        }
+
+        public InputMaterial GetByMaterialID(int materialID)
+        {
+            return materialsByID[materialID];
+        }
+
+        public InputMaterial GetInputMaterialData(Material material, bool atlas)
+        {
+            IReadOnlyList<InputMaterial> materials = atlasInputMaterials;
+            var lookup = atlasMaterialIndexLookup;
+
+            if (!atlas)
+            {
+                materials = tiledInputMaterials;
+                lookup = tiledMaterialIndexLookup;
+            }
+
+            if ((lookup.Count == 0) || (material == null) || !lookup.ContainsKey(material))
+            {
+                return null;
+            }
+
+            var index = lookup[material];
+
+            return materials[index];
+        }
+
+        public InputMaterial GetInputMaterialData(Material material, TreeMaterialUsage usage)
+        {
+            switch (usage)
+            {
+                case TreeMaterialUsage.Bark:
+                case TreeMaterialUsage.SplineBreak:
+                    return GetInputMaterialData(material, false);
+                case TreeMaterialUsage.Billboard:
+                case TreeMaterialUsage.Prefab:
+                case TreeMaterialUsage.LeafPlane:
+                case TreeMaterialUsage.Frond:
+                    return GetInputMaterialData(material, true);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(usage), usage, null);
+            }
+        }
+
+        public int GetMaterialIDByMaterial(Material m, bool atlas)
+        {
+            return atlas ? atlasInputIDsByMaterial[m] : tiledInputIDsByMaterial[m];
+        }
 
         public void RebuildCache()
         {
@@ -161,7 +284,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Management
                             _atlasInputMaterials.RemoveAt(i);
                             continue;
                         }
-                        
+
                         _atlasInputIDsByMaterial.Add(original.material, original.materialID);
                     }
                 }
@@ -184,7 +307,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Management
                             _tiledInputMaterials.RemoveAt(i);
                             continue;
                         }
-                        
+
                         _tiledInputIDsByMaterial.Add(original.material, original.materialID);
                     }
                 }
@@ -256,18 +379,6 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Management
             RebuildCache();
         }
 
-        public void AddAtlasMaterial(AtlasInputMaterial material)
-        {
-            _atlasInputMaterials.Add(material);
-            RebuildCache();
-        }
-
-        public void AddTiledMaterial(TiledInputMaterial material)
-        {
-            _tiledInputMaterials.Add(material);
-            RebuildCache();
-        }
-
         [Button]
         public void Reset()
         {
@@ -277,13 +388,60 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Management
             _tiledInputMaterials.Clear();
         }
 
-        public void ClearCache()
+        public void SetDefaultMaterials(DefaultMaterialSettingsPublic settings)
         {
-            _materialsByID.Clear();
-            _atlasMaterialIndexLookup.Clear();
-            _tiledMaterialIndexLookup.Clear();
-            _atlasInputIDsByMaterial.Clear();
-            _tiledInputIDsByMaterial.Clear();
+            using (BUILD_TIME.TREE_MAT_COLL.SetDefaultMaterials.Auto())
+            {
+                if (settings == null)
+                {
+                    return;
+                }
+
+                if (defaultMaterials == null)
+                {
+                    defaultMaterials = new DefaultMaterialSettings();
+                }
+
+                if (settings.breaks != null)
+                {
+                    var material = GetInputMaterialData(settings.breaks, TreeMaterialUsage.SplineBreak);
+
+                    if (material != null)
+                    {
+                        defaultMaterials.materialBreak = material.material;
+                    }
+                }
+
+                if (settings.branches != null)
+                {
+                    var material = GetInputMaterialData(settings.branches, TreeMaterialUsage.Bark);
+
+                    if (material != null)
+                    {
+                        defaultMaterials.materialBark = material.material;
+                    }
+                }
+
+                if (settings.fronds != null)
+                {
+                    var material = GetInputMaterialData(settings.fronds, TreeMaterialUsage.Frond);
+
+                    if (material != null)
+                    {
+                        defaultMaterials.materialFrond = material.material;
+                    }
+                }
+
+                if (settings.leaves != null)
+                {
+                    var material = GetInputMaterialData(settings.leaves, TreeMaterialUsage.LeafPlane);
+
+                    if (material != null)
+                    {
+                        defaultMaterials.materialLeaf = material.material;
+                    }
+                }
+            }
         }
 
         public void Update(ITree species, TreePrefabCollection prefabs, IDIncrementer ids)
@@ -364,92 +522,102 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Management
             }
         }
 
-        private void UpdateDefaultMaterials(IEnumerable<HierarchyData> hierarchies)
+        public void UpdateDefaultMaterials()
         {
-            foreach (var hierarchy in hierarchies)
+            using (BUILD_TIME.TREE_MAT_COLL.UpdateDefaultMaterials.Auto())
             {
-                var barkHierarchy = hierarchy as BarkHierarchyData;
-
-                if (barkHierarchy != null)
+                if (defaultMaterials == null)
                 {
-                    if ((barkHierarchy.geometry.barkMaterial == null) &&
-                        (defaultMaterials != null) &&
-                        (defaultMaterials.materialBark != null))
-                    {
-                        barkHierarchy.geometry.barkMaterial = defaultMaterials.materialBark;
-                    }
-
-                    /*if ((barkHierarchy.limb.breakMaterial == null) &&
-                        (defaultMaterials != null) &&
-                        (defaultMaterials.materialBreak != null))
-                    {
-                        barkHierarchy.limb.breakMaterial = defaultMaterials.materialBreak;
-                    }*/
-
-                    if ((barkHierarchy.geometry.frond != null) &&
-                        (barkHierarchy.geometry.frond.frondMaterial == null) &&
-                        (defaultMaterials != null) &&
-                        (defaultMaterials.materialFrond != null))
-                    {
-                        barkHierarchy.geometry.frond.frondMaterial = defaultMaterials.materialFrond;
-                    }
+                    defaultMaterials = new DefaultMaterialSettings();
                 }
 
-                var leafHierarchy = hierarchy as LeafHierarchyData;
-
-                if (leafHierarchy != null)
+                if (!IsMaterialValidAsDefault(defaultMaterials.materialBark, false))
                 {
-                    if ((leafHierarchy.geometry.leafMaterial == null) &&
-                        (defaultMaterials != null) &&
-                        (defaultMaterials.materialLeaf != null))
-                    {
-                        leafHierarchy.geometry.leafMaterial = defaultMaterials.materialLeaf;
-                    }
+                    defaultMaterials.materialBark = tiledInputMaterials
+                                                   .FirstOrDefault(
+                                                        m => (m != null) &&
+                                                             (m.material != null) &&
+                                                             m.eligibleAsBranch
+                                                    )
+                                                  ?.material;
+                }
+
+                if (!IsMaterialValidAsDefault(defaultMaterials.materialBreak, false))
+                {
+                    defaultMaterials.materialBreak = atlasInputMaterials
+                                                    .FirstOrDefault(
+                                                         m => (m != null) &&
+                                                              (m.material != null) &&
+                                                              m.eligibleAsBreak
+                                                     )
+                                                   ?.material;
+                }
+
+                if (!IsMaterialValidAsDefault(defaultMaterials.materialFrond, true))
+                {
+                    defaultMaterials.materialFrond = atlasInputMaterials
+                                                    .FirstOrDefault(
+                                                         m => (m != null) &&
+                                                              (m.material != null) &&
+                                                              m.eligibleAsFrond
+                                                     )
+                                                   ?.material;
+                }
+
+                if (!IsMaterialValidAsDefault(defaultMaterials.materialLeaf, true))
+                {
+                    defaultMaterials.materialLeaf = atlasInputMaterials
+                                                   .FirstOrDefault(
+                                                        m => (m != null) &&
+                                                             (m.material != null) &&
+                                                             m.eligibleAsLeaf
+                                                    )
+                                                  ?.material;
                 }
             }
         }
 
-        private void AddTrunkTileMaterials(ITrunkProvider provider, IDIncrementer ids, ResponsiveSettingsType type)
+        private void AddBarkAtlasMaterial(
+            BarkHierarchyData hierarchy,
+            IDIncrementer ids,
+            ResponsiveSettingsType type)
         {
-            foreach (var hierarchy in provider.Trunks)
+            if (hierarchy.geometry.frond.frondMaterial != null)
             {
-                if (hierarchy.geometry.barkMaterial != null)
+                if (!_atlasInputIDsByMaterial.ContainsKey(hierarchy.geometry.frond.frondMaterial))
                 {
-                    if (!_tiledInputIDsByMaterial.ContainsKey(hierarchy.geometry.barkMaterial))
-                    {
-                        var newInputMaterial = new TiledInputMaterial(
-                            ids.GetNextIdAndIncrement(),
-                            hierarchy.geometry.barkMaterial,
-                            type
-                        );
+                    var newMaterial = new AtlasInputMaterial(
+                        ids.GetNextIdAndIncrement(),
+                        hierarchy.geometry.frond.frondMaterial,
+                        type
+                    );
 
-                        AddTiledMaterial(newInputMaterial);
-                    }
+                    newMaterial.SetEligibilityAsFrond(true);
+                    AddAtlasMaterial(newMaterial);
                 }
-
-                /*if (hierarchy.limb.breakMaterial != null)
+                else
                 {
-                    if (!_tiledInputIDsByMaterial.ContainsKey(hierarchy.limb.breakMaterial))
-                    {
-                        var newInputMaterial = new TiledInputMaterial(
-                            ids.GetNextIdAndIncrement(),
-                            hierarchy.limb.breakMaterial,
-                            type
-                        );
-
-                        newInputMaterial.SetEligibilityAsBreak(true);
-                        AddTiledMaterial(newInputMaterial);
-                    }
-                    else
-                    {
-                        _tiledInputMaterials[_tiledMaterialIndexLookup[hierarchy.limb.breakMaterial]]
-                            .SetEligibilityAsBreak(true);
-                    }
-                }*/
+                    _atlasInputMaterials[_atlasMaterialIndexLookup[hierarchy.geometry.frond.frondMaterial]]
+                       .SetEligibilityAsFrond(true);
+                }
             }
         }
 
-        private void AddBranchTileMaterials(IBranchProvider provider, IDIncrementer ids, ResponsiveSettingsType type)
+        private void AddBranchAtlasMaterials(
+            IBranchProvider species,
+            IDIncrementer ids,
+            ResponsiveSettingsType type)
+        {
+            foreach (var hierarchy in species.Branches)
+            {
+                AddBarkAtlasMaterial(hierarchy, ids, type);
+            }
+        }
+
+        private void AddBranchTileMaterials(
+            IBranchProvider provider,
+            IDIncrementer ids,
+            ResponsiveSettingsType type)
         {
             foreach (var hierarchy in provider.Branches)
             {
@@ -489,7 +657,158 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Management
             }
         }
 
-        private void AddRootTileMaterials(IRootProvider provider, IDIncrementer ids, ResponsiveSettingsType type)
+        private void AddFruitMaterials(
+            IFruitProvider provider,
+            TreePrefabCollection prefabs,
+            IDIncrementer ids,
+            ResponsiveSettingsType type)
+        {
+            foreach (var hierarchy in provider.Fruits)
+            {
+                if (hierarchy.geometry.prefab == null)
+                {
+                    continue;
+                }
+
+                var prefab = prefabs.GetPrefab(hierarchy.geometry.prefab, TreeComponentType.Fruit);
+                foreach (var material in prefab.GetMaterials())
+                {
+                    if (!_atlasInputIDsByMaterial.ContainsKey(material))
+                    {
+                        var newMaterial = new AtlasInputMaterial(ids.GetNextIdAndIncrement(), material, type);
+
+                        AddAtlasMaterial(newMaterial);
+                    }
+                }
+            }
+        }
+
+        private void AddFungiMaterials(
+            IFungusProvider provider,
+            TreePrefabCollection prefabs,
+            IDIncrementer ids,
+            ResponsiveSettingsType type)
+        {
+            foreach (var hierarchy in provider.Fungi)
+            {
+                if (hierarchy.geometry.prefab == null)
+                {
+                    continue;
+                }
+
+                var prefab = prefabs.GetPrefab(hierarchy.geometry.prefab, TreeComponentType.Fungus);
+                foreach (var material in prefab.GetMaterials())
+                {
+                    if (!_atlasInputIDsByMaterial.ContainsKey(material))
+                    {
+                        var mID = ids.GetNextIdAndIncrement();
+
+                        var newMaterial = new AtlasInputMaterial(mID, material, type);
+
+                        AddAtlasMaterial(newMaterial);
+                    }
+                }
+            }
+        }
+
+        private void AddKnotMaterials(
+            IKnotProvider provider,
+            TreePrefabCollection prefabs,
+            IDIncrementer ids,
+            ResponsiveSettingsType type)
+        {
+            foreach (var hierarchy in provider.Knots)
+            {
+                if (hierarchy.geometry.prefab == null)
+                {
+                    continue;
+                }
+
+                var prefab = prefabs.GetPrefab(hierarchy.geometry.prefab, TreeComponentType.Knot);
+                foreach (var material in prefab.GetMaterials())
+                {
+                    if (!_atlasInputIDsByMaterial.ContainsKey(material))
+                    {
+                        var newMaterial = new AtlasInputMaterial(ids.GetNextIdAndIncrement(), material, type);
+
+                        AddAtlasMaterial(newMaterial);
+                    }
+                }
+            }
+        }
+
+        private void AddLeafMaterials(
+            ILeafProvider provider,
+            TreePrefabCollection prefabs,
+            IDIncrementer ids,
+            ResponsiveSettingsType type)
+        {
+            foreach (var hierarchy in provider.Leaves)
+            {
+                if (hierarchy.geometry.geometryMode == LeafGeometryMode.Mesh)
+                {
+                    var prefab = prefabs.GetPrefab(hierarchy.geometry.prefab, TreeComponentType.Leaf);
+
+                    foreach (var material in prefab.GetMaterials())
+                    {
+                        if (!_atlasInputIDsByMaterial.ContainsKey(material))
+                        {
+                            var newMaterial = new AtlasInputMaterial(
+                                ids.GetNextIdAndIncrement(),
+                                material,
+                                type
+                            );
+
+                            newMaterial.SetEligibilityAsLeaf(true);
+                            AddAtlasMaterial(newMaterial);
+                        }
+                        else
+                        {
+                            _atlasInputMaterials[_atlasMaterialIndexLookup[material]]
+                               .SetEligibilityAsLeaf(true);
+                        }
+                    }
+                }
+                else
+                {
+                    if (hierarchy.geometry.leafMaterial != null)
+                    {
+                        if (!_atlasInputIDsByMaterial.ContainsKey(hierarchy.geometry.leafMaterial))
+                        {
+                            var newMaterial = new AtlasInputMaterial(
+                                ids.GetNextIdAndIncrement(),
+                                hierarchy.geometry.leafMaterial,
+                                type
+                            );
+
+                            newMaterial.SetEligibilityAsLeaf(true);
+                            AddAtlasMaterial(newMaterial);
+                        }
+                        else
+                        {
+                            _atlasInputMaterials[_atlasMaterialIndexLookup[hierarchy.geometry.leafMaterial]]
+                               .SetEligibilityAsLeaf(true);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void AddRootAtlasMaterials(
+            IRootProvider species,
+            IDIncrementer ids,
+            ResponsiveSettingsType type)
+        {
+            foreach (var hierarchy in species.Roots)
+            {
+                AddBarkAtlasMaterial(hierarchy, ids, type);
+            }
+        }
+
+        private void AddRootTileMaterials(
+            IRootProvider provider,
+            IDIncrementer ids,
+            ResponsiveSettingsType type)
         {
             foreach (var hierarchy in provider.Roots)
             {
@@ -529,7 +848,10 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Management
             }
         }
 
-        private void AddTrunkAtlasMaterials(ITrunkProvider species, IDIncrementer ids, ResponsiveSettingsType type)
+        private void AddTrunkAtlasMaterials(
+            ITrunkProvider species,
+            IDIncrementer ids,
+            ResponsiveSettingsType type)
         {
             foreach (var hierarchy in species.Trunks)
             {
@@ -537,162 +859,73 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Management
             }
         }
 
-        private void AddBranchAtlasMaterials(IBranchProvider species, IDIncrementer ids, ResponsiveSettingsType type)
+        private void AddTrunkTileMaterials(
+            ITrunkProvider provider,
+            IDIncrementer ids,
+            ResponsiveSettingsType type)
         {
-            foreach (var hierarchy in species.Branches)
+            foreach (var hierarchy in provider.Trunks)
             {
-                AddBarkAtlasMaterial(hierarchy, ids, type);
-            }
-        }
-
-        private void AddRootAtlasMaterials(IRootProvider species, IDIncrementer ids, ResponsiveSettingsType type)
-        {
-            foreach (var hierarchy in species.Roots)
-            {
-                AddBarkAtlasMaterial(hierarchy, ids, type);
-            }
-        }
-
-        private void AddBarkAtlasMaterial(BarkHierarchyData hierarchy, IDIncrementer ids, ResponsiveSettingsType type)
-        {
-            if (hierarchy.geometry.frond.frondMaterial != null)
-            {
-                if (!_atlasInputIDsByMaterial.ContainsKey(hierarchy.geometry.frond.frondMaterial))
+                if (hierarchy.geometry.barkMaterial != null)
                 {
-                    var newMaterial = new AtlasInputMaterial(
-                        ids.GetNextIdAndIncrement(),
-                        hierarchy.geometry.frond.frondMaterial,
-                        type
-                    );
-
-                    newMaterial.SetEligibilityAsFrond(true);
-                    AddAtlasMaterial(newMaterial);
-                }
-                else
-                {
-                    _atlasInputMaterials[_atlasMaterialIndexLookup[hierarchy.geometry.frond.frondMaterial]]
-                        .SetEligibilityAsFrond(true);
-                }
-            }
-        }
-
-        private void AddLeafMaterials(ILeafProvider provider, TreePrefabCollection prefabs, IDIncrementer ids, ResponsiveSettingsType type)
-        {
-            foreach (var hierarchy in provider.Leaves)
-            {
-                if (hierarchy.geometry.geometryMode == LeafGeometryMode.Mesh)
-                {
-                    var prefab = prefabs.GetPrefab(hierarchy.geometry.prefab, TreeComponentType.Leaf);
-
-                    foreach (var material in prefab.GetMaterials())
+                    if (!_tiledInputIDsByMaterial.ContainsKey(hierarchy.geometry.barkMaterial))
                     {
-                        if (!_atlasInputIDsByMaterial.ContainsKey(material))
-                        {
-                            var newMaterial = new AtlasInputMaterial(ids.GetNextIdAndIncrement(), material, type);
+                        var newInputMaterial = new TiledInputMaterial(
+                            ids.GetNextIdAndIncrement(),
+                            hierarchy.geometry.barkMaterial,
+                            type
+                        );
 
-                            newMaterial.SetEligibilityAsLeaf(true);
-                            AddAtlasMaterial(newMaterial);
-                        }
-                        else
-                        {
-                            _atlasInputMaterials[_atlasMaterialIndexLookup[material]].SetEligibilityAsLeaf(true);
-                        }
+                        AddTiledMaterial(newInputMaterial);
                     }
                 }
-                else
-                {
-                    if (hierarchy.geometry.leafMaterial != null)
-                    {
-                        if (!_atlasInputIDsByMaterial.ContainsKey(hierarchy.geometry.leafMaterial))
-                        {
-                            var newMaterial = new AtlasInputMaterial(
-                                ids.GetNextIdAndIncrement(),
-                                hierarchy.geometry.leafMaterial,
-                                type
-                            );
 
-                            newMaterial.SetEligibilityAsLeaf(true);
-                            AddAtlasMaterial(newMaterial);
-                        }
-                        else
-                        {
-                            _atlasInputMaterials[_atlasMaterialIndexLookup[hierarchy.geometry.leafMaterial]]
-                                .SetEligibilityAsLeaf(true);
-                        }
+                /*if (hierarchy.limb.breakMaterial != null)
+                {
+                    if (!_tiledInputIDsByMaterial.ContainsKey(hierarchy.limb.breakMaterial))
+                    {
+                        var newInputMaterial = new TiledInputMaterial(
+                            ids.GetNextIdAndIncrement(),
+                            hierarchy.limb.breakMaterial,
+                            type
+                        );
+
+                        newInputMaterial.SetEligibilityAsBreak(true);
+                        AddTiledMaterial(newInputMaterial);
                     }
-                }
+                    else
+                    {
+                        _tiledInputMaterials[_tiledMaterialIndexLookup[hierarchy.limb.breakMaterial]]
+                            .SetEligibilityAsBreak(true);
+                    }
+                }*/
             }
         }
 
-        private void AddFruitMaterials(IFruitProvider provider, TreePrefabCollection prefabs, IDIncrementer ids, ResponsiveSettingsType type)
+        private bool IsMaterialValidAsDefault(Material m, bool atlas)
         {
-            foreach (var hierarchy in provider.Fruits)
+            if (m == null)
             {
-                if (hierarchy.geometry.prefab == null)
-                {
-                    continue;
-                }
-
-                var prefab = prefabs.GetPrefab(hierarchy.geometry.prefab, TreeComponentType.Fruit);
-                foreach (var material in prefab.GetMaterials())
-                {
-                    if (!_atlasInputIDsByMaterial.ContainsKey(material))
-                    {
-                        var newMaterial = new AtlasInputMaterial(ids.GetNextIdAndIncrement(), material, type);
-
-                        AddAtlasMaterial(newMaterial);
-                    }
-                }
+                return false;
             }
+
+            if (m.primaryTexture() == null)
+            {
+                return false;
+            }
+
+            if (!(atlas ? atlasInputIDsByMaterial : tiledInputIDsByMaterial).ContainsKey(m))
+            {
+                return false;
+            }
+
+            return true;
         }
 
-        private void AddKnotMaterials(IKnotProvider provider, TreePrefabCollection prefabs, IDIncrementer ids, ResponsiveSettingsType type)
-        {
-            foreach (var hierarchy in provider.Knots)
-            {
-                if (hierarchy.geometry.prefab == null)
-                {
-                    continue;
-                }
-
-                var prefab = prefabs.GetPrefab(hierarchy.geometry.prefab, TreeComponentType.Knot);
-                foreach (var material in prefab.GetMaterials())
-                {
-                    if (!_atlasInputIDsByMaterial.ContainsKey(material))
-                    {
-                        var newMaterial = new AtlasInputMaterial(ids.GetNextIdAndIncrement(), material, type);
-
-                        AddAtlasMaterial(newMaterial);
-                    }
-                }
-            }
-        }
-
-        private void AddFungiMaterials(IFungusProvider provider, TreePrefabCollection prefabs, IDIncrementer ids, ResponsiveSettingsType type)
-        {
-            foreach (var hierarchy in provider.Fungi)
-            {
-                if (hierarchy.geometry.prefab == null)
-                {
-                    continue;
-                }
-
-                var prefab = prefabs.GetPrefab(hierarchy.geometry.prefab, TreeComponentType.Fungus);
-                foreach (var material in prefab.GetMaterials())
-                {
-                    if (!_atlasInputIDsByMaterial.ContainsKey(material))
-                    {
-                        var mID = ids.GetNextIdAndIncrement();
-
-                        var newMaterial = new AtlasInputMaterial(mID, material, type);
-
-                        AddAtlasMaterial(newMaterial);
-                    }
-                }
-            }
-        }
-
-        private void RemoveUnnecessaryMaterials(IEnumerable<HierarchyData> hierarchies, TreePrefabCollection prefabs, ResponsiveSettingsType type)
+        private void RemoveUnnecessaryMaterials(
+            IEnumerable<HierarchyData> hierarchies,
+            TreePrefabCollection prefabs,
+            ResponsiveSettingsType type)
         {
             using (BUILD_TIME.TREE_MAT_CACHE.RemoveUnnecessary.Auto())
             {
@@ -770,218 +1003,48 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Management
             }
         }
 
-        public InputMaterial GetInputMaterialData(Material material, bool atlas)
+        private void UpdateDefaultMaterials(IEnumerable<HierarchyData> hierarchies)
         {
-            IReadOnlyList<InputMaterial> materials = atlasInputMaterials;
-            var lookup = atlasMaterialIndexLookup;
-
-            if (!atlas)
+            foreach (var hierarchy in hierarchies)
             {
-                materials = tiledInputMaterials;
-                lookup = tiledMaterialIndexLookup;
-            }
+                var barkHierarchy = hierarchy as BarkHierarchyData;
 
-            if ((lookup.Count == 0) || (material == null) || !lookup.ContainsKey(material))
-            {
-                return null;
-            }
-
-            var index = lookup[material];
-
-            return materials[index];
-        }
-
-        public InputMaterial GetInputMaterialData(Material material, TreeMaterialUsage usage)
-        {
-            switch (usage)
-            {
-                case TreeMaterialUsage.Bark:
-                case TreeMaterialUsage.SplineBreak:
-                    return GetInputMaterialData(material, false);
-                case TreeMaterialUsage.Billboard:
-                case TreeMaterialUsage.Prefab:
-                case TreeMaterialUsage.LeafPlane:
-                case TreeMaterialUsage.Frond:
-                    return GetInputMaterialData(material, true);
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(usage), usage, null);
-            }
-        }
-
-        public int GetMaterialIDByMaterial(Material m, bool atlas)
-        {
-            return atlas ? atlasInputIDsByMaterial[m] : tiledInputIDsByMaterial[m];
-        }
-
-        public void SetDefaultMaterials(DefaultMaterialSettingsPublic settings)
-        {
-            using (BUILD_TIME.TREE_MAT_COLL.SetDefaultMaterials.Auto())
-            {
-                if (settings == null)
+                if (barkHierarchy != null)
                 {
-                    return;
-                }
-
-                if (defaultMaterials == null)
-                {
-                    defaultMaterials = new DefaultMaterialSettings();
-                }
-
-                if (settings.breaks != null)
-                {
-                    var material = GetInputMaterialData(settings.breaks, TreeMaterialUsage.SplineBreak);
-
-                    if (material != null)
+                    if ((barkHierarchy.geometry.barkMaterial == null) &&
+                        (defaultMaterials != null) &&
+                        (defaultMaterials.materialBark != null))
                     {
-                        defaultMaterials.materialBreak = material.material;
+                        barkHierarchy.geometry.barkMaterial = defaultMaterials.materialBark;
+                    }
+
+                    /*if ((barkHierarchy.limb.breakMaterial == null) &&
+                        (defaultMaterials != null) &&
+                        (defaultMaterials.materialBreak != null))
+                    {
+                        barkHierarchy.limb.breakMaterial = defaultMaterials.materialBreak;
+                    }*/
+
+                    if ((barkHierarchy.geometry.frond != null) &&
+                        (barkHierarchy.geometry.frond.frondMaterial == null) &&
+                        (defaultMaterials != null) &&
+                        (defaultMaterials.materialFrond != null))
+                    {
+                        barkHierarchy.geometry.frond.frondMaterial = defaultMaterials.materialFrond;
                     }
                 }
 
-                if (settings.branches != null)
-                {
-                    var material = GetInputMaterialData(settings.branches, TreeMaterialUsage.Bark);
+                var leafHierarchy = hierarchy as LeafHierarchyData;
 
-                    if (material != null)
+                if (leafHierarchy != null)
+                {
+                    if ((leafHierarchy.geometry.leafMaterial == null) &&
+                        (defaultMaterials != null) &&
+                        (defaultMaterials.materialLeaf != null))
                     {
-                        defaultMaterials.materialBark = material.material;
+                        leafHierarchy.geometry.leafMaterial = defaultMaterials.materialLeaf;
                     }
                 }
-
-                if (settings.fronds != null)
-                {
-                    var material = GetInputMaterialData(settings.fronds, TreeMaterialUsage.Frond);
-
-                    if (material != null)
-                    {
-                        defaultMaterials.materialFrond = material.material;
-                    }
-                }
-
-                if (settings.leaves != null)
-                {
-                    var material = GetInputMaterialData(settings.leaves, TreeMaterialUsage.LeafPlane);
-
-                    if (material != null)
-                    {
-                        defaultMaterials.materialLeaf = material.material;
-                    }
-                }
-            }
-        }
-
-        public void UpdateDefaultMaterials()
-        {
-            using (BUILD_TIME.TREE_MAT_COLL.UpdateDefaultMaterials.Auto())
-            {
-                if (defaultMaterials == null)
-                {
-                    defaultMaterials = new DefaultMaterialSettings();
-                }
-
-                if (!IsMaterialValidAsDefault(defaultMaterials.materialBark, false))
-                {
-                    defaultMaterials.materialBark = tiledInputMaterials
-                        .FirstOrDefault(m => (m != null) && (m.material != null) && m.eligibleAsBranch)
-                        ?.material;
-                }
-
-                if (!IsMaterialValidAsDefault(defaultMaterials.materialBreak, false))
-                {
-                    defaultMaterials.materialBreak = atlasInputMaterials
-                        .FirstOrDefault(m => (m != null) && (m.material != null) && m.eligibleAsBreak)
-                        ?.material;
-                }
-
-                if (!IsMaterialValidAsDefault(defaultMaterials.materialFrond, true))
-                {
-                    defaultMaterials.materialFrond = atlasInputMaterials
-                        .FirstOrDefault(m => (m != null) && (m.material != null) && m.eligibleAsFrond)
-                        ?.material;
-                }
-
-                if (!IsMaterialValidAsDefault(defaultMaterials.materialLeaf, true))
-                {
-                    defaultMaterials.materialLeaf = atlasInputMaterials
-                        .FirstOrDefault(m => (m != null) && (m.material != null) && m.eligibleAsLeaf)
-                        ?.material;
-                }
-            }
-        }
-
-        private bool IsMaterialValidAsDefault(Material m, bool atlas)
-        {
-            if (m == null)
-            {
-                return false;
-            }
-
-            if (m.primaryTexture() == null)
-            {
-                return false;
-            }
-
-            if (!(atlas ? atlasInputIDsByMaterial : tiledInputIDsByMaterial).ContainsKey(m))
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        public InputMaterial GetByMaterialID(int materialID)
-        {
-            return materialsByID[materialID];
-        }
-
-        
-        public string CalculateHash()
-        {
-            using (BUILD_TIME.TREE_MAT_COLL.CalculateHash.Auto())
-            {
-                var materials = tiledInputMaterials.Select(tm => tm.material)
-                    .Concat(atlasInputMaterials.Select(tm => tm.material));
-
-                var builder = new StringBuilder();
-
-                foreach (var material in materials)
-                {
-                    if (material == null)
-                    {
-                        continue;
-                    }
-
-                    builder.Append(material.name);
-                    builder.Append(material.shader.name);
-                    builder.Append(material.GetInstanceID());
-
-                    foreach (var prop in material.GetTexturePropertyNames())
-                    {
-                        var tex = material.GetTexture(prop) as Texture2D;
-                        if (tex == null)
-                        {
-                            continue;
-                        }
-
-                        var path = AssetDatabaseManager.GetAssetPath(tex);
-
-                        if (path.StartsWith("Assets"))
-                        {
-                            path = path.Replace("Assets", Application.dataPath);
-                        }
-
-                        if (path.StartsWith("Assets"))
-                        {
-                            path = path.Replace("Assets", Application.dataPath);
-                        }
-
-                        builder.Append(tex.name);
-                        builder.Append(tex.GetInstanceID());
-                        builder.Append(AppaFile.GetLastWriteTime(path).ToString("s"));
-                        builder.Append(AppaFile.ReadAllText(ZString.Format("{0}.meta", path)));
-                    }
-                }
-
-                return builder.ToString().GetHashCode().ToString();
             }
         }
     }

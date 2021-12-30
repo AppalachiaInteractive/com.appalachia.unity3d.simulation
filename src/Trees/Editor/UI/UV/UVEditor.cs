@@ -16,7 +16,6 @@ namespace Appalachia.Simulation.Trees.UI.UV
         //where TT : IBranch
         where TD : TSEDataContainer
     {
-        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
         static UVEditor()
         {
             LeafUVRectCollection.InstanceAvailable += i => _leafUVRectCollection = i;

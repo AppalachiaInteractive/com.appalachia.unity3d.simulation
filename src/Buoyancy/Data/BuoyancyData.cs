@@ -13,7 +13,6 @@ namespace Appalachia.Simulation.Buoyancy.Data
     [CallStaticConstructorInEditor]
     public class BuoyancyData : AppalachiaObject<BuoyancyData>
     {
-        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
         static BuoyancyData()
         {
             RegisterDependency<BuoyancyDataDefaults>(i => _buoyancyDataDefaults = i);

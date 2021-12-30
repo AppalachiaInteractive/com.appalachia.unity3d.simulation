@@ -86,7 +86,7 @@ namespace Appalachia.Simulation.Trees.Definition
             TreeAsset asset)
         {
             var assetName = nameBasis.FileNameStageSO(individualID, ageType, stageType);
-            var instance = TreeStage.LoadOrCreateNew(folder, assetName);
+            var instance = LoadOrCreateNew<TreeStage>(folder, assetName);
 
             instance.ageType = ageType;
             instance.asset = asset;
@@ -185,7 +185,7 @@ namespace Appalachia.Simulation.Trees.Definition
                     // state == TreeStateType.Felled || 
                     // state == TreeStateType.FelledBare ||
                     // state == TreeStateType.FelledBareRotted
-                )
+                   )
                 {
                     Stump(hierarchyRead, settings);
                 }

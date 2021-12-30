@@ -24,14 +24,14 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
         public static BranchAsset Create(string folder, NameBasis nameBasis)
         {
             var assetName = nameBasis.FileNameSO("asset");
-            var instance = BranchAsset.LoadOrCreateNew(folder, assetName);
+            var instance = LoadOrCreateNew<BranchAsset>(folder, assetName);
 
             return instance;
         }
 
         public void CreateMesh()
         {
-            mesh = new Mesh {name = CleanName};
+            mesh = new Mesh { name = CleanName };
         }
 
         public AssetStatistics GetStatistics()
@@ -40,7 +40,7 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
 
             if (mesh == null)
             {
-                stats.statistics.Add(new AssetStatistic {submeshes = 0, triangles = 0, vertices = 0});
+                stats.statistics.Add(new AssetStatistic { submeshes = 0, triangles = 0, vertices = 0 });
             }
             else
             {

@@ -1,4 +1,5 @@
 using System;
+using Appalachia.Core.Objects.Initialization;
 using Appalachia.Core.Objects.Root;
 using Appalachia.Core.Types.Enums;
 using Appalachia.Utility.Async;
@@ -10,8 +11,7 @@ namespace Appalachia.Simulation.ReactionSystem.Base
 {
     [ExecuteAlways]
     [Serializable]
-    public abstract class ReactionSubsystemBase<T> : AppalachiaBehaviour<T>
-        where T : ReactionSubsystemBase<T>
+    public abstract class ReactionSubsystemBase : AppalachiaBehaviour
     {
         #region Fields and Autoproperties
 
@@ -68,18 +68,6 @@ namespace Appalachia.Simulation.ReactionSystem.Base
 
         #region Event Functions
 
-        //public abstract void GetRenderingPosition(out Vector3 minimumPosition, out Vector3 size);
-
-        protected override void Awake()
-        {
-            using (_PRF_Awake.Auto())
-            {
-                base.Awake();
-                updateLoopInitialized = false;
-                Initialize();
-            }
-        }
-
         protected void Update()
         {
             using (_PRF_Update.Auto())
@@ -105,43 +93,7 @@ namespace Appalachia.Simulation.ReactionSystem.Base
             }
         }
 
-        protected override async AppaTask WhenEnabled()
-        {
-            using (_PRF_OnEnable.Auto())
-            {
-                await base.WhenEnabled();
-
-                updateLoopInitialized = false;
-                Initialize();
-            }
-        }
-
-        protected override async AppaTask WhenDisabled()
-
-        {
-            using (_PRF_OnDisable.Auto())
-            {
-                await base.WhenDisabled();
-
-                TeardownSubsystem();
-                updateLoopInitialized = false;
-            }
-        }
-
         #endregion
-
-        [Button]
-        protected override void Initialize()
-        {
-            using (_PRF_Initialize.Auto())
-            {
-                base.Initialize();
-
-                gameObject.name = SubsystemName;
-
-                OnInitialization();
-            }
-        }
 
         public void InitializeSubsystem(ReactionSystem system, int groupIndex)
         {
@@ -149,8 +101,6 @@ namespace Appalachia.Simulation.ReactionSystem.Base
             {
                 mainSystem = system;
                 _groupIndex = groupIndex;
-
-                Initialize();
             }
         }
 
@@ -166,6 +116,32 @@ namespace Appalachia.Simulation.ReactionSystem.Base
         protected abstract void OnInitialization();
 
         protected abstract void TeardownSubsystem();
+
+        protected override async AppaTask Initialize(Initializer initializer)
+        {
+            using (_PRF_Initialize.Auto())
+            {
+                await base.Initialize(initializer);
+
+                updateLoopInitialized = false;
+
+                gameObject.name = SubsystemName;
+
+                OnInitialization();
+            }
+        }
+
+        protected override async AppaTask WhenDisabled()
+
+        {
+            using (_PRF_OnDisable.Auto())
+            {
+                await base.WhenDisabled();
+
+                TeardownSubsystem();
+                updateLoopInitialized = false;
+            }
+        }
 
         #region Profiling
 
@@ -188,5 +164,7 @@ namespace Appalachia.Simulation.ReactionSystem.Base
             new ProfilerMarker(_PRF_PFX + nameof(OnDisable));
 
         #endregion
+
+        //public abstract void GetRenderingPosition(out Vector3 minimumPosition, out Vector3 size);
     }
 }

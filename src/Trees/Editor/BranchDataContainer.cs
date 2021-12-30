@@ -30,7 +30,7 @@ using Random = UnityEngine.Random;
 namespace Appalachia.Simulation.Trees
 {
     [Serializable]
-    public sealed class BranchDataContainer : TSEDataContainer<BranchDataContainer>
+    public sealed class BranchDataContainer : TSEDataContainer
     {
         #region Fields and Autoproperties
 
@@ -91,14 +91,14 @@ namespace Appalachia.Simulation.Trees
             BranchBuildRequestManager.Full();
         }
 
-        public override void CopyHierarchiesFrom(BranchDataContainer dc)
+        public override void CopyHierarchiesFrom(TSEDataContainer dc)
         {
-            dc.branch.hierarchies.CopyHierarchiesTo(branch.hierarchies);
+            (dc as BranchDataContainer)?.branch.hierarchies.CopyHierarchiesTo(branch.hierarchies);
         }
 
-        public override void CopySettingsFrom(BranchDataContainer dc)
+        public override void CopySettingsFrom(TSEDataContainer dc)
         {
-            dc.settings.CopySettingsTo(settings);
+            (dc as BranchDataContainer)?.settings.CopySettingsTo(settings);
         }
 
         public override NameBasis GetNameBasis()
@@ -217,7 +217,7 @@ namespace Appalachia.Simulation.Trees
 
                 ResetInitialization();
 
-                var basis = NameBasis.CreateNested<NameBasis>(this);
+                var basis = NameBasis.CreateNested(this);
 
                 var n = initializationSettings.name.ToSafe().TrimEnd(',', '.', '_', '-');
 
@@ -230,11 +230,11 @@ namespace Appalachia.Simulation.Trees
 
                 UpdateNameAndMove(basis.nameBasis);
 
-                subfolders = TreeAssetSubfolders.CreateNested<TreeAssetSubfolders>(this, false);
+                subfolders = TreeAssetSubfolders.CreateNested(this, false);
 
                 subfolders.nameBasis = basis;
 
-                subfolders.Initialize(this);
+                subfolders.InitializeFromParent(this);
                 subfolders.CreateFolders();
 
                 branch = TreeBranch.Create(subfolders.data, basis);

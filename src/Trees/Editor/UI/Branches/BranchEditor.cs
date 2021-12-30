@@ -203,7 +203,7 @@ namespace Appalachia.Simulation.Trees.UI.Branches
                 }
 
                 branchData.subfolders.nameBasis = branchData.GetNameBasis();
-                branchData.subfolders.Initialize(branchData);
+                branchData.subfolders.InitializeFromParent(branchData);
 
                 _treeSpeciesEditorSelection.branch.selection.Set(branchData);
 

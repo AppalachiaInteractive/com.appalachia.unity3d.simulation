@@ -13,7 +13,6 @@ namespace Appalachia.Simulation.Trees.UI.Species
     [CallStaticConstructorInEditor]
     public class TreeSpeciesHierarchyEditor : HierarchyBaseEditor<TreeDataContainer>
     {
-        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
         static TreeSpeciesHierarchyEditor()
         {
             TreeSpeciesEditorSelection.InstanceAvailable += i => _treeSpeciesEditorSelection = i;

@@ -21,19 +21,27 @@ namespace Appalachia.Simulation.Trees.Generation.Geometry.Leaves
     [CallStaticConstructorInEditor]
     public static class LeafGeometryGenerator
     {
-        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
+        #region Constants and Static Readonly
+
+        private static readonly TreeTriangle[] _triangles = new TreeTriangle[4];
+        private static readonly TreeVertex[] _planeVerts = new TreeVertex[8];
+        private static readonly TreeVertex[] _planeVerts2 = new TreeVertex[8];
+
+        #endregion
+
         static LeafGeometryGenerator()
         {
             LeafUVRectCollection.InstanceAvailable += i => _leafUVRectCollection = i;
         }
 
-        private static LeafUVRectCollection _leafUVRectCollection;
-        private static readonly TreeVertex[] _planeVerts = new TreeVertex[8];
-        private static readonly TreeVertex[] _planeVerts2 = new TreeVertex[8];
-        private static BillboardPlane _billboardPlane;
-        private static readonly TreeTriangle[] _triangles = new TreeTriangle[4];
+        #region Static Fields and Autoproperties
 
-        
+        private static BillboardPlane _billboardPlane;
+
+        private static LeafUVRectCollection _leafUVRectCollection;
+
+        #endregion
+
 /*
 *     DIAMOND WIDTH CUT     DIAMOND LENGTH CUT          PLANE             DIAMOND 1          DIAMOND 2    
 *                          
@@ -71,11 +79,15 @@ namespace Appalachia.Simulation.Trees.Generation.Geometry.Leaves
             {
                 if (weld && (shape.matrix == shape.effectiveMatrix))
                 {
-                    shape.effectiveMatrix = ShapeWelder.WeldLeafShapeOriginToParent(output, parentShape, shape.effectiveMatrix);
-                    
+                    shape.effectiveMatrix = ShapeWelder.WeldLeafShapeOriginToParent(
+                        output,
+                        parentShape,
+                        shape.effectiveMatrix
+                    );
+
                     shape.welded = true;
                 }
-                
+
                 var missChance = 1 - Mathf.Clamp01(lodSettings.leafFullness);
 
                 if (shape.variationSeed < missChance)
@@ -100,10 +112,17 @@ namespace Appalachia.Simulation.Trees.Generation.Geometry.Leaves
                 }
                 else if (hierarchy.geometry.geometryMode == LeafGeometryMode.Billboard)
                 {
-                    GenerateLeafBillboardGeometry(output, inputMaterialCache, meshSettings, shape, hierarchy, seed);
+                    GenerateLeafBillboardGeometry(
+                        output,
+                        inputMaterialCache,
+                        meshSettings,
+                        shape,
+                        hierarchy,
+                        seed
+                    );
                 }
                 else if ((hierarchy.geometry.geometryMode == LeafGeometryMode.DiamondLengthCut) ||
-                    (hierarchy.geometry.geometryMode == LeafGeometryMode.DiamondWidthCut))
+                         (hierarchy.geometry.geometryMode == LeafGeometryMode.DiamondWidthCut))
                 {
                     GenerateLeafDiamondGeometry(
                         output,
@@ -115,7 +134,7 @@ namespace Appalachia.Simulation.Trees.Generation.Geometry.Leaves
                     );
                 }
                 else if ((hierarchy.geometry.geometryMode == LeafGeometryMode.DiamondPyramid) ||
-                    (hierarchy.geometry.geometryMode == LeafGeometryMode.BoxPyramid))
+                         (hierarchy.geometry.geometryMode == LeafGeometryMode.BoxPyramid))
                 {
                     GenerateLeafPyramidGeometry(
                         output,
@@ -127,39 +146,28 @@ namespace Appalachia.Simulation.Trees.Generation.Geometry.Leaves
                     );
                 }
                 else if ((hierarchy.geometry.geometryMode == LeafGeometryMode.Spoke) ||
-                    (hierarchy.geometry.geometryMode == LeafGeometryMode.BentSpoke))
+                         (hierarchy.geometry.geometryMode == LeafGeometryMode.BentSpoke))
                 {
                     GenerateLeafSpokeGeometry(
-                        output, 
+                        output,
                         inputMaterialCache,
                         lodSettings,
                         meshSettings,
                         shape,
-                        hierarchy);
+                        hierarchy
+                    );
                 }
                 else
                 {
-                    GenerateLeafPlaneGeometry(output, inputMaterialCache, lodSettings, meshSettings, shape, hierarchy);
+                    GenerateLeafPlaneGeometry(
+                        output,
+                        inputMaterialCache,
+                        lodSettings,
+                        meshSettings,
+                        shape,
+                        hierarchy
+                    );
                 }
-            }
-        }
-
-        private static void MergeMeshGeometryIntoTree(
-            LODGenerationOutput output,
-            InputMaterialCache inputMaterialCache,
-            ShapeData shape,
-            TreePrefab prefab)
-        {
-            using (BUILD_TIME.GEO_GEN.MergeMeshGeometryIntoTree.Auto())
-            {
-                if ((prefab.LODCount <= 0) || !prefab.canMergeIntoTree)
-                {
-                    return;
-                }
-
-                var lod = prefab.GetLOD(output.lodLevel);
-
-                lod.MergeIntoTree(output, inputMaterialCache, shape, shape.hierarchyID, shape.shapeID, 0f);
             }
         }
 
@@ -185,7 +193,7 @@ namespace Appalachia.Simulation.Trees.Generation.Geometry.Leaves
                     1.0f - meshSettings.generatedBillboardNormalFactor,
                     meshSettings.generatedBillboardNormalFactor
                 );
-                
+
                 // dumb
                 var flip = hierarchy.geometry.flipLeafNormals ? 1 : -1;
 
@@ -218,10 +226,10 @@ namespace Appalachia.Simulation.Trees.Generation.Geometry.Leaves
 
                 var scale = shape.effectiveScale;
 
-                _planeVerts[0].billboardData = new Vector4(-scale, scale, 0f, -2f);
+                _planeVerts[0].billboardData = new Vector4(-scale, scale,  0f, -2f);
                 _planeVerts[1].billboardData = new Vector4(-scale, -scale, 0f, -2f);
-                _planeVerts[2].billboardData = new Vector4(scale, -scale, 0f, -2f);
-                _planeVerts[3].billboardData = new Vector4(scale, scale, 0f, -2f);
+                _planeVerts[2].billboardData = new Vector4(scale,  -scale, 0f, -2f);
+                _planeVerts[3].billboardData = new Vector4(scale,  scale,  0f, -2f);
 
                 for (var i = 0; i < 4; ++i)
                 {
@@ -243,14 +251,14 @@ namespace Appalachia.Simulation.Trees.Generation.Geometry.Leaves
                 var index0 = output.vertices.Count;
 
                 _billboardPlane.Reset();
-                
+
                 for (var i = 0; i < 4; ++i)
                 {
                     _planeVerts[i].billboard = true;
                     output.AddVertex(_planeVerts[i]);
                     _billboardPlane[i] = _planeVerts[i];
                 }
-                
+
                 output.billboards.Add(_billboardPlane);
 
                 var t1 = _triangles[0];
@@ -259,521 +267,27 @@ namespace Appalachia.Simulation.Trees.Generation.Geometry.Leaves
                 t1.Reset();
                 t2.Reset();
 
-                t1.Set(shape, materialID, index0, index0 + 2, index0 + 1, TreeMaterialUsage.LeafPlane, hierarchy.geometry.flipLeafNormals);
-                t2.Set(shape, materialID, index0, index0 + 3, index0 + 2, TreeMaterialUsage.LeafPlane, hierarchy.geometry.flipLeafNormals);
+                t1.Set(
+                    shape,
+                    materialID,
+                    index0,
+                    index0 + 2,
+                    index0 + 1,
+                    TreeMaterialUsage.LeafPlane,
+                    hierarchy.geometry.flipLeafNormals
+                );
+                t2.Set(
+                    shape,
+                    materialID,
+                    index0,
+                    index0 + 3,
+                    index0 + 2,
+                    TreeMaterialUsage.LeafPlane,
+                    hierarchy.geometry.flipLeafNormals
+                );
 
                 output.AddTriangle(t1);
                 output.AddTriangle(t2);
-            }
-        }
-
-        private static void GenerateLeafPlaneGeometry(
-            LODGenerationOutput output,
-            InputMaterialCache inputMaterialCache,
-            LevelOfDetailSettings settings,
-            MeshSettings meshSettings,
-            LeafShapeData shape,
-            LeafHierarchyData hierarchy)
-        {
-            using (BUILD_TIME.GEO_GEN.GenerateLeafPlaneGeometry.Auto())
-            {
-                var m = inputMaterialCache.GetInputMaterialData(
-                    hierarchy.geometry.leafMaterial,
-                    TreeMaterialUsage.LeafPlane
-                );
-                
-                var materialID = m == null ? -1 : m.materialID;
-
-                var planes = 0;
-                switch (hierarchy.geometry.geometryMode)
-                {
-                    case LeafGeometryMode.Plane:
-                    case LeafGeometryMode.BentPlane:
-                        planes = 1;
-                        break;
-                    case LeafGeometryMode.Cross:
-                    case LeafGeometryMode.BentCross:
-                        planes = 2;
-                        break;
-                    case LeafGeometryMode.TriCross:
-                    case LeafGeometryMode.BentTriCross:
-                        planes = 3;
-                        break;
-                }
-
-                TextureHullData hullData;
-
-                using (BUILD_TIME.GEO_GEN.GetTextureHullData.Auto())
-                {
-                    if (materialID >= 0)
-                    {
-                        hullData = hierarchy.geometry.leafMaterial.GetTextureHullData();
-                    }
-                    else
-                    {
-                        hullData = TextureHullData.Default();
-                    }
-                }
-
-                var rects = _leafUVRectCollection.Get(hierarchy.geometry.leafMaterial);
-
-                float xRatio = hierarchy.geometry.xRatio;
-
-                if (xRatio == 0.0f)
-                {
-                    hierarchy.geometry.xRatio.SetValue(1.0f);
-                    xRatio = 1.0f;
-                }
-                
-                float xOffset = 0.0f;
-                float zOffset = 0.0f;
-                
-                if (((rects == null) || (rects.Count < 2)) && hierarchy.geometry.correctOffset)
-                {
-                    var xCorrectionNecessary = .5f - hullData.baseWidthCenter0To1;
-                    var zCorrectionNecessary = -1 * hullData.baseHeightOffset0To1;
-
-                    xOffset = xCorrectionNecessary * (shape.effectiveScale * 2);
-                    zOffset = zCorrectionNecessary * (shape.effectiveScale * 2);
-                }
-                
-                xOffset += shape.effectiveScale * hierarchy.geometry.xOffset;
-                zOffset += shape.effectiveScale * hierarchy.geometry.zOffset;
-                
-                var offset = new Vector3(xOffset, 0f, zOffset);
-
-                var yOffset = 0f;
-
-                if ((hierarchy.geometry.geometryMode == LeafGeometryMode.BentPlane) ||
-                    (hierarchy.geometry.geometryMode == LeafGeometryMode.BentCross) ||
-                    (hierarchy.geometry.geometryMode == LeafGeometryMode.BentTriCross))
-                {
-                    yOffset = hierarchy.geometry.bendFactor * shape.effectiveScale;
-                }
-
-                var xPush = shape.effectiveScale*xRatio;
-                var zPush = shape.effectiveScale;
-                
-                var positionsRaw = new[]
-                {
-                    offset + new Vector3(-xPush, 0f, -zPush),
-                    offset + new Vector3(-xPush, 0f, zPush),
-                    offset + new Vector3(xPush, 0f, zPush),
-                    offset + new Vector3(xPush, yOffset, -zPush)
-                };
-
-                var normal = new Vector3(
-                    meshSettings.generatedPlaneNormalFactor,
-                    1.0f - meshSettings.generatedPlaneNormalFactor,
-                    meshSettings.generatedPlaneNormalFactor
-                );
-
-                //dumb
-                var flip = hierarchy.geometry.flipLeafNormals ? 1 : -1;
-                normal.y *= flip;
-
-                var normalsRaw = new[]
-                {
-                    new Vector3(-normal.x, normal.y, -normal.z).normalized,
-                    new Vector3(-normal.x, normal.y, 0).normalized, // note z always 0
-                    new Vector3(normal.x, normal.y, 0).normalized, // note z always 0
-                    new Vector3(normal.x, normal.y, -normal.z).normalized
-                };
-
-                for (var planeIndex = 0; planeIndex < planes; planeIndex++)
-                {
-                    if ((planeIndex == 1) && (settings.leafGeometryQuality <= .5f))
-                    {
-                        continue;
-                    }
-
-                    if ((planeIndex == 2) & (settings.leafGeometryQuality <= .33f))
-                    {
-                        continue;
-                    }
-
-                    var planeRotation = Quaternion.Euler(new Vector3(90, 0, 0));
-                    switch (planeIndex)
-                    {
-                        case 1:
-                            planeRotation = Quaternion.Euler(new Vector3(90, 90, 0));
-                            break;
-                        case 2:
-                            planeRotation = Quaternion.Euler(new Vector3(0, 90, 0));
-                            break;
-                    }
-
-                    _planeVerts[0] = new TreeVertex() /*TreeVertex.Get()*/;
-                    _planeVerts[1] = new TreeVertex() /*TreeVertex.Get()*/;
-                    _planeVerts[2] = new TreeVertex() /*TreeVertex.Get()*/;
-                    _planeVerts[3] = new TreeVertex() /*TreeVertex.Get()*/;
-                    _planeVerts[4] = new TreeVertex() /*TreeVertex.Get()*/;
-                    _planeVerts[5] = new TreeVertex() /*TreeVertex.Get()*/;
-                    _planeVerts[6] = new TreeVertex() /*TreeVertex.Get()*/;
-                    _planeVerts[7] = new TreeVertex() /*TreeVertex.Get()*/;
-
-                    _planeVerts[0].Set(shape, 0f);
-                    _planeVerts[1].Set(shape, 0f);
-                    _planeVerts[2].Set(shape, 0f);
-                    _planeVerts[3].Set(shape, 0f);
-                    _planeVerts[4].Set(shape, 0f);
-                    _planeVerts[5].Set(shape, 0f);
-                    _planeVerts[6].Set(shape, 0f);
-                    _planeVerts[7].Set(shape, 0f);
-
-                    for (var i = 0; i < 4; ++i)
-                    {
-                        _planeVerts[i].position = shape.effectiveMatrix.MultiplyPoint(planeRotation * positionsRaw[i]);
-                        _planeVerts[i].normal = shape.effectiveMatrix.MultiplyVector(planeRotation * normalsRaw[i]);
-                        _planeVerts[i].tangent = TangentGenerator.CreateTangent(shape, planeRotation, _planeVerts[i].normal);
-                        _planeVerts[i].raw_uv0 = hullData.textureHull[i];
-                    }
-
-                    _planeVerts[0].heightOffset = 1f;
-                    _planeVerts[1].heightOffset = 1f;
-                    _planeVerts[2].heightOffset = 0f;
-                    _planeVerts[3].heightOffset = 0f;
-
-                    _planeVerts[0].rawWind.tertiaryRoll = 0.5f;
-                    _planeVerts[1].rawWind.tertiaryRoll = 0.4f;
-                    _planeVerts[2].rawWind.tertiaryRoll = 0.0f;
-                    _planeVerts[3].rawWind.tertiaryRoll = 0.0f;
-
-                    for (var i = 0; i < 4; i++)
-                    {
-                        _planeVerts[i + 4].LerpVerticesByFactor(_planeVerts, hullData.textureHull[i]);
-
-                        _planeVerts[i + 4].raw_uv0 = _planeVerts[i].raw_uv0;
-                        _planeVerts[i + 4].heightOffset = _planeVerts[i].heightOffset;
-                        _planeVerts[i + 4].rawWind.tertiaryRoll = _planeVerts[i].rawWind.tertiaryRoll;
-                        _planeVerts[i + 4].uvScaleUpdated = _planeVerts[i].uvScaleUpdated;
-                    }
-
-                    var index0 = output.vertices.Count;
-
-                    for (var i = 0; i < 4;  i++)
-                    {
-                        output.AddVertex(_planeVerts[i + 4]);
-                    }
-
-                    var t1 = _triangles[0];
-                    var t2 = _triangles[1];
-
-                    t1.Reset();
-                    t2.Reset();
-
-                    t1.Set(shape, materialID, index0, index0 + 1, index0 + 2, TreeMaterialUsage.LeafPlane, hierarchy.geometry.flipLeafNormals);
-                    t2.Set(shape, materialID, index0, index0 + 2, index0 + 3, TreeMaterialUsage.LeafPlane, hierarchy.geometry.flipLeafNormals);
-
-                    output.AddTriangle(t1);
-                    output.AddTriangle(t2);
-
-                    var faceNormal = shape.effectiveMatrix.MultiplyVector(planeRotation * Vector3.up);
-
-                    if (settings.doubleSidedLeafGeometry)
-                    {
-                        _planeVerts2[0] = new TreeVertex() /*TreeVertex.Get()*/;
-                        _planeVerts2[1] = new TreeVertex() /*TreeVertex.Get()*/;
-                        _planeVerts2[2] = new TreeVertex() /*TreeVertex.Get()*/;
-                        _planeVerts2[3] = new TreeVertex() /*TreeVertex.Get()*/;
-                        _planeVerts2[4] = new TreeVertex() /*TreeVertex.Get()*/;
-                        _planeVerts2[5] = new TreeVertex() /*TreeVertex.Get()*/;
-                        _planeVerts2[6] = new TreeVertex() /*TreeVertex.Get()*/;
-                        _planeVerts2[7] = new TreeVertex() /*TreeVertex.Get()*/;
-
-                        _planeVerts2[0].Set(shape, 0f);
-                        _planeVerts2[1].Set(shape, 0f);
-                        _planeVerts2[2].Set(shape, 0f);
-                        _planeVerts2[3].Set(shape, 0f);
-                        _planeVerts2[4].Set(shape, 0f);
-                        _planeVerts2[5].Set(shape, 0f);
-                        _planeVerts2[6].Set(shape, 0f);
-                        _planeVerts2[7].Set(shape, 0f);
-
-                        for (var i = 0; i < 4; ++i)
-                        {
-                            _planeVerts2[i].position = _planeVerts[i].position;
-                            _planeVerts2[i].normal = Vector3.Reflect(_planeVerts[i].normal, faceNormal);
-                            _planeVerts2[i].tangent = Vector3.Reflect(_planeVerts[i].tangent, faceNormal);
-                            _planeVerts2[i].tangent.w = -1;
-                            _planeVerts2[i].raw_uv0 = _planeVerts[i].raw_uv0;
-                            _planeVerts2[i].rawWind.tertiaryRoll = _planeVerts[i].rawWind.tertiaryRoll;
-                            _planeVerts2[i].heightOffset = _planeVerts[i].heightOffset;
-                        }
-
-                        for (var i = 0; i < 4; ++i)
-                        {
-                            _planeVerts2[i + 4].LerpVerticesByFactor(_planeVerts2, hullData.textureHull[i]);
-                            _planeVerts2[i + 4].raw_uv0 = _planeVerts2[i].raw_uv0;
-                            _planeVerts2[i + 4].uvScaleUpdated = _planeVerts2[i].uvScaleUpdated;
-                            _planeVerts2[i + 4].rawWind.tertiaryRoll = _planeVerts[i].rawWind.tertiaryRoll;
-                            _planeVerts2[i + 4].heightOffset = _planeVerts[i].heightOffset;
-                        }
-
-                        var index4 = output.vertices.Count;
-                        for (var i = 0; i < 4; ++i)
-                        {
-                            output.AddVertex(_planeVerts2[i + 4]);
-                        }
-                        
-                        t1.Reset();
-                        t2.Reset();
-
-                        t1.Set(shape, materialID, index4, index4 + 2, index4 + 1, TreeMaterialUsage.LeafPlane, hierarchy.geometry.flipLeafNormals); 
-                        t2.Set(shape, materialID, index4, index4 + 3, index4 + 2, TreeMaterialUsage.LeafPlane, hierarchy.geometry.flipLeafNormals);
-
-                        output.AddTriangle(t1);
-                        output.AddTriangle(t2);
-                    }
-                }
-            }
-        }
-        
-        private static void GenerateLeafSpokeGeometry(
-            LODGenerationOutput output,
-            InputMaterialCache inputMaterialCache,
-            LevelOfDetailSettings settings,
-            MeshSettings meshSettings,
-            LeafShapeData shape,
-            LeafHierarchyData hierarchy)
-        {
-            using (BUILD_TIME.GEO_GEN.GenerateLeafPlaneGeometry.Auto())
-            {
-                var m = inputMaterialCache.GetInputMaterialData(
-                    hierarchy.geometry.leafMaterial,
-                    TreeMaterialUsage.LeafPlane
-                );
-                var materialID = m == null ? -1 : m.materialID;
-
-                if ((hierarchy.geometry.spokeCount == null) || (hierarchy.geometry.spokeCount == 0))
-                {
-                    hierarchy.geometry.spokeCount = TreeProperty.New(3);
-                    hierarchy.geometry.spokeDropPerMeter = TreeProperty.New(.05f);
-                }
-
-                var height = shape.effectiveMatrix.MultiplyPoint(Vector3.zero).y;
-                var spokeDrop = hierarchy.geometry.spokeDropPerMeter * height;
-                var planeCount = Mathf.Max(1, Mathf.RoundToInt(hierarchy.geometry.spokeCount * spokeDrop));
-                
-                TextureHullData hullData;
-
-                using (BUILD_TIME.GEO_GEN.GetTextureHullData.Auto())
-                {
-                    if (materialID >= 0)
-                    {
-                        hullData = hierarchy.geometry.leafMaterial.GetTextureHullData();
-                    }
-                    else
-                    {
-                        hullData = TextureHullData.Default();
-                    }
-                }
-
-                var rects = _leafUVRectCollection.Get(hierarchy.geometry.leafMaterial);
-
-                float xRatio = hierarchy.geometry.xRatio;
-
-                if (xRatio == 0.0f)
-                {
-                    hierarchy.geometry.xRatio.SetValue(1.0f);
-                    xRatio = 1.0f;
-                }
-                
-                float xOffset = 0.0f;
-                float zOffset = 0.0f;
-                
-                if (((rects == null) || (rects.Count < 2)) && hierarchy.geometry.correctOffset)
-                {
-                    var xCorrectionNecessary = .5f - hullData.baseWidthCenter0To1;
-                    var zCorrectionNecessary = -1 * hullData.baseHeightOffset0To1;
-
-                    xOffset = xCorrectionNecessary * (shape.effectiveScale * 2);
-                    zOffset = zCorrectionNecessary * (shape.effectiveScale * 2);
-                }
-                
-                xOffset += shape.effectiveScale * hierarchy.geometry.xOffset;
-                zOffset += shape.effectiveScale * hierarchy.geometry.zOffset;
-                
-                var offset = new Vector3(xOffset, 0f, zOffset);
-
-                var yOffset = 0f;
-
-                if (hierarchy.geometry.geometryMode == LeafGeometryMode.BentSpoke)
-                {
-                    yOffset = hierarchy.geometry.bendFactor * shape.effectiveScale;
-                }
-
-                var xPush = shape.effectiveScale*xRatio;
-                var zPush = shape.effectiveScale;
-                
-                var positionsRaw = new[]
-                {
-                    offset + new Vector3(-xPush, 0f, -zPush),
-                    offset + new Vector3(-xPush, 0f, zPush),
-                    offset + new Vector3(xPush, 0f, zPush),
-                    offset + new Vector3(xPush, yOffset, -zPush)
-                };
-
-                var normal = new Vector3(
-                    meshSettings.generatedPlaneNormalFactor,
-                    1.0f - meshSettings.generatedPlaneNormalFactor,
-                    meshSettings.generatedPlaneNormalFactor
-                );
-
-                //dumb
-                var flip = hierarchy.geometry.flipLeafNormals ? 1 : -1;
-                normal.y *= flip;
-
-                var normalsRaw = new[]
-                {
-                    new Vector3(-normal.x, normal.y, -normal.z).normalized,
-                    new Vector3(-normal.x, normal.y, 0).normalized, // note z always 0
-                    new Vector3(normal.x, normal.y, 0).normalized, // note z always 0
-                    new Vector3(normal.x, normal.y, -normal.z).normalized
-                };
-
-                var angles = new float[planeCount];
-
-                for (var i = 0; i < planeCount; i++)
-                {
-                    var planeTime = i / (planeCount);
-
-                    var rotation = 180.0f * planeTime;
-                    angles[i] = rotation;
-                }
-                
-                for (var planeIndex = 0; planeIndex < planeCount; planeIndex++)
-                {
-                    var planeTime = planeIndex / (float)planeCount;
-
-                    if (planeTime > settings.leafGeometryQuality)
-                    {
-                        continue;
-                    }
-
-                    var planeRotation = Quaternion.Euler(new Vector3(90, angles[planeIndex], 0));
-                    
-                    _planeVerts[0] = new TreeVertex();
-                    _planeVerts[1] = new TreeVertex();
-                    _planeVerts[2] = new TreeVertex();
-                    _planeVerts[3] = new TreeVertex();
-                    _planeVerts[4] = new TreeVertex();
-                    _planeVerts[5] = new TreeVertex();
-                    _planeVerts[6] = new TreeVertex();
-                    _planeVerts[7] = new TreeVertex();
-
-                    _planeVerts[0].Set(shape, 0f);
-                    _planeVerts[1].Set(shape, 0f);
-                    _planeVerts[2].Set(shape, 0f);
-                    _planeVerts[3].Set(shape, 0f);
-                    _planeVerts[4].Set(shape, 0f);
-                    _planeVerts[5].Set(shape, 0f);
-                    _planeVerts[6].Set(shape, 0f);
-                    _planeVerts[7].Set(shape, 0f);
-
-                    for (var i = 0; i < 4; ++i)
-                    {
-                        _planeVerts[i].position = shape.effectiveMatrix.MultiplyPoint(planeRotation * positionsRaw[i]);
-                        _planeVerts[i].normal = shape.effectiveMatrix.MultiplyVector(planeRotation * normalsRaw[i]);
-                        _planeVerts[i].tangent = TangentGenerator.CreateTangent(shape, planeRotation, _planeVerts[i].normal);
-                        _planeVerts[i].raw_uv0 = hullData.textureHull[i];
-                    }
-
-                    _planeVerts[0].heightOffset = 1f;
-                    _planeVerts[1].heightOffset = 1f;
-                    _planeVerts[2].heightOffset = 0f;
-                    _planeVerts[3].heightOffset = 0f;
-
-                    _planeVerts[0].rawWind.tertiaryRoll = 0.5f;
-                    _planeVerts[1].rawWind.tertiaryRoll = 0.4f;
-                    _planeVerts[2].rawWind.tertiaryRoll = 0.0f;
-                    _planeVerts[3].rawWind.tertiaryRoll = 0.0f;
-
-                    for (var i = 0; i < 4; i++)
-                    {
-                        _planeVerts[i + 4].LerpVerticesByFactor(_planeVerts, hullData.textureHull[i]);
-
-                        _planeVerts[i + 4].raw_uv0 = _planeVerts[i].raw_uv0;
-                        _planeVerts[i + 4].heightOffset = _planeVerts[i].heightOffset;
-                        _planeVerts[i + 4].rawWind.tertiaryRoll = _planeVerts[i].rawWind.tertiaryRoll;
-                        _planeVerts[i + 4].uvScaleUpdated = _planeVerts[i].uvScaleUpdated;
-                    }
-
-                    var index0 = output.vertices.Count;
-
-                    for (var i = 0; i < 4;  i++)
-                    {
-                        output.AddVertex(_planeVerts[i + 4]);
-                    }
-
-                    var t1 = new TreeTriangle();
-                    var t2 = new TreeTriangle();
-
-                    t1.Set(shape, materialID, index0, index0 + 1, index0 + 2, TreeMaterialUsage.LeafPlane, hierarchy.geometry.flipLeafNormals);
-                    t2.Set(shape, materialID, index0, index0 + 2, index0 + 3, TreeMaterialUsage.LeafPlane, hierarchy.geometry.flipLeafNormals);
-
-                    output.AddTriangle(t1);
-                    output.AddTriangle(t2);
-
-                    var faceNormal = shape.effectiveMatrix.MultiplyVector(planeRotation * Vector3.up);
-
-                    if (settings.doubleSidedLeafGeometry)
-                    {
-                        _planeVerts2[0] = new TreeVertex() /*TreeVertex.Get()*/;
-                        _planeVerts2[1] = new TreeVertex() /*TreeVertex.Get()*/;
-                        _planeVerts2[2] = new TreeVertex() /*TreeVertex.Get()*/;
-                        _planeVerts2[3] = new TreeVertex() /*TreeVertex.Get()*/;
-                        _planeVerts2[4] = new TreeVertex() /*TreeVertex.Get()*/;
-                        _planeVerts2[5] = new TreeVertex() /*TreeVertex.Get()*/;
-                        _planeVerts2[6] = new TreeVertex() /*TreeVertex.Get()*/;
-                        _planeVerts2[7] = new TreeVertex() /*TreeVertex.Get()*/;
-
-                        _planeVerts2[0].Set(shape, 0f);
-                        _planeVerts2[1].Set(shape, 0f);
-                        _planeVerts2[2].Set(shape, 0f);
-                        _planeVerts2[3].Set(shape, 0f);
-                        _planeVerts2[4].Set(shape, 0f);
-                        _planeVerts2[5].Set(shape, 0f);
-                        _planeVerts2[6].Set(shape, 0f);
-                        _planeVerts2[7].Set(shape, 0f);
-
-                        for (var i = 0; i < 4; ++i)
-                        {
-                            _planeVerts2[i].position = _planeVerts[i].position;
-                            _planeVerts2[i].normal = Vector3.Reflect(_planeVerts[i].normal, faceNormal);
-                            _planeVerts2[i].tangent = Vector3.Reflect(_planeVerts[i].tangent, faceNormal);
-                            _planeVerts2[i].tangent.w = -1;
-                            _planeVerts2[i].raw_uv0 = _planeVerts[i].raw_uv0;
-                            _planeVerts2[i].rawWind.tertiaryRoll = _planeVerts[i].rawWind.tertiaryRoll;
-                            _planeVerts2[i].heightOffset = _planeVerts[i].heightOffset;
-                        }
-
-                        for (var i = 0; i < 4; ++i)
-                        {
-                            _planeVerts2[i + 4].LerpVerticesByFactor(_planeVerts2, hullData.textureHull[i]);
-                            _planeVerts2[i + 4].raw_uv0 = _planeVerts2[i].raw_uv0;
-                            _planeVerts2[i + 4].uvScaleUpdated = _planeVerts2[i].uvScaleUpdated;
-                            _planeVerts2[i + 4].rawWind.tertiaryRoll = _planeVerts[i].rawWind.tertiaryRoll;
-                            _planeVerts2[i + 4].heightOffset = _planeVerts[i].heightOffset;
-                        }
-
-                        var index4 = output.vertices.Count;
-                        for (var i = 0; i < 4; ++i)
-                        {
-                            output.AddVertex(_planeVerts2[i + 4]);
-                        }
-
-                        var t1_2 = new TreeTriangle();
-                        var t2_2 = new TreeTriangle();
-
-                        t1_2.Set(shape, materialID, index4, index4 + 2, index4 + 1, TreeMaterialUsage.LeafPlane, hierarchy.geometry.flipLeafNormals);
-
-                        t2_2.Set(shape, materialID, index4, index4 + 3, index4 + 2, TreeMaterialUsage.LeafPlane, hierarchy.geometry.flipLeafNormals);
-
-                        output.AddTriangle(t1_2);
-                        output.AddTriangle(t2_2);
-                    }
-                }
             }
         }
 
@@ -828,37 +342,37 @@ namespace Appalachia.Simulation.Trees.Generation.Geometry.Leaves
 
                 if (hierarchy.geometry.geometryMode == LeafGeometryMode.DiamondWidthCut)
                 {
-                    positionsRaw[0] = new Vector3(-shape.effectiveScale, 0.0f, 0.0f);
-                    positionsRaw[1] = new Vector3(0.0f, yOffset, -shape.effectiveScale);
-                    positionsRaw[2] = new Vector3(shape.effectiveScale, 0.0f, 0.0f);
-                    positionsRaw[3] = new Vector3(0.0f, 0.0f, shape.effectiveScale);
+                    positionsRaw[0] = new Vector3(-shape.effectiveScale, 0.0f,    0.0f);
+                    positionsRaw[1] = new Vector3(0.0f,                  yOffset, -shape.effectiveScale);
+                    positionsRaw[2] = new Vector3(shape.effectiveScale,  0.0f,    0.0f);
+                    positionsRaw[3] = new Vector3(0.0f,                  0.0f,    shape.effectiveScale);
 
                     normalsRaw[0] = new Vector3(-normal.x, normal.y, 0.0f).normalized;
-                    normalsRaw[1] = new Vector3(0.0f, normal.y, -normal.z).normalized;
-                    normalsRaw[2] = new Vector3(normal.x, normal.y, 0.0f).normalized;
-                    normalsRaw[3] = new Vector3(0.0f, normal.y, 0.0f).normalized;
+                    normalsRaw[1] = new Vector3(0.0f,      normal.y, -normal.z).normalized;
+                    normalsRaw[2] = new Vector3(normal.x,  normal.y, 0.0f).normalized;
+                    normalsRaw[3] = new Vector3(0.0f,      normal.y, 0.0f).normalized;
 
-                    uvsRaw[0] = new Vector2(0.0f, halfY);
+                    uvsRaw[0] = new Vector2(0.0f,                         halfY);
                     uvsRaw[1] = new Vector2(hullData.baseWidthCenter0To1, 1.0f);
-                    uvsRaw[2] = new Vector2(1.0f, halfY);
+                    uvsRaw[2] = new Vector2(1.0f,                         halfY);
                     uvsRaw[3] = new Vector2(hullData.baseWidthCenter0To1, hullData.baseHeightOffset0To1);
                 }
                 else
                 {
-                    positionsRaw[0] = new Vector3(0.0f, 0.0f, -shape.effectiveScale);
+                    positionsRaw[0] = new Vector3(0.0f,                  0.0f,    -shape.effectiveScale);
                     positionsRaw[1] = new Vector3(-shape.effectiveScale, yOffset, 0.0f);
-                    positionsRaw[2] = new Vector3(0.0f, 0.0f, shape.effectiveScale);
-                    positionsRaw[3] = new Vector3(shape.effectiveScale, yOffset, 0.0f);
+                    positionsRaw[2] = new Vector3(0.0f,                  0.0f,    shape.effectiveScale);
+                    positionsRaw[3] = new Vector3(shape.effectiveScale,  yOffset, 0.0f);
 
-                    normalsRaw[0] = new Vector3(0.0f, normal.y, -normal.z).normalized;
+                    normalsRaw[0] = new Vector3(0.0f,      normal.y, -normal.z).normalized;
                     normalsRaw[1] = new Vector3(-normal.x, normal.y, 0.0f).normalized;
-                    normalsRaw[2] = new Vector3(0.0f, normal.y, normal.z).normalized;
-                    normalsRaw[3] = new Vector3(normal.x, normal.y, 0.0f).normalized;
+                    normalsRaw[2] = new Vector3(0.0f,      normal.y, normal.z).normalized;
+                    normalsRaw[3] = new Vector3(normal.x,  normal.y, 0.0f).normalized;
 
                     uvsRaw[0] = new Vector2(hullData.baseWidthCenter0To1, 1.0f);
-                    uvsRaw[1] = new Vector2(0.0f, halfY);
+                    uvsRaw[1] = new Vector2(0.0f,                         halfY);
                     uvsRaw[2] = new Vector2(hullData.baseWidthCenter0To1, hullData.baseHeightOffset0To1);
-                    uvsRaw[3] = new Vector2(1.0f, halfY);
+                    uvsRaw[3] = new Vector2(1.0f,                         halfY);
                 }
 
                 var planeRotation = Quaternion.Euler(new Vector3(90, 0, 0));
@@ -875,9 +389,15 @@ namespace Appalachia.Simulation.Trees.Generation.Geometry.Leaves
 
                 for (var i = 0; i < 4; ++i)
                 {
-                    _planeVerts[i].position = shape.effectiveMatrix.MultiplyPoint(planeRotation * positionsRaw[i]);
-                    _planeVerts[i].normal = shape.effectiveMatrix.MultiplyVector(planeRotation * normalsRaw[i]);
-                    _planeVerts[i].tangent = TangentGenerator.CreateTangent(shape, planeRotation, _planeVerts[i].normal);
+                    _planeVerts[i].position =
+                        shape.effectiveMatrix.MultiplyPoint(planeRotation * positionsRaw[i]);
+                    _planeVerts[i].normal =
+                        shape.effectiveMatrix.MultiplyVector(planeRotation * normalsRaw[i]);
+                    _planeVerts[i].tangent = TangentGenerator.CreateTangent(
+                        shape,
+                        planeRotation,
+                        _planeVerts[i].normal
+                    );
                     _planeVerts[i].raw_uv0 = uvsRaw[i];
                 }
 
@@ -916,9 +436,25 @@ namespace Appalachia.Simulation.Trees.Generation.Geometry.Leaves
                 var t1 = new TreeTriangle();
                 var t2 = new TreeTriangle();
 
-                t1.Set(shape, materialID, index0, index0 + 1, index0 + 2, TreeMaterialUsage.LeafPlane, hierarchy.geometry.flipLeafNormals);
+                t1.Set(
+                    shape,
+                    materialID,
+                    index0,
+                    index0 + 1,
+                    index0 + 2,
+                    TreeMaterialUsage.LeafPlane,
+                    hierarchy.geometry.flipLeafNormals
+                );
 
-                t2.Set(shape, materialID, index0, index0 + 2, index0 + 3, TreeMaterialUsage.LeafPlane, hierarchy.geometry.flipLeafNormals);
+                t2.Set(
+                    shape,
+                    materialID,
+                    index0,
+                    index0 + 2,
+                    index0 + 3,
+                    TreeMaterialUsage.LeafPlane,
+                    hierarchy.geometry.flipLeafNormals
+                );
 
                 output.AddTriangle(t1);
                 output.AddTriangle(t2);
@@ -940,7 +476,7 @@ namespace Appalachia.Simulation.Trees.Generation.Geometry.Leaves
                     for (var i = 0; i < 4; ++i)
                     {
                         _planeVerts2[i].position = _planeVerts[i].position;
-                        _planeVerts2[i].normal = Vector3.Reflect(_planeVerts[i].normal, faceNormal);
+                        _planeVerts2[i].normal = Vector3.Reflect(_planeVerts[i].normal,   faceNormal);
                         _planeVerts2[i].tangent = Vector3.Reflect(_planeVerts[i].tangent, faceNormal);
                         _planeVerts2[i].tangent.w = -1;
                         _planeVerts2[i].raw_uv0 = _planeVerts[i].raw_uv0;
@@ -957,12 +493,328 @@ namespace Appalachia.Simulation.Trees.Generation.Geometry.Leaves
                     var t1_2 = new TreeTriangle();
                     var t2_2 = new TreeTriangle();
 
-                    t1_2.Set(shape, materialID, index4, index4 + 2, index4 + 1, TreeMaterialUsage.LeafPlane, hierarchy.geometry.flipLeafNormals);
+                    t1_2.Set(
+                        shape,
+                        materialID,
+                        index4,
+                        index4 + 2,
+                        index4 + 1,
+                        TreeMaterialUsage.LeafPlane,
+                        hierarchy.geometry.flipLeafNormals
+                    );
 
-                    t2_2.Set(shape, materialID, index4, index4 + 3, index4 + 2, TreeMaterialUsage.LeafPlane, hierarchy.geometry.flipLeafNormals);
+                    t2_2.Set(
+                        shape,
+                        materialID,
+                        index4,
+                        index4 + 3,
+                        index4 + 2,
+                        TreeMaterialUsage.LeafPlane,
+                        hierarchy.geometry.flipLeafNormals
+                    );
 
                     output.AddTriangle(t1_2);
                     output.AddTriangle(t2_2);
+                }
+            }
+        }
+
+        private static void GenerateLeafPlaneGeometry(
+            LODGenerationOutput output,
+            InputMaterialCache inputMaterialCache,
+            LevelOfDetailSettings settings,
+            MeshSettings meshSettings,
+            LeafShapeData shape,
+            LeafHierarchyData hierarchy)
+        {
+            using (BUILD_TIME.GEO_GEN.GenerateLeafPlaneGeometry.Auto())
+            {
+                var m = inputMaterialCache.GetInputMaterialData(
+                    hierarchy.geometry.leafMaterial,
+                    TreeMaterialUsage.LeafPlane
+                );
+
+                var materialID = m == null ? -1 : m.materialID;
+
+                var planes = 0;
+                switch (hierarchy.geometry.geometryMode)
+                {
+                    case LeafGeometryMode.Plane:
+                    case LeafGeometryMode.BentPlane:
+                        planes = 1;
+                        break;
+                    case LeafGeometryMode.Cross:
+                    case LeafGeometryMode.BentCross:
+                        planes = 2;
+                        break;
+                    case LeafGeometryMode.TriCross:
+                    case LeafGeometryMode.BentTriCross:
+                        planes = 3;
+                        break;
+                }
+
+                TextureHullData hullData;
+
+                using (BUILD_TIME.GEO_GEN.GetTextureHullData.Auto())
+                {
+                    if (materialID >= 0)
+                    {
+                        hullData = hierarchy.geometry.leafMaterial.GetTextureHullData();
+                    }
+                    else
+                    {
+                        hullData = TextureHullData.Default();
+                    }
+                }
+
+                var rects = _leafUVRectCollection.Get(hierarchy.geometry.leafMaterial);
+
+                float xRatio = hierarchy.geometry.xRatio;
+
+                if (xRatio == 0.0f)
+                {
+                    hierarchy.geometry.xRatio.SetValue(1.0f);
+                    xRatio = 1.0f;
+                }
+
+                var xOffset = 0.0f;
+                var zOffset = 0.0f;
+
+                if (((rects == null) || (rects.Count < 2)) && hierarchy.geometry.correctOffset)
+                {
+                    var xCorrectionNecessary = .5f - hullData.baseWidthCenter0To1;
+                    var zCorrectionNecessary = -1 * hullData.baseHeightOffset0To1;
+
+                    xOffset = xCorrectionNecessary * (shape.effectiveScale * 2);
+                    zOffset = zCorrectionNecessary * (shape.effectiveScale * 2);
+                }
+
+                xOffset += shape.effectiveScale * hierarchy.geometry.xOffset;
+                zOffset += shape.effectiveScale * hierarchy.geometry.zOffset;
+
+                var offset = new Vector3(xOffset, 0f, zOffset);
+
+                var yOffset = 0f;
+
+                if ((hierarchy.geometry.geometryMode == LeafGeometryMode.BentPlane) ||
+                    (hierarchy.geometry.geometryMode == LeafGeometryMode.BentCross) ||
+                    (hierarchy.geometry.geometryMode == LeafGeometryMode.BentTriCross))
+                {
+                    yOffset = hierarchy.geometry.bendFactor * shape.effectiveScale;
+                }
+
+                var xPush = shape.effectiveScale * xRatio;
+                var zPush = shape.effectiveScale;
+
+                var positionsRaw = new[]
+                {
+                    offset + new Vector3(-xPush, 0f,      -zPush),
+                    offset + new Vector3(-xPush, 0f,      zPush),
+                    offset + new Vector3(xPush,  0f,      zPush),
+                    offset + new Vector3(xPush,  yOffset, -zPush)
+                };
+
+                var normal = new Vector3(
+                    meshSettings.generatedPlaneNormalFactor,
+                    1.0f - meshSettings.generatedPlaneNormalFactor,
+                    meshSettings.generatedPlaneNormalFactor
+                );
+
+                //dumb
+                var flip = hierarchy.geometry.flipLeafNormals ? 1 : -1;
+                normal.y *= flip;
+
+                var normalsRaw = new[]
+                {
+                    new Vector3(-normal.x, normal.y, -normal.z).normalized,
+                    new Vector3(-normal.x, normal.y, 0).normalized, // note z always 0
+                    new Vector3(normal.x,  normal.y, 0).normalized, // note z always 0
+                    new Vector3(normal.x,  normal.y, -normal.z).normalized
+                };
+
+                for (var planeIndex = 0; planeIndex < planes; planeIndex++)
+                {
+                    if ((planeIndex == 1) && (settings.leafGeometryQuality <= .5f))
+                    {
+                        continue;
+                    }
+
+                    if ((planeIndex == 2) & (settings.leafGeometryQuality <= .33f))
+                    {
+                        continue;
+                    }
+
+                    var planeRotation = Quaternion.Euler(new Vector3(90, 0, 0));
+                    switch (planeIndex)
+                    {
+                        case 1:
+                            planeRotation = Quaternion.Euler(new Vector3(90, 90, 0));
+                            break;
+                        case 2:
+                            planeRotation = Quaternion.Euler(new Vector3(0, 90, 0));
+                            break;
+                    }
+
+                    _planeVerts[0] = new TreeVertex() /*TreeVertex.Get()*/;
+                    _planeVerts[1] = new TreeVertex() /*TreeVertex.Get()*/;
+                    _planeVerts[2] = new TreeVertex() /*TreeVertex.Get()*/;
+                    _planeVerts[3] = new TreeVertex() /*TreeVertex.Get()*/;
+                    _planeVerts[4] = new TreeVertex() /*TreeVertex.Get()*/;
+                    _planeVerts[5] = new TreeVertex() /*TreeVertex.Get()*/;
+                    _planeVerts[6] = new TreeVertex() /*TreeVertex.Get()*/;
+                    _planeVerts[7] = new TreeVertex() /*TreeVertex.Get()*/;
+
+                    _planeVerts[0].Set(shape, 0f);
+                    _planeVerts[1].Set(shape, 0f);
+                    _planeVerts[2].Set(shape, 0f);
+                    _planeVerts[3].Set(shape, 0f);
+                    _planeVerts[4].Set(shape, 0f);
+                    _planeVerts[5].Set(shape, 0f);
+                    _planeVerts[6].Set(shape, 0f);
+                    _planeVerts[7].Set(shape, 0f);
+
+                    for (var i = 0; i < 4; ++i)
+                    {
+                        _planeVerts[i].position =
+                            shape.effectiveMatrix.MultiplyPoint(planeRotation * positionsRaw[i]);
+                        _planeVerts[i].normal =
+                            shape.effectiveMatrix.MultiplyVector(planeRotation * normalsRaw[i]);
+                        _planeVerts[i].tangent = TangentGenerator.CreateTangent(
+                            shape,
+                            planeRotation,
+                            _planeVerts[i].normal
+                        );
+                        _planeVerts[i].raw_uv0 = hullData.textureHull[i];
+                    }
+
+                    _planeVerts[0].heightOffset = 1f;
+                    _planeVerts[1].heightOffset = 1f;
+                    _planeVerts[2].heightOffset = 0f;
+                    _planeVerts[3].heightOffset = 0f;
+
+                    _planeVerts[0].rawWind.tertiaryRoll = 0.5f;
+                    _planeVerts[1].rawWind.tertiaryRoll = 0.4f;
+                    _planeVerts[2].rawWind.tertiaryRoll = 0.0f;
+                    _planeVerts[3].rawWind.tertiaryRoll = 0.0f;
+
+                    for (var i = 0; i < 4; i++)
+                    {
+                        _planeVerts[i + 4].LerpVerticesByFactor(_planeVerts, hullData.textureHull[i]);
+
+                        _planeVerts[i + 4].raw_uv0 = _planeVerts[i].raw_uv0;
+                        _planeVerts[i + 4].heightOffset = _planeVerts[i].heightOffset;
+                        _planeVerts[i + 4].rawWind.tertiaryRoll = _planeVerts[i].rawWind.tertiaryRoll;
+                        _planeVerts[i + 4].uvScaleUpdated = _planeVerts[i].uvScaleUpdated;
+                    }
+
+                    var index0 = output.vertices.Count;
+
+                    for (var i = 0; i < 4; i++)
+                    {
+                        output.AddVertex(_planeVerts[i + 4]);
+                    }
+
+                    var t1 = _triangles[0];
+                    var t2 = _triangles[1];
+
+                    t1.Reset();
+                    t2.Reset();
+
+                    t1.Set(
+                        shape,
+                        materialID,
+                        index0,
+                        index0 + 1,
+                        index0 + 2,
+                        TreeMaterialUsage.LeafPlane,
+                        hierarchy.geometry.flipLeafNormals
+                    );
+                    t2.Set(
+                        shape,
+                        materialID,
+                        index0,
+                        index0 + 2,
+                        index0 + 3,
+                        TreeMaterialUsage.LeafPlane,
+                        hierarchy.geometry.flipLeafNormals
+                    );
+
+                    output.AddTriangle(t1);
+                    output.AddTriangle(t2);
+
+                    var faceNormal = shape.effectiveMatrix.MultiplyVector(planeRotation * Vector3.up);
+
+                    if (settings.doubleSidedLeafGeometry)
+                    {
+                        _planeVerts2[0] = new TreeVertex() /*TreeVertex.Get()*/;
+                        _planeVerts2[1] = new TreeVertex() /*TreeVertex.Get()*/;
+                        _planeVerts2[2] = new TreeVertex() /*TreeVertex.Get()*/;
+                        _planeVerts2[3] = new TreeVertex() /*TreeVertex.Get()*/;
+                        _planeVerts2[4] = new TreeVertex() /*TreeVertex.Get()*/;
+                        _planeVerts2[5] = new TreeVertex() /*TreeVertex.Get()*/;
+                        _planeVerts2[6] = new TreeVertex() /*TreeVertex.Get()*/;
+                        _planeVerts2[7] = new TreeVertex() /*TreeVertex.Get()*/;
+
+                        _planeVerts2[0].Set(shape, 0f);
+                        _planeVerts2[1].Set(shape, 0f);
+                        _planeVerts2[2].Set(shape, 0f);
+                        _planeVerts2[3].Set(shape, 0f);
+                        _planeVerts2[4].Set(shape, 0f);
+                        _planeVerts2[5].Set(shape, 0f);
+                        _planeVerts2[6].Set(shape, 0f);
+                        _planeVerts2[7].Set(shape, 0f);
+
+                        for (var i = 0; i < 4; ++i)
+                        {
+                            _planeVerts2[i].position = _planeVerts[i].position;
+                            _planeVerts2[i].normal = Vector3.Reflect(_planeVerts[i].normal,   faceNormal);
+                            _planeVerts2[i].tangent = Vector3.Reflect(_planeVerts[i].tangent, faceNormal);
+                            _planeVerts2[i].tangent.w = -1;
+                            _planeVerts2[i].raw_uv0 = _planeVerts[i].raw_uv0;
+                            _planeVerts2[i].rawWind.tertiaryRoll = _planeVerts[i].rawWind.tertiaryRoll;
+                            _planeVerts2[i].heightOffset = _planeVerts[i].heightOffset;
+                        }
+
+                        for (var i = 0; i < 4; ++i)
+                        {
+                            _planeVerts2[i + 4].LerpVerticesByFactor(_planeVerts2, hullData.textureHull[i]);
+                            _planeVerts2[i + 4].raw_uv0 = _planeVerts2[i].raw_uv0;
+                            _planeVerts2[i + 4].uvScaleUpdated = _planeVerts2[i].uvScaleUpdated;
+                            _planeVerts2[i + 4].rawWind.tertiaryRoll = _planeVerts[i].rawWind.tertiaryRoll;
+                            _planeVerts2[i + 4].heightOffset = _planeVerts[i].heightOffset;
+                        }
+
+                        var index4 = output.vertices.Count;
+                        for (var i = 0; i < 4; ++i)
+                        {
+                            output.AddVertex(_planeVerts2[i + 4]);
+                        }
+
+                        t1.Reset();
+                        t2.Reset();
+
+                        t1.Set(
+                            shape,
+                            materialID,
+                            index4,
+                            index4 + 2,
+                            index4 + 1,
+                            TreeMaterialUsage.LeafPlane,
+                            hierarchy.geometry.flipLeafNormals
+                        );
+                        t2.Set(
+                            shape,
+                            materialID,
+                            index4,
+                            index4 + 3,
+                            index4 + 2,
+                            TreeMaterialUsage.LeafPlane,
+                            hierarchy.geometry.flipLeafNormals
+                        );
+
+                        output.AddTriangle(t1);
+                        output.AddTriangle(t2);
+                    }
                 }
             }
         }
@@ -1024,37 +876,49 @@ namespace Appalachia.Simulation.Trees.Generation.Geometry.Leaves
                     positionsRaw[3] = new Vector3(0.0f, 0.0f * yOffset, shape.effectiveScale);
                     positionsRaw[4] = new Vector3(shape.effectiveScale, 0.8f * yOffset, 0.0f);
 
-                    normalsRaw[0] = new Vector3(0.0f, normal.y, 0.0f).normalized;
-                    normalsRaw[1] = new Vector3(0.0f, normal.y, -normal.z).normalized;
+                    normalsRaw[0] = new Vector3(0.0f,      normal.y, 0.0f).normalized;
+                    normalsRaw[1] = new Vector3(0.0f,      normal.y, -normal.z).normalized;
                     normalsRaw[2] = new Vector3(-normal.x, normal.y, 0.0f).normalized;
-                    normalsRaw[3] = new Vector3(0.0f, normal.y, normal.z).normalized;
-                    normalsRaw[4] = new Vector3(normal.x, normal.y, 0.0f).normalized;
+                    normalsRaw[3] = new Vector3(0.0f,      normal.y, normal.z).normalized;
+                    normalsRaw[4] = new Vector3(normal.x,  normal.y, 0.0f).normalized;
 
                     uvsRaw[0] = new Vector2(hullData.baseWidthCenter0To1, halfY);
                     uvsRaw[1] = new Vector2(hullData.baseWidthCenter0To1, 1.0f);
-                    uvsRaw[2] = new Vector2(0.0f, halfY);
+                    uvsRaw[2] = new Vector2(0.0f,                         halfY);
                     uvsRaw[3] = new Vector2(hullData.baseWidthCenter0To1, hullData.baseHeightOffset0To1);
-                    uvsRaw[4] = new Vector2(1.0f, halfY);
+                    uvsRaw[4] = new Vector2(1.0f,                         halfY);
                 }
                 else
                 {
                     positionsRaw[0] = new Vector3(0.0f, 0.4f * yOffset, 0.0f);
-                    positionsRaw[1] = new Vector3(-shape.effectiveScale, 2.0f * yOffset, -shape.effectiveScale);
-                    positionsRaw[2] = new Vector3(-shape.effectiveScale, 0.0f * yOffset, shape.effectiveScale);
+                    positionsRaw[1] = new Vector3(
+                        -shape.effectiveScale,
+                        2.0f * yOffset,
+                        -shape.effectiveScale
+                    );
+                    positionsRaw[2] = new Vector3(
+                        -shape.effectiveScale,
+                        0.0f * yOffset,
+                        shape.effectiveScale
+                    );
                     positionsRaw[3] = new Vector3(shape.effectiveScale, 0.0f * yOffset, shape.effectiveScale);
-                    positionsRaw[4] = new Vector3(shape.effectiveScale, 1.6f * yOffset, -shape.effectiveScale);
+                    positionsRaw[4] = new Vector3(
+                        shape.effectiveScale,
+                        1.6f * yOffset,
+                        -shape.effectiveScale
+                    );
 
-                    normalsRaw[0] = new Vector3(0.0f, normal.y, 0.0f).normalized;
+                    normalsRaw[0] = new Vector3(0.0f,      normal.y, 0.0f).normalized;
                     normalsRaw[1] = new Vector3(-normal.x, normal.y, -normal.z).normalized;
                     normalsRaw[2] = new Vector3(-normal.x, normal.y, normal.z).normalized;
-                    normalsRaw[3] = new Vector3(normal.x, normal.y, normal.z).normalized;
-                    normalsRaw[4] = new Vector3(normal.x, normal.y, -normal.z).normalized;
+                    normalsRaw[3] = new Vector3(normal.x,  normal.y, normal.z).normalized;
+                    normalsRaw[4] = new Vector3(normal.x,  normal.y, -normal.z).normalized;
 
                     uvsRaw[0] = new Vector2(hullData.baseWidthCenter0To1, halfY);
-                    uvsRaw[1] = new Vector2(0.0f, 1.0f);
-                    uvsRaw[2] = new Vector2(0.0f, hullData.baseHeightOffset0To1);
-                    uvsRaw[3] = new Vector2(1.0f, hullData.baseHeightOffset0To1);
-                    uvsRaw[4] = new Vector2(1.0f, 1.0f);
+                    uvsRaw[1] = new Vector2(0.0f,                         1.0f);
+                    uvsRaw[2] = new Vector2(0.0f,                         hullData.baseHeightOffset0To1);
+                    uvsRaw[3] = new Vector2(1.0f,                         hullData.baseHeightOffset0To1);
+                    uvsRaw[4] = new Vector2(1.0f,                         1.0f);
                 }
 
                 var planeRotation = Quaternion.Euler(new Vector3(90, 0, 0));
@@ -1073,9 +937,15 @@ namespace Appalachia.Simulation.Trees.Generation.Geometry.Leaves
 
                 for (var i = 0; i < 5; ++i)
                 {
-                    _planeVerts[i].position = shape.effectiveMatrix.MultiplyPoint(planeRotation * positionsRaw[i]);
-                    _planeVerts[i].normal = shape.effectiveMatrix.MultiplyVector(planeRotation * normalsRaw[i]);
-                    _planeVerts[i].tangent = TangentGenerator.CreateTangent(shape, planeRotation, _planeVerts[i].normal);
+                    _planeVerts[i].position =
+                        shape.effectiveMatrix.MultiplyPoint(planeRotation * positionsRaw[i]);
+                    _planeVerts[i].normal =
+                        shape.effectiveMatrix.MultiplyVector(planeRotation * normalsRaw[i]);
+                    _planeVerts[i].tangent = TangentGenerator.CreateTangent(
+                        shape,
+                        planeRotation,
+                        _planeVerts[i].normal
+                    );
                     _planeVerts[i].raw_uv0 = uvsRaw[i];
                 }
 
@@ -1120,10 +990,42 @@ namespace Appalachia.Simulation.Trees.Generation.Geometry.Leaves
                 var t3 = new TreeTriangle();
                 var t4 = new TreeTriangle();
 
-                t1.Set(shape, materialID, index0, index0 + 1, index0 + 2, TreeMaterialUsage.LeafPlane, hierarchy.geometry.flipLeafNormals);
-                t2.Set(shape, materialID, index0, index0 + 2, index0 + 3, TreeMaterialUsage.LeafPlane, hierarchy.geometry.flipLeafNormals);
-                t3.Set(shape, materialID, index0, index0 + 3, index0 + 4, TreeMaterialUsage.LeafPlane, hierarchy.geometry.flipLeafNormals);
-                t4.Set(shape, materialID, index0, index0 + 4, index0 + 1, TreeMaterialUsage.LeafPlane, hierarchy.geometry.flipLeafNormals);
+                t1.Set(
+                    shape,
+                    materialID,
+                    index0,
+                    index0 + 1,
+                    index0 + 2,
+                    TreeMaterialUsage.LeafPlane,
+                    hierarchy.geometry.flipLeafNormals
+                );
+                t2.Set(
+                    shape,
+                    materialID,
+                    index0,
+                    index0 + 2,
+                    index0 + 3,
+                    TreeMaterialUsage.LeafPlane,
+                    hierarchy.geometry.flipLeafNormals
+                );
+                t3.Set(
+                    shape,
+                    materialID,
+                    index0,
+                    index0 + 3,
+                    index0 + 4,
+                    TreeMaterialUsage.LeafPlane,
+                    hierarchy.geometry.flipLeafNormals
+                );
+                t4.Set(
+                    shape,
+                    materialID,
+                    index0,
+                    index0 + 4,
+                    index0 + 1,
+                    TreeMaterialUsage.LeafPlane,
+                    hierarchy.geometry.flipLeafNormals
+                );
 
                 output.AddTriangle(t1);
                 output.AddTriangle(t2);
@@ -1149,7 +1051,7 @@ namespace Appalachia.Simulation.Trees.Generation.Geometry.Leaves
                     for (var i = 0; i < 5; ++i)
                     {
                         _planeVerts2[i].position = _planeVerts[i].position;
-                        _planeVerts2[i].normal = Vector3.Reflect(_planeVerts[i].normal, faceNormal);
+                        _planeVerts2[i].normal = Vector3.Reflect(_planeVerts[i].normal,   faceNormal);
                         _planeVerts2[i].tangent = Vector3.Reflect(_planeVerts[i].tangent, faceNormal);
                         _planeVerts2[i].tangent.w = -1;
                         _planeVerts2[i].raw_uv0 = _planeVerts[i].raw_uv0;
@@ -1168,16 +1070,353 @@ namespace Appalachia.Simulation.Trees.Generation.Geometry.Leaves
                     var t3_2 = new TreeTriangle();
                     var t4_2 = new TreeTriangle();
 
-                    t1_2.Set(shape, materialID, index4, index4 + 2, index4 + 1, TreeMaterialUsage.LeafPlane, hierarchy.geometry.flipLeafNormals);
-                    t2_2.Set(shape, materialID, index4, index4 + 3, index4 + 2, TreeMaterialUsage.LeafPlane, hierarchy.geometry.flipLeafNormals);
-                    t3_2.Set(shape, materialID, index4, index4 + 4, index4 + 3, TreeMaterialUsage.LeafPlane, hierarchy.geometry.flipLeafNormals);
-                    t4_2.Set(shape, materialID, index4, index4 + 1, index4 + 4, TreeMaterialUsage.LeafPlane, hierarchy.geometry.flipLeafNormals);
+                    t1_2.Set(
+                        shape,
+                        materialID,
+                        index4,
+                        index4 + 2,
+                        index4 + 1,
+                        TreeMaterialUsage.LeafPlane,
+                        hierarchy.geometry.flipLeafNormals
+                    );
+                    t2_2.Set(
+                        shape,
+                        materialID,
+                        index4,
+                        index4 + 3,
+                        index4 + 2,
+                        TreeMaterialUsage.LeafPlane,
+                        hierarchy.geometry.flipLeafNormals
+                    );
+                    t3_2.Set(
+                        shape,
+                        materialID,
+                        index4,
+                        index4 + 4,
+                        index4 + 3,
+                        TreeMaterialUsage.LeafPlane,
+                        hierarchy.geometry.flipLeafNormals
+                    );
+                    t4_2.Set(
+                        shape,
+                        materialID,
+                        index4,
+                        index4 + 1,
+                        index4 + 4,
+                        TreeMaterialUsage.LeafPlane,
+                        hierarchy.geometry.flipLeafNormals
+                    );
 
                     output.AddTriangle(t1_2);
                     output.AddTriangle(t2_2);
                     output.AddTriangle(t3_2);
                     output.AddTriangle(t4_2);
                 }
+            }
+        }
+
+        private static void GenerateLeafSpokeGeometry(
+            LODGenerationOutput output,
+            InputMaterialCache inputMaterialCache,
+            LevelOfDetailSettings settings,
+            MeshSettings meshSettings,
+            LeafShapeData shape,
+            LeafHierarchyData hierarchy)
+        {
+            using (BUILD_TIME.GEO_GEN.GenerateLeafPlaneGeometry.Auto())
+            {
+                var m = inputMaterialCache.GetInputMaterialData(
+                    hierarchy.geometry.leafMaterial,
+                    TreeMaterialUsage.LeafPlane
+                );
+                var materialID = m == null ? -1 : m.materialID;
+
+                if ((hierarchy.geometry.spokeCount == null) || (hierarchy.geometry.spokeCount == 0))
+                {
+                    hierarchy.geometry.spokeCount = TreeProperty.New(3);
+                    hierarchy.geometry.spokeDropPerMeter = TreeProperty.New(.05f);
+                }
+
+                var height = shape.effectiveMatrix.MultiplyPoint(Vector3.zero).y;
+                var spokeDrop = hierarchy.geometry.spokeDropPerMeter * height;
+                var planeCount = Mathf.Max(1, Mathf.RoundToInt(hierarchy.geometry.spokeCount * spokeDrop));
+
+                TextureHullData hullData;
+
+                using (BUILD_TIME.GEO_GEN.GetTextureHullData.Auto())
+                {
+                    if (materialID >= 0)
+                    {
+                        hullData = hierarchy.geometry.leafMaterial.GetTextureHullData();
+                    }
+                    else
+                    {
+                        hullData = TextureHullData.Default();
+                    }
+                }
+
+                var rects = _leafUVRectCollection.Get(hierarchy.geometry.leafMaterial);
+
+                float xRatio = hierarchy.geometry.xRatio;
+
+                if (xRatio == 0.0f)
+                {
+                    hierarchy.geometry.xRatio.SetValue(1.0f);
+                    xRatio = 1.0f;
+                }
+
+                var xOffset = 0.0f;
+                var zOffset = 0.0f;
+
+                if (((rects == null) || (rects.Count < 2)) && hierarchy.geometry.correctOffset)
+                {
+                    var xCorrectionNecessary = .5f - hullData.baseWidthCenter0To1;
+                    var zCorrectionNecessary = -1 * hullData.baseHeightOffset0To1;
+
+                    xOffset = xCorrectionNecessary * (shape.effectiveScale * 2);
+                    zOffset = zCorrectionNecessary * (shape.effectiveScale * 2);
+                }
+
+                xOffset += shape.effectiveScale * hierarchy.geometry.xOffset;
+                zOffset += shape.effectiveScale * hierarchy.geometry.zOffset;
+
+                var offset = new Vector3(xOffset, 0f, zOffset);
+
+                var yOffset = 0f;
+
+                if (hierarchy.geometry.geometryMode == LeafGeometryMode.BentSpoke)
+                {
+                    yOffset = hierarchy.geometry.bendFactor * shape.effectiveScale;
+                }
+
+                var xPush = shape.effectiveScale * xRatio;
+                var zPush = shape.effectiveScale;
+
+                var positionsRaw = new[]
+                {
+                    offset + new Vector3(-xPush, 0f,      -zPush),
+                    offset + new Vector3(-xPush, 0f,      zPush),
+                    offset + new Vector3(xPush,  0f,      zPush),
+                    offset + new Vector3(xPush,  yOffset, -zPush)
+                };
+
+                var normal = new Vector3(
+                    meshSettings.generatedPlaneNormalFactor,
+                    1.0f - meshSettings.generatedPlaneNormalFactor,
+                    meshSettings.generatedPlaneNormalFactor
+                );
+
+                //dumb
+                var flip = hierarchy.geometry.flipLeafNormals ? 1 : -1;
+                normal.y *= flip;
+
+                var normalsRaw = new[]
+                {
+                    new Vector3(-normal.x, normal.y, -normal.z).normalized,
+                    new Vector3(-normal.x, normal.y, 0).normalized, // note z always 0
+                    new Vector3(normal.x,  normal.y, 0).normalized, // note z always 0
+                    new Vector3(normal.x,  normal.y, -normal.z).normalized
+                };
+
+                var angles = new float[planeCount];
+
+                for (var i = 0; i < planeCount; i++)
+                {
+                    var planeTime = i / planeCount;
+
+                    var rotation = 180.0f * planeTime;
+                    angles[i] = rotation;
+                }
+
+                for (var planeIndex = 0; planeIndex < planeCount; planeIndex++)
+                {
+                    var planeTime = planeIndex / (float)planeCount;
+
+                    if (planeTime > settings.leafGeometryQuality)
+                    {
+                        continue;
+                    }
+
+                    var planeRotation = Quaternion.Euler(new Vector3(90, angles[planeIndex], 0));
+
+                    _planeVerts[0] = new TreeVertex();
+                    _planeVerts[1] = new TreeVertex();
+                    _planeVerts[2] = new TreeVertex();
+                    _planeVerts[3] = new TreeVertex();
+                    _planeVerts[4] = new TreeVertex();
+                    _planeVerts[5] = new TreeVertex();
+                    _planeVerts[6] = new TreeVertex();
+                    _planeVerts[7] = new TreeVertex();
+
+                    _planeVerts[0].Set(shape, 0f);
+                    _planeVerts[1].Set(shape, 0f);
+                    _planeVerts[2].Set(shape, 0f);
+                    _planeVerts[3].Set(shape, 0f);
+                    _planeVerts[4].Set(shape, 0f);
+                    _planeVerts[5].Set(shape, 0f);
+                    _planeVerts[6].Set(shape, 0f);
+                    _planeVerts[7].Set(shape, 0f);
+
+                    for (var i = 0; i < 4; ++i)
+                    {
+                        _planeVerts[i].position =
+                            shape.effectiveMatrix.MultiplyPoint(planeRotation * positionsRaw[i]);
+                        _planeVerts[i].normal =
+                            shape.effectiveMatrix.MultiplyVector(planeRotation * normalsRaw[i]);
+                        _planeVerts[i].tangent = TangentGenerator.CreateTangent(
+                            shape,
+                            planeRotation,
+                            _planeVerts[i].normal
+                        );
+                        _planeVerts[i].raw_uv0 = hullData.textureHull[i];
+                    }
+
+                    _planeVerts[0].heightOffset = 1f;
+                    _planeVerts[1].heightOffset = 1f;
+                    _planeVerts[2].heightOffset = 0f;
+                    _planeVerts[3].heightOffset = 0f;
+
+                    _planeVerts[0].rawWind.tertiaryRoll = 0.5f;
+                    _planeVerts[1].rawWind.tertiaryRoll = 0.4f;
+                    _planeVerts[2].rawWind.tertiaryRoll = 0.0f;
+                    _planeVerts[3].rawWind.tertiaryRoll = 0.0f;
+
+                    for (var i = 0; i < 4; i++)
+                    {
+                        _planeVerts[i + 4].LerpVerticesByFactor(_planeVerts, hullData.textureHull[i]);
+
+                        _planeVerts[i + 4].raw_uv0 = _planeVerts[i].raw_uv0;
+                        _planeVerts[i + 4].heightOffset = _planeVerts[i].heightOffset;
+                        _planeVerts[i + 4].rawWind.tertiaryRoll = _planeVerts[i].rawWind.tertiaryRoll;
+                        _planeVerts[i + 4].uvScaleUpdated = _planeVerts[i].uvScaleUpdated;
+                    }
+
+                    var index0 = output.vertices.Count;
+
+                    for (var i = 0; i < 4; i++)
+                    {
+                        output.AddVertex(_planeVerts[i + 4]);
+                    }
+
+                    var t1 = new TreeTriangle();
+                    var t2 = new TreeTriangle();
+
+                    t1.Set(
+                        shape,
+                        materialID,
+                        index0,
+                        index0 + 1,
+                        index0 + 2,
+                        TreeMaterialUsage.LeafPlane,
+                        hierarchy.geometry.flipLeafNormals
+                    );
+                    t2.Set(
+                        shape,
+                        materialID,
+                        index0,
+                        index0 + 2,
+                        index0 + 3,
+                        TreeMaterialUsage.LeafPlane,
+                        hierarchy.geometry.flipLeafNormals
+                    );
+
+                    output.AddTriangle(t1);
+                    output.AddTriangle(t2);
+
+                    var faceNormal = shape.effectiveMatrix.MultiplyVector(planeRotation * Vector3.up);
+
+                    if (settings.doubleSidedLeafGeometry)
+                    {
+                        _planeVerts2[0] = new TreeVertex() /*TreeVertex.Get()*/;
+                        _planeVerts2[1] = new TreeVertex() /*TreeVertex.Get()*/;
+                        _planeVerts2[2] = new TreeVertex() /*TreeVertex.Get()*/;
+                        _planeVerts2[3] = new TreeVertex() /*TreeVertex.Get()*/;
+                        _planeVerts2[4] = new TreeVertex() /*TreeVertex.Get()*/;
+                        _planeVerts2[5] = new TreeVertex() /*TreeVertex.Get()*/;
+                        _planeVerts2[6] = new TreeVertex() /*TreeVertex.Get()*/;
+                        _planeVerts2[7] = new TreeVertex() /*TreeVertex.Get()*/;
+
+                        _planeVerts2[0].Set(shape, 0f);
+                        _planeVerts2[1].Set(shape, 0f);
+                        _planeVerts2[2].Set(shape, 0f);
+                        _planeVerts2[3].Set(shape, 0f);
+                        _planeVerts2[4].Set(shape, 0f);
+                        _planeVerts2[5].Set(shape, 0f);
+                        _planeVerts2[6].Set(shape, 0f);
+                        _planeVerts2[7].Set(shape, 0f);
+
+                        for (var i = 0; i < 4; ++i)
+                        {
+                            _planeVerts2[i].position = _planeVerts[i].position;
+                            _planeVerts2[i].normal = Vector3.Reflect(_planeVerts[i].normal,   faceNormal);
+                            _planeVerts2[i].tangent = Vector3.Reflect(_planeVerts[i].tangent, faceNormal);
+                            _planeVerts2[i].tangent.w = -1;
+                            _planeVerts2[i].raw_uv0 = _planeVerts[i].raw_uv0;
+                            _planeVerts2[i].rawWind.tertiaryRoll = _planeVerts[i].rawWind.tertiaryRoll;
+                            _planeVerts2[i].heightOffset = _planeVerts[i].heightOffset;
+                        }
+
+                        for (var i = 0; i < 4; ++i)
+                        {
+                            _planeVerts2[i + 4].LerpVerticesByFactor(_planeVerts2, hullData.textureHull[i]);
+                            _planeVerts2[i + 4].raw_uv0 = _planeVerts2[i].raw_uv0;
+                            _planeVerts2[i + 4].uvScaleUpdated = _planeVerts2[i].uvScaleUpdated;
+                            _planeVerts2[i + 4].rawWind.tertiaryRoll = _planeVerts[i].rawWind.tertiaryRoll;
+                            _planeVerts2[i + 4].heightOffset = _planeVerts[i].heightOffset;
+                        }
+
+                        var index4 = output.vertices.Count;
+                        for (var i = 0; i < 4; ++i)
+                        {
+                            output.AddVertex(_planeVerts2[i + 4]);
+                        }
+
+                        var t1_2 = new TreeTriangle();
+                        var t2_2 = new TreeTriangle();
+
+                        t1_2.Set(
+                            shape,
+                            materialID,
+                            index4,
+                            index4 + 2,
+                            index4 + 1,
+                            TreeMaterialUsage.LeafPlane,
+                            hierarchy.geometry.flipLeafNormals
+                        );
+
+                        t2_2.Set(
+                            shape,
+                            materialID,
+                            index4,
+                            index4 + 3,
+                            index4 + 2,
+                            TreeMaterialUsage.LeafPlane,
+                            hierarchy.geometry.flipLeafNormals
+                        );
+
+                        output.AddTriangle(t1_2);
+                        output.AddTriangle(t2_2);
+                    }
+                }
+            }
+        }
+
+        private static void MergeMeshGeometryIntoTree(
+            LODGenerationOutput output,
+            InputMaterialCache inputMaterialCache,
+            ShapeData shape,
+            TreePrefab prefab)
+        {
+            using (BUILD_TIME.GEO_GEN.MergeMeshGeometryIntoTree.Auto())
+            {
+                if ((prefab.LODCount <= 0) || !prefab.canMergeIntoTree)
+                {
+                    return;
+                }
+
+                var lod = prefab.GetLOD(output.lodLevel);
+
+                lod.MergeIntoTree(output, inputMaterialCache, shape, shape.hierarchyID, shape.shapeID, 0f);
             }
         }
     }

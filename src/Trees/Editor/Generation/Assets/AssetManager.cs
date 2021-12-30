@@ -26,20 +26,19 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
     [CallStaticConstructorInEditor]
     public static class AssetManager
     {
-        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
         static AssetManager()
         {
             PrefabReplacementCollection.InstanceAvailable += i => _prefabReplacementCollection = i;
             TreeGlobalSettings.InstanceAvailable += i => _treeGlobalSettings = i;
         }
 
-        private static PrefabReplacementCollection _prefabReplacementCollection;
-        private static TreeGlobalSettings _treeGlobalSettings;
-
         #region Static Fields and Autoproperties
 
         [NonSerialized] private static AppaContext _context;
+
+        private static PrefabReplacementCollection _prefabReplacementCollection;
         private static Scene ___previewScene;
+        private static TreeGlobalSettings _treeGlobalSettings;
 
         #endregion
 

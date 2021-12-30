@@ -6,6 +6,7 @@ using System;
 using Appalachia.CI.Integration.Assets;
 using Appalachia.Core.Attributes;
 using Appalachia.Core.Math.Geometry;
+using Appalachia.Editing.Core.Behaviours;
 using Appalachia.Editing.Debugging.Handle;
 using Appalachia.Simulation.Core.Metadata.Tree.Types;
 using Appalachia.Simulation.Trees.Core.Interfaces;
@@ -13,7 +14,6 @@ using Appalachia.Simulation.Trees.Core.Shape;
 using Appalachia.Utility.Strings;
 using Sirenix.OdinInspector;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 #endregion
 
@@ -21,7 +21,7 @@ namespace Appalachia.Simulation.Trees.Core.Model
 {
     [CallStaticConstructorInEditor]
     [ExecuteAlways]
-    public class TreeModel : EditorOnlyFrustumCulledBehaviour, ITreeModel
+    public class TreeModel : EditorOnlyFrustumCulledBehaviour<TreeModel>, ITreeModel
     {
         static TreeModel()
         {
@@ -251,7 +251,7 @@ namespace Appalachia.Simulation.Trees.Core.Model
                             (_visibleAge != selection.ageSelection) ||
                             (_visibleStage != selection.stageSelection))
                         {
-                            Object.DestroyImmediate(_visible);
+                            DestroyImmediate(_visible);
 
                             _visible = container.GetIndividual(
                                 selection.individualSelection,
@@ -289,7 +289,7 @@ namespace Appalachia.Simulation.Trees.Core.Model
             {
                 for (var i = 0; i < transform.childCount; i++)
                 {
-                    Object.DestroyImmediate(transform.GetChild(i).gameObject);
+                    DestroyImmediate(transform.GetChild(i).gameObject);
                 }
 
                 repaint = true;
@@ -313,7 +313,7 @@ namespace Appalachia.Simulation.Trees.Core.Model
                 if (_container == null)
                 {
                     Context.Log.Error("Need to set containers!");
-                    Object.DestroyImmediate(gameObject);
+                    DestroyImmediate(gameObject);
                 }
             }
             else if (selection.container != container)
@@ -513,13 +513,13 @@ namespace Appalachia.Simulation.Trees.Core.Model
 
         public static TreeModel Find(ISpeciesDataProvider container)
         {
-            var gos = Object.FindObjectsOfType<TreeModel>();
+            var gos = FindObjectsOfType<TreeModel>();
 
             for (var i = gos.Length - 1; i >= 0; i--)
             {
                 if (i > 0)
                 {
-                    Object.DestroyImmediate(gos[i]);
+                    DestroyImmediate(gos[i]);
                 }
 
                 if (i == 0)

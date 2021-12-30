@@ -7,11 +7,11 @@ using UnityEngine;
 namespace Appalachia.Simulation.ReactionSystem.TouchBend.Data
 {
     [Serializable]
-    public class TouchBendComponentInfo : AppalachiaObject<>,
+    public class TouchBendComponentInfo : AppalachiaObject<TouchBendComponentInfo>,
                                           IEquatable<TouchBendComponentInfo>
     {
-        
-        
+        #region Fields and Autoproperties
+
         public Texture2D texture;
 
         [ReadOnly] public float size;
@@ -27,7 +27,61 @@ namespace Appalachia.Simulation.ReactionSystem.TouchBend.Data
         [PropertyRange(0f, 1.0f)]
         public float maxOld = 1.0f;
 
-        [DebuggerStepThrough] public bool Equals(TouchBendComponentInfo other)
+        #endregion
+
+        [DebuggerStepThrough]
+        public static bool operator ==(TouchBendComponentInfo left, TouchBendComponentInfo right)
+        {
+            return Equals(left, right);
+        }
+
+        [DebuggerStepThrough]
+        public static bool operator !=(TouchBendComponentInfo left, TouchBendComponentInfo right)
+        {
+            return !Equals(left, right);
+        }
+
+        [DebuggerStepThrough]
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            if (obj.GetType() != GetType())
+            {
+                return false;
+            }
+
+            return Equals((TouchBendComponentInfo)obj);
+        }
+
+        [DebuggerStepThrough]
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = base.GetHashCode();
+                hashCode = (hashCode * 397) ^ (texture != null ? texture.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ size.GetHashCode();
+                hashCode = (hashCode * 397) ^ offset.GetHashCode();
+                hashCode = (hashCode * 397) ^ strength.GetHashCode();
+                hashCode = (hashCode * 397) ^ minOld.GetHashCode();
+                hashCode = (hashCode * 397) ^ maxOld.GetHashCode();
+                return hashCode;
+            }
+        }
+
+        #region IEquatable<TouchBendComponentInfo> Members
+
+        [DebuggerStepThrough]
+        public bool Equals(TouchBendComponentInfo other)
         {
             if (ReferenceEquals(null, other))
             {
@@ -48,49 +102,6 @@ namespace Appalachia.Simulation.ReactionSystem.TouchBend.Data
                    maxOld.Equals(other.maxOld);
         }
 
-        [DebuggerStepThrough] public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj))
-            {
-                return false;
-            }
-
-            if (ReferenceEquals(this, obj))
-            {
-                return true;
-            }
-
-            if (obj.GetType() != GetType())
-            {
-                return false;
-            }
-
-            return Equals((TouchBendComponentInfo) obj);
-        }
-
-        [DebuggerStepThrough] public override int GetHashCode()
-        {
-            unchecked
-            {
-                var hashCode = base.GetHashCode();
-                hashCode = (hashCode * 397) ^ (texture != null ? texture.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ size.GetHashCode();
-                hashCode = (hashCode * 397) ^ offset.GetHashCode();
-                hashCode = (hashCode * 397) ^ strength.GetHashCode();
-                hashCode = (hashCode * 397) ^ minOld.GetHashCode();
-                hashCode = (hashCode * 397) ^ maxOld.GetHashCode();
-                return hashCode;
-            }
-        }
-
-        [DebuggerStepThrough] public static bool operator ==(TouchBendComponentInfo left, TouchBendComponentInfo right)
-        {
-            return Equals(left, right);
-        }
-
-        [DebuggerStepThrough] public static bool operator !=(TouchBendComponentInfo left, TouchBendComponentInfo right)
-        {
-            return !Equals(left, right);
-        }
+        #endregion
     }
 }

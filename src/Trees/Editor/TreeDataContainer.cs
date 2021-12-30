@@ -41,7 +41,6 @@ namespace Appalachia.Simulation.Trees
     [CallStaticConstructorInEditor]
     public sealed class TreeDataContainer : TSEDataContainer, ISpeciesDataProvider
     {
-        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
         static TreeDataContainer()
         {
             LabelSets.InstanceAvailable += i => _labelSets = i;
@@ -617,7 +616,7 @@ namespace Appalachia.Simulation.Trees
                     subfolders = TreeAssetSubfolders.CreateNested(this, false);
 
                     subfolders.nameBasis = basis;
-                    subfolders.Initialize(this);
+                    subfolders.InitializeFromParent(this);
 
                     subfolders.CreateFolders();
 

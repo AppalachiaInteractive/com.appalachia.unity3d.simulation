@@ -34,7 +34,6 @@ namespace Appalachia.Simulation.Trees.Build.Execution
     [CallStaticConstructorInEditor]
     public static class LogBuildManager
     {
-// [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
         static LogBuildManager()
         {
             TreeSpeciesEditorSelection.InstanceAvailable += i => _treeSpeciesEditorSelection = i;
@@ -152,7 +151,7 @@ namespace Appalachia.Simulation.Trees.Build.Execution
 
                 if (log.subfolders == null)
                 {
-                    log.subfolders = TreeAssetSubfolders.CreateNested<TreeAssetSubfolders>(log);
+                    log.subfolders = TreeAssetSubfolders.CreateNested(log);
                 }
 
                 log.subfolders.CreateFolders();

@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using Appalachia.Core.Objects.Initialization;
 using Appalachia.Core.Objects.Root;
+using Appalachia.Utility.Async;
 using Unity.Profiling;
 using UnityEngine;
 
@@ -9,25 +11,18 @@ namespace Appalachia.Simulation.ReactionSystem
     [DisallowMultipleComponent]
     public sealed class ReactionSystem : AppalachiaBehaviour<ReactionSystem>
     {
-        
-        
-        private const string _PRF_PFX = nameof(ReactionSystem) + ".";
+        #region Fields and Autoproperties
 
-        private static readonly ProfilerMarker _PRF_Awake = new(_PRF_PFX + nameof(Awake));
-
-        private static readonly ProfilerMarker _PRF_Start = new(_PRF_PFX + nameof(Start));
-
-        private static readonly ProfilerMarker _PRF_OnEnable = new(_PRF_PFX + nameof(OnEnable));
-
-        private static readonly ProfilerMarker _PRF_Initialize = new(_PRF_PFX + nameof(Initialize));
         public List<ReactionSubsystemGroup> groups;
 
-        protected override void Initialize()
+        #endregion
+
+        protected override async AppaTask Initialize(Initializer initializer)
         {
             using (_PRF_Initialize.Auto())
             {
-                base.Initialize();
-                
+                await base.Initialize(initializer);
+
                 if (groups == null)
                 {
                     groups = new List<ReactionSubsystemGroup>();
@@ -47,5 +42,14 @@ namespace Appalachia.Simulation.ReactionSystem
                 }
             }
         }
+
+        #region Profiling
+
+        private const string _PRF_PFX = nameof(ReactionSystem) + ".";
+
+        private static readonly ProfilerMarker _PRF_Initialize =
+            new ProfilerMarker(_PRF_PFX + nameof(Initialize));
+
+        #endregion
     }
 }

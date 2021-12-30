@@ -80,7 +80,7 @@ namespace Appalachia.Simulation.Trees.Definition
         public static LogInstance Create(string folder, NameBasis nameBasis, int logID, LogAsset asset)
         {
             var assetName = nameBasis.FileNameLogSO(logID);
-            var instance = LogInstance.LoadOrCreateNew(folder, assetName);
+            var instance = LoadOrCreateNew<LogInstance>(folder, assetName);
 
             instance.asset = asset;
             instance.logID = logID;

@@ -1,23 +1,33 @@
 using System;
+using Appalachia.Core.Attributes;
 using Appalachia.Simulation.Core.Metadata.Tree.Types;
 using Appalachia.Simulation.Trees.UI.Selections.Dropdown;
 
 namespace Appalachia.Simulation.Trees.UI.Selections.State
 {
     [Serializable]
+    [CallStaticConstructorInEditor]
     public class TreeSelection : TSESelection<TreeDataContainer, TreeDataContainerSelection>
     {
-        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
         static TreeSelection()
         {
             TreeDataContainerSelection.InstanceAvailable += i => _treeDataContainerSelection = i;
         }
 
+        #region Static Fields and Autoproperties
+
         private static TreeDataContainerSelection _treeDataContainerSelection;
+
+        #endregion
+
+        #region Fields and Autoproperties
+
         public AgeType age;
         public StageType stage;
 
-        public override TreeDataContainerSelection selection 
+        #endregion
+
+        public override TreeDataContainerSelection selection
         {
             get
             {

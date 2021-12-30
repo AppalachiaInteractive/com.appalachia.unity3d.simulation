@@ -12,14 +12,11 @@ namespace Appalachia.Simulation.Trees.UI.Selections.Icons
     public abstract class TreeEditorSidebarMenuContainer<T>
         where T : class
     {
-        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
         static TreeEditorSidebarMenuContainer()
         {
             TreeSpeciesEditorSelection.InstanceAvailable += i => _treeSpeciesEditorSelection = i;
         }
 
-        protected static TreeSpeciesEditorSelection _treeSpeciesEditorSelection;
-        
         protected TreeEditorSidebarMenuContainer(
             OdinMenuStyle menuStyle,
             OdinMenuTreeDrawingConfig menuConfig,
@@ -32,39 +29,39 @@ namespace Appalachia.Simulation.Trees.UI.Selections.Icons
             this.menuTitle = menuTitle;
         }
 
+        #region Static Fields and Autoproperties
+
+        protected static TreeSpeciesEditorSelection _treeSpeciesEditorSelection;
+
+        #endregion
+
+        #region Fields and Autoproperties
+
+        protected readonly Color menuBackgroundColor;
+
         protected readonly OdinMenuStyle menuStyle;
         protected readonly OdinMenuTreeDrawingConfig menuConfig;
-        protected readonly Color menuBackgroundColor;
         protected string menuTitle;
-        
+
         protected T lastSelection;
         protected TreeEditorSidebarMenu menu;
 
-        public T Selected => menu?.Selection?.SelectedValue as T;
+        #endregion
+
+        protected abstract bool HasAdditionalToolbar { get; }
 
         public bool HasSelection => menu?.HasSelection ?? false;
-        
-        private void RecreateMenusIfNull()
-        {
-            if ((menu?.MenuItems == null) || menu.MenuItems.Any(m => m == null))
-            {
-                menu = new TreeEditorSidebarMenu(menuStyle, menuConfig, menuBackgroundColor);
-                
-                menu.DefaultMenuStyle = menuStyle;
-            }
-        }
 
-        private void ClearMenusIfInvalid(bool requested)
-        {
-            if (requested)
-            {
-                menu.Selection.Clear();
-                menu.Clear();
-            }
+        public T Selected => menu?.Selection?.SelectedValue as T;
 
-            if (menu.Selection.Any(s => s == null))
+        public void DrawMenu(float menuWidth, float menuHeight, float menuItemHeight, float menuButtonHeight)
+        {
+            TreeGUI.Draw.SmallTitle(menuTitle);
+            menu.Draw(menuItemHeight, maxWidth: menuWidth, maxHeight: menuHeight);
+
+            if (HasAdditionalToolbar)
             {
-                menu = null;
+                DrawAdditionalToolbar(menuWidth, menuButtonHeight);
             }
         }
 
@@ -107,7 +104,7 @@ namespace Appalachia.Simulation.Trees.UI.Selections.Icons
                 menu.SelectByIndex(selectionIndex);
             }
             else if (menu.MenuItems.Count == 0)
-            { 
+            {
                 foreach (var menuItem in menuItems)
                 {
                     menu.Add(GetMenuName(menuItem), menuItem, GetMenuIcon(menuItem)?.icon);
@@ -118,17 +115,6 @@ namespace Appalachia.Simulation.Trees.UI.Selections.Icons
                     menu.SelectFirst();
                 }
             }
-        }
-
-        protected abstract IList<T> GetMenuItems();
-
-        protected abstract string GetMenuName(T menuItem);
-        
-        protected abstract TreeIcon GetMenuIcon(T menuItem);
-
-        public void SelectFirst()
-        {
-            menu.SelectFirst();
         }
 
         public void Select(T item)
@@ -146,19 +132,41 @@ namespace Appalachia.Simulation.Trees.UI.Selections.Icons
             }
         }
 
-        public void DrawMenu(float menuWidth, float menuHeight, float menuItemHeight, float menuButtonHeight)
+        public void SelectFirst()
         {
-            TreeGUI.Draw.SmallTitle(menuTitle);
-            menu.Draw(menuItemHeight, maxWidth: menuWidth, maxHeight: menuHeight);
+            menu.SelectFirst();
+        }
 
-            if (HasAdditionalToolbar)
+        protected abstract void DrawAdditionalToolbar(float width, float height);
+
+        protected abstract TreeIcon GetMenuIcon(T menuItem);
+
+        protected abstract IList<T> GetMenuItems();
+
+        protected abstract string GetMenuName(T menuItem);
+
+        private void ClearMenusIfInvalid(bool requested)
+        {
+            if (requested)
             {
-                DrawAdditionalToolbar(menuWidth, menuButtonHeight);
+                menu.Selection.Clear();
+                menu.Clear();
+            }
+
+            if (menu.Selection.Any(s => s == null))
+            {
+                menu = null;
             }
         }
 
-        protected abstract bool HasAdditionalToolbar { get; }
-        
-        protected abstract  void DrawAdditionalToolbar(float width, float height);
+        private void RecreateMenusIfNull()
+        {
+            if ((menu?.MenuItems == null) || menu.MenuItems.Any(m => m == null))
+            {
+                menu = new TreeEditorSidebarMenu(menuStyle, menuConfig, menuBackgroundColor);
+
+                menu.DefaultMenuStyle = menuStyle;
+            }
+        }
     }
 }

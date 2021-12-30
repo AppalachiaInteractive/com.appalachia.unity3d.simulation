@@ -2,6 +2,7 @@ using Appalachia.Core.Attributes;
 using Appalachia.Core.Extensions;
 using Appalachia.Core.Shading;
 using Appalachia.Globals.Shading;
+using Appalachia.Simulation.ReactionSystem.Base;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -18,7 +19,6 @@ namespace Appalachia.Simulation.ReactionSystem.TouchBend
 
         #endregion
 
-        // [CallStaticConstructorInEditor] should be added to the class (initsingletonattribute)
         static TouchBendCurrentStateMotion()
         {
             GSR.InstanceAvailable += i => _GSR = i;
@@ -88,12 +88,12 @@ namespace Appalachia.Simulation.ReactionSystem.TouchBend
         {
             if (maskCamera == null)
             {
-                maskCamera = Object.FindObjectOfType<TouchBendCurrentStateMaskCamera>();
+                maskCamera = FindObjectOfType<TouchBendCurrentStateMaskCamera>();
             }
 
             if (spatialCamera == null)
             {
-                spatialCamera = Object.FindObjectOfType<TouchBendCurrentStateSpatialCamera>();
+                spatialCamera = FindObjectOfType<TouchBendCurrentStateSpatialCamera>();
             }
 
             if (maskCamera == null)

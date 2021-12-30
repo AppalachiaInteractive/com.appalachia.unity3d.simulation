@@ -23,11 +23,32 @@ namespace Appalachia.Simulation.Trees.Definition
     [Serializable]
     public sealed class TreeIndividual : TypeBasedSettings<TreeIndividual>, IMenuItemProvider
     {
-        
+        #region Fields and Autoproperties
+
         [SerializeField] private List<TreeAge> _ages;
 
         private Dictionary<AgeType, TreeAge> _ageLookupInternal;
-        
+
+        public bool active;
+
+        public int individualID;
+
+        public InternalSeed seed;
+
+        #endregion
+
+        public bool hasAdult => _ageLookup.ContainsKey(AgeType.Adult);
+
+        public bool hasAny => _ageLookup.Count > 0;
+        public bool hasMature => _ageLookup.ContainsKey(AgeType.Mature);
+        public bool hasSapling => _ageLookup.ContainsKey(AgeType.Sapling);
+        public bool hasSpirit => _ageLookup.ContainsKey(AgeType.Spirit);
+        public bool hasYoung => _ageLookup.ContainsKey(AgeType.Young);
+
+        public int ageCount => _ages.Count;
+
+        public IReadOnlyList<TreeAge> ages => _ages;
+
         private Dictionary<AgeType, TreeAge> _ageLookup
         {
             get
@@ -35,9 +56,8 @@ namespace Appalachia.Simulation.Trees.Definition
                 if (_ageLookupInternal == null)
                 {
                     _ageLookupInternal = new Dictionary<AgeType, TreeAge>();
-
                 }
-                                    
+
                 if (_ages == null)
                 {
                     _ages = new List<TreeAge>();
@@ -52,57 +72,40 @@ namespace Appalachia.Simulation.Trees.Definition
                         _ageLookupInternal.Add(age.ageType, age);
                     }
                 }
-                
+
                 return _ageLookupInternal;
             }
         }
 
-        public bool active;
-        
-        public int individualID;
-        
-        public InternalSeed seed;
-
         public TreeAge this[AgeType type] => _ageLookup[type];
 
-        public IReadOnlyList<TreeAge> ages => _ages;
-        
-        public int ageCount => _ages.Count;
-        
-        public bool hasAdult => _ageLookup.ContainsKey(AgeType.Adult);
-        
-        public bool hasAny => _ageLookup.Count > 0;
-        public bool hasMature => _ageLookup.ContainsKey(AgeType.Mature);
-        public bool hasSapling => _ageLookup.ContainsKey(AgeType.Sapling);
-        public bool hasSpirit => _ageLookup.ContainsKey(AgeType.Spirit);
-        public bool hasYoung => _ageLookup.ContainsKey(AgeType.Young);
-   
-        public BuildRequestLevel GetRequestLevel(BuildState buildState)
+        public static TreeIndividual Create(
+            string folder,
+            NameBasis nameBasis,
+            int individualID,
+            TreeAsset asset)
         {
-            BuildRequestLevel rl = BuildRequestLevel.None;
-            
-            foreach (var age in ages)
-            {
-                if (age.buildRequest == null)
-                {
-                    age.buildRequest = new AgeBuildRequests();
-                }
-                
-                if (age.active || (buildState > BuildState.Full))
-                {
-                    rl = rl.Max(age.GetRequestLevel(buildState));
-                    
-                    if (rl == BuildRequestLevel.InitialPass)
-                    {
-                        return rl;
-                    }                        
-                }
-            }
+            var assetName = nameBasis.FileNameIndividualSO(individualID);
+            var instance = LoadOrCreateNew<TreeIndividual>(folder, assetName);
 
-            return rl;
+            instance.individualID = individualID;
+
+            var mature = TreeAge.Create(folder, nameBasis, instance.individualID, AgeType.Mature, asset);
+
+            instance._ages = new List<TreeAge>();
+
+            instance._ageLookupInternal = new Dictionary<AgeType, TreeAge>();
+
+            instance._ageLookupInternal.Add(mature.ageType, mature);
+            instance._ages.Add(mature);
+
+            return instance;
         }
-        
-        public bool HasType(AgeType type) => _ageLookup.ContainsKey(type);
+
+        public static string GetMenuString(int individualID)
+        {
+            return ZString.Format("{0:00}", individualID);
+        }
 
         public TreeAge AddAge(string folder, NameBasis nameBasis, AgeType type, TreeAsset asset)
         {
@@ -112,11 +115,127 @@ namespace Appalachia.Simulation.Trees.Definition
             {
                 _ageLookupInternal = new Dictionary<AgeType, TreeAge>();
             }
-            
+
             _ageLookupInternal.Add(age.ageType, age);
             _ages.Add(age);
-            _ages.Sort(new Comparison<TreeAge>((a, b) => a.ageType.CompareTo(b.ageType) ));
+            _ages.Sort((a, b) => a.ageType.CompareTo(b.ageType));
             return age;
+        }
+
+        public void ApplyStageRuntime(
+            TreeDataContainer tree,
+            TreeStage stage,
+            GameObject prefab,
+            GameObject points)
+        {
+            var globals = _treeGlobalSettings;
+
+            points.layer = _treeGlobalSettings.interactionLayer.layer;
+            points.name = "POINTS";
+
+            var runtime = prefab.GetComponent<TreeRuntimeInstance>();
+
+            if (runtime == null)
+            {
+                runtime = prefab.AddComponent<TreeRuntimeInstance>();
+            }
+
+            runtime.metadata = stage.runtimeMetadata;
+
+            runtime.enabled = true;
+
+            runtime.metadata.pointsOfInterest.Clear();
+
+            if (tree.runtimeSpeciesMetadata == null)
+            {
+                tree.CreateRuntimeMetadata();
+            }
+
+            runtime.speciesMetadata = tree.runtimeSpeciesMetadata;
+
+            var spheres = points.GetComponents<SphereCollider>();
+            for (var i = spheres.Length - 1; i >= 0; i--)
+            {
+                DestroyImmediate(spheres[i]);
+            }
+
+            var requiresCut = stage.CanBeCut && _ageLookup[stage.ageType].RequiresCut;
+
+            if (requiresCut)
+            {
+                foreach (var trunk in stage.shapes.trunkShapes)
+                {
+                    var trunkLength = SplineModeler.GetApproximateLength(trunk.spline);
+
+                    var verticalOffset = tree.species.hierarchies.verticalOffset;
+
+                    var cutTime = (verticalOffset + tree.settings.variants.trunkCutHeight) / trunkLength;
+
+                    var trunkRadius = SplineModeler.GetRadiusWithCollarAtTime(
+                        tree.species.hierarchies,
+                        trunk,
+                        tree.species.hierarchies.GetHierarchyData(trunk.hierarchyID) as BarkHierarchyData,
+                        cutTime
+                    );
+
+                    var trunkCenter = trunk.effectiveMatrix.MultiplyPoint(
+                        SplineModeler.GetPositionAtTime(trunk.spline, cutTime)
+                    );
+
+                    var sphereCollider = points.AddComponent<SphereCollider>();
+                    sphereCollider.center = trunkCenter;
+                    sphereCollider.enabled = true;
+                    sphereCollider.isTrigger = true;
+                    sphereCollider.sharedMaterial = null;
+                    sphereCollider.radius = trunkRadius + globals.trunkCutColliderRadiusAdditive;
+
+                    var poi = new RuntimePointOfInterest
+                    {
+                        layer = _treeGlobalSettings.interactionLayer,
+                        radius = sphereCollider.radius,
+                        position = trunkCenter,
+                        sphereCollider = sphereCollider,
+                        zoneType = RuntimePointOfInterestType.CutZone
+                    };
+
+                    runtime.metadata.pointsOfInterest.Add(poi);
+                }
+            }
+        }
+
+        public string GetMenuString()
+        {
+            return GetMenuString(individualID);
+        }
+
+        public BuildRequestLevel GetRequestLevel(BuildState buildState)
+        {
+            var rl = BuildRequestLevel.None;
+
+            foreach (var age in ages)
+            {
+                if (age.buildRequest == null)
+                {
+                    age.buildRequest = new AgeBuildRequests();
+                }
+
+                if (age.active || (buildState > BuildState.Full))
+                {
+                    rl = rl.Max(age.GetRequestLevel(buildState));
+
+                    if (rl == BuildRequestLevel.InitialPass)
+                    {
+                        return rl;
+                    }
+                }
+            }
+
+            return rl;
+        }
+
+        public bool HasType(AgeType type)
+        {
+            return _ageLookup.ContainsKey(type);
         }
 
         public void RemoveAge(AgeType type)
@@ -125,57 +244,60 @@ namespace Appalachia.Simulation.Trees.Definition
 
             var variants = age.Variants.ToArray();
 
-
             for (var i = 0; i < variants.Length; i++)
             {
                 age.RemoveVariant(variants[i].stageType);
             }
-            
+
             age.RemoveNormal();
             _ageLookupInternal.Remove(age.ageType);
             _ages.Remove(age);
         }
 
-        public static TreeIndividual Create(string folder, NameBasis nameBasis, int individualID, TreeAsset asset)
+        public bool RuntimePointsRequireUpdate(TreeStage stage, GameObject gameObject)
         {
-            var assetName = nameBasis.FileNameIndividualSO(individualID);
-            var instance = TreeIndividual.LoadOrCreateNew(folder, assetName);
-            
-            instance.individualID = individualID;
+            var points = stage.runtimeMetadata.pointsOfInterest;
 
-            var mature = TreeAge.Create(folder, nameBasis, instance.individualID, AgeType.Mature, asset);
+            var childCount = gameObject.transform.childCount;
 
-            instance._ages = new List<TreeAge>();
-            
-            instance._ageLookupInternal = new Dictionary<AgeType, TreeAge>();
-            
-            instance._ageLookupInternal.Add(mature.ageType, mature);
-            instance._ages.Add(mature);
+            if (childCount != points.Count)
+            {
+                Context.Log.Warn("Prefab update required: Wrong point of interest count.");
+                return true;
+            }
 
-            return instance;
+            if (gameObject.name != "POINTS")
+            {
+                Context.Log.Warn("Prefab update required: Wrong POI name.");
+                return true;
+            }
+
+            return false;
         }
 
-        public string GetMenuString()
+        public bool StageRequiresRuntimeUpdate(TreeDataContainer tree, TreeStage stage)
         {
-            return GetMenuString(individualID);
-        }
-        
-        public static string GetMenuString(int individualID)
-        {
-            return ZString.Format("{0:00}", individualID);
-        }
+            var runtime = stage.asset.prefab.GetComponent<TreeRuntimeInstance>();
 
+            if (runtime == null)
+            {
+                Context.Log.Warn("Prefab update required: Missing TreeRuntimeInstance.");
+                return true;
+            }
 
-        /*public OdinMenuItem GetMenuItem(OdinMenuTree tree)
-        {
-            var item = new OdinMenuItem(tree, GetMenuString(), this) {Icon = GetIcon(true).icon};
+            if (runtime.metadata == null)
+            {
+                Context.Log.Warn("Prefab update required: Missing tree runtime metadata.");
+                return true;
+            }
 
-            return item;
-        }*/
+            if (runtime.metadata != stage.runtimeMetadata)
+            {
+                Context.Log.Warn("Prefab update required: Missing tree runtime metadata.");
+                return true;
+            }
 
-        public TreeIcon GetIcon(bool enabled)
-        {
-            return enabled ? TreeIcons.newTree : TreeIcons.disabledNewTree;
+            return false;
         }
 
         public void UpdateMetadata(TreeSpecies species)
@@ -214,7 +336,8 @@ namespace Appalachia.Simulation.Trees.Definition
                         Modifications.MarkAsModified(stage.runtimeMetadata);
                     }
 
-                    if (Math.Abs(stage.runtimeMetadata.rootDepth - species.hierarchies.verticalOffset) > float.Epsilon)
+                    if (Math.Abs(stage.runtimeMetadata.rootDepth - species.hierarchies.verticalOffset) >
+                        float.Epsilon)
                     {
                         stage.runtimeMetadata.rootDepth = species.hierarchies.verticalOffset;
                         Modifications.MarkAsModified(stage.runtimeMetadata);
@@ -241,136 +364,20 @@ namespace Appalachia.Simulation.Trees.Definition
             }
         }
 
-        public bool StageRequiresRuntimeUpdate(
-            TreeDataContainer tree,
-            TreeStage stage)
+        #region IMenuItemProvider Members
+
+        /*public OdinMenuItem GetMenuItem(OdinMenuTree tree)
         {
-            var runtime = stage.asset.prefab.GetComponent<TreeRuntimeInstance>();
-                    
-            if (runtime == null)
-            {
-                Context.Log.Warn("Prefab update required: Missing TreeRuntimeInstance.");
-                return true;
-            }
+            var item = new OdinMenuItem(tree, GetMenuString(), this) {Icon = GetIcon(true).icon};
 
-            if (runtime.metadata == null)
-            {
-                Context.Log.Warn("Prefab update required: Missing tree runtime metadata.");
-                return true;
-            }
+            return item;
+        }*/
 
-            if (runtime.metadata != stage.runtimeMetadata)
-            {
-                Context.Log.Warn("Prefab update required: Missing tree runtime metadata.");
-                return true;
-            }
-            
-            return false;
-        }
-        
-        public bool RuntimePointsRequireUpdate(
-            TreeStage stage,
-            GameObject gameObject)
+        public TreeIcon GetIcon(bool enabled)
         {
-            var points = stage.runtimeMetadata.pointsOfInterest;
-
-            var childCount = gameObject.transform.childCount;
-
-            if (childCount != points.Count)
-            {
-                Context.Log.Warn("Prefab update required: Wrong point of interest count.");
-                return true;
-            }
-            
-            if (gameObject.name != "POINTS")
-            {
-                Context.Log.Warn("Prefab update required: Wrong POI name.");
-                return true;
-            }
-
-            return false;
+            return enabled ? TreeIcons.newTree : TreeIcons.disabledNewTree;
         }
-        
-        public void ApplyStageRuntime(
-            TreeDataContainer tree,
-            TreeStage stage,
-            GameObject prefab,
-            GameObject points)
-        {
-            var globals = _treeGlobalSettings;
 
-            points.layer = _treeGlobalSettings.interactionLayer.layer;
-            points.name = "POINTS";
-            
-            var runtime = prefab.GetComponent<TreeRuntimeInstance>();
-
-            if (runtime == null)
-            {
-                runtime = prefab.AddComponent<TreeRuntimeInstance>();
-            }
-
-            runtime.metadata = stage.runtimeMetadata;
-
-            runtime.enabled = true;
-
-            runtime.metadata.pointsOfInterest.Clear();
-
-            if (tree.runtimeSpeciesMetadata == null)
-            {
-                tree.CreateRuntimeMetadata();
-            }
-
-            runtime.speciesMetadata = tree.runtimeSpeciesMetadata;
-
-            var spheres = points.GetComponents<SphereCollider>();
-            for (var i = spheres.Length - 1; i >= 0; i--)
-            {
-                DestroyImmediate(spheres[i]);
-            }
-
-            var requiresCut = stage.CanBeCut && _ageLookup[stage.ageType].RequiresCut;
-
-            if (requiresCut)
-            {
-                foreach (var trunk in stage.shapes.trunkShapes)
-                {
-                    var trunkLength = SplineModeler.GetApproximateLength(trunk.spline);
-
-                    var verticalOffset = tree.species.hierarchies.verticalOffset;
-                    
-                    var cutTime = (verticalOffset + tree.settings.variants.trunkCutHeight) / trunkLength;
-
-                    
-                    var trunkRadius = SplineModeler.GetRadiusWithCollarAtTime(
-                        tree.species.hierarchies,
-                        trunk,
-                        tree.species.hierarchies.GetHierarchyData(trunk.hierarchyID) as BarkHierarchyData, 
-                        cutTime
-                    );
-
-                    var trunkCenter = 
-                        trunk.effectiveMatrix.MultiplyPoint(SplineModeler.GetPositionAtTime(trunk.spline, cutTime));
-
-                    var sphereCollider = points.AddComponent<SphereCollider>();
-                    sphereCollider.center = trunkCenter;
-                    sphereCollider.enabled = true;
-                    sphereCollider.isTrigger = true;
-                    sphereCollider.sharedMaterial = null;
-                    sphereCollider.radius = trunkRadius+globals.trunkCutColliderRadiusAdditive;
-
-                    var poi = new RuntimePointOfInterest()
-                    {
-                        layer = _treeGlobalSettings.interactionLayer,
-                        radius = sphereCollider.radius,
-                        position = trunkCenter,
-                        sphereCollider = sphereCollider,
-                        zoneType = RuntimePointOfInterestType.CutZone
-                    };
-
-                    runtime.metadata.pointsOfInterest.Add(poi);
-                }
-            }
-            
-        }
+        #endregion
     }
 }
