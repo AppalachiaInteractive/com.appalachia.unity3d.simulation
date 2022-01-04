@@ -12,7 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 773aa34ad01d5be41af9e052481587f0, type: 3}
   m_Name: tuliptree
   m_EditorClassIdentifier: 
+  _cachedName: 
+  _niceName: 
+  _initializer:
+    _tags: []
+    _resetToken: 
   id: 38
+  speciesName: 
   woodData: {fileID: 11400000, guid: 30e5509f76fc20a428782bf4e266fe2a, type: 2}
   individuals:
   - {fileID: 11400000, guid: 6a8bbb68e245b9e4e828a208a2f8a427, type: 2}

@@ -12,13 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5055e54811e14323bac61ccf7ef3657b, type: 3}
   m_Name: Flesh
   m_EditorClassIdentifier: 
-  _niceName: Flesh
   _cachedName: Flesh
+  _niceName: Flesh
+  _initializer:
+    _tags: []
+    _resetToken: 
   _category: Organic
-  material: {fileID: 13400000, guid: ef1f3944115d9144a9725fbc04ca6b81, type: 2}
-  defaultDensity: {fileID: 11400000, guid: 8cccbe8323ad1a645af921fb9495efff, type: 2}
-  wireColor: {r: 0.8509804, g: 0.6009556, b: 0.48235294, a: 1}
-  meshTransparency: 0.5
   labelBackgroundColor: {r: 0.2264151, g: 0.2264151, b: 0.2264151, a: 1}
   labelTextColor: {r: 1, g: 1, b: 1, a: 1}
+  wireColor: {r: 0.8509804, g: 0.6009556, b: 0.48235294, a: 1}
+  defaultDensity: {fileID: 11400000, guid: 8cccbe8323ad1a645af921fb9495efff, type: 2}
+  meshTransparency: 0.5
   surface: {fileID: 2100000, guid: 95077c4483d96824a94ed705a9957aba, type: 2}
+  material: {fileID: 13400000, guid: ef1f3944115d9144a9725fbc04ca6b81, type: 2}

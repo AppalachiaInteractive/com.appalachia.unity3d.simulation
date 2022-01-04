@@ -7,5 +7,15 @@ namespace Appalachia.Simulation.Buoyancy.Voxels
         BuoyancyVoxelsDataStore, stringList, BuoyancyVoxelsDataStoreList, BuoyancyVoxelsLookup,
         BuoyancyVoxelsDataStoreLookup, MainBuoyancyVoxelsDataStoreLookup>
     {
+#if UNITY_EDITOR
+        [UnityEditor.MenuItem(
+            PKG.Menu.Assets.Base + nameof(MainBuoyancyVoxelsDataStoreLookup),
+            priority = PKG.Menu.Assets.Priority
+        )]
+        public static void CreateAsset()
+        {
+            CreateNew<MainBuoyancyVoxelsDataStoreLookup>();
+        }
+#endif
     }
 }

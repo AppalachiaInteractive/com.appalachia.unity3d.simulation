@@ -12,7 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 773aa34ad01d5be41af9e052481587f0, type: 3}
   m_Name: hickory-pecan
   m_EditorClassIdentifier: 
+  _cachedName: 
+  _niceName: 
+  _initializer:
+    _tags: []
+    _resetToken: 
   id: 15
+  speciesName: 
   woodData: {fileID: 11400000, guid: 0d55a144c9147bd449bac35bfcb5c38f, type: 2}
   individuals:
   - {fileID: 11400000, guid: a7b7ffcda98f33b4a8f9051aaf8f1a29, type: 2}

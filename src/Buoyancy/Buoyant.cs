@@ -225,6 +225,11 @@ namespace Appalachia.Simulation.Buoyancy
         {
             using (_PRF_Update.Auto())
             {
+                if (!DependenciesAreReady || !FullyInitialized)
+                {
+                    return;
+                }
+                
                 if (buoyancyData == null)
                 {
                     return;

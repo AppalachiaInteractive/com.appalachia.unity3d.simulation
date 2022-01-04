@@ -12,7 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 773aa34ad01d5be41af9e052481587f0, type: 3}
   m_Name: hemlock-eastern
   m_EditorClassIdentifier: 
+  _cachedName: 
+  _niceName: 
+  _initializer:
+    _tags: []
+    _resetToken: 
   id: 14
+  speciesName: 
   woodData: {fileID: 11400000, guid: a43b04ea0ab16464dbb06effffb2367a, type: 2}
   individuals:
   - {fileID: 11400000, guid: 1e6cad66a9a7c3c459cc6753630ad3d6, type: 2}

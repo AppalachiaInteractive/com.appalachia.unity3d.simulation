@@ -12,15 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebc057f721a531a4992e9e7eea91f2b2, type: 3}
   m_Name: pine_lodgepole
   m_EditorClassIdentifier: 
-  _niceName: 
   _cachedName: 
+  _niceName: 
+  _initializer:
+    _tags: []
+    _resetToken: 
   id: 142
   _category: Pine
   densityMetadata: {fileID: 11400000, guid: d3f4ad1dd4482c14198a8f8b92542e70, type: 2}
-  charTemperature: 150
-  ignitionTemperature: 250
+  btuDry: 19058.720703125
+  btuGreen: 11515.57421875
+  smokeAmount: 0.8036831
   burnRate: {fileID: 11400000, guid: 48ebe2092f9ab4d4da71da1b69e4075f, type: 2}
   burnScale: {fileID: 11400000, guid: 747f60abf758a6841810d6421db21b23, type: 2}
-  btuGreen: 11515.57421875
-  btuDry: 19058.720703125
-  smokeAmount: 0.8036831
+  charTemperature: 150
+  ignitionTemperature: 250

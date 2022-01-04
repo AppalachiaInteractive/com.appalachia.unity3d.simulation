@@ -12,7 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 773aa34ad01d5be41af9e052481587f0, type: 3}
   m_Name: willow
   m_EditorClassIdentifier: 
+  _cachedName: 
+  _niceName: 
+  _initializer:
+    _tags: []
+    _resetToken: 
   id: 40
+  speciesName: 
   woodData: {fileID: 11400000, guid: e3f7bf6e4eb143d41a0c5b7fba7e5285, type: 2}
   individuals:
   - {fileID: 11400000, guid: a644b2b373a60e44d9f4868589511dc5, type: 2}

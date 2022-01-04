@@ -12,7 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 773aa34ad01d5be41af9e052481587f0, type: 3}
   m_Name: sassafras
   m_EditorClassIdentifier: 
+  _cachedName: 
+  _niceName: 
+  _initializer:
+    _tags: []
+    _resetToken: 
   id: 32
+  speciesName: 
   woodData: {fileID: 11400000, guid: 999651f4117a86140ae194c6e5b4825f, type: 2}
   individuals:
   - {fileID: 11400000, guid: e49d44b042af43c4794e23b2b0434237, type: 2}

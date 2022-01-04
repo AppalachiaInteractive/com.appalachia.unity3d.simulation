@@ -12,13 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5055e54811e14323bac61ccf7ef3657b, type: 3}
   m_Name: Reptile
   m_EditorClassIdentifier: 
-  _niceName: Reptile
   _cachedName: Reptile
+  _niceName: Reptile
+  _initializer:
+    _tags: []
+    _resetToken: 
   _category: Organic
-  material: {fileID: 13400000, guid: 385947a34619c0244b75ec97d6f6fca9, type: 2}
-  defaultDensity: {fileID: 11400000, guid: a3495254b03d1d143b032b090b0c958b, type: 2}
-  wireColor: {r: 0, g: 1, b: 0, a: 1}
-  meshTransparency: 0.5
   labelBackgroundColor: {r: 0.2264151, g: 0.2264151, b: 0.2264151, a: 1}
   labelTextColor: {r: 1, g: 1, b: 1, a: 1}
+  wireColor: {r: 0, g: 1, b: 0, a: 1}
+  defaultDensity: {fileID: 11400000, guid: a3495254b03d1d143b032b090b0c958b, type: 2}
+  meshTransparency: 0.5
   surface: {fileID: 2100000, guid: 01ac4c136f590ed4db86f8218f946741, type: 2}
+  material: {fileID: 13400000, guid: 385947a34619c0244b75ec97d6f6fca9, type: 2}

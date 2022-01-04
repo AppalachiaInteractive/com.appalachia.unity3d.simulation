@@ -12,6 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 773aa34ad01d5be41af9e052481587f0, type: 3}
   m_Name: pine-pitch
   m_EditorClassIdentifier: 
+  _cachedName: 
+  _niceName: 
+  _initializer:
+    _tags: []
+    _resetToken: 
   id: 27
   speciesName: 
   woodData: {fileID: 11400000, guid: 0c25b179efd152f4785b1fcb17f4b8c1, type: 2}

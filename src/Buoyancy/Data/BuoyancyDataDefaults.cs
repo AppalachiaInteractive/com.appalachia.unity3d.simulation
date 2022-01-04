@@ -7,8 +7,8 @@ namespace Appalachia.Simulation.Buoyancy.Data
 {
     public class BuoyancyDataDefaults : SingletonAppalachiaObject<BuoyancyDataDefaults>
     {
-        
-            
+        #region Fields and Autoproperties
+
         [SmartLabel]
         [PropertyRange(0.00001f, 0.01f)]
         public float wetnessAccumulationSpeed = .001f;
@@ -26,8 +26,7 @@ namespace Appalachia.Simulation.Buoyancy.Data
         public float submergednessDispersalSpeed = .0003f;
 
         [SmartLabel]
-        public BuoyancyType
-            buoyancyType = BuoyancyType.PhysicalVoxel; // type of buoyancy to calculate
+        public BuoyancyType buoyancyType = BuoyancyType.PhysicalVoxel; // type of buoyancy to calculate
 
         /// <summary>
         ///     type of voxel population to use
@@ -53,5 +52,7 @@ namespace Appalachia.Simulation.Buoyancy.Data
         [PropertyRange(0.01f, 1.0f)]
         [SmartLabel]
         public float submersionDisengageSmoothing = 0.35f;
+
+        #endregion
     }
 }

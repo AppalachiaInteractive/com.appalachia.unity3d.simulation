@@ -12,6 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 773aa34ad01d5be41af9e052481587f0, type: 3}
   m_Name: pine-shortleaf
   m_EditorClassIdentifier: 
+  _cachedName: 
+  _niceName: 
+  _initializer:
+    _tags: []
+    _resetToken: 
   id: 28
   speciesName: 
   woodData: {fileID: 11400000, guid: cc89bdca3ce0d414f99ba7604e0ed81d, type: 2}

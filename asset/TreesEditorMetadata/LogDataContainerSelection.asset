@@ -12,8 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d6d6de7034e4017955fe62598a3d0c8, type: 3}
   m_Name: LogDataContainerSelection
   m_EditorClassIdentifier: 
-  objects:
-  - {fileID: 11400000, guid: 466a7811612c1ee4d9d1bc317851a837, type: 2}
-  objectNames:
-  - logs-knots
+  _cachedName: 
+  _niceName: 
+  _initializer:
+    _tags: []
+    _resetToken: 
+  objects: []
+  objectNames: []
   _selected: {fileID: 0}

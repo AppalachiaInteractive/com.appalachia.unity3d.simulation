@@ -73,7 +73,9 @@ namespace Appalachia.Simulation.Trees.Build.Execution
             }
         }
 
-        private static BranchDataContainer CTX => _treeSpeciesEditorSelection.branch.selection.selected;
+        private static BranchDataContainer CTX =>
+            (_treeSpeciesEditorSelection == null ? null : _treeSpeciesEditorSelection)?.branch?.selection
+          ?.selected;
 
         public static IEnumerator ExecuteAllBuildsEnumerator(
             QualityMode quality,
@@ -166,6 +168,7 @@ namespace Appalachia.Simulation.Trees.Build.Execution
                         _autobuilding ||
                         EditorApplication.isCompiling ||
                         AppalachiaApplication.IsPlayingOrWillPlay ||
+                        
                         (CTX == null) ||
                         !CTX.initialized ||
                         (CTX.dataState == TSEDataContainer.DataState.Normal) ||

@@ -12,7 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 773aa34ad01d5be41af9e052481587f0, type: 3}
   m_Name: birch-paper
   m_EditorClassIdentifier: 
+  _cachedName: 
+  _niceName: 
+  _initializer:
+    _tags: []
+    _resetToken: 
   id: 6
+  speciesName: 
   woodData: {fileID: 11400000, guid: a1e6feacee80e4a44a6688eb36ed3db6, type: 2}
   individuals:
   - {fileID: 11400000, guid: 0e6600f52906faa4e81cf1a0030069b3, type: 2}

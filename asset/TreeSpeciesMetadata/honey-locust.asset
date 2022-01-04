@@ -12,7 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 773aa34ad01d5be41af9e052481587f0, type: 3}
   m_Name: honey-locust
   m_EditorClassIdentifier: 
+  _cachedName: 
+  _niceName: 
+  _initializer:
+    _tags: []
+    _resetToken: 
   id: 17
+  speciesName: 
   woodData: {fileID: 11400000, guid: b3757f228a93abd41ae2f7217f2a3106, type: 2}
   individuals:
   - {fileID: 11400000, guid: 8ce7508bd69bb3248bf3c6f3649314e6, type: 2}

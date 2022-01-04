@@ -12,6 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1abba75be2db41e486c06cf3b9d18c34, type: 3}
   m_Name: LeafUVRectCollection
   m_EditorClassIdentifier: 
+  _cachedName: 
+  _niceName: 
+  _initializer:
+    _tags: []
+    _resetToken: 
   leafUVRectSets:
   - material: {fileID: 0}
     uvRects: []

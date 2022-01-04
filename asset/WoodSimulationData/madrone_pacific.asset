@@ -12,15 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebc057f721a531a4992e9e7eea91f2b2, type: 3}
   m_Name: madrone_pacific
   m_EditorClassIdentifier: 
-  _niceName: 
   _cachedName: 
+  _niceName: 
+  _initializer:
+    _tags: []
+    _resetToken: 
   id: 124
   _category: Unique
   densityMetadata: {fileID: 11400000, guid: 53c017e048e90ba4ba81eff58bb3fe7e, type: 2}
-  charTemperature: 157
-  ignitionTemperature: 265
+  btuDry: 16675.109375
+  btuGreen: 10450.0771484375
+  smokeAmount: 0.5793994
   burnRate: {fileID: 11400000, guid: 48ebe2092f9ab4d4da71da1b69e4075f, type: 2}
   burnScale: {fileID: 11400000, guid: 747f60abf758a6841810d6421db21b23, type: 2}
-  btuGreen: 10450.0771484375
-  btuDry: 16675.109375
-  smokeAmount: 0.5793994
+  charTemperature: 157
+  ignitionTemperature: 265

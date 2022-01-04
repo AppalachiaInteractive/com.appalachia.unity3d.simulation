@@ -12,6 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3348e0e4239454b9b41cc2e1bbe9331, type: 3}
   m_Name: TreePresets
   m_EditorClassIdentifier: 
+  _cachedName: 
+  _niceName: 
+  _initializer:
+    _tags: []
+    _resetToken: 
   trunk_distribution:
     settingsType: 0
     distributionFrequency:
@@ -349,6 +354,20 @@ MonoBehaviour:
       young: 0
       defaultValue: 0
     distributionAngleOffset:
+      settingsType: 0
+      overrideAdult: 0
+      overrideMature: 0
+      overrideSapling: 0
+      overrideSpirit: 0
+      overrideYoung: 0
+      initialized: 0
+      adult: 0
+      mature: 0
+      sapling: 0
+      spirit: 0
+      young: 0
+      defaultValue: 0
+    distributionAngleOffsetJitter:
       settingsType: 0
       overrideAdult: 0
       overrideMature: 0
@@ -804,6 +823,21 @@ MonoBehaviour:
         m_PostInfinity: 2
         m_RotationOrder: 4
     shorterBranchesAreThinner:
+      settingsType: 0
+      overrideAdult: 0
+      overrideMature: 0
+      overrideSapling: 0
+      overrideSpirit: 0
+      overrideYoung: 0
+      initialized: 0
+      adult: 0
+      mature: 0
+      sapling: 0
+      spirit: 0
+      young: 0
+      defaultValue: 0
+    disableWind: 0
+    windStrength:
       settingsType: 0
       overrideAdult: 0
       overrideMature: 0
@@ -1415,7 +1449,6 @@ MonoBehaviour:
   trunk_limb:
     settingsType: 0
     log: 0
-    breakMaterial: {fileID: 0}
     capSmoothing:
       settingsType: 0
       overrideAdult: 0
@@ -1934,6 +1967,20 @@ MonoBehaviour:
       spirit: 0
       young: 0
       defaultValue: 0
+    distributionAngleOffsetJitter:
+      settingsType: 0
+      overrideAdult: 0
+      overrideMature: 0
+      overrideSapling: 0
+      overrideSpirit: 0
+      overrideYoung: 0
+      initialized: 0
+      adult: 0
+      mature: 0
+      sapling: 0
+      spirit: 0
+      young: 0
+      defaultValue: 0
     distributionSpin:
       settingsType: 0
       overrideAdult: 0
@@ -2349,6 +2396,21 @@ MonoBehaviour:
         m_PostInfinity: 2
         m_RotationOrder: 4
     shorterBranchesAreThinner:
+      settingsType: 0
+      overrideAdult: 0
+      overrideMature: 0
+      overrideSapling: 0
+      overrideSpirit: 0
+      overrideYoung: 0
+      initialized: 0
+      adult: 0
+      mature: 0
+      sapling: 0
+      spirit: 0
+      young: 0
+      defaultValue: 0
+    disableWind: 0
+    windStrength:
       settingsType: 0
       overrideAdult: 0
       overrideMature: 0
@@ -3070,7 +3132,6 @@ MonoBehaviour:
   root_limb:
     settingsType: 0
     log: 0
-    breakMaterial: {fileID: 0}
     capSmoothing:
       settingsType: 0
       overrideAdult: 0
@@ -3841,6 +3902,20 @@ MonoBehaviour:
       spirit: 0
       young: 0
       defaultValue: 0
+    distributionAngleOffsetJitter:
+      settingsType: 0
+      overrideAdult: 0
+      overrideMature: 0
+      overrideSapling: 0
+      overrideSpirit: 0
+      overrideYoung: 0
+      initialized: 0
+      adult: 0
+      mature: 0
+      sapling: 0
+      spirit: 0
+      young: 0
+      defaultValue: 0
     distributionSpin:
       settingsType: 0
       overrideAdult: 0
@@ -4287,6 +4362,21 @@ MonoBehaviour:
       spirit: 1
       young: 1
       defaultValue: 1
+    disableWind: 0
+    windStrength:
+      settingsType: 0
+      overrideAdult: 0
+      overrideMature: 0
+      overrideSapling: 0
+      overrideSpirit: 0
+      overrideYoung: 0
+      initialized: 0
+      adult: 0
+      mature: 0
+      sapling: 0
+      spirit: 0
+      young: 0
+      defaultValue: 0
     colliderMultiplier:
       settingsType: 0
       overrideAdult: 0
@@ -5022,7 +5112,6 @@ MonoBehaviour:
   branch_limb:
     settingsType: 0
     log: 0
-    breakMaterial: {fileID: 0}
     capSmoothing:
       settingsType: 0
       overrideAdult: 0
@@ -5537,6 +5626,20 @@ MonoBehaviour:
       young: 1
       defaultValue: 1
     distributionAngleOffset:
+      settingsType: 0
+      overrideAdult: 0
+      overrideMature: 0
+      overrideSapling: 0
+      overrideSpirit: 0
+      overrideYoung: 0
+      initialized: 0
+      adult: 0
+      mature: 0
+      sapling: 0
+      spirit: 0
+      young: 0
+      defaultValue: 0
+    distributionAngleOffsetJitter:
       settingsType: 0
       overrideAdult: 0
       overrideMature: 0
@@ -6078,6 +6181,20 @@ MonoBehaviour:
       spirit: 0
       young: 0
       defaultValue: 0
+    distributionAngleOffsetJitter:
+      settingsType: 0
+      overrideAdult: 0
+      overrideMature: 0
+      overrideSapling: 0
+      overrideSpirit: 0
+      overrideYoung: 0
+      initialized: 0
+      adult: 0
+      mature: 0
+      sapling: 0
+      spirit: 0
+      young: 0
+      defaultValue: 0
     distributionSpin:
       settingsType: 0
       overrideAdult: 0
@@ -6575,6 +6692,20 @@ MonoBehaviour:
       young: 0
       defaultValue: 0
     distributionAngleOffset:
+      settingsType: 0
+      overrideAdult: 0
+      overrideMature: 0
+      overrideSapling: 0
+      overrideSpirit: 0
+      overrideYoung: 0
+      initialized: 0
+      adult: 0
+      mature: 0
+      sapling: 0
+      spirit: 0
+      young: 0
+      defaultValue: 0
+    distributionAngleOffsetJitter:
       settingsType: 0
       overrideAdult: 0
       overrideMature: 0
@@ -7103,6 +7234,20 @@ MonoBehaviour:
       young: 0
       defaultValue: 0
     distributionAngleOffset:
+      settingsType: 0
+      overrideAdult: 0
+      overrideMature: 0
+      overrideSapling: 0
+      overrideSpirit: 0
+      overrideYoung: 0
+      initialized: 0
+      adult: 0
+      mature: 0
+      sapling: 0
+      spirit: 0
+      young: 0
+      defaultValue: 0
+    distributionAngleOffsetJitter:
       settingsType: 0
       overrideAdult: 0
       overrideMature: 0

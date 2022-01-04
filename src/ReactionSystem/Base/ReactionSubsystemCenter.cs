@@ -27,6 +27,9 @@ namespace Appalachia.Simulation.ReactionSystem.Base
 
 #if UNITY_EDITOR
 
+        private static readonly ProfilerMarker _PRF_OnDrawGizmosSelected =
+            new(_PRF_PFX + nameof(OnDrawGizmosSelected));
+
         private void OnDrawGizmosSelected()
         {
             using (_PRF_OnDrawGizmosSelected.Auto())
@@ -76,14 +79,7 @@ namespace Appalachia.Simulation.ReactionSystem.Base
 
         private const string _PRF_PFX = nameof(ReactionSubsystemCenter) + ".";
 
-        private static readonly ProfilerMarker _PRF_OnDrawGizmosSelected =
-            new(_PRF_PFX + nameof(OnDrawGizmosSelected));
-
         private static readonly ProfilerMarker _PRF_GetPosition = new(_PRF_PFX + nameof(GetPosition));
-
-#if UNITY_EDITOR
-
-#endif
 
         private static readonly ProfilerMarker _PRF_ValidateSubsystems =
             new(_PRF_PFX + nameof(ValidateSubsystems));

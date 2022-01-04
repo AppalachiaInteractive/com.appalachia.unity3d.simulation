@@ -12,10 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27f402b5f299425b8811f4aa1879a37f, type: 3}
   m_Name: metal_brass
   m_EditorClassIdentifier: 
-  _niceName: 
   _cachedName: 
+  _niceName: 
+  _initializer:
+    _tags:
+    - profileName
+    _resetToken: 
   id: 26
-  profileName: brass
+  profileName: metal_brass
   _category: Metal
   densityGramPerCubicCentimeter: 8.6
   materialWrapper: {fileID: 11400000, guid: b2e2893528dfbc245bc474bad5538fa0, type: 2}

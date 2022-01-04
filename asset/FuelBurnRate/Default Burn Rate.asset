@@ -12,6 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 975e25e16f846fa42b54540c9a86131c, type: 3}
   m_Name: Default Burn Rate
   m_EditorClassIdentifier: 
-  kgCharPerHour: 2
-  kgBurnPerHour: 1
+  _cachedName: 
+  _niceName: 
+  _initializer:
+    _tags: []
+    _resetToken: 
   ignitionRate: 0.01
+  kgBurnPerHour: 1
+  kgCharPerHour: 2

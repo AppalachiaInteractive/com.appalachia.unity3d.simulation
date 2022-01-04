@@ -12,13 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5055e54811e14323bac61ccf7ef3657b, type: 3}
   m_Name: Bone
   m_EditorClassIdentifier: 
-  _niceName: Bone
   _cachedName: Bone
+  _niceName: Bone
+  _initializer:
+    _tags: []
+    _resetToken: 
   _category: Organic
-  material: {fileID: 13400000, guid: 505c540e720b1434398c890ee85a806c, type: 2}
-  defaultDensity: {fileID: 11400000, guid: 7fee5c667e37d6446bf6fc62dbd76bf8, type: 2}
-  wireColor: {r: 0.5377358, g: 0.015024564, b: 0, a: 1}
-  meshTransparency: 0.5
   labelBackgroundColor: {r: 0.2264151, g: 0.2264151, b: 0.2264151, a: 1}
   labelTextColor: {r: 1, g: 1, b: 1, a: 1}
+  wireColor: {r: 0.5377358, g: 0.015024564, b: 0, a: 1}
+  defaultDensity: {fileID: 11400000, guid: 7fee5c667e37d6446bf6fc62dbd76bf8, type: 2}
+  meshTransparency: 0.5
   surface: {fileID: 2100000, guid: 8647ba43420e08740b9f7905639351ac, type: 2}
+  material: {fileID: 13400000, guid: 505c540e720b1434398c890ee85a806c, type: 2}

@@ -145,6 +145,11 @@ namespace Appalachia.Simulation.Physical.Integration
         {
             using (_PRF_Update.Auto())
             {
+                if (!DependenciesAreReady || !FullyInitialized)
+                {
+                    return;
+                }
+                
                 if (_rigidbody == null)
                 {
                     _rigidbody = _transform.GetComponent<Rigidbody>();

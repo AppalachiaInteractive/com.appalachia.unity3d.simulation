@@ -12,15 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebc057f721a531a4992e9e7eea91f2b2, type: 3}
   m_Name: dogwood
   m_EditorClassIdentifier: 
-  _niceName: 
   _cachedName: 
+  _niceName: 
+  _initializer:
+    _tags: []
+    _resetToken: 
   id: 102
   _category: Unique
   densityMetadata: {fileID: 11400000, guid: 104a1309cf20c04469ffed736a0550ab, type: 2}
-  charTemperature: 157
-  ignitionTemperature: 264
+  btuDry: 16653.912109375
+  btuGreen: 10280.9814453125
+  smokeAmount: 0.61458117
   burnRate: {fileID: 11400000, guid: 48ebe2092f9ab4d4da71da1b69e4075f, type: 2}
   burnScale: {fileID: 11400000, guid: 747f60abf758a6841810d6421db21b23, type: 2}
-  btuGreen: 10280.9814453125
-  btuDry: 16653.912109375
-  smokeAmount: 0.61458117
+  charTemperature: 157
+  ignitionTemperature: 264

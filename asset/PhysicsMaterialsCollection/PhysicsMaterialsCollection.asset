@@ -12,12 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66a8dcf723a340d0a46a01f3977130e0, type: 3}
   m_Name: PhysicsMaterialsCollection
   m_EditorClassIdentifier: 
-  _initializationData:
-    _tags: []
-    _resetToken: 
   _cachedName: 
   _niceName: 
-  defaultValue: {fileID: 11400000, guid: 99987a58ac8d53c41be8082bb47054f3, type: 2}
+  _initializer:
+    _tags:
+    - defaultValue
+    _resetToken: 
+  defaultValue: {fileID: 11400000, guid: 6af244fba04ab5c49852cb49307aaf05, type: 2}
   _all:
     _capacityIncreaseMultiplier: 2
     _values:

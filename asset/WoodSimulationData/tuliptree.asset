@@ -12,15 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebc057f721a531a4992e9e7eea91f2b2, type: 3}
   m_Name: tuliptree
   m_EditorClassIdentifier: 
-  _niceName: 
   _cachedName: 
+  _niceName: 
+  _initializer:
+    _tags: []
+    _resetToken: 
   id: 79
   _category: Magnolia
   densityMetadata: {fileID: 11400000, guid: ebccb47dd1f6e8c4b96374fb5f58b276, type: 2}
-  charTemperature: 126
-  ignitionTemperature: 202
+  btuDry: 23309.8828125
+  btuGreen: 14127.201171875
+  smokeAmount: 1.360544
   burnRate: {fileID: 11400000, guid: 48ebe2092f9ab4d4da71da1b69e4075f, type: 2}
   burnScale: {fileID: 11400000, guid: 747f60abf758a6841810d6421db21b23, type: 2}
-  btuGreen: 14127.201171875
-  btuDry: 23309.8828125
-  smokeAmount: 1.360544
+  charTemperature: 126
+  ignitionTemperature: 202

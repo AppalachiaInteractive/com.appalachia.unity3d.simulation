@@ -12,13 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5055e54811e14323bac61ccf7ef3657b, type: 3}
   m_Name: Ice
   m_EditorClassIdentifier: 
-  _niceName: Ice
   _cachedName: Ice
+  _niceName: Ice
+  _initializer:
+    _tags: []
+    _resetToken: 
   _category: General
-  material: {fileID: 13400000, guid: ba92fb44336020f40bdf294bb66bc9da, type: 2}
-  defaultDensity: {fileID: 11400000, guid: c51f45457fd0c904b8ec764ad6989564, type: 2}
-  wireColor: {r: 0.532, g: 0.7917279, b: 1, a: 1}
-  meshTransparency: 0.5
   labelBackgroundColor: {r: 0.2264151, g: 0.2264151, b: 0.2264151, a: 1}
   labelTextColor: {r: 1, g: 1, b: 1, a: 1}
+  wireColor: {r: 0.532, g: 0.7917279, b: 1, a: 1}
+  defaultDensity: {fileID: 11400000, guid: c51f45457fd0c904b8ec764ad6989564, type: 2}
+  meshTransparency: 0.5
   surface: {fileID: 2100000, guid: 6be41643742c020428d013a2621fb4cc, type: 2}
+  material: {fileID: 13400000, guid: ba92fb44336020f40bdf294bb66bc9da, type: 2}

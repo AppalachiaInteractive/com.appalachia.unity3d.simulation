@@ -12,10 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27f402b5f299425b8811f4aa1879a37f, type: 3}
   m_Name: plant_leaves
   m_EditorClassIdentifier: 
-  _niceName: 
   _cachedName: 
+  _niceName: 
+  _initializer:
+    _tags:
+    - profileName
+    _resetToken: 
   id: 38
-  profileName: leaves
+  profileName: plant_leaves
   _category: Plant
   densityGramPerCubicCentimeter: 0.2
   materialWrapper: {fileID: 11400000, guid: 0c799d273797e9d4eb9f8ad876e9d062, type: 2}

@@ -12,7 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 773aa34ad01d5be41af9e052481587f0, type: 3}
   m_Name: sweet-gum
   m_EditorClassIdentifier: 
+  _cachedName: 
+  _niceName: 
+  _initializer:
+    _tags: []
+    _resetToken: 
   id: 36
+  speciesName: 
   woodData: {fileID: 11400000, guid: 18bb7cb8b076d3e4cb9679ba2c837ecc, type: 2}
   individuals:
   - {fileID: 11400000, guid: 7b9454b3a930cee4aa208488aa4bbbce, type: 2}

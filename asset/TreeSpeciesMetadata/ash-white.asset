@@ -12,7 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 773aa34ad01d5be41af9e052481587f0, type: 3}
   m_Name: ash-white
   m_EditorClassIdentifier: 
+  _cachedName: 
+  _niceName: 
+  _initializer:
+    _tags: []
+    _resetToken: 
   id: 3
+  speciesName: 
   woodData: {fileID: 11400000, guid: c983ae1aa39fe39488cf8b9c5b239cef, type: 2}
   individuals:
   - {fileID: 11400000, guid: 1e62e1f31dc697846a932ff1078cf8b3, type: 2}

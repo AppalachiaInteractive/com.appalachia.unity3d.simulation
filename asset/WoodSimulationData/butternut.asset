@@ -12,15 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebc057f721a531a4992e9e7eea91f2b2, type: 3}
   m_Name: butternut
   m_EditorClassIdentifier: 
-  _niceName: 
   _cachedName: 
+  _niceName: 
+  _initializer:
+    _tags: []
+    _resetToken: 
   id: 16
   _category: Nut
   densityMetadata: {fileID: 11400000, guid: b223c37f5afd4954a81bbff2eb5d68d8, type: 2}
-  charTemperature: 120
-  ignitionTemperature: 191
+  btuDry: 25121.25
+  btuGreen: 15225
+  smokeAmount: 2.0680273
   burnRate: {fileID: 11400000, guid: 48ebe2092f9ab4d4da71da1b69e4075f, type: 2}
   burnScale: {fileID: 11400000, guid: 747f60abf758a6841810d6421db21b23, type: 2}
-  btuGreen: 15225
-  btuDry: 25121.25
-  smokeAmount: 2.0680273
+  charTemperature: 120
+  ignitionTemperature: 191

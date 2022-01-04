@@ -12,15 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebc057f721a531a4992e9e7eea91f2b2, type: 3}
   m_Name: fir_red
   m_EditorClassIdentifier: 
-  _niceName: 
   _cachedName: 
+  _niceName: 
+  _initializer:
+    _tags: []
+    _resetToken: 
   id: 110
   _category: Fir
   densityMetadata: {fileID: 11400000, guid: eff4f5e0ba5339c4fbc6589634dd40b6, type: 2}
-  charTemperature: 146
-  ignitionTemperature: 243
+  btuDry: 18926.25
+  btuGreen: 11243.31640625
+  smokeAmount: 0.85755515
   burnRate: {fileID: 11400000, guid: 48ebe2092f9ab4d4da71da1b69e4075f, type: 2}
   burnScale: {fileID: 11400000, guid: 747f60abf758a6841810d6421db21b23, type: 2}
-  btuGreen: 11243.31640625
-  btuDry: 18926.25
-  smokeAmount: 0.85755515
+  charTemperature: 146
+  ignitionTemperature: 243

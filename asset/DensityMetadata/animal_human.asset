@@ -12,10 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27f402b5f299425b8811f4aa1879a37f, type: 3}
   m_Name: animal_human
   m_EditorClassIdentifier: 
-  _niceName: 
   _cachedName: 
+  _niceName: 
+  _initializer:
+    _tags:
+    - profileName
+    _resetToken: 
   id: 43
-  profileName: human
+  profileName: animal_human
   _category: Animal
   densityGramPerCubicCentimeter: 1
   materialWrapper: {fileID: 11400000, guid: 639b219556e29fc459ecd9f00e101b53, type: 2}

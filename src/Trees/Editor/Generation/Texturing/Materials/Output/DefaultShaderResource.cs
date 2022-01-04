@@ -3,15 +3,23 @@ using Appalachia.Core.Objects.Initialization;
 using Appalachia.Simulation.Trees.Core;
 using Appalachia.Simulation.Trees.Generation.Texturing.Shading.OutputShaders;
 using Appalachia.Utility.Async;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Output
 {
     public class DefaultShaderResource : SingletonAppalachiaTreeObject<DefaultShaderResource>
     {
+        [InlineProperty, HideLabel, Title("Branch Shader Set")]
         public OutputShaderSelectionSet branchShaderSet;
+
+        [InlineProperty, HideLabel, Title("Tiled Shader Set")]
         public OutputShaderSelectionSet tiledShaderSet;
+
+        [InlineProperty, HideLabel, Title("Atlas Shader Set")]
         public OutputShaderSelectionSet atlasShaderSet;
+
+        [InlineProperty, HideLabel, Title("Shadow Shader Set")]
         public OutputShaderSelectionSet shadowShaderSet;
         public Shader logShader;
         public AmplifyImpostorBakePreset impostorPreset;

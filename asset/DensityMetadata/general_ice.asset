@@ -12,10 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27f402b5f299425b8811f4aa1879a37f, type: 3}
   m_Name: general_ice
   m_EditorClassIdentifier: 
-  _niceName: 
   _cachedName: 
+  _niceName: 
+  _initializer:
+    _tags:
+    - profileName
+    _resetToken: 
   id: 34
-  profileName: ice
+  profileName: general_ice
   _category: General
   densityGramPerCubicCentimeter: 0.9167
   materialWrapper: {fileID: 11400000, guid: 130dec582a8d4b843b5617c79b127cf1, type: 2}

@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: faa3189d0c414aa5ae5f8bddb87f8510, type: 3}
   m_Name: WaterPhysicsCoefficients
   m_EditorClassIdentifier: 
-  _initializationData:
+  _cachedName: WaterPhysicsCoefficients
+  _niceName: Water Physics Coefficients
+  _initializer:
     _tags: []
     _resetToken: 
-  _cachedName: 
-  _niceName: 
   data:
     maximumMaximum: 25000
     maximumDrag: 10

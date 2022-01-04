@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d450b06ba0747b797ca2258023d0683, type: 3}
   m_Name: TreeDataContainerSelection
   m_EditorClassIdentifier: 
-  objects:
-  - {fileID: 11400000, guid: 74889d7173716dc4eb4ce15eaaea4bc5, type: 2}
-  - {fileID: 11400000, guid: b3a382499ad786e43bbd9009a958cdc8, type: 2}
-  objectNames:
-  - Logs
-  - Sycamore
+  _cachedName: 
+  _niceName: 
+  _initializer:
+    _tags: []
+    _resetToken: 
+  objects: []
+  objectNames: []
   _selected: {fileID: 0}

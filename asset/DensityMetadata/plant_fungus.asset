@@ -12,10 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27f402b5f299425b8811f4aa1879a37f, type: 3}
   m_Name: plant_fungus
   m_EditorClassIdentifier: 
-  _niceName: 
   _cachedName: 
+  _niceName: 
+  _initializer:
+    _tags:
+    - profileName
+    _resetToken: 
   id: 45
-  profileName: fungus
+  profileName: plant_fungus
   _category: Plant
   densityGramPerCubicCentimeter: 0.23
   materialWrapper: {fileID: 11400000, guid: d6c4f560f7517f34bbb354080cc263ef, type: 2}

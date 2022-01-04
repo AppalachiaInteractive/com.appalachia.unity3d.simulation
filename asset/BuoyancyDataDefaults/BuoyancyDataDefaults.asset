@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b7fb4ad6979440faed4004ded9b7958, type: 3}
   m_Name: BuoyancyDataDefaults
   m_EditorClassIdentifier: 
-  _initializationData:
-    _tags: []
-    _resetToken: 
   _cachedName: 
   _niceName: 
+  _initializer:
+    _tags: []
+    _resetToken: 
   wetnessAccumulationSpeed: 0.008
   wetnessDispersalSpeed: 0.0003
   submergednessAccumulationSpeed: 0.01

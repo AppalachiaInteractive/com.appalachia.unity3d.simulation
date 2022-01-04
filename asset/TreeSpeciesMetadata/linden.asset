@@ -12,7 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 773aa34ad01d5be41af9e052481587f0, type: 3}
   m_Name: linden
   m_EditorClassIdentifier: 
+  _cachedName: 
+  _niceName: 
+  _initializer:
+    _tags: []
+    _resetToken: 
   id: 19
+  speciesName: 
   woodData: {fileID: 11400000, guid: 5ade21c9a93477044b281d0d8d9e16d8, type: 2}
   individuals:
   - {fileID: 11400000, guid: 2f9a3ee468d4a754493eebddaab06d96, type: 2}

@@ -12,6 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 945e461c9f6a462e82c2ddafee83e127, type: 3}
   m_Name: DefaultShaderResource
   m_EditorClassIdentifier: 
+  _cachedName: 
+  _niceName: 
+  _initializer:
+    _tags: []
+    _resetToken: 
   branchShaderSet:
     shaders:
     - _shaderKey: internal/leaf

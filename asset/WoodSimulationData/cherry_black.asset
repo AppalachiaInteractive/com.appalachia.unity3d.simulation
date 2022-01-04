@@ -12,15 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebc057f721a531a4992e9e7eea91f2b2, type: 3}
   m_Name: cherry_black
   m_EditorClassIdentifier: 
-  _niceName: 
   _cachedName: 
+  _niceName: 
+  _initializer:
+    _tags: []
+    _resetToken: 
   id: 99
   _category: Fruit
   densityMetadata: {fileID: 11400000, guid: a6e09449308a9a64eb7ab28edaabf4c3, type: 2}
-  charTemperature: 128
-  ignitionTemperature: 206
+  btuDry: 24633.984375
+  btuGreen: 14929.6875
+  smokeAmount: 1.189308
   burnRate: {fileID: 11400000, guid: 48ebe2092f9ab4d4da71da1b69e4075f, type: 2}
   burnScale: {fileID: 11400000, guid: 747f60abf758a6841810d6421db21b23, type: 2}
-  btuGreen: 14929.6875
-  btuDry: 24633.984375
-  smokeAmount: 1.189308
+  charTemperature: 128
+  ignitionTemperature: 206

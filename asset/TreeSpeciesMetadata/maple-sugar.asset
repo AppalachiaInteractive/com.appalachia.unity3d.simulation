@@ -12,7 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 773aa34ad01d5be41af9e052481587f0, type: 3}
   m_Name: maple-sugar
   m_EditorClassIdentifier: 
+  _cachedName: 
+  _niceName: 
+  _initializer:
+    _tags: []
+    _resetToken: 
   id: 23
+  speciesName: 
   woodData: {fileID: 11400000, guid: 1b69fa92762925a44afc45f9c9d26b0f, type: 2}
   individuals:
   - {fileID: 11400000, guid: 1b93da3f0ffea6d4c90e0e01a9144419, type: 2}

@@ -231,6 +231,11 @@ namespace Appalachia.Simulation.Trees.Core
 
         private void Update()
         {
+            if (!DependenciesAreReady || !FullyInitialized)
+            {
+                return;
+            }
+            
             if (_model == null)
             {
                 _model = GetComponentInParent<LogModel>();

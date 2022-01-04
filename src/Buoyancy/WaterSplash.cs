@@ -5,6 +5,8 @@ namespace Appalachia.Simulation.Buoyancy
 {
     public sealed class WaterSplash : AppalachiaBehaviour<WaterSplash>
     {
+        #region Fields and Autoproperties
+
         public Transform sphere;
         public Transform splashTop;
         public Transform splashBottom;
@@ -12,8 +14,16 @@ namespace Appalachia.Simulation.Buoyancy
 
         private Vector3 lastPos;
 
+        #endregion
+
+        #region Event Functions
+
         private void Update()
         {
+            if (!DependenciesAreReady || !FullyInitialized)
+            {
+            }
+
             /*//Debug by drawing a line between the top and bottom
             Debug.DrawLine(splashBottom.position, splashTop.position, Color.blue);
     
@@ -71,5 +81,7 @@ namespace Appalachia.Simulation.Buoyancy
                 splashParticleSystem.Stop();
             }*/
         }
+
+        #endregion
     }
 }

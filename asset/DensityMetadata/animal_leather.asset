@@ -12,10 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27f402b5f299425b8811f4aa1879a37f, type: 3}
   m_Name: animal_leather
   m_EditorClassIdentifier: 
-  _niceName: 
   _cachedName: 
+  _niceName: 
+  _initializer:
+    _tags:
+    - profileName
+    _resetToken: 
   id: 44
-  profileName: leather
+  profileName: animal_leather
   _category: Animal
   densityGramPerCubicCentimeter: 1
   materialWrapper: {fileID: 11400000, guid: c3d9f4d26cfc57142bf9f671abfc74ea, type: 2}

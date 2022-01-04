@@ -12,17 +12,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b609a5af2c9400e80aadb0e8e3df1c3, type: 3}
   m_Name: TreeSpeciesEditorSelection
   m_EditorClassIdentifier: 
+  _cachedName: 
+  _niceName: 
+  _initializer:
+    _tags: []
+    _resetToken: 
   tree:
     hierarchyID: 0
     tab: 0
+    subtab: 0
     id: 0
     age: 0
     stage: 0
   branch:
     hierarchyID: 0
     tab: 0
+    subtab: 0
+    id: 0
+  branchCopySettings:
+    hierarchyID: 0
+    tab: 0
+    subtab: 0
+    id: 0
+  treeCopySettings:
+    hierarchyID: 0
+    tab: 0
+    subtab: 0
     id: 0
   log:
     hierarchyID: 0
     tab: 0
+    subtab: 0
     id: 0

@@ -12,10 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27f402b5f299425b8811f4aa1879a37f, type: 3}
   m_Name: animal_reptile
   m_EditorClassIdentifier: 
-  _niceName: 
   _cachedName: 
+  _niceName: 
+  _initializer:
+    _tags:
+    - profileName
+    _resetToken: 
   id: 41
-  profileName: reptile
+  profileName: animal_reptile
   _category: Animal
   densityGramPerCubicCentimeter: 0.85
   materialWrapper: {fileID: 11400000, guid: e3ccdedae63d84947aa829788e5290ab, type: 2}

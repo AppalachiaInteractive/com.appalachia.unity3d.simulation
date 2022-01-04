@@ -12,7 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 773aa34ad01d5be41af9e052481587f0, type: 3}
   m_Name: sycamore
   m_EditorClassIdentifier: 
+  _cachedName: 
+  _niceName: 
+  _initializer:
+    _tags: []
+    _resetToken: 
   id: 1
+  speciesName: 
   woodData: {fileID: 11400000, guid: 01e2fa608a17c3c43a7c8367091589d8, type: 2}
   individuals:
   - {fileID: 11400000, guid: cfefdaa8a66f4544d9e8f61dda325e37, type: 2}

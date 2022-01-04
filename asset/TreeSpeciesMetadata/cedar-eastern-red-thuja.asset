@@ -12,7 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 773aa34ad01d5be41af9e052481587f0, type: 3}
   m_Name: cedar-eastern-red-thuja
   m_EditorClassIdentifier: 
+  _cachedName: 
+  _niceName: 
+  _initializer:
+    _tags: []
+    _resetToken: 
   id: 9
+  speciesName: 
   woodData: {fileID: 11400000, guid: 5bf22023a3a54444eb7705028de5ca72, type: 2}
   individuals:
   - {fileID: 11400000, guid: 4f263e00cb22b84459be5349b29cd461, type: 2}

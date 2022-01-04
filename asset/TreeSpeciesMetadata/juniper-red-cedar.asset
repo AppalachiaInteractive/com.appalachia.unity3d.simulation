@@ -12,7 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 773aa34ad01d5be41af9e052481587f0, type: 3}
   m_Name: juniper-red-cedar
   m_EditorClassIdentifier: 
+  _cachedName: 
+  _niceName: 
+  _initializer:
+    _tags: []
+    _resetToken: 
   id: 18
+  speciesName: 
   woodData: {fileID: 11400000, guid: 795ef35c44b869146af277d8d1c825a9, type: 2}
   individuals:
   - {fileID: 11400000, guid: 01737c9bdc23951488698c377d01b6b4, type: 2}

@@ -12,10 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27f402b5f299425b8811f4aa1879a37f, type: 3}
   m_Name: wood_ash_green
   m_EditorClassIdentifier: 
-  _niceName: 
   _cachedName: 
+  _niceName: 
+  _initializer:
+    _tags:
+    - profileName
+    _resetToken: 
   id: 1
-  profileName: ash_green
+  profileName: wood_ash_green
   _category: Wood
   densityGramPerCubicCentimeter: 0.479
   materialWrapper: {fileID: 11400000, guid: 2e59f69177a4991468619104887a5fea, type: 2}

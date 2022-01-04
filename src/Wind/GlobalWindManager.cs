@@ -1,6 +1,5 @@
 #region
 
-using System;
 using Appalachia.Audio;
 using Appalachia.Audio.Analysis;
 using Appalachia.Core.Attributes;
@@ -12,6 +11,7 @@ using Appalachia.Globals.Shading;
 using Appalachia.Simulation.Core.Metadata.Wind;
 using Appalachia.Utility.Async;
 using Appalachia.Utility.Execution;
+using Appalachia.Utility.Extensions;
 using Sirenix.OdinInspector;
 using Unity.Mathematics;
 using Unity.Profiling;
@@ -157,10 +157,9 @@ namespace Appalachia.Simulation.Wind
         [ShowIf(nameof(debug))]
         public GlobalWindParameters debugParameters;
 
-        [HideInInspector] public GameObject _arrow;
+        [HideInInspector] public GameObject _windArrow;
         [HideInInspector] public MeshFilter _meshFilter;
         [HideInInspector] public MeshRenderer _meshRenderer;
-        [NonSerialized] private bool _initialized;
 
         #endregion
 
@@ -204,7 +203,7 @@ namespace Appalachia.Simulation.Wind
         {
             using (_PRF_Update.Auto())
             {
-                if (!DependenciesAreReady)
+                if (!DependenciesAreReady || !FullyInitialized)
                 {
                     return;
                 }
@@ -235,7 +234,12 @@ namespace Appalachia.Simulation.Wind
 
                 ToggleHideShowArrowComponents(param.showArrowComponents);
 
-                var arrowT = _arrow.transform;
+                if (_windArrow == null)
+                {
+                    return;
+                }
+
+                var arrowT = _windArrow.transform;
                 arrowT.localPosition = param.arrowOffset;
                 arrowT.localRotation = Quaternion.identity;
                 arrowT.localScale = param.arrowScale;
@@ -298,11 +302,30 @@ namespace Appalachia.Simulation.Wind
             {
                 await base.Initialize(initializer);
 
-                _initialized = true;
-
                 gameObject.name = "Global Wind Manager";
 
                 _GSR.InitializeShaderReferences();
+
+                _windArrow = gameObject.GetChild(AppalachiaRepository.PrefabAddresses.WIND_ARROW);
+
+                if (_windArrow == null)
+                {
+                    _windArrow = await AppalachiaRepository.InstantiatePrefab(
+                        AppalachiaRepository.PrefabAddresses.WIND_ARROW,
+                        gameObject,
+                        true
+                    );
+                }
+
+                _meshFilter = await initializer.Get<MeshFilter>(
+                    _windArrow,
+                    nameof(_windArrow) + nameof(_meshFilter)
+                );
+
+                _meshRenderer = await initializer.Get<MeshRenderer>(
+                    _windArrow,
+                    nameof(_windArrow) + nameof(_meshRenderer)
+                );
             }
         }
 
@@ -442,39 +465,6 @@ namespace Appalachia.Simulation.Wind
                 if (low.referenceID <= 0)
                 {
                     low.referenceID = (int)GAC.Lookup(mixer, GAC.WIND._GUST_CHANNEL_MONITOR_INSTANCE_LOW);
-                }
-            }
-        }
-
-        [Button]
-        private void RecreateArrowComponents()
-        {
-            using (_PRF_RecreateArrowComponents.Auto())
-            {
-                if (_arrow == null)
-                {
-                    _arrow = new GameObject("Arrow");
-                    _arrow.transform.SetParent(transform);
-                }
-
-                if (_meshFilter == null)
-                {
-                    _meshFilter = _arrow.GetComponent<MeshFilter>();
-                }
-
-                if (_meshFilter == null)
-                {
-                    _meshFilter = _arrow.AddComponent<MeshFilter>();
-                }
-
-                if (_meshRenderer == null)
-                {
-                    _meshRenderer = _arrow.GetComponent<MeshRenderer>();
-                }
-
-                if (_meshRenderer == null)
-                {
-                    _meshRenderer = _arrow.AddComponent<MeshRenderer>();
                 }
             }
         }
@@ -635,7 +625,7 @@ namespace Appalachia.Simulation.Wind
 
         private void ToggleHideShowArrowComponents(bool show)
         {
-            _arrow.hideFlags = show ? HideFlags.None : HideFlags.HideInInspector;
+            _windArrow.hideFlags = show ? HideFlags.None : HideFlags.HideInInspector;
             _meshFilter.hideFlags = show ? HideFlags.None : HideFlags.HideInInspector;
             _meshRenderer.hideFlags = show ? HideFlags.None : HideFlags.HideInInspector;
         }
@@ -650,25 +640,10 @@ namespace Appalachia.Simulation.Wind
         #region Profiling
 
         private const string _PRF_PFX = nameof(GlobalWindManager) + ".";
-        private static readonly ProfilerMarker _PRF_Awake = new(_PRF_PFX + "Awake");
-        private static readonly ProfilerMarker _PRF_Start = new(_PRF_PFX + "Start");
-        private static readonly ProfilerMarker _PRF_OnEnable = new(_PRF_PFX + "OnEnable");
         private static readonly ProfilerMarker _PRF_FixedUpdate = new(_PRF_PFX + "FixedUpdate");
 
         private static readonly ProfilerMarker _PRF_Update = new(_PRF_PFX + "Update");
-        private static readonly ProfilerMarker _PRF_LateUpdate = new(_PRF_PFX + "LateUpdate");
-        private static readonly ProfilerMarker _PRF_OnDisable = new(_PRF_PFX + "OnDisable");
-        private static readonly ProfilerMarker _PRF_OnDestroy = new(_PRF_PFX + "OnDestroy");
-        private static readonly ProfilerMarker _PRF_Reset = new(_PRF_PFX + "Reset");
-        private static readonly ProfilerMarker _PRF_OnDrawGizmos = new(_PRF_PFX + "OnDrawGizmos");
-
-        private static readonly ProfilerMarker _PRF_OnDrawGizmosSelected =
-            new(_PRF_PFX + "OnDrawGizmosSelected");
-
         private static readonly ProfilerMarker _PRF_Initialize = new(_PRF_PFX + nameof(Initialize));
-
-        private static readonly ProfilerMarker _PRF_RecreateArrowComponents =
-            new(_PRF_PFX + nameof(RecreateArrowComponents));
 
         private static readonly ProfilerMarker _PRF_GetCurrentAudioStrength =
             new(_PRF_PFX + nameof(GetCurrentAudioStrength));

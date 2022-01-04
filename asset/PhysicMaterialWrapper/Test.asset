@@ -12,13 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5055e54811e14323bac61ccf7ef3657b, type: 3}
   m_Name: Test
   m_EditorClassIdentifier: 
-  _niceName: Wood
   _cachedName: Wood
+  _niceName: Wood
+  _initializer:
+    _tags: []
+    _resetToken: 
   _category: _Test
-  material: {fileID: 13400000, guid: e9ccb2f4547f6f748a25d30269892091, type: 2}
-  defaultDensity: {fileID: 11400000, guid: 7279e20583347d04e8f9154587d2d2d9, type: 2}
-  wireColor: {r: 1, g: 1, b: 1, a: 1}
-  meshTransparency: 1
   labelBackgroundColor: {r: 0, g: 0, b: 0, a: 1}
   labelTextColor: {r: 1, g: 1, b: 1, a: 1}
+  wireColor: {r: 1, g: 1, b: 1, a: 1}
+  defaultDensity: {fileID: 11400000, guid: 7279e20583347d04e8f9154587d2d2d9, type: 2}
+  meshTransparency: 1
   surface: {fileID: 2100000, guid: c12ae51c0faa7f848adab34a1a0fa1b8, type: 2}
+  material: {fileID: 13400000, guid: e9ccb2f4547f6f748a25d30269892091, type: 2}

@@ -12,13 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5055e54811e14323bac61ccf7ef3657b, type: 3}
   m_Name: Gravel
   m_EditorClassIdentifier: 
-  _niceName: Gravel
   _cachedName: Gravel
+  _niceName: Gravel
+  _initializer:
+    _tags: []
+    _resetToken: 
   _category: Common
-  material: {fileID: 13400000, guid: 8d8ad4d060bf33e4397db2691bbce019, type: 2}
-  defaultDensity: {fileID: 11400000, guid: 7ff7872432fd7ec4da1afbf2c133815c, type: 2}
-  wireColor: {r: 0.348, g: 0.323292, b: 0.323292, a: 1}
-  meshTransparency: 0.85
   labelBackgroundColor: {r: 0.2264151, g: 0.2264151, b: 0.2264151, a: 1}
   labelTextColor: {r: 1, g: 1, b: 1, a: 1}
+  wireColor: {r: 0.348, g: 0.323292, b: 0.323292, a: 1}
+  defaultDensity: {fileID: 11400000, guid: 7ff7872432fd7ec4da1afbf2c133815c, type: 2}
+  meshTransparency: 0.85
   surface: {fileID: 2100000, guid: 2d2ce1d0a0371094793e53cb0eda3f10, type: 2}
+  material: {fileID: 13400000, guid: 8d8ad4d060bf33e4397db2691bbce019, type: 2}

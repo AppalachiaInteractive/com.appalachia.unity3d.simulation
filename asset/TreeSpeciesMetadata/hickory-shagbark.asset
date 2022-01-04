@@ -12,7 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 773aa34ad01d5be41af9e052481587f0, type: 3}
   m_Name: hickory-shagbark
   m_EditorClassIdentifier: 
+  _cachedName: 
+  _niceName: 
+  _initializer:
+    _tags: []
+    _resetToken: 
   id: 16
+  speciesName: 
   woodData: {fileID: 11400000, guid: 87a6b2a2036980944b9ee4aae8520eeb, type: 2}
   individuals:
   - {fileID: 11400000, guid: 8a532ec46d3101d459540a1bd9e2d3e2, type: 2}

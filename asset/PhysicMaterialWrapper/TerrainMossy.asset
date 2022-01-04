@@ -12,13 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5055e54811e14323bac61ccf7ef3657b, type: 3}
   m_Name: TerrainMossy
   m_EditorClassIdentifier: 
-  _niceName: Terrain Mossy
   _cachedName: TerrainMossy
+  _niceName: Terrain Mossy
+  _initializer:
+    _tags: []
+    _resetToken: 
   _category: Common
-  material: {fileID: 13400000, guid: 17eb6b1cf9a48634d92ccea6fc3193ba, type: 2}
-  defaultDensity: {fileID: 11400000, guid: 8edae0238ef5fe341a9685f09f5d0c67, type: 2}
-  wireColor: {r: 0.461, g: 0.39015573, b: 0, a: 0.23921569}
-  meshTransparency: 0.55
   labelBackgroundColor: {r: 0.2264151, g: 0.2264151, b: 0.2264151, a: 1}
   labelTextColor: {r: 1, g: 1, b: 1, a: 1}
+  wireColor: {r: 0.461, g: 0.39015573, b: 0, a: 0.23921569}
+  defaultDensity: {fileID: 11400000, guid: 8edae0238ef5fe341a9685f09f5d0c67, type: 2}
+  meshTransparency: 0.55
   surface: {fileID: 2100000, guid: c2b9c043e7d16544c8945e820cb83f38, type: 2}
+  material: {fileID: 13400000, guid: 17eb6b1cf9a48634d92ccea6fc3193ba, type: 2}

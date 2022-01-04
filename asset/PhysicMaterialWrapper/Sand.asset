@@ -12,13 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5055e54811e14323bac61ccf7ef3657b, type: 3}
   m_Name: Sand
   m_EditorClassIdentifier: 
-  _niceName: Sand
   _cachedName: Sand
+  _niceName: Sand
+  _initializer:
+    _tags: []
+    _resetToken: 
   _category: Ground
-  material: {fileID: 13400000, guid: 98c89de8c3d987b45aba659db9b15aa1, type: 2}
-  defaultDensity: {fileID: 11400000, guid: 3367f2245bf87c8439e626c89a6b08c6, type: 2}
-  wireColor: {r: 0.8509804, g: 0.7774598, b: 0.59738827, a: 1}
-  meshTransparency: 0.5
   labelBackgroundColor: {r: 0.2264151, g: 0.2264151, b: 0.2264151, a: 1}
   labelTextColor: {r: 1, g: 1, b: 1, a: 1}
+  wireColor: {r: 0.8509804, g: 0.7774598, b: 0.59738827, a: 1}
+  defaultDensity: {fileID: 11400000, guid: 3367f2245bf87c8439e626c89a6b08c6, type: 2}
+  meshTransparency: 0.5
   surface: {fileID: 2100000, guid: e9a6eacd0d92a3649b8c3b61bab8073f, type: 2}
+  material: {fileID: 13400000, guid: 98c89de8c3d987b45aba659db9b15aa1, type: 2}

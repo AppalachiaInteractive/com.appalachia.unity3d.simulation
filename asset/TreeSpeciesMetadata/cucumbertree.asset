@@ -12,7 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 773aa34ad01d5be41af9e052481587f0, type: 3}
   m_Name: cucumbertree
   m_EditorClassIdentifier: 
+  _cachedName: 
+  _niceName: 
+  _initializer:
+    _tags: []
+    _resetToken: 
   id: 11
+  speciesName: 
   woodData: {fileID: 11400000, guid: e1a7aa0c9992df94dabdd236fb0a0fc1, type: 2}
   individuals:
   - {fileID: 11400000, guid: 6f2af669a264eac4f9c1e3bd1c9d0bfc, type: 2}

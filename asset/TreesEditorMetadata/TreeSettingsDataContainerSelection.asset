@@ -12,87 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cfb6957798a14e1c82e797a7cc10e8f7, type: 3}
   m_Name: TreeSettingsDataContainerSelection
   m_EditorClassIdentifier: 
-  objects:
-  - {fileID: 11400000, guid: a1e1aafb4240a184498d87bb44d5f511, type: 2}
-  - {fileID: 11400000, guid: 8303830a7c8737d4eb614f9397d96e85, type: 2}
-  - {fileID: 11400000, guid: 22cf08760a82d73468b5c3f690424b23, type: 2}
-  - {fileID: 11400000, guid: f39d7539adbf3d945a1a88544dd42dd5, type: 2}
-  - {fileID: 11400000, guid: a5aede2954c777e418da25816e1cb5af, type: 2}
-  - {fileID: 11400000, guid: ec38e43589bb30c449e9a87ff4450cc6, type: 2}
-  - {fileID: 11400000, guid: 08e063dad546a4f44876617b6a7e6aa9, type: 2}
-  - {fileID: 11400000, guid: cb09b2caeef106a498b4ca123b6037ea, type: 2}
-  - {fileID: 11400000, guid: 455b235391d8d2f4f9efeb4755bbe99a, type: 2}
-  - {fileID: 11400000, guid: b04d84ee4f18ec04d93b6fa57e61c5a4, type: 2}
-  - {fileID: 11400000, guid: af80cd168c6efef40b8d2fa5a056cd3a, type: 2}
-  - {fileID: 11400000, guid: dee53b4fdd61da04085368f0e1866d1e, type: 2}
-  - {fileID: 11400000, guid: 771d06a1356c3c344a134f3b4eba026a, type: 2}
-  - {fileID: 11400000, guid: cbaf0118f5960ee4fbbf92a7df18cd61, type: 2}
-  - {fileID: 11400000, guid: 4b2abc7f1fcdc434989a3cfc00206a01, type: 2}
-  - {fileID: 11400000, guid: d812aea733fab864dbb4c030e235f780, type: 2}
-  - {fileID: 11400000, guid: 7ba56378015158c4098ad7b3f24d6f0e, type: 2}
-  - {fileID: 11400000, guid: eef0fc64c15199e49b025bf67e7592b0, type: 2}
-  - {fileID: 11400000, guid: 8ec58df11370a7542906d1df26246fc4, type: 2}
-  - {fileID: 11400000, guid: 70ab3fd6efd11ec49a7506c1fc4a2980, type: 2}
-  - {fileID: 11400000, guid: 30591afa77005ce46ac9bb2c88f86fb6, type: 2}
-  - {fileID: 11400000, guid: f4c4696b304d6724e8b8bc9439ef919b, type: 2}
-  - {fileID: 11400000, guid: 63382775f9aa8c8408587dad2cb40e03, type: 2}
-  - {fileID: 11400000, guid: 4bd9162d11f2c6847b02777956616b9a, type: 2}
-  - {fileID: 11400000, guid: cbd7b4b1ce766c34c808f7e9a4caeadd, type: 2}
-  - {fileID: 11400000, guid: d405de4db2b64764ba02989f63c2730a, type: 2}
-  - {fileID: 11400000, guid: b7a011b5b7d0cfa4680886bc37e3be88, type: 2}
-  - {fileID: 11400000, guid: 116cc63dd890f344599ce1592c5f6048, type: 2}
-  - {fileID: 11400000, guid: 58f5a441eafa6a44395cded3f636516a, type: 2}
-  - {fileID: 11400000, guid: cb9ed07415370a040bd8545abdb4aa34, type: 2}
-  - {fileID: 11400000, guid: 162904d344b00e14bbdec579eee0e5eb, type: 2}
-  - {fileID: 11400000, guid: bf5e40ee6ca13f1428f78b651de2dd21, type: 2}
-  - {fileID: 11400000, guid: 61780c680b90e534a9a86b219223b5c2, type: 2}
-  - {fileID: 11400000, guid: 8bbd18edc5b4d104f89ebd80f33ddbdd, type: 2}
-  - {fileID: 11400000, guid: c0456c458fba6504c91f11b615535aa3, type: 2}
-  - {fileID: 11400000, guid: b3a382499ad786e43bbd9009a958cdc8, type: 2}
-  - {fileID: 11400000, guid: fc23570258d9a0944b5e3aaf838579e5, type: 2}
-  - {fileID: 11400000, guid: 00c1ee70132b3644cb7fb3b92ab0b3d5, type: 2}
-  - {fileID: 11400000, guid: 55809870c0399be47a7c65c5037ceda0, type: 2}
-  - {fileID: 11400000, guid: a358f41c7d2ded3488fb58c794d8b652, type: 2}
-  objectNames:
-  - Ash-Black
-  - Ash-White
-  - Beech
-  - Birch-Black
-  - Birch-Paper
-  - Birch-Yellow
-  - Buckeye-Yellow
-  - Cedar-Eastern-Red-Thuja
-  - Chestnut
-  - Cucumbertree
-  - Dogwood-Flowering
-  - Elm
-  - Hemlock-Eastern
-  - Hickory-Pecan
-  - Hickory-Shagbark
-  - Honey-Locust
-  - Juniper-Red-Cedar
-  - Linden
-  - Maple-Moosewood
-  - Maple-Red
-  - Maple-Silver
-  - Maple-Sugar
-  - Oak-Blackjack
-  - Oak-Red
-  - Oak-White
-  - Pine-Pitch
-  - Pine-Shortleaf
-  - Pine-Table-Mountain
-  - Pine-Virginia
-  - Pine-White
-  - Sassafras
-  - Serviceberry
-  - Spruce-Black
-  - Sumac
-  - Sweet-Gum
-  - Sycamore
-  - Tamarack
-  - Tuliptree
-  - Walnut
-  - Willow
+  _cachedName: 
+  _niceName: 
+  _initializer:
+    _tags: []
+    _resetToken: 
+  objects: []
+  objectNames: []
   _selected: {fileID: 11400000, guid: 58f5a441eafa6a44395cded3f636516a, type: 2}
   enabled: 0

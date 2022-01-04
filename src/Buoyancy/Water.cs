@@ -43,8 +43,9 @@ namespace Appalachia.Simulation.Buoyancy
 
         static Water()
         {
-            MainVoxelDataGizmoSettingsCollection.InstanceAvailable +=
-                i => _mainVoxelDataGizmoSettingsCollection = i;
+            RegisterDependency<MainVoxelDataGizmoSettingsCollection>(
+                i => _mainVoxelDataGizmoSettingsCollection = i
+            );
         }
 
         #region Static Fields and Autoproperties

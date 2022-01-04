@@ -47,8 +47,6 @@ namespace Appalachia.Simulation.Trees.Build.Execution
 
         private static EditorCoroutine _coroutine;
 
-        private static TreeSpeciesEditorSelection _selectionInstance;
-
         private static TreeSpeciesEditorSelection _treeSpeciesEditorSelection;
 
         #endregion
@@ -66,20 +64,7 @@ namespace Appalachia.Simulation.Trees.Build.Execution
             }
         }
 
-        private static LogDataContainer CTX => selectionInstance.log.selection.selected;
-
-        private static TreeSpeciesEditorSelection selectionInstance
-        {
-            get
-            {
-                if (_selectionInstance == null)
-                {
-                    _selectionInstance = _treeSpeciesEditorSelection;
-                }
-
-                return _selectionInstance;
-            }
-        }
+        private static LogDataContainer CTX => _treeSpeciesEditorSelection?.log?.selection?.selected;
 
         [InitializeOnLoadMethod]
         public static void Initialize()

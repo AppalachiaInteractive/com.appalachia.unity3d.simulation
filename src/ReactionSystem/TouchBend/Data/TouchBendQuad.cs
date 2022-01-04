@@ -29,7 +29,7 @@ namespace Appalachia.Simulation.ReactionSystem.TouchBend.Data
     {
         static TouchBendQuad()
         {
-            GSR.InstanceAvailable += i => _GSR = i;
+            RegisterDependency<GSR>(i => _GSR = i);
         }
 
         #region Static Fields and Autoproperties
@@ -273,6 +273,11 @@ namespace Appalachia.Simulation.ReactionSystem.TouchBend.Data
         {
             using (_PRF_Update.Auto())
             {
+                if (!DependenciesAreReady || !FullyInitialized)
+                {
+                    return;
+                }
+                
 #if UNITY_EDITOR
 
                 if (finishShot)

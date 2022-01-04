@@ -12,10 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27f402b5f299425b8811f4aa1879a37f, type: 3}
   m_Name: animal_snake
   m_EditorClassIdentifier: 
-  _niceName: 
   _cachedName: 
+  _niceName: 
+  _initializer:
+    _tags:
+    - profileName
+    _resetToken: 
   id: 40
-  profileName: snake
+  profileName: animal_snake
   _category: Animal
   densityGramPerCubicCentimeter: 0.85
   materialWrapper: {fileID: 11400000, guid: bbfc6faa9711527429dbb41a23b8194e, type: 2}

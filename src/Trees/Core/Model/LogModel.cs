@@ -23,7 +23,7 @@ namespace Appalachia.Simulation.Trees.Core.Model
     {
         static LogModel()
         {
-            TreeGizmoStyle.InstanceAvailable += i => _treeGizmoStyle = i;
+            RegisterDependency<TreeGizmoStyle>(i => _treeGizmoStyle = i);
         }
 
         #region Static Fields and Autoproperties
@@ -156,6 +156,11 @@ namespace Appalachia.Simulation.Trees.Core.Model
 
         private void Update()
         {
+            if (!DependenciesAreReady || !FullyInitialized)
+            {
+                return;
+            }
+            
             var repaint = false;
 
             if (style == null)

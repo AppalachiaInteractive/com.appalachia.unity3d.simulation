@@ -12,15 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebc057f721a531a4992e9e7eea91f2b2, type: 3}
   m_Name: maple_moosewood
   m_EditorClassIdentifier: 
-  _niceName: 
   _cachedName: 
+  _niceName: 
+  _initializer:
+    _tags: []
+    _resetToken: 
   id: 49
   _category: Maple
   densityMetadata: {fileID: 11400000, guid: c22ffc62bc7813a4faa3a3b9cc5ad62b, type: 2}
-  charTemperature: 153
-  ignitionTemperature: 256
+  btuDry: 16684.5
+  btuGreen: 10132.287109375
+  smokeAmount: 0.7335945
   burnRate: {fileID: 11400000, guid: 48ebe2092f9ab4d4da71da1b69e4075f, type: 2}
   burnScale: {fileID: 11400000, guid: 747f60abf758a6841810d6421db21b23, type: 2}
-  btuGreen: 10132.287109375
-  btuDry: 16684.5
-  smokeAmount: 0.7335945
+  charTemperature: 153
+  ignitionTemperature: 256

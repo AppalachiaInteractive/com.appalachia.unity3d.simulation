@@ -12,6 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d56624587b5e44cb8f04bf0684abaf84, type: 3}
   m_Name: TreeGraphSettings
   m_EditorClassIdentifier: 
+  _cachedName: 
+  _niceName: 
+  _initializer:
+    _tags: []
+    _resetToken: 
   graphSize: 300
   horizontalBufferPixels: 6
   horizontalSubtreeBufferPixels: 12

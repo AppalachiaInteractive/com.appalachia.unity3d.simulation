@@ -12,4 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e354a58ab6c94c418a3e8f337c5aad0, type: 3}
   m_Name: Wood Burn Scale
   m_EditorClassIdentifier: 
+  _cachedName: 
+  _niceName: 
+  _initializer:
+    _tags: []
+    _resetToken: 
   burnScale: {x: 0.15, y: 0.15, z: 0.4}

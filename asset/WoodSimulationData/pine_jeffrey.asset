@@ -12,15 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebc057f721a531a4992e9e7eea91f2b2, type: 3}
   m_Name: pine_jeffrey
   m_EditorClassIdentifier: 
-  _niceName: 
   _cachedName: 
+  _niceName: 
+  _initializer:
+    _tags: []
+    _resetToken: 
   id: 141
   _category: Pine
   densityMetadata: {fileID: 11400000, guid: 1b20604341ccc774081c51756c6eddde, type: 2}
-  charTemperature: 149
-  ignitionTemperature: 248
+  btuDry: 18987.5
+  btuGreen: 11205.7373046875
+  smokeAmount: 0.83886486
   burnRate: {fileID: 11400000, guid: 48ebe2092f9ab4d4da71da1b69e4075f, type: 2}
   burnScale: {fileID: 11400000, guid: 747f60abf758a6841810d6421db21b23, type: 2}
-  btuGreen: 11205.7373046875
-  btuDry: 18987.5
-  smokeAmount: 0.83886486
+  charTemperature: 149
+  ignitionTemperature: 248

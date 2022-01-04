@@ -12,13 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5055e54811e14323bac61ccf7ef3657b, type: 3}
   m_Name: WoodMossy
   m_EditorClassIdentifier: 
-  _niceName: ' Mossy'
   _cachedName: WoodMossy
+  _niceName: ' Mossy'
+  _initializer:
+    _tags: []
+    _resetToken: 
   _category: Common
-  material: {fileID: 13400000, guid: 5a5d620449ca90848a66345e38b6bafc, type: 2}
-  defaultDensity: {fileID: 11400000, guid: 4742c98fdad02fe409780dc8a8c8003d, type: 2}
-  wireColor: {r: 0.70078117, g: 0.72300005, b: 0.117849045, a: 1}
-  meshTransparency: 0.4
   labelBackgroundColor: {r: 0.22508834, g: 0.41099998, b: 0.136863, a: 1}
   labelTextColor: {r: 1, g: 1, b: 1, a: 1}
+  wireColor: {r: 0.70078117, g: 0.72300005, b: 0.117849045, a: 1}
+  defaultDensity: {fileID: 11400000, guid: 4742c98fdad02fe409780dc8a8c8003d, type: 2}
+  meshTransparency: 0.4
   surface: {fileID: 2100000, guid: 05aa71a0e64297c4ea6027b6752678b9, type: 2}
+  material: {fileID: 13400000, guid: 5a5d620449ca90848a66345e38b6bafc, type: 2}

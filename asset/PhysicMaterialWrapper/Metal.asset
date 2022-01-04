@@ -12,13 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5055e54811e14323bac61ccf7ef3657b, type: 3}
   m_Name: Metal
   m_EditorClassIdentifier: 
-  _niceName: Metal
   _cachedName: Metal
+  _niceName: Metal
+  _initializer:
+    _tags: []
+    _resetToken: 
   _category: General
-  material: {fileID: 13400000, guid: 01571ba68fb2dad46aa03094ab219579, type: 2}
-  defaultDensity: {fileID: 11400000, guid: c19c82a0936eb3b48ac415ac1e3d4aa2, type: 2}
-  wireColor: {r: 0.4399395, g: 0.43207845, b: 0.54901963, a: 1}
-  meshTransparency: 0.5
   labelBackgroundColor: {r: 0.2264151, g: 0.2264151, b: 0.2264151, a: 1}
   labelTextColor: {r: 1, g: 1, b: 1, a: 1}
+  wireColor: {r: 0.4399395, g: 0.43207845, b: 0.54901963, a: 1}
+  defaultDensity: {fileID: 11400000, guid: c19c82a0936eb3b48ac415ac1e3d4aa2, type: 2}
+  meshTransparency: 0.5
   surface: {fileID: 2100000, guid: 2a6cc2dd2206fb948ba8df6c1ee3df2f, type: 2}
+  material: {fileID: 13400000, guid: 01571ba68fb2dad46aa03094ab219579, type: 2}

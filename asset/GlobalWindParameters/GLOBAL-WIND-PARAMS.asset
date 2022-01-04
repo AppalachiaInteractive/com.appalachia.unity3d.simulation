@@ -12,8 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 721e089ec8a14ce7bc5d36cedd9e6dbf, type: 3}
   m_Name: GLOBAL-WIND-PARAMS
   m_EditorClassIdentifier: 
-  _niceName: 
   _cachedName: 
+  _niceName: 
+  _initializer:
+    _tags: []
+    _resetToken: 
   realtimeUpdate: 1
   maximumWindSpeed: 25
   showArrow: 0
@@ -27,7 +30,7 @@ MonoBehaviour:
   headingUpdateSpeed: 0.05
   baseAmplitude: 1
   baseToGustRatio: 0.15
-  gustTexture: {fileID: 2800000, guid: b49712b1433bff9489d25d5e55859228, type: 3}
+  gustTexture: {fileID: 0}
   gustContrast: 1
   gustAmplitudeSharpness: 0.25
   gustStep: {x: 0.001, y: 0.01}

@@ -12,7 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 773aa34ad01d5be41af9e052481587f0, type: 3}
   m_Name: chestnut
   m_EditorClassIdentifier: 
+  _cachedName: 
+  _niceName: 
+  _initializer:
+    _tags: []
+    _resetToken: 
   id: 10
+  speciesName: 
   woodData: {fileID: 11400000, guid: 9cd56aefade6e2b44964fda797de7ff6, type: 2}
   individuals:
   - {fileID: 11400000, guid: c459a830fd29d4442893c1b4c154ac34, type: 2}

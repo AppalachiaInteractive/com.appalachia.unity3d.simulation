@@ -12,7 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 773aa34ad01d5be41af9e052481587f0, type: 3}
   m_Name: maple-moosewood
   m_EditorClassIdentifier: 
+  _cachedName: 
+  _niceName: 
+  _initializer:
+    _tags: []
+    _resetToken: 
   id: 20
+  speciesName: 
   woodData: {fileID: 11400000, guid: 9f63da34b0000814fa5d5c9287c340c7, type: 2}
   individuals:
   - {fileID: 11400000, guid: 0d9984354e313ae4da90519486159683, type: 2}

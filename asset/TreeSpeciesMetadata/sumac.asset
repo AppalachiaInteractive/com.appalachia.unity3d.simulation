@@ -12,7 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 773aa34ad01d5be41af9e052481587f0, type: 3}
   m_Name: sumac
   m_EditorClassIdentifier: 
+  _cachedName: 
+  _niceName: 
+  _initializer:
+    _tags: []
+    _resetToken: 
   id: 35
+  speciesName: 
   woodData: {fileID: 11400000, guid: ecb844274b986594fb0f34b12dade101, type: 2}
   individuals:
   - {fileID: 11400000, guid: cb1ae4eb1e91fb740bcba93395b99766, type: 2}

@@ -12,6 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 773aa34ad01d5be41af9e052481587f0, type: 3}
   m_Name: pine-table-mountain
   m_EditorClassIdentifier: 
+  _cachedName: 
+  _niceName: 
+  _initializer:
+    _tags: []
+    _resetToken: 
   id: 29
   speciesName: 
   woodData: {fileID: 11400000, guid: 936ea7993128148459e22cdb4f565d4f, type: 2}

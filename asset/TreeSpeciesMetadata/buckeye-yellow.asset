@@ -12,7 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 773aa34ad01d5be41af9e052481587f0, type: 3}
   m_Name: buckeye-yellow
   m_EditorClassIdentifier: 
+  _cachedName: 
+  _niceName: 
+  _initializer:
+    _tags: []
+    _resetToken: 
   id: 8
+  speciesName: 
   woodData: {fileID: 11400000, guid: 106c2451bfca4c54aa9eb87de2b5588f, type: 2}
   individuals:
   - {fileID: 11400000, guid: 314ae87bbb88a3343a35d372e96533e7, type: 2}
