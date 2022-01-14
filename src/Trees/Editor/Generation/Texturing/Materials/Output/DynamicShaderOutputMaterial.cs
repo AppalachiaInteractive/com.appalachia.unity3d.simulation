@@ -10,7 +10,10 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Output
         /*[VerticalGroup("RIGHT", Order = 10), LabelWidth(110)]
         public Material prototypeMaterial;*/
 
-        protected DynamicShaderOutputMaterial(int materialID, ResponsiveSettingsType settingsType) : base(materialID, settingsType)
+        protected DynamicShaderOutputMaterial(int materialID, ResponsiveSettingsType settingsType) : base(
+            materialID,
+            settingsType
+        )
         {
             _textureSet = new OutputTextureSet();
         }

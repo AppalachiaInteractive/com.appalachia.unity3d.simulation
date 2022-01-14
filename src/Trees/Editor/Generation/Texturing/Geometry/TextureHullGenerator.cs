@@ -13,10 +13,15 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Geometry
 {
     public static class TextureHullGenerator
     {
+        #region Static Fields and Autoproperties
+
+        private static Dictionary<Material, Texture2D>
+            primaryTextures = new Dictionary<Material, Texture2D>();
+
         private static Dictionary<Texture2D, TextureHullData> _textureHullData =
             new Dictionary<Texture2D, TextureHullData>();
 
-        private static Dictionary<Material, Texture2D> primaryTextures = new Dictionary<Material, Texture2D>();
+        #endregion
 
         public static TextureHullData GetTextureHullData(this Material mat)
         {
@@ -62,7 +67,10 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Geometry
                 var hull = new TextureHullData();
                 _textureHullData.Add(tex, hull);
 
-                hull.rawHull = new[] {new Vector2(0, 1), new Vector2(0, 0), new Vector2(1, 0), new Vector2(1, 1)};
+                hull.rawHull = new[]
+                {
+                    new Vector2(0, 1), new Vector2(0, 0), new Vector2(1, 0), new Vector2(1, 1)
+                };
 
                 //hull.textureHull = GetShapePoints(tex, 4);
 
@@ -83,14 +91,14 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Geometry
                     for (var y = 0; y < tex.height; y++) // bottom to top
                     {
                         var pixels = tex.GetPixels(0, y, tex.width, 1);
-                
+
                         for (var x = 0; x < tex.width; x++) // left to right
                         {
                             if (x == 0)
                             {
                                 continue;
                             }
-                            
+
                             if ((firstRowPopulatedFromBottom > -1) && (y != firstRowPopulatedFromBottom))
                             {
                                 continue;
@@ -111,13 +119,13 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Geometry
 
                 using (BUILD_TIME.TEX_HULL_GEN.AggregatePixelData.Auto())
                 {
-                    hull.baseHeightOffset0To1 = firstRowPopulatedFromBottom / (float) tex.height;
-                    var columnSum = (float) firstRowPopulatedXValues.Sum();
+                    hull.baseHeightOffset0To1 = firstRowPopulatedFromBottom / (float)tex.height;
+                    var columnSum = (float)firstRowPopulatedXValues.Sum();
                     var columnMin = firstRowPopulatedXValues.Min();
                     var columnMax = firstRowPopulatedXValues.Max();
                     var meanColumn = columnSum / firstRowPopulatedXValues.Count;
 
-                    hull.baseWidth = (columnMax - columnMin) / (float) tex.width;
+                    hull.baseWidth = (columnMax - columnMin) / (float)tex.width;
                     hull.baseWidthCenter0To1 = meanColumn / tex.width;
                 }
 
@@ -131,7 +139,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Geometry
             {
                 // create a 2d texture for calculations
                 var testRect = new Rect(0, 0, tex.width, tex.height);
-                
+
                 Vector2[][] paths;
 
                 using (BUILD_TIME.TEX_HULL_GEN.GenerateOutline.Auto())

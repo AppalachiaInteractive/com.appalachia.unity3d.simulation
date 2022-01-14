@@ -7,35 +7,10 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading.InputShaders
 {
     public class BestEffort_InputMaterialShader : IInputMaterialShader
     {
-        public int Priority { get; } = 100000;
-        
-        public bool AllowInsignificantPropertyNameDifferences { get; } = true;
+        #region Fields and Autoproperties
 
-        public bool CanProvideProfiles(Shader shader)
+        private InputTextureProfile[] _profiles =
         {
-            return true;
-        }
-
-        public bool FailOnMissingTexture(TextureMap texture)
-        {
-            switch (texture)
-            {
-                case TextureMap.Albedo:
-                    return true;
-            }
-
-            return false;
-        }
-
-        public IEnumerable<InputTextureProfile> GetInputProfiles(Material m)
-        {
-            return _profiles;
-        }
-
-
-        private InputTextureProfile[] _profiles = new[]
-        {
-
             InputTextureProfileFactory.Get(
                 TextureMap.Albedo,
                 "ALBEDO",
@@ -59,7 +34,6 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading.InputShaders
                 "RGBTEX",
                 "SVBRDFDIFFUSECOLORMAP"
             ),
-
             InputTextureProfileFactory.Get(
                 TextureMap.AlbedoDisplacement,
                 "ALBEDOH",
@@ -67,7 +41,6 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading.InputShaders
                 "BCH",
                 "BASECOLORHEIGHT"
             ),
-
             InputTextureProfileFactory.Get(
                 TextureMap.AmbientOcclusion,
                 "AO",
@@ -84,9 +57,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading.InputShaders
                 "SHADOWOFFSET",
                 "SHADOWTEX"
             ),
-
             InputTextureProfileFactory.Get(TextureMap.Cavity, "CAVITY", "CAVITYMAP", "AODETAIL"),
-
             InputTextureProfileFactory.Get(
                 TextureMap.Concavity,
                 "CONCAVITY",
@@ -94,7 +65,6 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading.InputShaders
                 "CONCAVE",
                 "CONCAVEMAP"
             ),
-
             InputTextureProfileFactory.Get(
                 TextureMap.Convexity,
                 "CONVEXITY",
@@ -102,9 +72,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading.InputShaders
                 "CONVEX",
                 "CONVEXMAP"
             ),
-
             InputTextureProfileFactory.Get(TextureMap.CurvatureDualChannel, "CURVE", "CURVATURE"),
-
             InputTextureProfileFactory.Get(
                 TextureMap.Displacement,
                 "DISPLACEMENT",
@@ -118,7 +86,6 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading.InputShaders
                 "UTEXTURESETSDISPLACEMENT",
                 "SVBRDFHEIGHTMAP"
             ),
-
             InputTextureProfileFactory.Get(
                 TextureMap.Emission,
                 "EMISION",
@@ -130,7 +97,6 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading.InputShaders
                 "EMISSIVECOLORMAP",
                 "GLOWTEX"
             ),
-
             InputTextureProfileFactory.Get(
                 TextureMap.Glossiness,
                 "GLOSS",
@@ -138,7 +104,6 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading.InputShaders
                 "SMOOTHNESS",
                 "GLOSSINESS"
             ),
-
             InputTextureProfileFactory.Get(
                 TextureMap.MAOHS,
                 "MAOHS",
@@ -156,7 +121,6 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading.InputShaders
                 "MASK",
                 "MAP"
             ),
-
             InputTextureProfileFactory.Get(
                 TextureMap.Metallicity,
                 "METALLIC",
@@ -168,7 +132,6 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading.InputShaders
                 "METALLICITY",
                 "METALICITY"
             ),
-
             InputTextureProfileFactory.Get(
                 TextureMap.MetallicityGlossiness,
                 "METALICSMOOTHNESS",
@@ -180,7 +143,6 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading.InputShaders
                 "METALLICGLOSSMAP",
                 "METALLICSMOOTH"
             ),
-
             InputTextureProfileFactory.Get(
                 TextureMap.Normal_TS,
                 "NORMAL",
@@ -203,7 +165,6 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading.InputShaders
                 "PLANTNORMAL",
                 "SVBRDFNORMALMAP"
             ),
-
             InputTextureProfileFactory.Get(
                 TextureMap.Normal_OS,
                 "BENTNORMALMAPOS",
@@ -211,14 +172,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading.InputShaders
                 "TANGENTMAPOS",
                 "NORMALMAPOS"
             ),
-
-            InputTextureProfileFactory.Get(
-                TextureMap.NormSAOPacked,
-                "NORMALSAO",
-                "NORMSAO",
-                "NORMSAO"
-            ),
-
+            InputTextureProfileFactory.Get(TextureMap.NormSAOPacked, "NORMALSAO", "NORMSAO", "NORMSAO"),
             InputTextureProfileFactory.Get(
                 TextureMap.Opacity,
                 "OPACITYMASK",
@@ -228,9 +182,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading.InputShaders
                 "ALPHATEX",
                 "ALPHATEXTURE"
             ),
-
             InputTextureProfileFactory.Get(TextureMap.Roughness, "ROUGHNESS", "ROUGH", "RGH"),
-
             InputTextureProfileFactory.Get(
                 TextureMap.Specularity,
                 "SPECMAP",
@@ -240,7 +192,6 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading.InputShaders
                 "REFLECTIVECOLOR",
                 "SVBRDFSPECULARCOLORMAP"
             ),
-
             InputTextureProfileFactory.Get(
                 TextureMap.SpecularityGlossiness,
                 "UTEXTURESETSSPECSMOOTH",
@@ -250,7 +201,6 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading.InputShaders
                 "SPECULARSMOOTHNESS",
                 "SPECGLOSSMAP"
             ),
-
             InputTextureProfileFactory.Get(
                 TextureMap.Transmission,
                 "TRANSLUCENCYMAP",
@@ -262,7 +212,6 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading.InputShaders
                 "SUBSURFACEMASKMAP0",
                 "SUBSURFACETEX"
             ),
-
             InputTextureProfileFactory.Get(
                 TextureMap.Variant_Albedo,
                 "ALBEDOTEX3",
@@ -275,13 +224,11 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading.InputShaders
                 "SNOWCOVER",
                 "SNOWDIFF"
             ),
-
             InputTextureProfileFactory.Get(
                 TextureMap.Variant_Displacement,
                 "COVERHEIGHTG",
                 "SNOWHEIGHTG"
             ),
-
             InputTextureProfileFactory.Get(
                 TextureMap.Variant_Normal_TS,
                 "NORMALTEX3",
@@ -293,7 +240,6 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading.InputShaders
                 "SNOWNORMAL",
                 "SNOWNORMALRGB"
             ),
-
             InputTextureProfileFactory.Get(
                 TextureMap.Variant_MAOHS,
                 "SURFACETEX3",
@@ -303,22 +249,18 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading.InputShaders
                 "SNOWMETALICRAOGSMOTHNESSA",
                 "SNOWMETALICRAMBIENTOCCLUSIONGSMOTHNESSA"
             ),
-
             InputTextureProfileFactory.Get(
                 TextureMap.Variant_AmbientOcclusion,
                 "SNOWAMBIENTOCCLUSIONG",
                 "SNOWCOVERAMBIENTOCCLUSIONG"
             ),
-
             InputTextureProfileFactory.Get(TextureMap.Variant_Specularity, "SNOWSPECULAR"),
-
             InputTextureProfileFactory.Get(
                 TextureMap.Variant_SpecularityGlossiness,
                 "SNOWCOVERSPECULARRGBSMOTHNESSA",
                 "SNOWSPECULARRGBSMOTHNESSA",
                 "SNOWSPECULARRGBSMOOTHNESSA"
             ),
-
             InputTextureProfileFactory.Get(
                 TextureMap.DetailMap,
                 "MICRODETAIL",
@@ -326,23 +268,19 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading.InputShaders
                 "DETAILTEXDETAILMAP",
                 "DETAILMAP0"
             ),
-
             InputTextureProfileFactory.Get(TextureMap.DetailMapPacked, "DETAILMAPALBEDORNYGNXA"),
-
             InputTextureProfileFactory.Get(
                 TextureMap.AlbedoDetail,
                 "DETAILALBEDO",
                 "DETAILALBEDOMAP",
                 "MASKYMIXALBEDO"
             ),
-
             InputTextureProfileFactory.Get(
                 TextureMap.DetailMask,
                 "DETAILMASK",
                 "DETAILMASKMAP",
                 "MASKYMIXMASK"
             ),
-
             InputTextureProfileFactory.Get(
                 TextureMap.Bump,
                 "DETAILNORMAL",
@@ -351,5 +289,36 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading.InputShaders
                 "MICRODETAILNORMAL"
             )
         };
+
+        #endregion
+
+        #region IInputMaterialShader Members
+
+        public int Priority { get; } = 100000;
+
+        public bool AllowInsignificantPropertyNameDifferences { get; } = true;
+
+        public bool CanProvideProfiles(Shader shader)
+        {
+            return true;
+        }
+
+        public bool FailOnMissingTexture(TextureMap texture)
+        {
+            switch (texture)
+            {
+                case TextureMap.Albedo:
+                    return true;
+            }
+
+            return false;
+        }
+
+        public IEnumerable<InputTextureProfile> GetInputProfiles(Material m)
+        {
+            return _profiles;
+        }
+
+        #endregion
     }
 }

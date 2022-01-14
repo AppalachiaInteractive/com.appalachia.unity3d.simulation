@@ -21,6 +21,8 @@ namespace Appalachia.Simulation.Physical.Integration
     {
         static RigidbodyDensityManager()
         {
+            
+
             RegisterDependency<PhysicsMaterialsCollection>(i => _physicsMaterialsCollection = i);
         }
 
@@ -173,60 +175,54 @@ namespace Appalachia.Simulation.Physical.Integration
 
         protected override async AppaTask Initialize(Initializer initializer)
         {
-            using (_PRF_Initialize.Auto())
+            await base.Initialize(initializer);
+
+            if (rb == null)
             {
-                await base.Initialize(initializer);
+                rb = GetComponent<Rigidbody>();
+            }
 
-                if (rb == null)
-                {
-                    rb = GetComponent<Rigidbody>();
-                }
+            if (rb == null)
+            {
+                rb = gameObject.AddComponent<Rigidbody>();
+            }
 
-                if (rb == null)
-                {
-                    rb = gameObject.AddComponent<Rigidbody>();
-                }
+            if (overrideDensity)
+            {
+                rb.SetDensity(density.densityKGPerCubicMeter);
+                return;
+            }
 
-                if (overrideDensity)
-                {
-                    rb.SetDensity(density.densityKGPerCubicMeter);
-                    return;
-                }
+            var lossyScale = rb.transform.lossyScale;
+            var scaleChanged = (lossyScale - volumeTakenAtScale).magnitude < .01f;
 
-                var lossyScale = rb.transform.lossyScale;
-                var scaleChanged = (lossyScale - volumeTakenAtScale).magnitude < .01f;
+            if ((_volume == 0f) || scaleChanged)
+            {
+                var originalMass = rb.mass;
 
-                if ((_volume == 0f) || scaleChanged)
-                {
-                    var originalMass = rb.mass;
+                rb.SetDensity(1.0f);
+                _volume = rb.mass;
+                volumeTakenAtScale = lossyScale;
+                rb.mass = originalMass;
+            }
 
-                    rb.SetDensity(1.0f);
-                    _volume = rb.mass;
-                    volumeTakenAtScale = lossyScale;
-                    rb.mass = originalMass;
-                }
+            if (density != null)
+            {
+                var newMass = density.densityKGPerCubicMeter * _volume;
 
-                if (density != null)
-                {
-                    var newMass = density.densityKGPerCubicMeter * _volume;
+                rb.mass = newMass;
 
-                    rb.mass = newMass;
-
-                    //var scale = ;
-                    //rb.mass = density.densityKGPerCubicMeter * volume * scale;
-                }
+                //var scale = ;
+                //rb.mass = density.densityKGPerCubicMeter * volume * scale;
             }
         }
 
         #region Profiling
 
-        private const string _PRF_PFX = nameof(RigidbodyDensityManager) + ".";
-
 #if UNITY_EDITOR
         private static readonly ProfilerMarker _PRF_CreateNewDensity =
             new(_PRF_PFX + nameof(CreateNewDensity));
 #endif
-        private static readonly ProfilerMarker _PRF_Initialize = new(_PRF_PFX + nameof(Initialize));
         private static readonly ProfilerMarker _PRF_CreateNow = new(_PRF_PFX + nameof(CreateNow));
 
         #endregion

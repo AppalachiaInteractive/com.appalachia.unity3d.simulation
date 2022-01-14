@@ -11,8 +11,13 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Operations
 {
     public static class TextureExtractor
     {
-        private static Dictionary<string, HashSet<string>> _shaderTexturePropertyNames = new Dictionary<string, HashSet<string>>();
-        
+        #region Static Fields and Autoproperties
+
+        private static Dictionary<string, HashSet<string>> _shaderTexturePropertyNames =
+            new Dictionary<string, HashSet<string>>();
+
+        #endregion
+
         public static InputTextureSet GetInputTextureSet(Material m)
         {
             using (BUILD_TIME.TEX_EXTRC.GetInputTextureSet.Auto())
@@ -27,7 +32,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Operations
                 if (!_shaderTexturePropertyNames.ContainsKey(m.shader.name))
                 {
                     _shaderTexturePropertyNames.Add(m.shader.name, new HashSet<string>());
-                    
+
                     for (var i = 0; i < m.shader.GetPropertyCount(); i++)
                     {
                         var propertyType = m.shader.GetPropertyType(i);
@@ -45,7 +50,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Operations
                 var propertyNames = _shaderTexturePropertyNames[m.shader.name];
 
                 var set = new InputTextureSet();
-                
+
                 var profiles = inputShader.GetInputProfiles(m);
 
                 foreach (var profile in profiles)
@@ -67,7 +72,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Operations
 
                             found = true;
 
-                            var texture = new InputTexture {profile = profile, texture = tex};
+                            var texture = new InputTexture { profile = profile, texture = tex };
 
                             set.inputTextures.Add(texture);
 

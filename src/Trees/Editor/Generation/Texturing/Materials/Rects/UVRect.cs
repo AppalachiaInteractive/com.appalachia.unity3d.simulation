@@ -11,43 +11,96 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Rects
     [Serializable]
     public class UVRect : ICloneable<UVRect>
     {
-        [SerializeField] private Vector2 _center = new Vector2(.5f, .5f);
+        #region Fields and Autoproperties
+
+        [HorizontalGroup("C", .5f), LabelWidth(20), OnValueChanged(nameof(Clamp))]
+        public bool flipX;
+
+        [HorizontalGroup("C", .5f), LabelWidth(20), OnValueChanged(nameof(Clamp))]
+        public bool flipY;
+
+        [SerializeField] private float _modifierRotation;
         [SerializeField] private float _rotation;
+        [SerializeField] private Vector2 _center = new Vector2(.5f, .5f);
+        [SerializeField] private Vector2 _modifierScale = Vector2.one;
         [SerializeField] private Vector2 _size = Vector2.one;
 
+        [SerializeField, HideInInspector]
+        private Vector2[] _coordinates = new Vector2[4];
 
-        public Vector2 center
+        #endregion
+
+        public float xMax => _center.x + (.5f * size.x);
+
+        public float xMin => _center.x - (.5f * size.x);
+        public float yMax => _center.y + (.5f * size.y);
+        public float yMin => _center.y - (.5f * size.y);
+        public Vector2 max => new Vector2(xMax, yMax);
+
+        public Vector2 min => new Vector2(xMin, yMin);
+
+        public Vector2[] coordinates
         {
             get
             {
-                return _center;
-            }
-            set
-            {
-                _center = value;
-                Clamp();
+                for (var i = 0; i < 4; i++)
+                {
+                    _coordinates[i] = this[i];
+                }
+
+                if (flipX)
+                {
+                    float swap;
+
+                    swap = _coordinates[0].x;
+                    _coordinates[0].x = _coordinates[3].x;
+                    _coordinates[3].x = swap;
+
+                    swap = _coordinates[1].x;
+                    _coordinates[1].x = _coordinates[2].x;
+                    _coordinates[2].x = swap;
+                }
+
+                if (flipY)
+                {
+                    float swap;
+
+                    swap = _coordinates[0].y;
+                    _coordinates[0].y = _coordinates[1].y;
+                    _coordinates[1].y = swap;
+
+                    swap = _coordinates[3].y;
+                    _coordinates[3].y = _coordinates[2].y;
+                    _coordinates[2].y = swap;
+                }
+
+                return _coordinates;
             }
         }
-        
+
         public float rotation
         {
-            get
-            {
-                return _modifierRotation + _rotation;
-            }
+            get => _modifierRotation + _rotation;
             set
             {
                 _rotation = value;
                 Clamp();
             }
         }
-        
+
+        public Vector2 center
+        {
+            get => _center;
+            set
+            {
+                _center = value;
+                Clamp();
+            }
+        }
+
         public Vector2 size
         {
-            get
-            {
-                return _modifierScale * _size;
-            }
+            get => _modifierScale * _size;
             set
             {
                 _size = value;
@@ -55,12 +108,95 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Rects
             }
         }
 
-        [HorizontalGroup("C", .5f), LabelWidth(20), OnValueChanged(nameof(Clamp))]
-        public bool flipX;
+        public Vector2 this[int i]
+        {
+            get
+            {
+                ResetIfNecessary();
 
-        [HorizontalGroup("C", .5f), LabelWidth(20), OnValueChanged(nameof(Clamp))]
-        public bool flipY;
-        
+                if (i == 0)
+                {
+                    return corner(true, true);
+                }
+
+                if (i == 1)
+                {
+                    return corner(true, false);
+                }
+
+                if (i == 2)
+                {
+                    return corner(false, false);
+                }
+
+                if (i == 3)
+                {
+                    return corner(false, true);
+                }
+
+                throw new IndexOutOfRangeException();
+            }
+        }
+
+        [DebuggerStepThrough]
+        public override string ToString()
+        {
+            return ZString.Format(
+                "{0}: {1}, {2}: {3}, {4}: {5}",
+                nameof(center).ToTitleCase(),
+                center,
+                nameof(coordinates).ToTitleCase(),
+                coordinates,
+                nameof(size).ToTitleCase(),
+                size
+            );
+        }
+
+        public void Finish()
+        {
+            _rotation = rotation;
+            _size = size;
+
+            _modifierRotation = 0f;
+            _modifierScale = Vector2.one;
+
+            ResetIfNecessary();
+        }
+
+        public float GetRotationModifier()
+        {
+            return _modifierRotation;
+        }
+
+        public Vector2 GetScaleModifier()
+        {
+            return _modifierScale;
+        }
+
+        public void Reset()
+        {
+            _center = new Vector2(.5f, .5f);
+            _rotation = 0f;
+            _size = Vector2.one;
+        }
+
+        public Vector2 ScaleNormalizedPointWithin(Vector2 point)
+        {
+            return new Vector2(xMin + (point.x * size.x), yMin + (point.y * size.y));
+        }
+
+        public void SetRotationModifier(float rot)
+        {
+            _modifierRotation = rot;
+            ResetIfNecessary();
+        }
+
+        public void SetScaleModifier(Vector2 scale)
+        {
+            _modifierScale = scale;
+            ResetIfNecessary();
+        }
+
         private void Clamp()
         {
             /*centerX = Mathf.Clamp01(centerX);
@@ -131,17 +267,6 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Rects
             {
                 height += 2 * br.y;
             }*/
-
-        }
-        
-        public UVRect Clone()
-        {
-            return new UVRect()
-            {
-                _center = _center,
-                _rotation = _rotation,
-                _size = _size,
-            };
         }
 
         private Vector2 corner(bool left, bool bottom)
@@ -150,144 +275,11 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Rects
             var offsetY = .5f * size.y * (bottom ? -1f : 1f);
 
             var rads = Mathf.Deg2Rad * -rotation;
-            
+
             return new Vector2(
-                (center.x + (offsetX  * Mathf.Cos(rads))) - (offsetY * Mathf.Sin(rads)),
-                center.y + (offsetX  * Mathf.Sin(rads)) + (offsetY * Mathf.Cos(rads))
-                );
-        }
-
-        [SerializeField, HideInInspector]
-        private Vector2[] _coordinates = new Vector2[4];
-
-        public Vector2[] coordinates
-        {
-            get
-            {
-                for (var i = 0; i < 4; i++)
-                {
-                    _coordinates[i] = this[i];
-                }
-
-                if (flipX)
-                {
-                    float swap;
-                    
-                    swap = _coordinates[0].x;
-                    _coordinates[0].x = _coordinates[3].x;
-                    _coordinates[3].x = swap;
-                    
-                    swap = _coordinates[1].x;
-                    _coordinates[1].x = _coordinates[2].x;
-                    _coordinates[2].x = swap;
-                }
-
-                if (flipY)
-                {
-                    float swap;
-                    
-                    swap = _coordinates[0].y;
-                    _coordinates[0].y = _coordinates[1].y;
-                    _coordinates[1].y = swap;
-                    
-                    swap = _coordinates[3].y;
-                    _coordinates[3].y = _coordinates[2].y;
-                    _coordinates[2].y = swap;
-                }
-                
-                return _coordinates;
-            }
-        }
-
-        public Vector2 this[int i]
-        {
-            get
-            {            
-                ResetIfNecessary();
-                
-                if (i == 0)
-                {
-                    return corner(true, true);
-                }
-                if (i == 1)
-                {
-                    return corner(true, false);
-                }
-                if (i == 2)
-                {
-                    return corner(false, false);
-                }
-                if (i == 3)
-                {
-                    return corner(false, true);
-                }
-                
-                throw new IndexOutOfRangeException();
-            }
-        }
-
-        public float xMin => _center.x - (.5f * size.x);
-        public float yMin => _center.y - (.5f * size.y);
-        public float xMax => _center.x + (.5f * size.x);
-        public float yMax => _center.y + (.5f * size.y);
-        
-        public Vector2 min => new Vector2(xMin, yMin);
-        public Vector2 max => new Vector2(xMax, yMax);
-
-        [DebuggerStepThrough] public override string ToString()
-        {
-            return ZString.Format(
-                "{0}: {1}, {2}: {3}, {4}: {5}",
-                nameof(center).ToTitleCase(),
-                center,
-                nameof(coordinates).ToTitleCase(),
-                coordinates,
-                nameof(size).ToTitleCase(),
-                size
+                (center.x + (offsetX * Mathf.Cos(rads))) - (offsetY * Mathf.Sin(rads)),
+                center.y + (offsetX * Mathf.Sin(rads)) + (offsetY * Mathf.Cos(rads))
             );
-        }
-
-        [SerializeField] private float _modifierRotation;
-        [SerializeField] private Vector2 _modifierScale = Vector2.one;
-
-        public void SetRotationModifier(float rot)
-        {
-            _modifierRotation = rot;
-            ResetIfNecessary();
-        }
-        
-        public void SetScaleModifier(Vector2 scale)
-        {
-            _modifierScale = scale;
-            ResetIfNecessary();
-        }
-
-        public float GetRotationModifier()
-        {
-            return _modifierRotation;
-        }
-
-        public Vector2 GetScaleModifier()
-        {
-            return _modifierScale;
-        }
-        
-        public void Finish()
-        {
-            _rotation = rotation;
-            _size = size;
-
-            _modifierRotation = 0f;
-            _modifierScale = Vector2.one;
-            
-            ResetIfNecessary();
-        }
-
-        public void Reset()
-        {
-            _center = new Vector2(.5f, .5f);
-            _rotation = 0f;
-            _size = Vector2.one;
         }
 
         private void ResetIfNecessary()
@@ -298,11 +290,9 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Rects
                 _rotation += 360;
             }
 
-            _size = new Vector2(Mathf.Clamp01(_size.x), 
-                Mathf.Clamp01(_size.y));
+            _size = new Vector2(Mathf.Clamp01(_size.x), Mathf.Clamp01(_size.y));
 
-            _center = new Vector2(Mathf.Clamp01(_center.x), 
-                Mathf.Clamp01(_center.y));
+            _center = new Vector2(Mathf.Clamp01(_center.x), Mathf.Clamp01(_center.y));
 
             if (_size.magnitude == 0)
             {
@@ -310,10 +300,16 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Rects
             }
         }
 
-        public Vector2 ScaleNormalizedPointWithin(Vector2 point)
+        #region ICloneable<UVRect> Members
+
+        public UVRect Clone()
         {
-            return new Vector2(xMin + (point.x * size.x), yMin + (point.y * size.y));
+            return new UVRect
+            {
+                _center = _center, _rotation = _rotation, _size = _size,
+            };
         }
-        
+
+        #endregion
     }
 }

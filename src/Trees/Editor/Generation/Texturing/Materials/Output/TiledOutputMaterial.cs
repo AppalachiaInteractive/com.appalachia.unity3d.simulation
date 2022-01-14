@@ -14,13 +14,6 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Output
     [Serializable]
     public class TiledOutputMaterial : DynamicShaderOutputMaterial
     {
-        [InlineProperty, HideLabel, InfoBox("UV Scale", InfoMessageType.None)]
-        [OnValueChanged(nameof(UVSettingsChanged))]
-        public UVScale uvScale;
-
-        [SerializeField, HideInInspector]
-        private int _inputMaterialID;
-
         public TiledOutputMaterial(
             int materialID,
             int inputMaterialID,
@@ -31,9 +24,20 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Output
             _inputMaterialID = inputMaterialID;
         }
 
-        public int inputMaterialID => _inputMaterialID;
+        #region Fields and Autoproperties
+
+        [InlineProperty, HideLabel, InfoBox("UV Scale", InfoMessageType.None)]
+        [OnValueChanged(nameof(UVSettingsChanged))]
+        public UVScale uvScale;
+
+        [SerializeField, HideInInspector]
+        private int _inputMaterialID;
+
+        #endregion
 
         public override MaterialContext MaterialContext => MaterialContext.TiledOutputMaterial;
+
+        public int inputMaterialID => _inputMaterialID;
 
         protected override OutputShaderSelectionSet defaultShaders => _defaultShaderResource.tiledShaderSet;
     }

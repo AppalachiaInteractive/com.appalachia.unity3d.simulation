@@ -145,11 +145,11 @@ namespace Appalachia.Simulation.Physical.Integration
         {
             using (_PRF_Update.Auto())
             {
-                if (!DependenciesAreReady || !FullyInitialized)
+                if (ShouldSkipUpdate)
                 {
                     return;
                 }
-                
+
                 if (_rigidbody == null)
                 {
                     _rigidbody = _transform.GetComponent<Rigidbody>();
@@ -477,36 +477,8 @@ namespace Appalachia.Simulation.Physical.Integration
 
         #region Profiling
 
-        private const string _PRF_PFX = nameof(RigidbodyUtility) + ".";
-
-        private static readonly ProfilerMarker _PRF_Update = new ProfilerMarker(_PRF_PFX + nameof(Update));
-        private static readonly ProfilerMarker _PRF_Sleep = new ProfilerMarker(_PRF_PFX + nameof(Sleep));
-
-        private static readonly ProfilerMarker _PRF_StopVelocity =
-            new ProfilerMarker(_PRF_PFX + nameof(StopVelocity));
-
-        private static readonly ProfilerMarker _PRF_WakeUp = new ProfilerMarker(_PRF_PFX + nameof(WakeUp));
-
-        private static readonly ProfilerMarker
-            _PRF_GetForce = new ProfilerMarker(_PRF_PFX + nameof(GetForce));
-
-        private static readonly ProfilerMarker _PRF_GetForceVector =
-            new ProfilerMarker(_PRF_PFX + nameof(GetForceVector));
-
-        private static readonly ProfilerMarker _PRF_ResetPosition =
-            new ProfilerMarker(_PRF_PFX + nameof(ResetPosition));
-
         private static readonly ProfilerMarker _PRF_AddExposiveForce =
             new ProfilerMarker(_PRF_PFX + nameof(AddExposiveForce));
-
-        private static readonly ProfilerMarker _PRF_DisableGravity =
-            new ProfilerMarker(_PRF_PFX + nameof(DisableGravity));
-
-        private static readonly ProfilerMarker _PRF_EnableGravity =
-            new ProfilerMarker(_PRF_PFX + nameof(EnableGravity));
-
-        private static readonly ProfilerMarker _PRF_OnDrawGizmosSelected =
-            new ProfilerMarker(_PRF_PFX + nameof(OnDrawGizmosSelected));
 
         private static readonly ProfilerMarker
             _PRF_AddForce = new ProfilerMarker(_PRF_PFX + nameof(AddForce));
@@ -514,14 +486,39 @@ namespace Appalachia.Simulation.Physical.Integration
         private static readonly ProfilerMarker _PRF_AddTorque =
             new ProfilerMarker(_PRF_PFX + nameof(AddTorque));
 
+        private static readonly ProfilerMarker _PRF_DisableGravity =
+            new ProfilerMarker(_PRF_PFX + nameof(DisableGravity));
+
+        private static readonly ProfilerMarker _PRF_EnableGravity =
+            new ProfilerMarker(_PRF_PFX + nameof(EnableGravity));
+
         private static readonly ProfilerMarker
-            _PRF_StopSpin = new ProfilerMarker(_PRF_PFX + nameof(StopSpin));
+            _PRF_GetForce = new ProfilerMarker(_PRF_PFX + nameof(GetForce));
+
+        private static readonly ProfilerMarker _PRF_GetForceVector =
+            new ProfilerMarker(_PRF_PFX + nameof(GetForceVector));
+
+        private static readonly ProfilerMarker _PRF_OnDrawGizmosSelected =
+            new ProfilerMarker(_PRF_PFX + nameof(OnDrawGizmosSelected));
+
+        private static readonly ProfilerMarker _PRF_ResetPosition =
+            new ProfilerMarker(_PRF_PFX + nameof(ResetPosition));
+
+        private static readonly ProfilerMarker _PRF_ResetUtility =
+            new ProfilerMarker(_PRF_PFX + nameof(ResetUtility));
+
+        private static readonly ProfilerMarker _PRF_Sleep = new ProfilerMarker(_PRF_PFX + nameof(Sleep));
 
         private static readonly ProfilerMarker _PRF_StopMovement =
             new ProfilerMarker(_PRF_PFX + nameof(StopMovement));
 
-        private static readonly ProfilerMarker _PRF_ResetUtility =
-            new ProfilerMarker(_PRF_PFX + nameof(ResetUtility));
+        private static readonly ProfilerMarker
+            _PRF_StopSpin = new ProfilerMarker(_PRF_PFX + nameof(StopSpin));
+
+        private static readonly ProfilerMarker _PRF_StopVelocity =
+            new ProfilerMarker(_PRF_PFX + nameof(StopVelocity));
+
+        private static readonly ProfilerMarker _PRF_WakeUp = new ProfilerMarker(_PRF_PFX + nameof(WakeUp));
 
         #endregion
     }

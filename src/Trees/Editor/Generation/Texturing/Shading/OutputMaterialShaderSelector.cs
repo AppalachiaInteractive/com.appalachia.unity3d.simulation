@@ -12,7 +12,22 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading
 {
     public class OutputMaterialShaderSelector : OdinSelector<IOutputMaterialShader>
     {
+        #region Fields and Autoproperties
+
+        private IOutputMaterialShader _current;
         private IReadOnlyCollection<IOutputMaterialShader> source;
+
+        #endregion
+
+        public void Show(IOutputMaterialShader current)
+        {
+            if (current != null)
+            {
+                _current = current;
+            }
+
+            ShowInPopup(200);
+        }
 
         protected override void BuildSelectionTree(OdinMenuTree tree)
         {
@@ -36,19 +51,5 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading
                 tree.MenuItems.FirstOrDefault(s => s.Value == _current)?.Select(true);
             }
         }
-
-        public void Show(IOutputMaterialShader current)
-        {
-            if (current != null)
-            {
-                _current = current;
-            }
-            
-            ShowInPopup(200);
-        }
-
-        private IOutputMaterialShader _current;
-        
-        
     }
 }

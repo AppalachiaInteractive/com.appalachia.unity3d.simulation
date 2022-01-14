@@ -30,10 +30,13 @@ namespace Appalachia.Simulation.Wind
     {
         static GlobalWindManager()
         {
-            GSR.InstanceAvailable += i => _GSR = i;
+            RegisterDependency<GlobalWindParametersGroup>(i => _globalWindParametersGroup = i);
+            RegisterDependency<GSR>(i => _GSR = i);
         }
 
         #region Static Fields and Autoproperties
+
+        private static GlobalWindParametersGroup _globalWindParametersGroup;
 
         private static GSR _GSR;
 
@@ -149,17 +152,14 @@ namespace Appalachia.Simulation.Wind
         [FoldoutGroup("Wind/Runtime")]
         public bool debug;
 
-        [InlineEditor(InlineEditorObjectFieldModes.CompletelyHidden)]
-        [HideIf(nameof(debug))]
-        public GlobalWindParameters parameters;
+        [FoldoutGroup("Components"), SerializeField]
+        private GameObject _windArrow;
 
-        [InlineEditor(InlineEditorObjectFieldModes.CompletelyHidden)]
-        [ShowIf(nameof(debug))]
-        public GlobalWindParameters debugParameters;
+        [FoldoutGroup("Components"), SerializeField]
+        private MeshFilter _meshFilter;
 
-        [HideInInspector] public GameObject _windArrow;
-        [HideInInspector] public MeshFilter _meshFilter;
-        [HideInInspector] public MeshRenderer _meshRenderer;
+        [FoldoutGroup("Components"), SerializeField]
+        private MeshRenderer _meshRenderer;
 
         #endregion
 
@@ -184,12 +184,16 @@ namespace Appalachia.Simulation.Wind
         [FoldoutGroup("Wind/Physics")]
         [ShowInInspector]
         public float3 WindDynamicPressure =>
-            .5f * parameters.airDensity.densityKGPerCubicMeter * WindVelocity * WindVelocity;
+            .5f *
+            _globalWindParametersGroup.Current.airDensity.densityKGPerCubicMeter *
+            WindVelocity *
+            WindVelocity;
 
         [FoldoutGroup("Wind/Physics")]
         [ShowInInspector]
         [SuffixLabel("m/s")]
-        public float3 WindSpeed => gustAudioStrengthActual * parameters.maximumWindSpeed;
+        public float3 WindSpeed =>
+            gustAudioStrengthActual * _globalWindParametersGroup.Current.maximumWindSpeed;
 
         [FoldoutGroup("Wind/Physics")]
         [ShowInInspector]
@@ -203,12 +207,10 @@ namespace Appalachia.Simulation.Wind
         {
             using (_PRF_Update.Auto())
             {
-                if (!DependenciesAreReady || !FullyInitialized)
+                if (ShouldSkipUpdate)
                 {
                     return;
                 }
-
-                CheckSetup();
 
 #if UNITY_EDITOR
                 if (!AppalachiaApplication.IsPlayingOrWillPlay)
@@ -217,7 +219,7 @@ namespace Appalachia.Simulation.Wind
                 }
 #endif
 
-                var param = debug ? debugParameters : parameters;
+                var param = _globalWindParametersGroup.Current;
 
 #if !UNITY_EDITOR
             if (param.realtimeUpdate)
@@ -288,8 +290,6 @@ namespace Appalachia.Simulation.Wind
         {
             using (_PRF_FixedUpdate.Auto())
             {
-                CheckSetup();
-
                 ExecuteHeadingStepUpdate(false);
             }
         }
@@ -298,35 +298,38 @@ namespace Appalachia.Simulation.Wind
 
         protected override async AppaTask Initialize(Initializer initializer)
         {
-            using (_PRF_Initialize.Auto())
+            await base.Initialize(initializer);
+
+            gameObject.name = "Global Wind Manager";
+
+            _GSR.InitializeShaderReferences();
+
+            _windArrow = gameObject.GetChild(AppalachiaRepository.PrefabAddresses.WIND_ARROW);
+
+            if (_windArrow == null)
             {
-                await base.Initialize(initializer);
-
-                gameObject.name = "Global Wind Manager";
-
-                _GSR.InitializeShaderReferences();
-
-                _windArrow = gameObject.GetChild(AppalachiaRepository.PrefabAddresses.WIND_ARROW);
-
-                if (_windArrow == null)
-                {
-                    _windArrow = await AppalachiaRepository.InstantiatePrefab(
-                        AppalachiaRepository.PrefabAddresses.WIND_ARROW,
-                        gameObject,
-                        true
-                    );
-                }
-
-                _meshFilter = await initializer.Get<MeshFilter>(
-                    _windArrow,
-                    nameof(_windArrow) + nameof(_meshFilter)
-                );
-
-                _meshRenderer = await initializer.Get<MeshRenderer>(
-                    _windArrow,
-                    nameof(_windArrow) + nameof(_meshRenderer)
+                _windArrow = await AppalachiaRepository.InstantiatePrefab(
+                    AppalachiaRepository.PrefabAddresses.WIND_ARROW,
+                    gameObject,
+                    true
                 );
             }
+
+            _meshFilter = initializer.Get(
+                _windArrow,
+                _meshFilter,
+                nameof(_windArrow) + nameof(_meshFilter),
+                _meshFilter == null
+            );
+
+            _meshRenderer = initializer.Get(
+                _windArrow,
+                _meshRenderer,
+                nameof(_windArrow) + nameof(_meshRenderer),
+                _meshRenderer == null
+            );
+
+            gustAudioGroup = _globalWindParametersGroup.gustAudioGroup;
         }
 
         private static float GetCurrentAudioStrength(AudioSignalSmoothAnalyzer analyzer, bool clamped = true)
@@ -378,36 +381,23 @@ namespace Appalachia.Simulation.Wind
             }
         }
 
-        private void CheckSetup()
-        {
-#if UNITY_EDITOR
-
-            if (debugParameters == null)
-            {
-                debugParameters = GlobalWindParameters.LoadOrCreateNew("GLOBAL-WIND-PARAMS_DEBUG");
-            }
-
-            if (parameters == null)
-            {
-                parameters = GlobalWindParameters.LoadOrCreateNew("GLOBAL-WIND-PARAMS");
-            }
-#endif
-        }
-
         private void ExecuteHeadingStepUpdate(bool forceUpdate)
         {
             var time = Time.time;
             if ((time > nextHeadingUpdateTime) || forceUpdate)
             {
-                var update = Random.Range(parameters.headingUpdateRange.x, parameters.headingUpdateRange.y);
+                var update = Random.Range(
+                    _globalWindParametersGroup.Current.headingUpdateRange.x,
+                    _globalWindParametersGroup.Current.headingUpdateRange.y
+                );
 
                 var rotation = Quaternion.AngleAxis(update, Vector3.up);
 
                 targetHeading = _transform.rotation * rotation;
                 nextHeadingUpdateTime = time +
                                         Random.Range(
-                                            parameters.headingChangeInterval.x,
-                                            parameters.headingChangeInterval.y
+                                            _globalWindParametersGroup.Current.headingChangeInterval.x,
+                                            _globalWindParametersGroup.Current.headingChangeInterval.y
                                         );
             }
             else
@@ -415,7 +405,7 @@ namespace Appalachia.Simulation.Wind
                 _transform.rotation = Quaternion.Slerp(
                     _transform.rotation,
                     targetHeading,
-                    parameters.headingUpdateSpeed
+                    _globalWindParametersGroup.Current.headingUpdateSpeed
                 );
             }
         }
@@ -639,12 +629,6 @@ namespace Appalachia.Simulation.Wind
 
         #region Profiling
 
-        private const string _PRF_PFX = nameof(GlobalWindManager) + ".";
-        private static readonly ProfilerMarker _PRF_FixedUpdate = new(_PRF_PFX + "FixedUpdate");
-
-        private static readonly ProfilerMarker _PRF_Update = new(_PRF_PFX + "Update");
-        private static readonly ProfilerMarker _PRF_Initialize = new(_PRF_PFX + nameof(Initialize));
-
         private static readonly ProfilerMarker _PRF_GetCurrentAudioStrength =
             new(_PRF_PFX + nameof(GetCurrentAudioStrength));
 
@@ -654,32 +638,32 @@ namespace Appalachia.Simulation.Wind
         private static readonly ProfilerMarker _PRF_SetGlobalShaderProperties =
             new(_PRF_PFX + nameof(SetGlobalShaderProperties));
 
-        private static readonly ProfilerMarker _PRF_SetGlobalShaderProperties_SetDefaults =
-            new(_PRF_PFX + nameof(SetGlobalShaderProperties) + ".SetDefaults");
+        private static readonly ProfilerMarker _PRF_SetGlobalShaderProperties_AddLatest =
+            new(_PRF_PFX + nameof(SetGlobalShaderProperties) + ".AddLatest");
+
+        private static readonly ProfilerMarker _PRF_SetGlobalShaderProperties_ApplyProperties =
+            new(_PRF_PFX + nameof(SetGlobalShaderProperties) + ".ApplyProperties");
 
         private static readonly ProfilerMarker _PRF_SetGlobalShaderProperties_GetCurrent =
             new(_PRF_PFX + nameof(SetGlobalShaderProperties) + ".GetCurrent");
 
-        private static readonly ProfilerMarker _PRF_SetGlobalShaderProperties_AddLatest =
-            new(_PRF_PFX + nameof(SetGlobalShaderProperties) + ".AddLatest");
+        private static readonly ProfilerMarker _PRF_SetGlobalShaderProperties_SetDefaults =
+            new(_PRF_PFX + nameof(SetGlobalShaderProperties) + ".SetDefaults");
 
         private static readonly ProfilerMarker _PRF_SetGlobalShaderProperties_SetLatest =
             new(_PRF_PFX + nameof(SetGlobalShaderProperties) + ".SetLatest");
 
-        private static readonly ProfilerMarker _PRF_SetGlobalShaderProperties_SetLatest_RealtimeUpdate =
-            new(_PRF_PFX + nameof(SetGlobalShaderProperties) + ".SetLatest.RealtimeUpdate");
-
         private static readonly ProfilerMarker _PRF_SetGlobalShaderProperties_SetLatest_NonRealtimeUpdate =
             new(_PRF_PFX + nameof(SetGlobalShaderProperties) + ".SetLatest.NonRealtimeUpdate");
+
+        private static readonly ProfilerMarker _PRF_SetGlobalShaderProperties_SetLatest_RealtimeUpdate =
+            new(_PRF_PFX + nameof(SetGlobalShaderProperties) + ".SetLatest.RealtimeUpdate");
 
         private static readonly ProfilerMarker _PRF_SetGlobalShaderProperties_SetShaderProps =
             new(_PRF_PFX + nameof(SetGlobalShaderProperties) + ".SetShaderProps");
 
         private static readonly ProfilerMarker _PRF_SetGlobalShaderProperties_SetShaderTexture =
             new(_PRF_PFX + nameof(SetGlobalShaderProperties) + ".SetShaderTexture");
-
-        private static readonly ProfilerMarker _PRF_SetGlobalShaderProperties_ApplyProperties =
-            new(_PRF_PFX + nameof(SetGlobalShaderProperties) + ".ApplyProperties");
 
         private static readonly ProfilerMarker _PRF_LerpValues = new(_PRF_PFX + nameof(LerpValues));
 

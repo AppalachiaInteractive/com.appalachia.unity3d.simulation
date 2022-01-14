@@ -9,19 +9,18 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Input
     public class InputTextureUsageElement : AppalachiaSimpleBase
     {
         public InputTextureUsageElement(
-            InputTextureProfileChannel profileChannel, 
+            InputTextureProfileChannel profileChannel,
             Texture2D value,
             int channel,
-            Rect rect
-        )
+            Rect rect)
         {
             present = profileChannel != null;
             this.value = value;
             this.channel = channel;
-            invert = (profileChannel?.invert ?? false) ? 1f : 0f;
-            packing = (float) (profileChannel?.packing ?? 0f);
+            invert = profileChannel?.invert ?? false ? 1f : 0f;
+            packing = (float)(profileChannel?.packing ?? 0f);
             this.rect = rect;
-            
+
             var importer = value.GetTextureImporter();
 
             if (importer.textureType == TextureImporterType.Default)
@@ -36,9 +35,10 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Input
             {
                 textureMode = 3f;
             }
-
         }
-            
+
+        #region Fields and Autoproperties
+
         public bool present;
         public Texture2D value;
         public float channel;
@@ -47,5 +47,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Input
         public Rect rect;
         public float textureMode;
         public InputMaterial source;
+
+        #endregion
     }
 }

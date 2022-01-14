@@ -1,5 +1,6 @@
 #region
 
+using System;
 using Appalachia.Core.Attributes;
 using Appalachia.Core.Attributes.Editing;
 using Appalachia.Core.Objects.Root;
@@ -13,10 +14,13 @@ using UnityEngine;
 namespace Appalachia.Simulation.Core.Metadata.Wind
 {
     [CallStaticConstructorInEditor]
+    [Serializable]
     public class GlobalWindParameters : AppalachiaObject<GlobalWindParameters>
     {
         static GlobalWindParameters()
         {
+            
+            
             RegisterDependency<DensityMetadataCollection>(i => _densityMetadataCollection = i);
         }
 

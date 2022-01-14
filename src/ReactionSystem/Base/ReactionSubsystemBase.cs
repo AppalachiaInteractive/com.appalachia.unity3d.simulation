@@ -74,6 +74,11 @@ namespace Appalachia.Simulation.ReactionSystem.Base
             {
                 try
                 {
+                    if (ShouldSkipUpdate)
+                    {
+                        return;
+                    }
+
                     if (!updateLoopInitialized)
                     {
                         updateLoopInitialized = InitializeUpdateLoop();
@@ -119,25 +124,21 @@ namespace Appalachia.Simulation.ReactionSystem.Base
 
         protected override async AppaTask Initialize(Initializer initializer)
         {
-            using (_PRF_Initialize.Auto())
-            {
-                await base.Initialize(initializer);
+            await base.Initialize(initializer);
 
-                updateLoopInitialized = false;
+            updateLoopInitialized = false;
 
-                gameObject.name = SubsystemName;
+            gameObject.name = SubsystemName;
 
-                OnInitialization();
-            }
+            OnInitialization();
         }
 
         protected override async AppaTask WhenDisabled()
-
         {
-            using (_PRF_OnDisable.Auto())
-            {
-                await base.WhenDisabled();
+            await base.WhenDisabled();
 
+            using (_PRF_WhenDisabled.Auto())
+            {
                 TeardownSubsystem();
                 updateLoopInitialized = false;
             }
@@ -150,18 +151,10 @@ namespace Appalachia.Simulation.ReactionSystem.Base
         private static readonly ProfilerMarker _PRF_InitializeSubsystem =
             new ProfilerMarker(_PRF_PFX + nameof(InitializeSubsystem));
 
-        private static readonly ProfilerMarker _PRF_Initialize =
-            new ProfilerMarker(_PRF_PFX + nameof(Initialize));
-
-        private static readonly ProfilerMarker _PRF_Awake = new ProfilerMarker(_PRF_PFX + nameof(Awake));
+        private static readonly ProfilerMarker _PRF_WhenDisabled =
+            new ProfilerMarker(_PRF_PFX + nameof(WhenDisabled));
 
         private static readonly ProfilerMarker _PRF_Update = new ProfilerMarker(_PRF_PFX + nameof(Update));
-
-        private static readonly ProfilerMarker
-            _PRF_OnEnable = new ProfilerMarker(_PRF_PFX + nameof(OnEnable));
-
-        private static readonly ProfilerMarker _PRF_OnDisable =
-            new ProfilerMarker(_PRF_PFX + nameof(OnDisable));
 
         #endregion
 

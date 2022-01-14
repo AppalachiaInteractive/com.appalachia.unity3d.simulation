@@ -20,8 +20,10 @@ namespace Appalachia.Simulation.Buoyancy
 
         private void Update()
         {
-            if (!DependenciesAreReady || !FullyInitialized)
+            if (ShouldSkipUpdate)
             {
+                // ReSharper disable once RedundantJumpStatement
+                return;
             }
 
             /*//Debug by drawing a line between the top and bottom

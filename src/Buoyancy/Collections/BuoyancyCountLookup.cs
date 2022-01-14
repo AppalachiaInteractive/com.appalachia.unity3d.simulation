@@ -6,11 +6,11 @@ using UnityEngine;
 
 namespace Appalachia.Simulation.Buoyancy.Collections
 {
-    public class BuoyancyCountLookup : AppaLookup<Buoyant, int, AppaList_Buoyant, intList>
+    public sealed class BuoyancyCountLookup : AppaLookup<Buoyant, int, AppaList_Buoyant, intList>
     {
-        protected override string GetDisplayTitle(Buoyant key, int value)
+        protected override Color GetDisplayColor(Buoyant key, int value)
         {
-            return key.name;
+            return key.submerged ? Colors.Aquamarine3 : Colors.White;
         }
 
         protected override string GetDisplaySubtitle(Buoyant key, int value)
@@ -18,9 +18,9 @@ namespace Appalachia.Simulation.Buoyancy.Collections
             return ZString.Format("{0} colliders", value);
         }
 
-        protected override Color GetDisplayColor(Buoyant key, int value)
+        protected override string GetDisplayTitle(Buoyant key, int value)
         {
-            return key.submerged ? Colors.Aquamarine3 : Colors.White;
+            return key.name;
         }
     }
 }

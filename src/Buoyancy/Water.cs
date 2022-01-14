@@ -43,6 +43,8 @@ namespace Appalachia.Simulation.Buoyancy
 
         static Water()
         {
+            
+
             RegisterDependency<MainVoxelDataGizmoSettingsCollection>(
                 i => _mainVoxelDataGizmoSettingsCollection = i
             );
@@ -336,57 +338,55 @@ namespace Appalachia.Simulation.Buoyancy
 
         protected override async AppaTask Initialize(Initializer initializer)
         {
-            using (_PRF_Initialize.Auto())
+            await base.Initialize(initializer);
+
+            if (_index == null)
             {
-                await base.Initialize(initializer);
-
-                if (_index == null)
-                {
-                    _index = new BuoyancyLookup();
-                }
-
-                var allColliders = _transform.FilterComponents<Collider>(true).NoTriggers().RunFilter();
-
-                foreach (var c in allColliders)
-                {
-                    if (c.attachedRigidbody)
-                    {
-                        Context.Log.Error("Water should REALLY not have a rigidbody!");
-
-                        c.attachedRigidbody.detectCollisions = false;
-                    }
-
-                    Context.Log.Error("Water should not have real colliders!");
-
-                    c.enabled = false;
-                }
-
-                CheckTriggersAndVoxels();
-#if UNITY_EDITOR
-                if (!AppalachiaApplication.IsPlayingOrWillPlay)
-                {
-                    PhysicsSimulator.onSimulationUpdate -= FixedUpdate;
-                    PhysicsSimulator.onSimulationUpdate += FixedUpdate;
-                }
-#endif
+                _index = new BuoyancyLookup();
             }
+
+            var allColliders = _transform.FilterComponents<Collider>(true).NoTriggers().RunFilter();
+
+            foreach (var c in allColliders)
+            {
+                if (c.attachedRigidbody)
+                {
+                    Context.Log.Error("Water should REALLY not have a rigidbody!");
+
+                    c.attachedRigidbody.detectCollisions = false;
+                }
+
+                Context.Log.Error("Water should not have real colliders!");
+
+                c.enabled = false;
+            }
+
+            CheckTriggersAndVoxels();
+#if UNITY_EDITOR
+            if (!AppalachiaApplication.IsPlayingOrWillPlay)
+            {
+                PhysicsSimulator.onSimulationUpdate -= FixedUpdate;
+                PhysicsSimulator.onSimulationUpdate += FixedUpdate;
+            }
+#endif
         }
 
         protected override async AppaTask WhenDestroyed()
         {
+            await base.WhenDestroyed();
+
             using (_PRF_OnDestroy.Auto())
             {
-                await base.WhenDestroyed();
                 CleanUp();
             }
         }
 
         protected override async AppaTask WhenDisabled()
-
         {
-            using (_PRF_OnDisable.Auto())
+            await base.WhenDisabled();
+
+            using (_PRF_WhenDisabled.Auto())
             {
-                await base.WhenDisabled();
 
 #if UNITY_EDITOR
                 if (AppalachiaApplication.IsCompiling || AppalachiaApplication.IsPlayingOrWillPlay)
@@ -572,48 +572,32 @@ namespace Appalachia.Simulation.Buoyancy
 
         #region Profiling
 
-        private const string _PRF_PFX = nameof(Water) + ".";
+        private static readonly ProfilerMarker _PRF_ApplyBuoyancyForces =
+            new(_PRF_PFX + nameof(ApplyBuoyancyForces));
 
-        private static readonly ProfilerMarker _PRF_waterBounds = new(_PRF_PFX + nameof(waterBounds));
+        private static readonly ProfilerMarker _PRF_ApplyBuoyancyForces_AddCumulativeForce =
+            new(_PRF_PFX + nameof(ApplyBuoyancyForces) + ".AddCumulativeForce");
 
-        private static readonly ProfilerMarker _PRF_GetWorldHeightAt =
-            new(_PRF_PFX + nameof(GetWorldHeightAt));
+        private static readonly ProfilerMarker _PRF_ApplyBuoyancyForces_AddForceAtPosition =
+            new(_PRF_PFX + nameof(ApplyBuoyancyForces) + ".AddForceAtPosition");
 
-        private static readonly ProfilerMarker _PRF_SetRenderTexture =
-            new(_PRF_PFX + nameof(SetRenderTexture));
+        private static readonly ProfilerMarker _PRF_ApplyBuoyancyForces_GetCalculationData =
+            new(_PRF_PFX + nameof(ApplyBuoyancyForces) + ".GetCalculationData");
 
-        private static readonly ProfilerMarker _PRF_Start = new(_PRF_PFX + nameof(Start));
-        private static readonly ProfilerMarker _PRF_OnEnable = new(_PRF_PFX + nameof(OnEnable));
-        private static readonly ProfilerMarker _PRF_OnDestroy = new(_PRF_PFX + nameof(OnDestroy));
-        private static readonly ProfilerMarker _PRF_Initialize = new(_PRF_PFX + nameof(Initialize));
-        private static readonly ProfilerMarker _PRF_OnDisable = new(_PRF_PFX + nameof(OnDisable));
-        private static readonly ProfilerMarker _PRF_CleanUp = new(_PRF_PFX + nameof(CleanUp));
+        private static readonly ProfilerMarker _PRF_ApplyBuoyancyForces_GetForce =
+            new(_PRF_PFX + nameof(ApplyBuoyancyForces) + ".GetForce");
 
-        private static readonly ProfilerMarker _PRF_CheckTriggersAndVoxels =
-            new(_PRF_PFX + nameof(CheckTriggersAndVoxels));
+        private static readonly ProfilerMarker _PRF_ApplyBuoyancyForces_GetVoxel =
+            new(_PRF_PFX + nameof(ApplyBuoyancyForces) + ".GetVoxel");
 
-        private static readonly ProfilerMarker _PRF_FixedUpdate = new(_PRF_PFX + nameof(FixedUpdate));
+        private static readonly ProfilerMarker _PRF_ApplyBuoyancyForces_GetVoxelWorldPosition =
+            new(_PRF_PFX + nameof(ApplyBuoyancyForces) + ".GetVoxelWorldPosition");
 
-        private static readonly ProfilerMarker _PRF_FixedUpdate_SynchronizeVoxelData =
-            new(_PRF_PFX + nameof(FixedUpdate) + ".SynchronizeVoxelData");
+        private static readonly ProfilerMarker _PRF_ApplyBuoyancyForces_IterateCalculations =
+            new(_PRF_PFX + nameof(ApplyBuoyancyForces) + ".IterateCalculations");
 
-        private static readonly ProfilerMarker _PRF_FixedUpdate_SyncTransforms =
-            new(_PRF_PFX + nameof(FixedUpdate) + ".SyncTransforms");
-
-        private static readonly ProfilerMarker _PRF_FixedUpdate_ScheduleBatchedJobs =
-            new(_PRF_PFX + nameof(FixedUpdate) + ".ScheduleBatchedJobs");
-
-        private static readonly ProfilerMarker _PRF_FixedUpdate_IterateIndices =
-            new(_PRF_PFX + nameof(FixedUpdate) + ".IterateIndices");
-
-        private static readonly ProfilerMarker _PRF_FixedUpdate_ScheduleBuoyancyJobs =
-            new(_PRF_PFX + nameof(FixedUpdate) + ".ScheduleBuoyancyJobs");
-
-        private static readonly ProfilerMarker _PRF_FixedUpdate_JobHandleComplete =
-            new(_PRF_PFX + nameof(FixedUpdate) + ".JobHandleComplete");
-
-        private static readonly ProfilerMarker _PRF_FixedUpdate_UpdateDrag =
-            new(_PRF_PFX + nameof(FixedUpdate) + ".UpdateDrag");
+        private static readonly ProfilerMarker _PRF_ApplyBuoyancyForces_IterateCalculations_Iteration =
+            new(_PRF_PFX + nameof(ApplyBuoyancyForces) + ".IterateCalculations.Iteration");
 
         private static readonly ProfilerMarker _PRF_ApplyBuoyancyForces_New =
             new(_PRF_PFX + nameof(ApplyBuoyancyForces_New));
@@ -624,41 +608,54 @@ namespace Appalachia.Simulation.Buoyancy
         private static readonly ProfilerMarker _PRF_ApplyBuoyancyForces_New_AddTorque =
             new(_PRF_PFX + nameof(ApplyBuoyancyForces_New) + ".AddTorque");
 
-        private static readonly ProfilerMarker _PRF_ApplyBuoyancyForces =
-            new(_PRF_PFX + nameof(ApplyBuoyancyForces));
+        private static readonly ProfilerMarker _PRF_CheckTriggersAndVoxels =
+            new(_PRF_PFX + nameof(CheckTriggersAndVoxels));
 
-        private static readonly ProfilerMarker _PRF_ApplyBuoyancyForces_IterateCalculations =
-            new(_PRF_PFX + nameof(ApplyBuoyancyForces) + ".IterateCalculations");
+        private static readonly ProfilerMarker _PRF_CleanUp = new(_PRF_PFX + nameof(CleanUp));
 
-        private static readonly ProfilerMarker _PRF_ApplyBuoyancyForces_IterateCalculations_Iteration =
-            new(_PRF_PFX + nameof(ApplyBuoyancyForces) + ".IterateCalculations.Iteration");
+        private static readonly ProfilerMarker _PRF_FixedUpdate_IterateIndices =
+            new(_PRF_PFX + nameof(FixedUpdate) + ".IterateIndices");
 
-        private static readonly ProfilerMarker _PRF_ApplyBuoyancyForces_GetCalculationData =
-            new(_PRF_PFX + nameof(ApplyBuoyancyForces) + ".GetCalculationData");
+        private static readonly ProfilerMarker _PRF_FixedUpdate_JobHandleComplete =
+            new(_PRF_PFX + nameof(FixedUpdate) + ".JobHandleComplete");
 
-        private static readonly ProfilerMarker _PRF_ApplyBuoyancyForces_GetVoxelWorldPosition =
-            new(_PRF_PFX + nameof(ApplyBuoyancyForces) + ".GetVoxelWorldPosition");
+        private static readonly ProfilerMarker _PRF_FixedUpdate_ScheduleBatchedJobs =
+            new(_PRF_PFX + nameof(FixedUpdate) + ".ScheduleBatchedJobs");
 
-        private static readonly ProfilerMarker _PRF_ApplyBuoyancyForces_GetForce =
-            new(_PRF_PFX + nameof(ApplyBuoyancyForces) + ".GetForce");
+        private static readonly ProfilerMarker _PRF_FixedUpdate_ScheduleBuoyancyJobs =
+            new(_PRF_PFX + nameof(FixedUpdate) + ".ScheduleBuoyancyJobs");
 
-        private static readonly ProfilerMarker _PRF_ApplyBuoyancyForces_AddCumulativeForce =
-            new(_PRF_PFX + nameof(ApplyBuoyancyForces) + ".AddCumulativeForce");
+        private static readonly ProfilerMarker _PRF_FixedUpdate_SynchronizeVoxelData =
+            new(_PRF_PFX + nameof(FixedUpdate) + ".SynchronizeVoxelData");
 
-        private static readonly ProfilerMarker _PRF_ApplyBuoyancyForces_GetVoxel =
-            new(_PRF_PFX + nameof(ApplyBuoyancyForces) + ".GetVoxel");
+        private static readonly ProfilerMarker _PRF_FixedUpdate_SyncTransforms =
+            new(_PRF_PFX + nameof(FixedUpdate) + ".SyncTransforms");
 
-        private static readonly ProfilerMarker _PRF_ApplyBuoyancyForces_AddForceAtPosition =
-            new(_PRF_PFX + nameof(ApplyBuoyancyForces) + ".AddForceAtPosition");
+        private static readonly ProfilerMarker _PRF_FixedUpdate_UpdateDrag =
+            new(_PRF_PFX + nameof(FixedUpdate) + ".UpdateDrag");
 
-        private static readonly ProfilerMarker _PRF_OnTriggerEnter = new(_PRF_PFX + nameof(OnTriggerEnter));
+        private static readonly ProfilerMarker _PRF_GetWorldHeightAt =
+            new(_PRF_PFX + nameof(GetWorldHeightAt));
 
         private static readonly ProfilerMarker _PRF_InitiateBuoyancy =
             new(_PRF_PFX + nameof(InitiateBuoyancy));
 
+        private static readonly ProfilerMarker _PRF_OnDestroy = new(_PRF_PFX + nameof(OnDestroy));
+        private static readonly ProfilerMarker _PRF_OnDisable = new(_PRF_PFX + nameof(OnDisable));
+        private static readonly ProfilerMarker _PRF_OnEnable = new(_PRF_PFX + nameof(OnEnable));
+
+        private static readonly ProfilerMarker _PRF_OnTriggerEnter = new(_PRF_PFX + nameof(OnTriggerEnter));
+
         private static readonly ProfilerMarker _PRF_OnTriggerExit = new(_PRF_PFX + nameof(OnTriggerExit));
 
+        private static readonly ProfilerMarker _PRF_SetRenderTexture =
+            new(_PRF_PFX + nameof(SetRenderTexture));
+
+        private static readonly ProfilerMarker _PRF_Start = new(_PRF_PFX + nameof(Start));
+
         private static readonly ProfilerMarker _PRF_UpdateSamples = new(_PRF_PFX + nameof(UpdateSamples));
+
+        private static readonly ProfilerMarker _PRF_waterBounds = new(_PRF_PFX + nameof(waterBounds));
 
         #endregion
 

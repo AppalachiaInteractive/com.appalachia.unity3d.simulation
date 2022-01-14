@@ -12,7 +12,6 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Output
     [Serializable]
     public class BranchOutputMaterial : OutputMaterial
     {
-        
         public BranchOutputMaterial(int materialID) : base(materialID, ResponsiveSettingsType.Branch)
         {
         }
@@ -29,15 +28,15 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Output
             {
                 return;
             }
-            
+
             var profiles = GetOutputTextureProfiles(true).ToArray();
 
             var outputTextures = new List<OutputTexture>();
 
             var outputMaterial = materials[0];
-            
+
             var recreatedSet = TextureExtractor.GetInputTextureSet(outputMaterial.asset);
-            
+
             for (var i = 0; i < profiles.Length; i++)
             {
                 var profile = profiles[i];

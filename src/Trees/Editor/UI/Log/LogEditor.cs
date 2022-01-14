@@ -23,13 +23,12 @@ namespace Appalachia.Simulation.Trees.UI.Log
     [CustomEditor(typeof(LogDataContainer))]
     public class LogEditor : OdinEditor
     {
-        // [CallStaticConstructorInEditor] should be added to the class
         static LogEditor()
         {
             TreeSpeciesEditorSelection.InstanceAvailable += i => _treeSpeciesEditorSelection = i;
             TreeGizmoDelegate.InstanceAvailable += i => _treeGizmoDelegate = i;
             TreeGizmoStyle.InstanceAvailable += i => _treeGizmoStyle = i;
-            GlobalDebug.InstanceAvailable += i => _globalDebug = i;
+            RendererDebuggingSettings.InstanceAvailable += i => _rendererDebuggingSettings = i;
         }
 
         #region Static Fields and Autoproperties
@@ -38,7 +37,7 @@ namespace Appalachia.Simulation.Trees.UI.Log
         public static LogModel _logModel;
         private static EditorInstanceState editorState;
         private static EditorInstanceState modelState;
-        private static GlobalDebug _globalDebug;
+        private static RendererDebuggingSettings _rendererDebuggingSettings;
         private static TreeGizmoDelegate _treeGizmoDelegate;
         private static TreeGizmoStyle _treeGizmoStyle;
 
@@ -494,7 +493,7 @@ namespace Appalachia.Simulation.Trees.UI.Log
         {
             if ((Event.current.type == EventType.Layout) && (_debugProperty == null))
             {
-                _debugProperty = PropertyTree.Create(_globalDebug);
+                _debugProperty = PropertyTree.Create(_rendererDebuggingSettings);
             }
 
             if (_debugProperty != null)

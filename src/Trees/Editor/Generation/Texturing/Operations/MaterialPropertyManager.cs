@@ -18,68 +18,6 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Operations
 {
     public static class MaterialPropertyManager
     {
-        public static void SetMaterialNonProportionalAreas(InputMaterialCache inputMaterialCache)
-        {
-            ResetMaterialAreas(inputMaterialCache);
-
-            var total = 0.0f;
-
-            for (var i = 0; i < inputMaterialCache.atlasInputMaterials.Count; i++)
-            {
-                total += 1.0f;
-            }
-
-            for (var i = 0; i < inputMaterialCache.atlasInputMaterials.Count; i++)
-            {
-                inputMaterialCache.atlasInputMaterials[i].proportionalArea = 1.0f / total;
-            }
-        }
-
-        public static void SetMaterialProportionalAreas(
-            InputMaterialCache inputMaterialCache,
-            LODGenerationOutput mainOutput)
-        {
-            ResetMaterialAreas(inputMaterialCache);
-
-            var atlasArea = 0f;
-
-            foreach (var triangle in mainOutput.triangles)
-            {
-                if (triangle.inputMaterialID == -1)
-                {
-                    continue;
-                }
-
-                var area = triangle.Area(mainOutput.vertices);
-
-                var material = inputMaterialCache.GetByMaterialID(triangle.inputMaterialID) as AtlasInputMaterial;
-                material.proportionalArea += area;
-
-                if (triangle.context != TreeMaterialUsage.Bark)
-                {
-                    atlasArea += area;
-                }
-            }
-
-            NormalizeMaterialAreas(inputMaterialCache, atlasArea);
-        }
-
-        private static void ResetMaterialAreas(InputMaterialCache inputMaterialCache)
-        {
-            foreach (var material in inputMaterialCache.atlasInputMaterials)
-            {
-                material.proportionalArea = 0f;
-            }
-        }
-
-        private static void NormalizeMaterialAreas(InputMaterialCache inputMaterialCache, float atlasArea)
-        {
-            foreach (var material in inputMaterialCache.atlasInputMaterials)
-            {
-                material.proportionalArea /= atlasArea;
-            }
-        }
-
         /*public static void PrepareMaterialProperties(
             bool dynamicEnabled,
             InputMaterialCache inputMaterialCache,
@@ -159,8 +97,11 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Operations
                     if (transmissionTemplate == null)
                     {
                         transmissionTemplate = inputMaterialCache.atlasInputMaterials
-                            .OrderByDescending(b => b.proportionalArea)
-                            .FirstOrDefault(tm => tm.eligibleAsLeaf && (tm.material != null));
+                                                                 .OrderByDescending(b => b.proportionalArea)
+                                                                 .FirstOrDefault(
+                                                                      tm => tm.eligibleAsLeaf &&
+                                                                          (tm.material != null)
+                                                                  );
                     }
 
                     if (transmissionTemplate != null)
@@ -241,6 +182,53 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Operations
                     }
                 }
             }
+        }
+
+        public static void SetMaterialNonProportionalAreas(InputMaterialCache inputMaterialCache)
+        {
+            ResetMaterialAreas(inputMaterialCache);
+
+            var total = 0.0f;
+
+            for (var i = 0; i < inputMaterialCache.atlasInputMaterials.Count; i++)
+            {
+                total += 1.0f;
+            }
+
+            for (var i = 0; i < inputMaterialCache.atlasInputMaterials.Count; i++)
+            {
+                inputMaterialCache.atlasInputMaterials[i].proportionalArea = 1.0f / total;
+            }
+        }
+
+        public static void SetMaterialProportionalAreas(
+            InputMaterialCache inputMaterialCache,
+            LODGenerationOutput mainOutput)
+        {
+            ResetMaterialAreas(inputMaterialCache);
+
+            var atlasArea = 0f;
+
+            foreach (var triangle in mainOutput.triangles)
+            {
+                if (triangle.inputMaterialID == -1)
+                {
+                    continue;
+                }
+
+                var area = triangle.Area(mainOutput.vertices);
+
+                var material =
+                    inputMaterialCache.GetByMaterialID(triangle.inputMaterialID) as AtlasInputMaterial;
+                material.proportionalArea += area;
+
+                if (triangle.context != TreeMaterialUsage.Bark)
+                {
+                    atlasArea += area;
+                }
+            }
+
+            NormalizeMaterialAreas(inputMaterialCache, atlasArea);
         }
 
         /*public static void AssignTransmissionMaterialProperties_Atlas(
@@ -746,8 +734,12 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Operations
             }
         }
         */
-        
-        private static void CopyPrototypeMaterialProperties(Material target, Material prototype, bool force, bool resetTextures)
+
+        private static void CopyPrototypeMaterialProperties(
+            Material target,
+            Material prototype,
+            bool force,
+            bool resetTextures)
         {
             using (BUILD_TIME.MAT_PROP_MGR.CopyPrototypeMaterialProperties.Auto())
             {
@@ -774,6 +766,22 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Operations
                         target.SetTextureScale(textureProperty, Vector2.one);
                     }
                 }
+            }
+        }
+
+        private static void NormalizeMaterialAreas(InputMaterialCache inputMaterialCache, float atlasArea)
+        {
+            foreach (var material in inputMaterialCache.atlasInputMaterials)
+            {
+                material.proportionalArea /= atlasArea;
+            }
+        }
+
+        private static void ResetMaterialAreas(InputMaterialCache inputMaterialCache)
+        {
+            foreach (var material in inputMaterialCache.atlasInputMaterials)
+            {
+                material.proportionalArea = 0f;
             }
         }
     }

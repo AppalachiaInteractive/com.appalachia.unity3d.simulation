@@ -142,9 +142,9 @@ namespace Appalachia.Simulation.Trees
                 {
                     try
                     {
-                        progress.Do(SetDirtyStates,                         "Setting states...");
-                        progress.Do(AssetDatabaseManager.SaveAssets,        "Saving assets...");
-                        progress.Do(() => SaveAllAssets(generateImpostors), "Persisting changes...");
+                        progress.Do(SetDirtyStates,                          "Setting states...");
+                        progress.Do(() => AssetDatabaseManager.SaveAssets(), "Saving assets...");
+                        progress.Do(() => SaveAllAssets(generateImpostors),  "Persisting changes...");
                         dataState = DataState.Normal;
                     }
                     catch (Exception ex)
@@ -160,20 +160,16 @@ namespace Appalachia.Simulation.Trees
 
         protected override async AppaTask Initialize(Initializer initializer)
         {
-            using (_PRF_Initialize.Auto())
-            {
-                await base.Initialize(initializer);
+            await base.Initialize(initializer);
 
-                UpdateSettingsType(settingsType);
-            }
+            UpdateSettingsType(settingsType);
         }
 
         #region Profiling
 
         private const string _PRF_PFX = nameof(TSEDataContainer) + ".";
 
-        private static readonly ProfilerMarker _PRF_Initialize =
-            new ProfilerMarker(_PRF_PFX + nameof(Initialize));
+        
 
         private static readonly ProfilerMarker _PRF_Save = new ProfilerMarker(_PRF_PFX + nameof(Save));
 

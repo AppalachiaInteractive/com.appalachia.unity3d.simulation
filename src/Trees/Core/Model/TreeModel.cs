@@ -25,6 +25,8 @@ namespace Appalachia.Simulation.Trees.Core.Model
     {
         static TreeModel()
         {
+            
+            
             RegisterDependency<TreeGizmoStyle>(i => _treeGizmoStyle = i);
         }
 
@@ -202,11 +204,11 @@ namespace Appalachia.Simulation.Trees.Core.Model
 
         private void Update()
         {
-            if (!DependenciesAreReady || !FullyInitialized)
+            if (ShouldSkipUpdate)
             {
                 return;
             }
-            
+
             var repaint = false;
 
             if (style == null)

@@ -19,23 +19,23 @@ MonoBehaviour:
     _resetToken: 
   branchShaderSet:
     shaders:
-    - _shaderKey: internal/leaf
+    - lodCoverage: 5
       _shader: {fileID: 4800000, guid: 257b0295a45d2b94e8c3f4a36969130c, type: 3}
-      lodCoverage: 5
+      _shaderKey: internal/leaf
   tiledShaderSet:
     shaders:
-    - _shaderKey: internal/bark
+    - lodCoverage: 5
       _shader: {fileID: 4800000, guid: 7630130c6ebf3b545b1a942926befb47, type: 3}
-      lodCoverage: 5
+      _shaderKey: internal/bark
   atlasShaderSet:
     shaders:
-    - _shaderKey: internal/leaf
+    - lodCoverage: 5
       _shader: {fileID: 4800000, guid: 257b0295a45d2b94e8c3f4a36969130c, type: 3}
-      lodCoverage: 5
+      _shaderKey: internal/leaf
   shadowShaderSet:
     shaders:
-    - _shaderKey: internal/tree-shadows
+    - lodCoverage: 5
       _shader: {fileID: 4800000, guid: e1ed889a03053a043a043ee492ab89a6, type: 3}
-      lodCoverage: 5
+      _shaderKey: internal/tree-shadows
   logShader: {fileID: 4800000, guid: 68ecdc851eee9694e9da7c0c0745e98b, type: 3}
   impostorPreset: {fileID: 11400000, guid: 8a8578bcf78732b43b9da5cb461c1d01, type: 2}

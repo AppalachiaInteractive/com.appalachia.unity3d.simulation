@@ -21,7 +21,6 @@ namespace Appalachia.Simulation.Physical.Relays
         protected abstract Collider[] GetColliders();
 
         protected override async AppaTask WhenDisabled()
-
         {
             await base.WhenDisabled();
 

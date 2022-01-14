@@ -78,34 +78,25 @@ namespace Appalachia.Simulation.ReactionSystem.TouchBend.Data
         [HideInInspector] public MeshFilter quadFilter;
         [HideInInspector] public MeshRenderer quadRenderer;
 
-        private const string _PRF_PFX = nameof(TouchBendQuad) + ".";
-
-        private static readonly ProfilerMarker _PRF_Initialize =
-            new ProfilerMarker(_PRF_PFX + nameof(Initialize));
-
         protected override async AppaTask Initialize(Initializer initializer)
         {
-            using (_PRF_Initialize.Auto())
-            {
-                await base.Initialize(initializer);
+            await base.Initialize(initializer);
 
 #if UNITY_EDITOR
-                await initializer.Do(this, nameof(InitializeCamera), InitializeCamera);
+            initializer.Do(this, nameof(InitializeCamera), InitializeCamera);
 #endif
-                await initializer.Do(this, nameof(RecalculateTouchBendBounds), RecalculateTouchBendBounds);
-                await initializer.Do(this, nameof(InitializeQuadComponents), InitializeQuadComponents);
-                await initializer.Do(this, nameof(RepositionQuad), RepositionQuad);
-                await initializer.Do(this, nameof(UpdateRenderParameters), () => UpdateRenderParameters());
-            }
+            initializer.Do(this, nameof(RecalculateTouchBendBounds), RecalculateTouchBendBounds);
+            initializer.Do(this, nameof(InitializeQuadComponents),   InitializeQuadComponents);
+            initializer.Do(this, nameof(RepositionQuad),             RepositionQuad);
+            initializer.Do(this, nameof(UpdateRenderParameters),     () => UpdateRenderParameters());
         }
 
         protected override async AppaTask WhenDisabled()
-
         {
-            using (_PRF_OnDisable.Auto())
-            {
-                await base.WhenDisabled();
+            await base.WhenDisabled();
 
+            using (_PRF_WhenDisabled.Auto())
+            {
                 if (quadRenderer)
                 {
                     quadRenderer.enabled = false;
@@ -115,9 +106,6 @@ namespace Appalachia.Simulation.ReactionSystem.TouchBend.Data
 
         private static readonly ProfilerMarker _PRF_InitializeQuadComponents =
             new ProfilerMarker(_PRF_PFX + nameof(InitializeQuadComponents));
-
-        private static readonly ProfilerMarker _PRF_OnDisable =
-            new ProfilerMarker(_PRF_PFX + nameof(OnDisable));
 
         private static readonly ProfilerMarker _PRF_Refresh = new ProfilerMarker(_PRF_PFX + nameof(Refresh));
 
@@ -267,17 +255,15 @@ namespace Appalachia.Simulation.ReactionSystem.TouchBend.Data
             }
         }
 
-        private static readonly ProfilerMarker _PRF_Update = new ProfilerMarker(_PRF_PFX + nameof(Update));
-
         private void Update()
         {
             using (_PRF_Update.Auto())
             {
-                if (!DependenciesAreReady || !FullyInitialized)
+                if (ShouldSkipUpdate)
                 {
                     return;
                 }
-                
+
 #if UNITY_EDITOR
 
                 if (finishShot)

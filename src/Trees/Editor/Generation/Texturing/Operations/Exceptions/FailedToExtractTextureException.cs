@@ -14,8 +14,12 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Operations.Exceptions
             this.m = m;
             this.map = map;
         }
-        
+
+        #region Fields and Autoproperties
+
         public Material m;
         public TextureMap map;
+
+        #endregion
     }
 }

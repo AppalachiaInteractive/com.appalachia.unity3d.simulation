@@ -16,7 +16,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading.OutputShaders
 
         #region Static Fields and Autoproperties
 
-        protected static GSR _GSR;
+        public static GSR _GSR;
 
         #endregion
 

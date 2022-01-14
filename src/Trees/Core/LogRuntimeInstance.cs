@@ -23,8 +23,6 @@ namespace Appalachia.Simulation.Trees.Core
     [RequireComponent(typeof(RigidbodyDensityManager))]
     public class LogRuntimeInstance : InstancedAppalachiaBehaviour<LogRuntimeInstance>
     {
-        
-        
         #region Fields and Autoproperties
 
         [FormerlySerializedAs("densityRigidbodyManager")]
@@ -89,25 +87,42 @@ namespace Appalachia.Simulation.Trees.Core
         [ShowInInspector]
         public float mass => rigidbodyDensityManager.rb.mass;
 
-        #region Event Functions
+        [Button]
+#if UNITY_EDITOR
+        [EnableIf(nameof(_missingModel))]
+#endif
+        public void InitializeWithoutModel()
+        {
+            using (_PRF_InitializeWithoutModel.Auto())
+            {
+                logName = name;
 
-        private static readonly ProfilerMarker _PRF_Initialize =
-            new ProfilerMarker(_PRF_PFX + nameof(Initialize));
+                var _renderer = GetComponentInChildren<Renderer>();
+
+                var mesh = _renderer.GetSharedMesh();
+
+                mesh.GetVolumeAndCenterOfMass(out volume, out centerOfMass);
+            }
+        }
 
         protected override async AppaTask Initialize(Initializer initializer)
         {
+            await base.Initialize(initializer);
+
+            initializer.Do(
+                this,
+                nameof(RigidbodyDensityManager),
+                rigidbodyDensityManager == null,
+                () =>
+                {
+                    using (_PRF_Initialize.Auto())
+                    {
+                        gameObject.GetOrCreateComponent(ref rigidbodyDensityManager);
+                    }
+                }
+            );
             using (_PRF_Initialize.Auto())
             {
-                await base.Initialize(initializer);
-
-                await initializer.Do(
-                    this,
-                    nameof(RigidbodyDensityManager),
-                    rigidbodyDensityManager == null,
-                    () => gameObject.GetOrCreateComponent(ref rigidbodyDensityManager)
-                );
-                
-
                 if (wood == null)
                 {
                     var errorMessage = ZString.Format("Need to assign wood to this log [{0}]!", name);
@@ -149,29 +164,6 @@ namespace Appalachia.Simulation.Trees.Core
                 rigidbodyDensityManager.density = densityMetadata;
             }
         }
-     
-
-            
-
-        #endregion
-
-        [Button]
-#if UNITY_EDITOR
-        [EnableIf(nameof(_missingModel))]
-#endif
-        public void InitializeWithoutModel()
-        {
-            using (_PRF_InitializeWithoutModel.Auto())
-            {
-                logName = name;
-
-                var _renderer = GetComponentInChildren<Renderer>();
-
-                var mesh = _renderer.GetSharedMesh();
-
-                mesh.GetVolumeAndCenterOfMass(out volume, out centerOfMass);
-            }
-        }
 
         protected override void UpdateInstancedProperties(MaterialPropertyBlock block, Material m)
         {
@@ -191,16 +183,16 @@ namespace Appalachia.Simulation.Trees.Core
 
         #region Profiling
 
-        private const string _PRF_PFX = nameof(LogRuntimeInstance) + ".";
+        
 
         private static readonly ProfilerMarker _PRF_InitializeWithoutModel =
             new ProfilerMarker(_PRF_PFX + nameof(InitializeWithoutModel));
 
-        private static readonly ProfilerMarker _PRF_UpdateInstancedProperties =
-            new ProfilerMarker(_PRF_PFX + nameof(UpdateInstancedProperties));
-
         private static readonly ProfilerMarker
             _PRF_OnEnable = new ProfilerMarker(_PRF_PFX + nameof(OnEnable));
+
+        private static readonly ProfilerMarker _PRF_UpdateInstancedProperties =
+            new ProfilerMarker(_PRF_PFX + nameof(UpdateInstancedProperties));
 
         #endregion
 
@@ -226,16 +218,16 @@ namespace Appalachia.Simulation.Trees.Core
         [DisableIf(nameof(_missingModel))]
         public void SelectModel()
         {
-            UnityEditor.Selection.objects = new Object[] {_model.GameObject};
+            UnityEditor.Selection.objects = new Object[] { _model.GameObject };
         }
 
         private void Update()
         {
-            if (!DependenciesAreReady || !FullyInitialized)
+            if (ShouldSkipUpdate)
             {
                 return;
             }
-            
+
             if (_model == null)
             {
                 _model = GetComponentInParent<LogModel>();

@@ -17,6 +17,10 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Operations.Exceptions
             this.m = m;
         }
 
+        #region Fields and Autoproperties
+
         public Material m;
+
+        #endregion
     }
 }

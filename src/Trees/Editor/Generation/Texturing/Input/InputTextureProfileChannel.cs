@@ -8,39 +8,74 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Input
     [Serializable]
     public class InputTextureProfileChannel : IEquatable<InputTextureProfileChannel>
     {
+        #region Fields and Autoproperties
+
         [HorizontalGroup]
+
         //[InfoBox("Invert", InfoMessageType.None), HideLabel, LabelWidth(40)]
         [HideLabel]
         public bool invert;
 
         [HorizontalGroup]
-        //[InfoBox("Channel", InfoMessageType.None), HideLabel]
-        [HideLabel]
-        public TextureMapChannel mapChannel;
 
-        [HorizontalGroup]
         //[InfoBox("Packing", InfoMessageType.None), HideLabel]
         [HideLabel]
         public TextureChannelPacking packing;
 
-        [DebuggerStepThrough] public bool Equals(InputTextureProfileChannel other)
+        [HorizontalGroup]
+
+        //[InfoBox("Channel", InfoMessageType.None), HideLabel]
+        [HideLabel]
+        public TextureMapChannel mapChannel;
+
+        #endregion
+
+        [DebuggerStepThrough]
+        public static bool operator ==(TextureMapChannel left, InputTextureProfileChannel right)
         {
-            if (ReferenceEquals(null, other))
+            if (right == null)
             {
+                if (left == TextureMapChannel.None)
+                {
+                    return true;
+                }
+
                 return false;
             }
 
-            if (ReferenceEquals(this, other))
-            {
-                return true;
-            }
-
-            return (mapChannel == other.mapChannel) &&
-                (invert == other.invert) &&
-                (packing == other.packing);
+            return left == right.mapChannel;
         }
 
-        [DebuggerStepThrough] public override bool Equals(object obj)
+        [DebuggerStepThrough]
+        public static bool operator ==(InputTextureProfileChannel left, TextureMapChannel right)
+        {
+            if (left == null)
+            {
+                if (right == TextureMapChannel.None)
+                {
+                    return true;
+                }
+
+                return false;
+            }
+
+            return left.mapChannel == right;
+        }
+
+        [DebuggerStepThrough]
+        public static bool operator !=(TextureMapChannel left, InputTextureProfileChannel right)
+        {
+            return !(left == right);
+        }
+
+        [DebuggerStepThrough]
+        public static bool operator !=(InputTextureProfileChannel left, TextureMapChannel right)
+        {
+            return !(left == right);
+        }
+
+        [DebuggerStepThrough]
+        public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj))
             {
@@ -57,58 +92,39 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Input
                 return false;
             }
 
-            return Equals((InputTextureProfileChannel) obj);
+            return Equals((InputTextureProfileChannel)obj);
         }
 
-        [DebuggerStepThrough] public override int GetHashCode()
+        [DebuggerStepThrough]
+        public override int GetHashCode()
         {
             unchecked
             {
-                var hashCode = (int) mapChannel;
+                var hashCode = (int)mapChannel;
                 hashCode = (hashCode * 397) ^ invert.GetHashCode();
-                hashCode = (hashCode * 397) ^ (int) packing;
+                hashCode = (hashCode * 397) ^ (int)packing;
                 return hashCode;
             }
         }
 
-        [DebuggerStepThrough] public static bool operator ==(TextureMapChannel left, InputTextureProfileChannel right)
+        #region IEquatable<InputTextureProfileChannel> Members
+
+        [DebuggerStepThrough]
+        public bool Equals(InputTextureProfileChannel other)
         {
-            if (right == null)
+            if (ReferenceEquals(null, other))
             {
-                if (left == TextureMapChannel.None)
-                {
-                    return true;
-                }
-                
                 return false;
             }
 
-            return left == right.mapChannel;
-        }
-
-        [DebuggerStepThrough] public static bool operator !=(TextureMapChannel left, InputTextureProfileChannel right)
-        {
-            return !(left == right);
-        }
-
-        [DebuggerStepThrough] public static bool operator ==(InputTextureProfileChannel left, TextureMapChannel right)
-        {
-            if (left == null)
+            if (ReferenceEquals(this, other))
             {
-                if (right == TextureMapChannel.None)
-                {
-                    return true;
-                }
-                
-                return false;
+                return true;
             }
 
-            return left.mapChannel == right;
+            return (mapChannel == other.mapChannel) && (invert == other.invert) && (packing == other.packing);
         }
 
-        [DebuggerStepThrough] public static bool operator !=(InputTextureProfileChannel left, TextureMapChannel right)
-        {
-            return !(left == right);
-        }
+        #endregion
     }
 }

@@ -335,35 +335,28 @@ namespace Appalachia.Simulation.Trees.Prefabs
             }
         }
 
-        private static readonly ProfilerMarker _PRF_Initialize =
-            new ProfilerMarker(_PRF_PFX + nameof(Initialize));
-
         protected override async AppaTask Initialize(Initializer initializer)
         {
-            using (_PRF_Initialize.Auto())
+            await base.Initialize(initializer);
+
+            if (_prefabsByGUIDAndType == null)
             {
-                await base.Initialize(initializer);
-                
-                if (_prefabsByGUIDAndType == null)
-                {
-                    _prefabsByGUIDAndType =
-                        new Dictionary<string, Dictionary<TreeComponentType, TreePrefab>>();
-                }
+                _prefabsByGUIDAndType = new Dictionary<string, Dictionary<TreeComponentType, TreePrefab>>();
+            }
 
-                if (_prefabsByID == null)
-                {
-                    _prefabsByID = new Dictionary<int, TreePrefab>();
-                }
+            if (_prefabsByID == null)
+            {
+                _prefabsByID = new Dictionary<int, TreePrefab>();
+            }
 
-                if (_prefabIDs == null)
-                {
-                    _prefabIDs = new IDIncrementer(true);
-                }
+            if (_prefabIDs == null)
+            {
+                _prefabIDs = new IDIncrementer(true);
+            }
 
-                if (_prefabs == null)
-                {
-                    _prefabs = new List<TreePrefab>();
-                }
+            if (_prefabs == null)
+            {
+                _prefabs = new List<TreePrefab>();
             }
         }
 
@@ -421,10 +414,11 @@ namespace Appalachia.Simulation.Trees.Prefabs
 
         private const string _PRF_PFX = nameof(TreePrefabCollection) + ".";
 
+        private static readonly ProfilerMarker _PRF_Initialize =
+            new ProfilerMarker(_PRF_PFX + nameof(Initialize));
+
         private static readonly ProfilerMarker _PRF_UpdatePrefabs =
             new ProfilerMarker(_PRF_PFX + nameof(UpdatePrefabs));
-
-        
 
         private static readonly ProfilerMarker _PRF_RebuildLookups =
             new ProfilerMarker(_PRF_PFX + nameof(RebuildLookups));

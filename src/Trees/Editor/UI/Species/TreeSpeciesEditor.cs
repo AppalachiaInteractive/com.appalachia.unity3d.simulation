@@ -31,7 +31,7 @@ namespace Appalachia.Simulation.Trees.UI.Species
         static TreeSpeciesEditor()
         {
             TreeSpeciesEditorSelection.InstanceAvailable += i => _treeSpeciesEditorSelection = i;
-            GlobalDebug.InstanceAvailable += i => _globalDebug = i;
+            RendererDebuggingSettings.InstanceAvailable += i => _rendererDebuggingSettings = i;
             TreeGlobalSettings.InstanceAvailable += i => _treeGlobalSettings = i;
             TreeGizmoStyle.InstanceAvailable += i => _treeGizmoStyle = i;
             TreeGizmoDelegate.InstanceAvailable += i => _treeGizmoDelegate = i;
@@ -43,7 +43,7 @@ namespace Appalachia.Simulation.Trees.UI.Species
         public static TreeModel _treeModel;
         private static EditorInstanceState editorState;
         private static EditorInstanceState modelState;
-        private static GlobalDebug _globalDebug;
+        private static RendererDebuggingSettings _rendererDebuggingSettings;
         private static TreeGizmoDelegate _treeGizmoDelegate;
         private static TreeGizmoStyle _treeGizmoStyle;
         private static TreeGlobalSettings _treeGlobalSettings;
@@ -196,7 +196,7 @@ namespace Appalachia.Simulation.Trees.UI.Species
             {
                 if (!TreeModelViewToolbar.IsReady ||
                     !TreeSpeciesEditorSelection.IsInstanceAvailable ||
-                    !GlobalDebug.IsInstanceAvailable ||
+                    !RendererDebuggingSettings.IsInstanceAvailable ||
                     !TreeGlobalSettings.IsInstanceAvailable ||
                     !TreeGizmoStyle.IsInstanceAvailable)
                 {
@@ -713,7 +713,7 @@ namespace Appalachia.Simulation.Trees.UI.Species
         {
             if ((Event.current.type == EventType.Layout) && (_debugProperty == null))
             {
-                _debugProperty = PropertyTree.Create(_globalDebug);
+                _debugProperty = PropertyTree.Create(_rendererDebuggingSettings);
             }
 
             if (_debugProperty != null)

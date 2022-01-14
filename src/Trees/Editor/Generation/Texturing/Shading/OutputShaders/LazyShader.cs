@@ -11,16 +11,21 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading.OutputShaders
         {
             _shaderName = shaderName;
         }
-        
+
         public LazyShader(Shader shader)
         {
             _shaderName = shader.name;
             _shader = shader;
         }
 
-        [SerializeField] private string _shaderName;
+        #region Fields and Autoproperties
+
         [SerializeField] private Shader _shader;
-        
+
+        [SerializeField] private string _shaderName;
+
+        #endregion
+
         public Shader shader
         {
             get
@@ -29,11 +34,15 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading.OutputShaders
                 {
                     _shader = Shader.Find(_shaderName);
                 }
-                
+
                 return _shader;
             }
         }
 
-        [DebuggerStepThrough] public static implicit operator Shader(LazyShader s) => s?.shader;
+        [DebuggerStepThrough]
+        public static implicit operator Shader(LazyShader s)
+        {
+            return s?.shader;
+        }
     }
 }

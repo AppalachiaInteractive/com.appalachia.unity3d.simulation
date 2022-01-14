@@ -24,6 +24,13 @@ namespace Appalachia.Simulation.Core.Metadata.Wind
             Grass
         }
 
+        public WindParameterCategory(WindParameterCategoryType category)
+        {
+            this.category = category;
+        }
+
+        #region Fields and Autoproperties
+
         [HideInInspector] public WindParameterCategoryType category;
 
         [Title("$" + nameof(category))]
@@ -32,6 +39,7 @@ namespace Appalachia.Simulation.Core.Metadata.Wind
         public float strength = 1.0f;
 
         [FoldoutGroup("Groups")]
+        [HideLabel, InlineProperty]
         [ListDrawerSettings(
             Expanded = true,
             DraggableItems = false,
@@ -45,10 +53,7 @@ namespace Appalachia.Simulation.Core.Metadata.Wind
 
         private int strengthPropertyID;
 
-        public WindParameterCategory(WindParameterCategoryType category)
-        {
-            this.category = category;
-        }
+        #endregion
 
         public void ApplyProperties()
         {

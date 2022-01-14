@@ -5,12 +5,12 @@ using UnityEngine;
 
 namespace Appalachia.Simulation.Buoyancy.Collections
 {
-    public class
+    public sealed class
         BuoyancyLookup : AppaLookup<GameObject, Buoyant, AppaList_GameObject, AppaList_Buoyant>
     {
-        protected override string GetDisplayTitle(GameObject key, Buoyant value)
+        protected override Color GetDisplayColor(GameObject key, Buoyant value)
         {
-            return key.name;
+            return value.submerged ? Colors.Aquamarine3 : Colors.White;
         }
 
         protected override string GetDisplaySubtitle(GameObject key, Buoyant value)
@@ -18,9 +18,9 @@ namespace Appalachia.Simulation.Buoyancy.Collections
             return value.buoyancyData.name;
         }
 
-        protected override Color GetDisplayColor(GameObject key, Buoyant value)
+        protected override string GetDisplayTitle(GameObject key, Buoyant value)
         {
-            return value.submerged ? Colors.Aquamarine3 : Colors.White;
+            return key.name;
         }
     }
 }

@@ -6,24 +6,31 @@ using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading.OutputShaders
 {
-    
     [Serializable]
     public sealed class OutputShaderSelection
     {
-        private OutputMaterialShaderSelector _selector;
-        [SerializeField, HideInInspector] private string _shaderKey;
-        private IOutputMaterialShader _materialShader;
-        [SerializeField] private Shader _shader;
+        public delegate void shaderEventDelegate();
 
-        [PropertyRange(1, 5)] public int lodCoverage = 1;
+        public event shaderEventDelegate OnShaderChanged;
+
         public OutputShaderSelection(IOutputMaterialShader materialShader)
         {
             _shaderKey = materialShader.Name;
             _materialShader = materialShader;
             _shader = materialShader.Shader;
         }
-        
-        public string shaderKey => _shaderKey;
+
+        #region Fields and Autoproperties
+
+        [PropertyRange(1, 5)] public int lodCoverage = 1;
+        private IOutputMaterialShader _materialShader;
+        private OutputMaterialShaderSelector _selector;
+        [SerializeField] private Shader _shader;
+
+        [SerializeField, HideInInspector]
+        private string _shaderKey;
+
+        #endregion
 
         public IOutputMaterialShader materialShader
         {
@@ -58,7 +65,9 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading.OutputShaders
                 return _shader;
             }
         }
-        
+
+        public string shaderKey => _shaderKey;
+
         [Button]
         private void Change()
         {
@@ -72,12 +81,12 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading.OutputShaders
                         using (BUILD_TIME.OUT_MAT.UpdateShader.Auto())
                         {
                             var m = ms.FirstOrDefault();
-                            
+
                             _materialShader = m;
                             _shader = _materialShader?.Shader;
                             _shaderKey = _materialShader?.Name;
                         }
-                        
+
                         OnShaderChanged?.Invoke();
                     };
                 }
@@ -85,9 +94,5 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading.OutputShaders
                 _selector.Show(_materialShader);
             }
         }
-        
-        public delegate void shaderEventDelegate();
-
-        public event shaderEventDelegate OnShaderChanged;
     }
 }

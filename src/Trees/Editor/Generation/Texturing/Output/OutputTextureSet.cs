@@ -9,6 +9,8 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Output
     [Serializable]
     public class OutputTextureSet : AppalachiaSimpleBase
     {
+        #region Fields and Autoproperties
+
         [ListDrawerSettings(
             Expanded = true,
             IsReadOnly = true,
@@ -17,19 +19,14 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Output
             HideRemoveButton = true,
             ShowIndexLabels = false,
             ShowPaging = true,
-            NumberOfItemsPerPage = 1)]
+            NumberOfItemsPerPage = 1
+        )]
         [SerializeField]
         private List<OutputTexture> _outputTextures = new List<OutputTexture>();
 
-        public IReadOnlyList<OutputTexture> outputTextures => _outputTextures;
+        #endregion
 
-        public void UpdateAlphaTestReferenceValue(float value)
-        {
-            foreach (var outputTexture in outputTextures)
-            {
-                outputTexture.UpdateAlphaTestReferenceValue(value);
-            }
-        }
+        public IReadOnlyList<OutputTexture> outputTextures => _outputTextures;
 
         public void Clear()
         {
@@ -38,7 +35,6 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Output
                 _outputTextures = new List<OutputTexture>();
             }
 
-            
             _outputTextures.Clear();
         }
 
@@ -49,6 +45,14 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Output
             foreach (var texture in textures)
             {
                 _outputTextures.Add(texture);
+            }
+        }
+
+        public void UpdateAlphaTestReferenceValue(float value)
+        {
+            foreach (var outputTexture in outputTextures)
+            {
+                outputTexture.UpdateAlphaTestReferenceValue(value);
             }
         }
     }

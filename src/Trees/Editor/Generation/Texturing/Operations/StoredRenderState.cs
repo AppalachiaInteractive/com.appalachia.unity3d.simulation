@@ -6,18 +6,6 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Operations
 {
     public class StoredRenderState : AppalachiaSimpleBase
     {
-        private bool fogState;
-        private bool srgbWrite;
-        private RenderTexture texture;
-
-        internal void Restore()
-        {
-            GL.PopMatrix();
-            GL.sRGBWrite = srgbWrite;
-            Unsupported.SetRenderSettingsUseFogNoDirty(fogState);
-            RenderTexture.active = texture;
-        }
-
         internal StoredRenderState()
         {
             GL.PushMatrix();
@@ -25,6 +13,22 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Operations
             srgbWrite = GL.sRGBWrite;
             Unsupported.SetRenderSettingsUseFogNoDirty(false);
             texture = RenderTexture.active;
+        }
+
+        #region Fields and Autoproperties
+
+        private bool fogState;
+        private bool srgbWrite;
+        private RenderTexture texture;
+
+        #endregion
+
+        internal void Restore()
+        {
+            GL.PopMatrix();
+            GL.sRGBWrite = srgbWrite;
+            Unsupported.SetRenderSettingsUseFogNoDirty(fogState);
+            RenderTexture.active = texture;
         }
     }
 }

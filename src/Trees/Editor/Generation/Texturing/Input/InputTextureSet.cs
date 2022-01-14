@@ -9,9 +9,21 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Input
     [Serializable]
     public class InputTextureSet : AppalachiaSimpleBase
     {
-        [ListDrawerSettings(DraggableItems = false, ShowPaging = true, NumberOfItemsPerPage = 1, Expanded = true,
-            HideAddButton = true, HideRemoveButton =  true)]
+        #region Fields and Autoproperties
+
+        [ListDrawerSettings(
+            DraggableItems = false,
+            ShowPaging = true,
+            NumberOfItemsPerPage = 1,
+            Expanded = true,
+            HideAddButton = true,
+            HideRemoveButton = true
+        )]
         public List<InputTexture> inputTextures = new List<InputTexture>();
+
+        #endregion
+
+        public int count => inputTextures?.Count ?? 0;
 
         public Vector2 size
         {
@@ -23,7 +35,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Input
                 }
 
                 var max = Vector2.zero;
-                
+
                 foreach (var inputTexture in inputTextures)
                 {
                     if (inputTexture.texture.width > max.x)
@@ -40,7 +52,5 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Input
                 return max;
             }
         }
-
-        public int count => inputTextures?.Count ?? 0;
     }
 }

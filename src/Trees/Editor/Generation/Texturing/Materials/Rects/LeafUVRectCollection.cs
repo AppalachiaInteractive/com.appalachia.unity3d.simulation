@@ -7,9 +7,15 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Rects
 {
     public class LeafUVRectCollection : SingletonAppalachiaTreeObject<LeafUVRectCollection>
     {
+        #region Fields and Autoproperties
+
         public List<LeafUVRectSet> leafUVRectSets = new List<LeafUVRectSet>();
-        
+
         private Dictionary<Material, LeafUVRectSet> _lookup = new Dictionary<Material, LeafUVRectSet>();
+
+        public List<LeafUVRect> defaultRects = new List<LeafUVRect>();
+
+        #endregion
 
         private Dictionary<Material, LeafUVRectSet> lookup
         {
@@ -22,13 +28,12 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Rects
 
                 foreach (var materialSet in _lookup)
                 {
-                    
-                    if ((materialSet.Key != null) && 
+                    if ((materialSet.Key != null) &&
                         (materialSet.Value != null) &&
                         !leafUVRectSets.Contains(materialSet.Value))
                     {
                         materialSet.Value.material = materialSet.Key;
-                        
+
                         leafUVRectSets.Add(materialSet.Value);
                     }
                 }
@@ -47,22 +52,21 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Rects
                     {
                         continue;
                     }
-                    
+
                     _lookup.Add(set.material, set);
                 }
 
                 return _lookup;
-            }   
+            }
         }
 
-        public List<LeafUVRect> defaultRects = new List<LeafUVRect>(); 
         public List<LeafUVRect> Get(Material m)
         {
             if (m == null)
             {
                 if (defaultRects == null)
                 {
-                    defaultRects = new List<LeafUVRect>(); 
+                    defaultRects = new List<LeafUVRect>();
                 }
 
                 if (defaultRects.Count != 1)
@@ -73,10 +77,10 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Rects
 
                     defaultRects.Add(r);
                 }
-                
+
                 return defaultRects;
             }
-            
+
             if (!lookup.ContainsKey(m))
             {
                 lookup.Add(m, new LeafUVRectSet());
@@ -88,6 +92,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Rects
             {
                 set.uvRects = new List<LeafUVRect>();
             }
+
             if (set.uvRects.Count == 0)
             {
                 var rect = new LeafUVRect();

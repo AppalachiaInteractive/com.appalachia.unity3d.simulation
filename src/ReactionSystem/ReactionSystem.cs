@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using Appalachia.Core.Objects.Initialization;
 using Appalachia.Core.Objects.Root;
 using Appalachia.Utility.Async;
-using Unity.Profiling;
 using UnityEngine;
 
 namespace Appalachia.Simulation.ReactionSystem
@@ -19,36 +18,30 @@ namespace Appalachia.Simulation.ReactionSystem
 
         protected override async AppaTask Initialize(Initializer initializer)
         {
-            using (_PRF_Initialize.Auto())
+            await base.Initialize(initializer);
+
+            if (groups == null)
             {
-                await base.Initialize(initializer);
+                groups = new List<ReactionSubsystemGroup>();
+            }
 
-                if (groups == null)
+            for (var i = groups.Count - 1; i >= 0; i--)
+            {
+                var group = groups[i];
+
+                if (group == null)
                 {
-                    groups = new List<ReactionSubsystemGroup>();
+                    groups.RemoveAt(i);
+                    continue;
                 }
 
-                for (var i = groups.Count - 1; i >= 0; i--)
-                {
-                    var group = groups[i];
-
-                    if (group == null)
-                    {
-                        groups.RemoveAt(i);
-                        continue;
-                    }
-
-                    group.Initialize(this, i);
-                }
+                group.Initialize(this, i);
             }
         }
 
         #region Profiling
 
-        private const string _PRF_PFX = nameof(ReactionSystem) + ".";
-
-        private static readonly ProfilerMarker _PRF_Initialize =
-            new ProfilerMarker(_PRF_PFX + nameof(Initialize));
+        
 
         #endregion
     }

@@ -96,8 +96,6 @@ namespace Appalachia.Simulation.Trees.Core
             }
         }
 
-        
-
 #if UNITY_EDITOR
         [SerializeField]
         [HideInInspector]
@@ -125,11 +123,11 @@ namespace Appalachia.Simulation.Trees.Core
 
         private void Update()
         {
-            if (!DependenciesAreReady || !FullyInitialized)
+            if (ShouldSkipUpdate)
             {
                 return;
             }
-            
+
             if (_model == null)
             {
                 _model = GetComponentInParent<TreeModel>();

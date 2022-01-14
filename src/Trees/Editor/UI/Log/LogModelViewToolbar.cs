@@ -20,12 +20,12 @@ namespace Appalachia.Simulation.Trees.UI.Log
             TreeGizmoStyle.InstanceAvailable += i => _treeGizmoStyle = i;
             TreeGizmoDelegate.InstanceAvailable += i => _treeGizmoDelegate = i;
             TreeSpeciesEditorSelection.InstanceAvailable += i => _treeSpeciesEditorSelection = i;
-            GlobalDebug.InstanceAvailable += i => _globalDebug = i;
+            RendererDebuggingSettings.InstanceAvailable += i => _rendererDebuggingSettings = i;
         }
 
         #region Static Fields and Autoproperties
 
-        private static GlobalDebug _globalDebug;
+        private static RendererDebuggingSettings _rendererDebuggingSettings;
         private static TreeGizmoDelegate _treeGizmoDelegate;
 
         private static TreeGizmoStyle _treeGizmoStyle;
@@ -176,7 +176,7 @@ namespace Appalachia.Simulation.Trees.UI.Log
                 );
 
                 TreeGUI.Button.EnumContext(
-                    _globalDebug.debugMode,
+                    _rendererDebuggingSettings.debugMode,
                     mode => true,
                     mode => mode == DebugMode.Off ? TreeIcons.disabledColor : TreeIcons.color,
                     mode => mode switch
@@ -187,14 +187,14 @@ namespace Appalachia.Simulation.Trees.UI.Log
                     },
                     mode =>
                     {
-                        _globalDebug.debugMode = mode switch
+                        _rendererDebuggingSettings.debugMode = mode switch
                         {
                             DebugMode.Off         => DebugMode.DebugMotion,
                             DebugMode.DebugMotion => DebugMode.DebugMesh,
                             _                     => DebugMode.Off
                         };
 
-                        _globalDebug.Update();
+                        _rendererDebuggingSettings.Update();
                     },
                     mode => mode == DebugMode.Off
                         ? TreeGUI.Styles.ButtonLeft
@@ -204,15 +204,16 @@ namespace Appalachia.Simulation.Trees.UI.Log
                 );
 
                 TreeGUI.Button.EnumContext(
-                    _globalDebug.debugMode,
+                    _rendererDebuggingSettings.debugMode,
                     mode => mode == DebugMode.DebugMotion,
                     mode => mode == DebugMode.DebugMotion ? TreeIcons.wind : TreeIcons.disabledWind,
                     mode => "Change motion debugging type",
                     mode =>
                     {
-                        _globalDebug.debugMotion = _globalDebug.debugMotion.Next();
+                        _rendererDebuggingSettings.debugMotion =
+                            _rendererDebuggingSettings.debugMotion.Next();
 
-                        _globalDebug.Update();
+                        _rendererDebuggingSettings.Update();
                     },
                     mode => mode != DebugMode.DebugMotion
                         ? TreeGUI.Styles.ButtonMid
@@ -222,15 +223,15 @@ namespace Appalachia.Simulation.Trees.UI.Log
                 );
 
                 TreeGUI.Button.EnumContext(
-                    _globalDebug.debugMode,
+                    _rendererDebuggingSettings.debugMode,
                     mode => mode == DebugMode.DebugMesh,
                     mode => mode == DebugMode.DebugMesh ? TreeIcons.mesh : TreeIcons.disabledMesh,
                     mode => "Change mesh debugging type",
                     mode =>
                     {
-                        _globalDebug.debugMesh = _globalDebug.debugMesh.Next();
+                        _rendererDebuggingSettings.debugMesh = _rendererDebuggingSettings.debugMesh.Next();
 
-                        _globalDebug.Update();
+                        _rendererDebuggingSettings.Update();
                     },
                     mode => mode != DebugMode.DebugMesh
                         ? TreeGUI.Styles.ButtonRight

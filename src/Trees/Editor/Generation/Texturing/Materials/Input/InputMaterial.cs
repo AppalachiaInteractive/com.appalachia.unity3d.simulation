@@ -13,23 +13,59 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Input
     [Serializable]
     public abstract class InputMaterial : TreeMaterial
     {
-        [SerializeField, InlineProperty, HideLabel]
-        private InputTextureSet _textures;
+        protected InputMaterial(int materialID, Material material, ResponsiveSettingsType settingsType) :
+            base(materialID, settingsType)
+        {
+            _material = material;
+            _textures = TextureExtractor.GetInputTextureSet(material);
+        }
 
-        public InputTextureSet textures => _textures;
+        #region Fields and Autoproperties
+
+        [VerticalGroup("MAT/RIGHT")]
+        [LabelWidth(150)]
+        [PropertyRange(0f, 4f)]
+        [ShowIf(nameof(showColorBoost))]
+        public float colorBoost = 1.0f;
+
+        [VerticalGroup("MAT/RIGHT")]
+        [LabelWidth(150)]
+        public MaterialColorStyle colorStyle = MaterialColorStyle.Unchanged;
 
         [SerializeField]
         [HorizontalGroup("MAT", PaddingLeft = 0, PaddingRight = 10, MaxWidth = 100)]
         [InlineEditor(
-             Expanded = true,
-             DrawHeader = false,
-             DrawPreview = true,
-             PreviewHeight = 96,
-             PreviewWidth = 96,
-             ObjectFieldMode = InlineEditorObjectFieldModes.Hidden,
-             DrawGUI = false)]
-         [PropertyOrder(-501)]
+            Expanded = true,
+            DrawHeader = false,
+            DrawPreview = true,
+            PreviewHeight = 96,
+            PreviewWidth = 96,
+            ObjectFieldMode = InlineEditorObjectFieldModes.Hidden,
+            DrawGUI = false
+        )]
+        [PropertyOrder(-501)]
         protected Material _material;
+
+        [SerializeField, InlineProperty, HideLabel]
+        private InputTextureSet _textures;
+
+        #endregion
+
+        public abstract bool eligibleAsBranch { get; }
+        public abstract bool eligibleAsBreak { get; }
+        public abstract bool eligibleAsFrond { get; }
+        public abstract bool eligibleAsLeaf { get; }
+
+        public InputTextureSet textures => _textures;
+
+        public Material material => _material;
+
+        private bool _materialPresent => _material != null;
+
+        private bool showColorBoost =>
+            (colorStyle == MaterialColorStyle.GrayscaleBoosted) || (colorStyle == MaterialColorStyle.Boosted);
+
+        public abstract Rect GetRect(Vector2 inputSize, Vector2 outputSize);
 
         [Button(ButtonSizes.Small), EnableIf(nameof(_materialPresent))]
         [VerticalGroup("MAT/RIGHT"), PropertyOrder(-500)]
@@ -38,33 +74,6 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Input
         {
             EditorGUIUtility.PingObject(_material);
         }
-
-        [VerticalGroup("MAT/RIGHT")]
-        [LabelWidth(150)]
-        public MaterialColorStyle colorStyle = MaterialColorStyle.Unchanged;
-
-        private bool showColorBoost => (colorStyle == MaterialColorStyle.GrayscaleBoosted) || (colorStyle == MaterialColorStyle.Boosted);
-        
-        [VerticalGroup("MAT/RIGHT")]
-        [LabelWidth(150)]
-        [PropertyRange(0f, 4f)]
-        [ShowIf(nameof(showColorBoost))]
-        public float colorBoost = 1.0f;
-        
-        private bool _materialPresent => _material != null;
-
-        public Material material => _material;
-
-        protected InputMaterial(int materialID, Material material, ResponsiveSettingsType settingsType) : base(materialID, settingsType)
-        {
-            _material = material;
-            _textures = TextureExtractor.GetInputTextureSet(material);
-        }
-
-        public abstract bool eligibleAsBranch { get; }
-        public abstract bool eligibleAsBreak { get; }
-        public abstract bool eligibleAsFrond { get; }
-        public abstract bool eligibleAsLeaf { get; }
 
         [Button(ButtonSizes.Small), EnableIf(nameof(_materialPresent))]
         [VerticalGroup("MAT/RIGHT"), PropertyOrder(-499)]
@@ -76,7 +85,5 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Input
                 _textures = TextureExtractor.GetInputTextureSet(material);
             }
         }
-
-        public abstract Rect GetRect(Vector2 inputSize, Vector2 outputSize);
     }
 }

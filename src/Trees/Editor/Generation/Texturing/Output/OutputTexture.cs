@@ -10,13 +10,13 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Output
     [Serializable]
     public class OutputTexture : AppalachiaSimpleBase
     {
-        public OutputTexture(
-            OutputTextureProfile profile, 
-            Texture2D texture)
+        public OutputTexture(OutputTextureProfile profile, Texture2D texture)
         {
             this.profile = profile;
             _texture = texture;
         }
+
+        #region Fields and Autoproperties
 
         [PreviewField(ObjectFieldAlignment.Center, Height = 72f), HideLabel, InlineProperty]
         [HorizontalGroup("TEX", MaxWidth = 96f)]
@@ -24,26 +24,23 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Output
         [SerializeField]
         private Texture2D _texture;
 
-        public Texture2D texture => _texture;
-
         [VerticalGroup("TEX/PANE")]
         [HideLabel, InlineProperty]
         public OutputTextureProfile profile;
+
+        #endregion
+
+        public Texture2D texture => _texture;
 
         public void AssignToMaterial(Material m)
         {
             m.SetTexture(profile.propertyName, _texture);
         }
 
-        public void UpdateAlphaTestReferenceValue(float transparency)
-        {
-            profile.settings.UpdateAlphaTestReferenceValue(AssetDatabaseManager.GetAssetPath(_texture), transparency);
-        }
-
         public void Reload(string path)
         {
             var temp = _texture;
-            
+
             _texture = AssetDatabaseManager.LoadAssetAtPath<Texture2D>(path);
 
             if (temp != null)
@@ -52,10 +49,13 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Output
             }
         }
 
-
-
-
-
+        public void UpdateAlphaTestReferenceValue(float transparency)
+        {
+            profile.settings.UpdateAlphaTestReferenceValue(
+                AssetDatabaseManager.GetAssetPath(_texture),
+                transparency
+            );
+        }
 
         /*
 

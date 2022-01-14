@@ -595,98 +595,92 @@ namespace Appalachia.Simulation.Trees
         [EnableIf(nameof(canInitialize))]
         protected override async AppaTask Initialize(Initializer initializer)
         {
-            using (_PRF_Initialize.Auto())
+            try
             {
-                try
+                if (initialized)
                 {
-                    if (initialized)
-                    {
-                        return;
-                    }
+                    return;
+                }
 
-                    await base.Initialize(initializer);
+                await base.Initialize(initializer);
 
-                    ResetInitialization();
+                ResetInitialization();
 
-                    var basis = NameBasis.CreateNested(this);
-                    basis.nameBasis = initializationSettings.name.ToSafe().TrimEnd(',', '.', '_', '-');
+                var basis = NameBasis.CreateNested(this);
+                basis.nameBasis = initializationSettings.name.ToSafe().TrimEnd(',', '.', '_', '-');
 
-                    UpdateNameAndMove(basis.nameBasis);
+                UpdateNameAndMove(basis.nameBasis);
 
-                    subfolders = TreeAssetSubfolders.CreateNested(this, false);
+                subfolders = TreeAssetSubfolders.CreateNested(this, false);
 
-                    subfolders.nameBasis = basis;
-                    subfolders.InitializeFromParent(this);
+                subfolders.nameBasis = basis;
+                subfolders.InitializeFromParent(this);
 
-                    subfolders.CreateFolders();
+                subfolders.CreateFolders();
 
-                    if (initializationSettings.convertTreeData)
-                    {
-                        species = TreeSpecies.Create(initializationSettings.original, subfolders.main, basis);
-                        species.hierarchies.verticalOffset =
-                            initializationSettings.original.root.groundOffset;
-                    }
-                    else
-                    {
-                        species = TreeSpecies.Create(subfolders.data, basis);
-                        species.seed.value = Random.Range(1, BaseSeed.HIGH_ELEMENT);
-                        species.seed.SetInternalSeed(
-                            Random.Range(1, BaseSeed.HIGH_ELEMENT),
-                            Random.Range(1, BaseSeed.HIGH_ELEMENT)
-                        );
-                    }
-
-                    if (settings == null)
-                    {
-                        settings = TreeSettings.Create(subfolders.data, basis);
-                    }
-
-                    if (settings.lod.impostor.impostorAfterLastLevel)
-                    {
-                        subfolders.CreateImpostorFolder();
-                    }
-
-                    individuals = new List<TreeIndividual>();
-
-                    hierarchyPrefabs = TreePrefabCollection.Create(subfolders.data, basis);
-                    hierarchyPrefabs.ResetPrefabs();
-                    hierarchyPrefabs.UpdatePrefabs(species);
-
-                    materials = TreeMaterialCollection.Create(subfolders.data, basis);
-                    materials.UpdateMaterials(
-                        species,
-                        hierarchyPrefabs,
-                        settings.lod.levels,
-                        settings.lod.shadowCaster
+                if (initializationSettings.convertTreeData)
+                {
+                    species = TreeSpecies.Create(initializationSettings.original, subfolders.main, basis);
+                    species.hierarchies.verticalOffset = initializationSettings.original.root.groundOffset;
+                }
+                else
+                {
+                    species = TreeSpecies.Create(subfolders.data, basis);
+                    species.seed.value = Random.Range(1, BaseSeed.HIGH_ELEMENT);
+                    species.seed.SetInternalSeed(
+                        Random.Range(1, BaseSeed.HIGH_ELEMENT),
+                        Random.Range(1, BaseSeed.HIGH_ELEMENT)
                     );
-                    materials.inputMaterialCache.SetDefaultMaterials(settings.material.defaultMaterials);
-                    materials.inputMaterialCache.UpdateDefaultMaterials();
-
-                    if (!initializationSettings.convertTreeData)
-                    {
-                        species.hierarchies.CreateTrunkHierarchy(materials.inputMaterialCache);
-                    }
-
-                    SeedManager.UpdateSeeds(species);
-
-                    AddNewIndividual();
-
-                    buildRequest = new TreeBuildRequest();
-
-                    initialized = true;
-                    basis.Lock();
-                    dataState = DataState.Dirty;
-
-                    SetDirtyStates();
-
-                    AssetDatabaseManager.SaveAssets();
                 }
-                catch (Exception ex)
+
+                if (settings == null)
                 {
-                    Context.Log.Error(ex.Message, this);
-                    initialized = false;
-                    throw;
+                    settings = TreeSettings.Create(subfolders.data, basis);
                 }
+
+                if (settings.lod.impostor.impostorAfterLastLevel)
+                {
+                    subfolders.CreateImpostorFolder();
+                }
+
+                individuals = new List<TreeIndividual>();
+
+                hierarchyPrefabs = TreePrefabCollection.Create(subfolders.data, basis);
+                hierarchyPrefabs.ResetPrefabs();
+                hierarchyPrefabs.UpdatePrefabs(species);
+
+                materials = TreeMaterialCollection.Create(subfolders.data, basis);
+                materials.UpdateMaterials(
+                    species,
+                    hierarchyPrefabs,
+                    settings.lod.levels,
+                    settings.lod.shadowCaster
+                );
+                materials.inputMaterialCache.SetDefaultMaterials(settings.material.defaultMaterials);
+                materials.inputMaterialCache.UpdateDefaultMaterials();
+
+                if (!initializationSettings.convertTreeData)
+                {
+                    species.hierarchies.CreateTrunkHierarchy(materials.inputMaterialCache);
+                }
+
+                SeedManager.UpdateSeeds(species);
+
+                AddNewIndividual();
+
+                buildRequest = new TreeBuildRequest();
+
+                initialized = true;
+                basis.Lock();
+                dataState = DataState.Dirty;
+
+                SetDirtyStates();
+            }
+            catch (Exception ex)
+            {
+                Context.Log.Error(ex.Message, this);
+                initialized = false;
+                throw;
             }
         }
 

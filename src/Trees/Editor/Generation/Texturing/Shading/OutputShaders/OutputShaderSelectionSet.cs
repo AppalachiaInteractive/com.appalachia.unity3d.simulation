@@ -6,10 +6,6 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading.OutputShaders
     [Serializable]
     public sealed class OutputShaderSelectionSet
     {
-        public List<OutputShaderSelection> shaders;
-
-        public int Count => shaders?.Count ?? 0;
-
         public OutputShaderSelectionSet(params IOutputMaterialShader[] args)
         {
             shaders = new List<OutputShaderSelection>();
@@ -21,6 +17,16 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading.OutputShaders
             }
         }
 
+        #region Fields and Autoproperties
+
+        public List<OutputShaderSelection> shaders;
+
+        #endregion
+
+        public int Count => shaders?.Count ?? 0;
+
+        public OutputShaderSelection this[int i] => shaders[i];
+
         public OutputShaderSelectionSet Clone()
         {
             var clone = new OutputShaderSelectionSet();
@@ -30,13 +36,8 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading.OutputShaders
                 var cloneShader = new OutputShaderSelection(shader.materialShader);
                 clone.shaders.Add(cloneShader);
             }
-            
-            return clone;
-        }
 
-        public OutputShaderSelection this[int i]
-        {
-            get { return shaders[i]; }
+            return clone;
         }
 
         public void RemoveAt(int i)

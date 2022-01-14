@@ -4,7 +4,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Appalachia.Core.Extensions;
 using Appalachia.Simulation.Trees.Build.Execution;
 using Appalachia.Simulation.Trees.Core.Settings;
 using Appalachia.Simulation.Trees.Generation.Texturing.Materials.Base;
@@ -22,9 +21,35 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Output
     [Serializable]
     public abstract class OutputMaterial : TreeMaterial, IEnumerable<OutputMaterialElement>
     {
+        protected OutputMaterial(int materialID, ResponsiveSettingsType settingsType) : base(
+            materialID,
+            settingsType
+        )
+        {
+            _materials = new List<OutputMaterialElement>();
+
+            for (var i = 0; i < defaultShaders.Count; i++)
+            {
+                var newMat = new OutputMaterialElement(defaultShaders.shaders[i]);
+
+                _materials.Add(newMat);
+            }
+
+            _textureSet = new OutputTextureSet();
+        }
+
+        #region Fields and Autoproperties
+
+        [PropertyOrder(0)]
+        [InlineProperty, HideLabel]
+        [HideIf(nameof(_hideTextures))]
+        [SerializeField]
+        protected OutputTextureSet _textureSet;
+
         [SerializeField]
         [ListDrawerSettings(
             HideAddButton = true,
+
             //HideRemoveButton = true,
             DraggableItems = false,
             NumberOfItemsPerPage = 1,
@@ -32,6 +57,24 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Output
         )]
         [PropertyOrder(100)]
         private List<OutputMaterialElement> _materials;
+
+        #endregion
+
+        protected abstract OutputShaderSelectionSet defaultShaders { get; }
+
+        public bool RequiresUpdate =>
+            (materials == null) || (materials.Count == 0) || materials.Any(m => m.asset == null);
+
+        public int Count => materials.Count;
+
+        public OutputTextureSet textureSet => _textureSet;
+
+        public string TexturePrefix => materials[0].asset.name;
+
+        protected bool _hideTextures =>
+            (_textureSet == null) ||
+            (_textureSet.outputTextures == null) ||
+            (_textureSet.outputTextures.Count == 0);
 
         protected List<OutputMaterialElement> materials
         {
@@ -44,7 +87,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Output
 
                 if (_materials.Capacity < defaultShaders.Count)
                 {
-                    _materials.Capacity = (defaultShaders.Count);                    
+                    _materials.Capacity = defaultShaders.Count;
                 }
 
                 for (var i = 0; i < _materials.Count; i++)
@@ -59,46 +102,6 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Output
             }
         }
 
-        protected abstract OutputShaderSelectionSet defaultShaders { get; }
-
-        [PropertyOrder(0)]
-        [InlineProperty, HideLabel]
-        [HideIf(nameof(_hideTextures))]
-        [SerializeField]
-        protected OutputTextureSet _textureSet;
-
-        protected bool _hideTextures =>
-            (_textureSet == null) || (_textureSet.outputTextures == null) || (_textureSet.outputTextures.Count == 0);
-
-        public OutputTextureSet textureSet => _textureSet;
-
-        protected OutputMaterial(int materialID, ResponsiveSettingsType settingsType) : base(materialID, settingsType)
-        {
-            _materials = new List<OutputMaterialElement>();
-
-            for (var i = 0; i < defaultShaders.Count; i++)
-            {
-                var newMat = new OutputMaterialElement(defaultShaders.shaders[i]);
-
-                _materials.Add(newMat);
-            }
-
-            _textureSet = new OutputTextureSet();
-        }
-
-        public bool HasTexture(TextureMap map)
-        {
-            foreach (var texture in textureSet.outputTextures)
-            {
-                if (texture.profile.map == map)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
         public void EnsureCreated(int lodsRequired)
         {
             var elements = new OutputMaterialElement[lodsRequired];
@@ -107,7 +110,8 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Output
             {
                 if (materials[i].asset == null)
                 {
-                    var atlas = (MaterialContext == MaterialContext.AtlasOutputMaterial) || (MaterialContext == MaterialContext.ShadowCaster);
+                    var atlas = (MaterialContext == MaterialContext.AtlasOutputMaterial) ||
+                                (MaterialContext == MaterialContext.ShadowCaster);
 
                     materials[i].SetMaterial(new Material(materials[i].selectedShader.shader), atlas);
                 }
@@ -116,7 +120,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Output
             for (var i = 0; i < lodsRequired; i++)
             {
                 var shaderIndex = GetMaterialIndexForLOD(i);
-                
+
                 if (shaderIndex >= (materials.Count - 1))
                 {
                     elements[i] = materials[shaderIndex];
@@ -132,9 +136,11 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Output
             {
                 if (element.asset == null)
                 {
-                    element.SetMaterial(new Material(element.selectedShader.shader),
+                    element.SetMaterial(
+                        new Material(element.selectedShader.shader),
                         (MaterialContext == MaterialContext.AtlasOutputMaterial) ||
-                        (MaterialContext == MaterialContext.BranchOutputMaterial));
+                        (MaterialContext == MaterialContext.BranchOutputMaterial)
+                    );
                 }
                 else
                 {
@@ -143,19 +149,22 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Output
             }
         }
 
-        public IEnumerable<OutputTextureProfile> GetOutputTextureProfiles(bool atlas)
+        public void FinalizeMaterial()
         {
-            var profileHash = new HashSet<OutputTextureProfile>();
-
-            foreach (var shader in materials)
+            using (BUILD_TIME.OUT_MAT.UpdateMaterial.Auto())
             {
-                profileHash.AddRange(shader.selectedShader.materialShader.GetOutputProfiles(atlas));
-            }
+                foreach (var element in materials)
+                {
+                    element.FinalizeMaterial(MaterialContext == MaterialContext.AtlasOutputMaterial);
 
-            return profileHash;
+                    foreach (var texture in textureSet.outputTextures)
+                    {
+                        texture.AssignToMaterial(element.asset);
+                    }
+                }
+            }
         }
 
-        public int Count => materials.Count;
         public OutputMaterialElement GetMaterialElementByIndex(int index)
         {
             return materials[index];
@@ -165,7 +174,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Output
         {
             return materials[GetMaterialIndexForLOD(lod)];
         }
-        
+
         public int GetMaterialIndexForLOD(int lod)
         {
             var shaderIndex = 0;
@@ -190,14 +199,39 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Output
                 {
                     return shaderIndex;
                 }
+
                 shaderIndexCount += 1;
             }
 
             return shaderIndex;
         }
 
+        public IEnumerable<OutputTextureProfile> GetOutputTextureProfiles(bool atlas)
+        {
+            var profileHash = new HashSet<OutputTextureProfile>();
 
-        public string TexturePrefix => materials[0].asset.name;
+            foreach (var shader in materials)
+            {
+                profileHash.AddRange(shader.selectedShader.materialShader.GetOutputProfiles(atlas));
+            }
+
+            return profileHash;
+        }
+
+        public bool HasTexture(TextureMap map)
+        {
+            foreach (var texture in textureSet.outputTextures)
+            {
+                if (texture.profile.map == map)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        #region IEnumerable<OutputMaterialElement> Members
 
         public IEnumerator<OutputMaterialElement> GetEnumerator()
         {
@@ -209,23 +243,6 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Output
             return GetEnumerator();
         }
 
-
-        public void FinalizeMaterial()
-        {
-            using (BUILD_TIME.OUT_MAT.UpdateMaterial.Auto())
-            {
-                foreach (var element in materials)
-                {
-                    element.FinalizeMaterial(MaterialContext == MaterialContext.AtlasOutputMaterial);
-
-                    foreach (var texture in textureSet.outputTextures)
-                    {
-                        texture.AssignToMaterial(element.asset);
-                    }
-                }
-            }
-        }
-
-        public bool RequiresUpdate => (materials == null) || (materials.Count == 0) || materials.Any(m => m.asset == null);
+        #endregion
     }
 }

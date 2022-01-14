@@ -11,9 +11,98 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Output
     [Serializable]
     public class OutputTextureProfile : AppalachiaSimpleBase
     {
+        #region Constants and Static Readonly
+
+        public static IEqualityComparer<OutputTextureProfile> OutputTextureProfileComparer { get; } =
+            new OutputTextureProfileEqualityComparer();
+
+        #endregion
+
+        public OutputTextureProfile(TextureMap map, Color defaultColor)
+        {
+            _map = map;
+            _color = defaultColor;
+        }
+
+        #region Fields and Autoproperties
+
+        [SerializeField]
+        [TabGroup("Group", "General", Paddingless = true)]
+        [LabelWidth(100)]
+        private TextureMap _map;
+
+        [SerializeField]
+        [TabGroup("Group", "General", Paddingless = true)]
+        [LabelWidth(100)]
+        private Color _color;
+
+        [TabGroup("Group", "General", Paddingless = true)]
+        [LabelWidth(100)]
+        public string propertyName = "_MainTex";
+
+        [TabGroup("Group", "General", Paddingless = true)]
+        [LabelWidth(100)]
+        public string fileNameSuffix = "_Albedo";
+
+        /*
+        [TabGroup("Group", "General", Paddingless = true)]
+        [LabelWidth(100)]
+        public TextureSize textureSize;
+        */
+
+        [TabGroup("Group", "Channels", Paddingless = true)]
+        [LabelWidth(100)]
+        public TextureMapChannel red;
+
+        [TabGroup("Group", "Channels", Paddingless = true)]
+        [LabelWidth(100)]
+        public TextureMapChannel green;
+
+        [TabGroup("Group", "Channels", Paddingless = true)]
+        [LabelWidth(100)]
+        public TextureMapChannel blue;
+
+        [TabGroup("Group", "Channels", Paddingless = true)]
+        [LabelWidth(100)]
+        public TextureMapChannel alpha;
+
+        [TabGroup("Group", "Settings", Paddingless = true)]
+        [InlineProperty, HideLabel]
+        public OutputTextureSetting settings;
+
+        #endregion
+
+        public Color color => _color;
+        public TextureMap map => _map;
+
+        public TextureMapChannel this[int i]
+        {
+            get
+            {
+                switch (i)
+                {
+                    case 0:
+                        return red;
+                    case 1:
+                        return green;
+                    case 2:
+                        return blue;
+                    case 3:
+                        return alpha;
+                    default:
+                        throw new IndexOutOfRangeException("0 to 3 allowed.");
+                }
+            }
+        }
+
+        #region Nested type: OutputTextureProfileEqualityComparer
+
         private sealed class OutputTextureProfileEqualityComparer : IEqualityComparer<OutputTextureProfile>
         {
-            [DebuggerStepThrough] public bool Equals(OutputTextureProfile x, OutputTextureProfile y)
+            #region IEqualityComparer<OutputTextureProfile> Members
+
+            [DebuggerStepThrough]
+            public bool Equals(OutputTextureProfile x, OutputTextureProfile y)
             {
                 if (ReferenceEquals(x, y))
                 {
@@ -35,97 +124,40 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Output
                     return false;
                 }
 
-                return (x._map == y._map) && x._color.Equals(y._color) && (x.propertyName == y.propertyName) && (x.fileNameSuffix == y.fileNameSuffix) && (x.red == y.red) && (x.green == y.green) && (x.blue == y.blue) && (x.alpha == y.alpha) && Equals(x.settings, y.settings);
+                return (x._map == y._map) &&
+                       x._color.Equals(y._color) &&
+                       (x.propertyName == y.propertyName) &&
+                       (x.fileNameSuffix == y.fileNameSuffix) &&
+                       (x.red == y.red) &&
+                       (x.green == y.green) &&
+                       (x.blue == y.blue) &&
+                       (x.alpha == y.alpha) &&
+                       Equals(x.settings, y.settings);
             }
 
-            [DebuggerStepThrough] public int GetHashCode(OutputTextureProfile obj)
+            [DebuggerStepThrough]
+            public int GetHashCode(OutputTextureProfile obj)
             {
                 unchecked
                 {
-                    var hashCode = (int) obj._map;
+                    var hashCode = (int)obj._map;
                     hashCode = (hashCode * 397) ^ obj._color.GetHashCode();
-                    hashCode = (hashCode * 397) ^ (obj.propertyName != null ? obj.propertyName.GetHashCode() : 0);
-                    hashCode = (hashCode * 397) ^ (obj.fileNameSuffix != null ? obj.fileNameSuffix.GetHashCode() : 0);
-                    hashCode = (hashCode * 397) ^ (int) obj.red;
-                    hashCode = (hashCode * 397) ^ (int) obj.green;
-                    hashCode = (hashCode * 397) ^ (int) obj.blue;
-                    hashCode = (hashCode * 397) ^ (int) obj.alpha;
+                    hashCode = (hashCode * 397) ^
+                               (obj.propertyName != null ? obj.propertyName.GetHashCode() : 0);
+                    hashCode = (hashCode * 397) ^
+                               (obj.fileNameSuffix != null ? obj.fileNameSuffix.GetHashCode() : 0);
+                    hashCode = (hashCode * 397) ^ (int)obj.red;
+                    hashCode = (hashCode * 397) ^ (int)obj.green;
+                    hashCode = (hashCode * 397) ^ (int)obj.blue;
+                    hashCode = (hashCode * 397) ^ (int)obj.alpha;
                     hashCode = (hashCode * 397) ^ (obj.settings != null ? obj.settings.GetHashCode() : 0);
                     return hashCode;
                 }
             }
+
+            #endregion
         }
 
-        public static IEqualityComparer<OutputTextureProfile> OutputTextureProfileComparer { get; } = new OutputTextureProfileEqualityComparer();
-
-        public OutputTextureProfile(TextureMap map, Color defaultColor)
-        {
-            _map = map;
-            _color = defaultColor;
-        }
-
-        [SerializeField]
-        [TabGroup("Group", "General", Paddingless = true)]
-        [LabelWidth(100)]
-        private TextureMap _map;
-        public TextureMap map => _map;
-
-        [SerializeField]
-        [TabGroup("Group", "General", Paddingless = true)]
-        [LabelWidth(100)]
-        private Color _color;
-        public Color color => _color;
-
-        [TabGroup("Group", "General", Paddingless = true)]
-        [LabelWidth(100)]
-        public string propertyName = "_MainTex";
-        
-        [TabGroup("Group", "General", Paddingless = true)]
-        [LabelWidth(100)]
-        public string fileNameSuffix = "_Albedo";
-        
-        /*
-        [TabGroup("Group", "General", Paddingless = true)]
-        [LabelWidth(100)]
-        public TextureSize textureSize;
-        */
-        
-        
-        [TabGroup("Group", "Channels", Paddingless = true)]
-        [LabelWidth(100)]
-        public TextureMapChannel red;
-        [TabGroup("Group", "Channels", Paddingless = true)]
-        [LabelWidth(100)]
-        public TextureMapChannel green;
-        [TabGroup("Group", "Channels", Paddingless = true)]
-        [LabelWidth(100)]
-        public TextureMapChannel blue;
-        [TabGroup("Group", "Channels", Paddingless = true)]
-        [LabelWidth(100)]
-        public TextureMapChannel alpha;
-
-        [TabGroup("Group", "Settings", Paddingless = true)]
-        [InlineProperty, HideLabel]
-        public OutputTextureSetting settings;
-
-        public TextureMapChannel this[int i]
-        {
-            get
-            {
-                switch (i)
-                {
-                    case 0:
-                        return red;
-                    case 1:
-                        return green;
-                    case 2:
-                        return blue;
-                    case 3:
-                        return alpha;
-                    default:
-                        throw new IndexOutOfRangeException("0 to 3 allowed.");
-                }
-            }
-        }
+        #endregion
     }
 }

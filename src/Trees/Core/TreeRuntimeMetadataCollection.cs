@@ -18,27 +18,16 @@ namespace Appalachia.Simulation.Trees.Core
 
         protected override async AppaTask Initialize(Initializer initializer)
         {
-            using (_PRF_Initialize.Auto())
-            {
-                await base.Initialize(initializer);
+            await base.Initialize(initializer);
 
 #if UNITY_EDITOR
-                if (!AppalachiaApplication.IsPlayingOrWillPlay)
-                {
-                    UpdateLists();
-                }
-#endif
+            if (!AppalachiaApplication.IsPlayingOrWillPlay)
+            {
+                UpdateLists();
             }
+#endif
         }
 
-        #region Profiling
-
-        private const string _PRF_PFX = nameof(TreeRuntimeMetadataCollection) + ".";
-
-        private static readonly ProfilerMarker _PRF_Initialize =
-            new ProfilerMarker(_PRF_PFX + nameof(Initialize));
-
-        #endregion
 
 #if UNITY_EDITOR
 

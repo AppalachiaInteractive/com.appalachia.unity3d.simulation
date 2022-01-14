@@ -160,7 +160,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Specifications
         ///     The alpha channel contains glossiness information.
         /// </summary>
         NormSAO = 210,
-        
+
         /// <summary>
         ///     A common optimized mapping.
         ///     The red channel contains glossiness information.
@@ -169,7 +169,6 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Specifications
         ///     The alpha channel contains tangent space normal X+ information.
         /// </summary>
         NormSAOPacked = 211,
-
 
         /// <summary>
         ///     A common optimized mapping.
@@ -240,7 +239,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Specifications
         ///     The alpha channel contains displacement information.
         /// </summary>
         NormalOSDisplacement = 270,
-        
+
         /// <summary>
         ///     An optimized mapping (CTI Tree Shaders).
         ///     The green channel contains tangent space normal Y+ information.
@@ -248,7 +247,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Specifications
         ///     The alpha channel contains tangent space normal X+ information.
         /// </summary>
         NormalTSSpecularityMap = 280,
-        
+
         /// <summary>
         ///     An optimized mapping (CTI Tree Shaders).
         ///     The red channel contains specularity information.
@@ -295,68 +294,68 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Specifications
         ///     An map used to augment shadow information. The red channel represents shadow casting strength..
         /// </summary>
         ShadowMap = 320,
-        
+
         /// <summary>
-        /// A variant of the surface albedo information.
+        ///     A variant of the surface albedo information.
         /// </summary>
         Variant_Albedo = 400,
-        
+
         /// <summary>
-        /// A variant of the surface albedo glossiness information.
+        ///     A variant of the surface albedo glossiness information.
         /// </summary>
         Variant_AlbedoGlossiness = 401,
-        
+
         /// <summary>
-        /// A variant of the surface tangent-space normal information.
+        ///     A variant of the surface tangent-space normal information.
         /// </summary>
         Variant_Normal_TS = 410,
-        
+
         /// <summary>
-        /// A variant of the surface displacement information.
+        ///     A variant of the surface displacement information.
         /// </summary>
         Variant_Displacement = 420,
-        
+
         /// <summary>
-        /// A variant of the surface ambient occlusion information.
+        ///     A variant of the surface ambient occlusion information.
         /// </summary>
         Variant_AmbientOcclusion = 430,
-        
+
         /// <summary>
-        /// A variant of the surface metallicity information.
+        ///     A variant of the surface metallicity information.
         /// </summary>
-        Variant_Metallicity = 440,   
-        
+        Variant_Metallicity = 440,
+
         /// <summary>
-        /// A variant of the surface glossiness information.
-        /// </summary>   
+        ///     A variant of the surface glossiness information.
+        /// </summary>
         Variant_Glossiness = 450,
-        
+
         /// <summary>
-        /// A variant of the surface roughness information.
+        ///     A variant of the surface roughness information.
         /// </summary>
         Variant_Roughness = 460,
-        
+
         /// <summary>
-        /// A variant of the surface opacity information.
+        ///     A variant of the surface opacity information.
         /// </summary>
         Variant_Opacity = 470,
-        
+
         /// <summary>
-        /// A variant of the surface metallicity, ambient occlusion, displacement, and
-        /// glossiness information.
+        ///     A variant of the surface metallicity, ambient occlusion, displacement, and
+        ///     glossiness information.
         /// </summary>
         Variant_MAOHS = 475,
-        
+
         /// <summary>
-        /// A variant of the surface specularity (RGB).
+        ///     A variant of the surface specularity (RGB).
         /// </summary>
         Variant_Specularity = 480,
-        
+
         /// <summary>
-        /// A variant of the surface specularity (RGB) and smoothness (A).
+        ///     A variant of the surface specularity (RGB) and smoothness (A).
         /// </summary>
         Variant_SpecularityGlossiness = 490,
-        
+
         /// <summary>
         ///     An optimized mapping (CTI Tree Shaders).
         ///     The red channel contains specularity information.

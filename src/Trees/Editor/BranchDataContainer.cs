@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Appalachia.CI.Integration.Assets;
 using Appalachia.Core.Objects.Initialization;
 using Appalachia.Simulation.Trees.Build.RequestManagers;
 using Appalachia.Simulation.Trees.Build.Requests;
@@ -281,8 +280,6 @@ namespace Appalachia.Simulation.Trees
                 dataState = DataState.Dirty;
 
                 SetDirtyStates();
-
-                AssetDatabaseManager.SaveAssets();
             }
             catch (Exception ex)
             {
@@ -300,10 +297,10 @@ namespace Appalachia.Simulation.Trees
         protected override async AppaTask WhenDisabled()
 
         {
+            await base.WhenDisabled();
+
             using (_PRF_OnDisable.Auto())
             {
-                await base.WhenDisabled();
-
                 if (_renderUtility != null)
                 {
                     _renderUtility.Cleanup();

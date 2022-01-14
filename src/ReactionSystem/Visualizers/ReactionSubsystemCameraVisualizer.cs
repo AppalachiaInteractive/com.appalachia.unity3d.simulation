@@ -22,12 +22,12 @@ namespace Appalachia.Simulation.ReactionSystem.Visualizers
 
         protected override void PrepareInitialGeneration()
         {
-            texture = subsystem.renderTexture.Capture();
+            texture = subsystem.renderTexture.ToTexture2D();
         }
 
         protected override void PrepareSubsequentGenerations()
         {
-            texture = subsystem.renderTexture.Capture();
+            texture = subsystem.renderTexture.ToTexture2D();
         }
 
         protected override void GetVisualizationInfo(

@@ -7,8 +7,21 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading.InputShaders
 {
     public class Internal_Plant_InputMaterialShader : IInputMaterialShader
     {
+        #region Fields and Autoproperties
+
+        private InputTextureProfile[] _plant =
+        {
+            InputTextureProfileFactory.Get(TextureMap.Albedo,    "_AlbedoTex",  "_MainTex"),
+            InputTextureProfileFactory.Get(TextureMap.Normal_TS, "_NormalTex",  "_BumpMap"),
+            InputTextureProfileFactory.Get(TextureMap.MAOHS,     "_SurfaceTex", "_MetallicGlossMap"),
+        };
+
+        #endregion
+
+        #region IInputMaterialShader Members
+
         public int Priority { get; } = 0;
-        
+
         public bool AllowInsignificantPropertyNameDifferences { get; } = false;
 
         public bool CanProvideProfiles(Shader shader)
@@ -24,17 +37,9 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading.InputShaders
                 case TextureMap.Normal_TS:
                     return true;
             }
-            
+
             return false;
         }
-
-        private InputTextureProfile[] _plant = new[]
-        {
-            InputTextureProfileFactory.Get(TextureMap.Albedo, "_AlbedoTex", "_MainTex"),
-            InputTextureProfileFactory.Get(TextureMap.Normal_TS,  "_NormalTex", "_BumpMap"),
-            InputTextureProfileFactory.Get(TextureMap.MAOHS, "_SurfaceTex","_MetallicGlossMap"),
-        };
-
 
         public IEnumerable<InputTextureProfile> GetInputProfiles(Material m)
         {
@@ -42,8 +47,10 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading.InputShaders
             {
                 return _plant;
             }
-            
+
             return null;
         }
+
+        #endregion
     }
 }

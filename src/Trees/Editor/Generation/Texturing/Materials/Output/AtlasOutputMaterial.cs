@@ -8,7 +8,10 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Output
     [Serializable]
     public class AtlasOutputMaterial : DynamicShaderOutputMaterial
     {
-        public AtlasOutputMaterial(int materialID, ResponsiveSettingsType settingsType) : base(materialID, settingsType)
+        public AtlasOutputMaterial(int materialID, ResponsiveSettingsType settingsType) : base(
+            materialID,
+            settingsType
+        )
         {
         }
 

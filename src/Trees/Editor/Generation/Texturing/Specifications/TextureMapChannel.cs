@@ -45,7 +45,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Specifications
         AlbedoDetail_Opacity = 144,
         DetailMask = 150,
         Shadow = 160,
-        
+
         Variant_Albedo_R = 510,
         Variant_Albedo_G = 511,
         Variant_Albedo_B = 512,
@@ -54,16 +54,15 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Specifications
         Variant_Normal_TS_Z = 522,
         Variant_Displacement = 550,
         Variant_AmbientOcclusion = 560,
-        Variant_Metallicity = 570,  
+        Variant_Metallicity = 570,
         Variant_Specularity_R = 580,
         Variant_Specularity_G = 581,
-        Variant_Specularity_B = 582,      
-        Variant_Specularity_Strength = 583,      
+        Variant_Specularity_B = 582,
+        Variant_Specularity_Strength = 583,
         Variant_Glossiness = 590,
         Variant_Roughness = 591,
         Variant_Opacity = 600,
-        
-        
+
         SetToZero = 1000,
         SetToPointFive = 1001,
         SetToOne = 1002

@@ -17,14 +17,35 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Output
             _asset = new Material(_selectedShader.shader);
         }
 
-        [PropertyOrder(-100)]
-        [SerializeField, InlineProperty, HideLabel]
-        private OutputShaderSelection _selectedShader;
+        #region Fields and Autoproperties
+
+        [SerializeField, HideInInspector]
+        private bool _atlas;
 
         [SerializeField, ShowInInspector]
         [PropertyOrder(0)]
         [InlineEditor(ObjectFieldMode = InlineEditorObjectFieldModes.Hidden)]
         private Material _asset;
+
+        [PropertyOrder(-100)]
+        [SerializeField, InlineProperty, HideLabel]
+        private OutputShaderSelection _selectedShader;
+
+        #endregion
+
+        [ShowInInspector /*, InlineEditor(ObjectFieldMode = InlineEditorObjectFieldModes.Hidden)*/]
+        public Material asset => _asset;
+
+        public OutputShaderSelection selectedShader => _selectedShader;
+
+        private bool _materialPresent => _asset != null;
+
+        public void FinalizeMaterial(bool atlas)
+        {
+            asset.shader = selectedShader.shader;
+
+            selectedShader.materialShader.FinalizeSettings(asset, atlas);
+        }
 
         [Button(ButtonSizes.Small), EnableIf(nameof(_materialPresent))]
         [ /*VerticalGroup("MAT/RIGHT"),*/ PropertyOrder(-50)]
@@ -33,13 +54,6 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Output
         {
             EditorGUIUtility.PingObject(_asset);
         }
-
-        private bool _materialPresent => _asset != null;
-
-        [SerializeField, HideInInspector] private bool _atlas;
-
-        [ShowInInspector/*, InlineEditor(ObjectFieldMode = InlineEditorObjectFieldModes.Hidden)*/]
-        public Material asset => _asset;
 
         public void SetMaterial(string path, bool atlas)
         {
@@ -53,20 +67,13 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Output
             _asset = mat;
         }
 
-        public OutputShaderSelection selectedShader => _selectedShader;
-
-        public void FinalizeMaterial(bool atlas)
-        {
-            asset.shader = selectedShader.shader;
-
-            selectedShader.materialShader.FinalizeSettings(asset, atlas);
-        }
+        #region IDeserializationCallback Members
 
         public void OnDeserialization(object sender)
         {
             _selectedShader.OnShaderChanged += () => FinalizeMaterial(_atlas);
         }
+
+        #endregion
     }
 }
-
-

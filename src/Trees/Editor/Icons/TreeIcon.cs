@@ -12,10 +12,16 @@ namespace Appalachia.Simulation.Trees.Icons
 {
     public class TreeIcon : AppalachiaSimpleBase
     {
+        #region Fields and Autoproperties
+
         private string _fieldName;
         private string _assetPath;
         private string _assetName;
         private Texture2D _icon;
+
+        private GUIContentCache cache = new GUIContentCache();
+
+        #endregion
 
         public Texture2D icon
         {
@@ -28,15 +34,14 @@ namespace Appalachia.Simulation.Trees.Icons
 
                 if (_assetPath == null)
                 {
-
-                    var nameVariants = new List<string>()
+                    var nameVariants = new List<string>
                     {
                         _fieldName, _fieldName.ToLowerInvariant(), _fieldName.ToUpperInvariant()
                     };
 
                     var appBuilder = new StringBuilder();
 
-                    char last = default(char);
+                    var last = default(char);
                     var first = true;
                     foreach (var character in _fieldName)
                     {
@@ -57,32 +62,26 @@ namespace Appalachia.Simulation.Trees.Icons
                     nameVariants.Add(appBuilder.ToString());
                     nameVariants.Add(appBuilder.ToString().ToLowerInvariant());
                     nameVariants.Add(appBuilder.ToString().Replace("-", string.Empty));
-                    nameVariants.Add(
-                        appBuilder.ToString().Replace("-", string.Empty).ToLowerInvariant()
-                    );
+                    nameVariants.Add(appBuilder.ToString().Replace("-", string.Empty).ToLowerInvariant());
                     nameVariants.Add(appBuilder.ToString().Replace('-', '_'));
                     nameVariants.Add(appBuilder.ToString().Replace('-', '_').ToLowerInvariant());
 
                     foreach (var nameVariant in nameVariants)
                     {
-                        var found = AssetDatabaseManager.FindAssets(
-                                                             ZString.Format(
-                                                                 "icon_{0} t:Texture2D",
-                                                                 nameVariant
-                                                             )
-                                                         )
-                                                        .Where(
-                                                             fa => (nameVariant.Contains("small") && fa.Contains("small")) ||
-                                                                   (!nameVariant.Contains("small") && !fa.Contains("small"))
-                                                         )
-                                                        .Select(AssetDatabaseManager.GUIDToAssetPath)
-                                                        .OrderBy(fa => fa.Length)
-                                                        .ToArray();
+                        var found = AssetDatabaseManager
+                                   .FindAssets(ZString.Format("icon_{0} t:Texture2D", nameVariant))
+                                   .Where(
+                                        fa => (nameVariant.Contains("small") && fa.Contains("small")) ||
+                                              (!nameVariant.Contains("small") && !fa.Contains("small"))
+                                    )
+                                   .Select(AssetDatabaseManager.GUIDToAssetPath)
+                                   .OrderBy(fa => fa.eitherPath.Length)
+                                   .ToArray();
 
                         if (found.Length > 0)
                         {
-                            _assetPath = found[0];
-                            _assetName = AppaPath.GetFileNameWithoutExtension(found[0]);
+                            _assetPath = found[0].relativePath;
+                            _assetName = AppaPath.GetFileNameWithoutExtension(found[0].relativePath);
                             break;
                         }
                     }
@@ -97,18 +96,88 @@ namespace Appalachia.Simulation.Trees.Icons
             }
         }
 
+        public void Draw(Rect rect, float drawSize)
+        {
+            if (Event.current.type != EventType.Repaint)
+            {
+                return;
+            }
+
+            rect = AlignCenter(rect, drawSize, drawSize);
+
+            Draw(rect);
+        }
+
+        public void Draw(Rect rect)
+        {
+            if (Event.current.type != EventType.Repaint)
+            {
+                return;
+            }
+
+            rect.x = (int)rect.x;
+            rect.y = (int)rect.y;
+            rect.width = (int)rect.width;
+            rect.height = (int)rect.height;
+            GUI.DrawTexture(rect, icon);
+        }
+
+        public GUIContent Get()
+        {
+            if (cache == null)
+            {
+                cache = new GUIContentCache();
+            }
+
+            return cache.Get(this);
+        }
+
+        public GUIContent Get(string tooltip)
+        {
+            if (cache == null)
+            {
+                cache = new GUIContentCache();
+            }
+
+            return cache.Get(this, tooltip);
+        }
+
+        public GUIContent GetDefault()
+        {
+            if (cache == null)
+            {
+                cache = new GUIContentCache();
+            }
+
+            return cache.GetDefault(this);
+        }
+
         public void SetFieldName(string fieldName)
         {
             _fieldName = fieldName;
         }
 
+        private static Rect AlignCenter(Rect rect, float width, float height)
+        {
+            rect.x = (float)((rect.x + (rect.width * 0.5)) - (width * 0.5));
+            rect.y = (float)((rect.y + (rect.height * 0.5)) - (height * 0.5));
+            rect.width = width;
+            rect.height = height;
+            return rect;
+        }
+
+        #region Nested type: GUIContentCache
+
         private class GUIContentCache
         {
+            #region Fields and Autoproperties
+
+            public Dictionary<string, GUIContent> contentByTip = new Dictionary<string, GUIContent>();
+
             public GUIContent blankContent;
             public GUIContent labelledContent;
 
-            public Dictionary<string, GUIContent> contentByTip =
-                new Dictionary<string, GUIContent>();
+            #endregion
 
             public GUIContent Get(TreeIcon icon)
             {
@@ -146,17 +215,15 @@ namespace Appalachia.Simulation.Trees.Icons
                 {
                     return Get(icon);
                 }
-                
+
                 if (labelledContent == null)
                 {
-                    var name = icon._assetName
-                        .ToLowerInvariant()
-                        .Replace("_", " ")
-                        .Replace("_", " ")
-                        .Replace("icon", " ")
-                        .Trim()
-                        .ToFriendly();
-
+                    var name = icon._assetName.ToLowerInvariant()
+                                   .Replace("_",    " ")
+                                   .Replace("_",    " ")
+                                   .Replace("icon", " ")
+                                   .Trim()
+                                   .ToFriendly();
 
                     var builder = new StringBuilder();
                     var first = true;
@@ -170,9 +237,10 @@ namespace Appalachia.Simulation.Trees.Icons
                         {
                             builder.Append(chars);
                         }
+
                         first = false;
                     }
-                    
+
                     labelledContent = new GUIContent(icon.icon, builder.ToString());
                 }
 
@@ -180,62 +248,6 @@ namespace Appalachia.Simulation.Trees.Icons
             }
         }
 
-        private GUIContentCache cache = new GUIContentCache();
-
-        
-        public GUIContent Get()
-        {
-            if (cache == null) cache = new GUIContentCache();
-
-            return cache.Get(this);
-        }
-
-        public GUIContent Get(string tooltip)
-        {
-            if (cache == null) cache = new GUIContentCache();
-
-            return cache.Get(this, tooltip);
-        }
-        
-        
-        public GUIContent GetDefault()
-        {
-            if (cache == null) cache = new GUIContentCache();
-
-            return cache.GetDefault(this);
-        }
-
-        
-
-        public void Draw(Rect rect, float drawSize)
-        {
-            if (Event.current.type != EventType.Repaint)
-                return;
-            
-            rect = AlignCenter(rect,  drawSize, drawSize);
-            
-            Draw(rect);
-        }
-
-        public void Draw(Rect rect)
-        {
-            if (Event.current.type != EventType.Repaint)
-                return;
-            rect.x = (int) rect.x;
-            rect.y = (int) rect.y;
-            rect.width = (int) rect.width;
-            rect.height = (int) rect.height;
-            GUI.DrawTexture(rect, icon);
-        }
-
-        private static Rect AlignCenter(Rect rect, float width, float height)
-        {
-            rect.x = (float) ((rect.x + (rect.width * 0.5)) - (width * 0.5));
-            rect.y = (float) ((rect.y + (rect.height * 0.5)) - (height * 0.5));
-            rect.width = width;
-            rect.height = height;
-            return rect;
-        }
-        
+        #endregion
     }
 }

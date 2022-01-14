@@ -4,31 +4,46 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials
     {
         public static string AlbedoTex => "_MainTex";
         public static string AlbedoTex3 => "_MainTex3";
-        public static string BaseBlendHeight => "_BaseBlendHeight";
         public static string BaseBlendAmount => "_BaseBlendAmount";
-        public static string BaseBlendVariation => "_BaseBlendVariation";
-        public static string TrunkHeightOffset => "_TrunkHeightOffset";
-        public static string TrunkHeightRange => "_TrunkHeightRange";
+        public static string BaseBlendHeight => "_BaseBlendHeight";
         public static string BaseBlendHeightContrast => "_BaseBlendHeightContrast";
+
+        public static string BaseBlendNormals => "_BaseBlendNormals";
+        public static string BaseBlendVariation => "_BaseBlendVariation";
         public static string BaseHeightOffset => "_BaseHeightOffset";
         public static string BaseHeightRange => "_BaseHeightRange";
-        
-        public static string BaseBlendNormals => "_BaseBlendNormals";
         public static string Brightness => "_Brightness";
         public static string BumpMap => "_BumpMap";
         public static string BumpMap3 => "_BumpMap3";
         public static string BumpScale => "_BumpScale";
-        
+
         public static string BumpScale3 => "_BumpScale3";
         public static string Color => "_Color";
         public static string Color3 => "_Color3";
-        public static string CutoffLow => "_CutoffLow";
         public static string CutoffHigh => "_CutoffHigh";
+        public static string CutoffLow => "_CutoffLow";
         public static string DetailTint => "_DetailTint";
         public static string EnableBase => "_EnableBase";
         public static string GlobalTint => "_GlobalTint";
         public static string GlobalTurbulence => "_GlobalTurbulence";
         public static string Glossiness => "_Glossiness";
+        public static string HueVariation => "_HueVariation";
+        public static string Impostor_BrightnessAdjustment => "_BrightnessAdjustment";
+        public static string Impostor_Clip => "_AI_Clip";
+        public static string Impostor_ContrastAdjustment => "_ContrastAdjustment";
+        public static string Impostor_ContrastCorrection => "_ContrastCorrection";
+
+        public static string Impostor_CorrectContrast => "_CorrectContrast";
+
+        public static string Impostor_FadeVariation => "_FadeVariation";
+
+        public static string Impostor_HueAdjustment => "_HueAdjustment";
+        public static string Impostor_HueVariationStrength => "_AI_HueVariation";
+        public static string Impostor_PrimaryBend => "_PrimaryBendStrength";
+        public static string Impostor_PrimaryRoll => "_PrimaryRollStrength";
+        public static string Impostor_SaturationAdjustment => "_SaturationAdjustment";
+
+        public static string Impostor_UseHueVariation => "_Hue";
         public static string LeafTransmission => "_Transmission";
         public static string LeafTransmissionCutoff => "_TransmissionCutoffLow";
         public static string MainTex => "_MainTex";
@@ -58,36 +73,18 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials
         public static string Smoothness => "_Smoothness";
         public static string Smoothness3 => "_Smoothness3";
         public static string SubsurfaceColor => "_SubsurfaceColor";
-        public static string HueVariation => "_HueVariation";
         public static string SurfaceTex => "_MetallicGlossMap";
         public static string SurfaceTex3 => "_MetallicGlossMap3";
-        public static string TrunkVariation => "_TrunkVariation";
-        public static string VertexOcclusion => "_VertexOcclusion";
-        
-        public static string TranslucencyStrength => "_Translucency";
+        public static string TranslucencyAmbient => "_TransShadow";
+        public static string TranslucencyDirect => "_TransAmbient";
         public static string TranslucencyNormalDistortion => "_TransNormalDistortion";
         public static string TranslucencyScatteringFalloff => "_TransDirect";
-        public static string TranslucencyDirect => "_TransAmbient";
-        public static string TranslucencyAmbient => "_TransShadow";
         public static string TranslucencyShadow => "_TransShadow";
-        
-        
-        public static string Impostor_HueAdjustment => "_HueAdjustment";
-        public static string Impostor_SaturationAdjustment => "_SaturationAdjustment";
-        public static string Impostor_BrightnessAdjustment => "_BrightnessAdjustment";
-        public static string Impostor_ContrastAdjustment => "_ContrastAdjustment";
-        public static string Impostor_PrimaryBend => "_PrimaryBendStrength";
-        public static string Impostor_PrimaryRoll => "_PrimaryRollStrength";
-        public static string Impostor_Clip => "_AI_Clip";
-        
-        public static string Impostor_FadeVariation => "_FadeVariation";
-        
-        public static string Impostor_UseHueVariation => "_Hue";
-        public static string Impostor_HueVariationStrength => "_AI_HueVariation";
-        
-        public static string Impostor_CorrectContrast => "_CorrectContrast";
-        public static string Impostor_ContrastCorrection => "_ContrastCorrection";
-        
 
+        public static string TranslucencyStrength => "_Translucency";
+        public static string TrunkHeightOffset => "_TrunkHeightOffset";
+        public static string TrunkHeightRange => "_TrunkHeightRange";
+        public static string TrunkVariation => "_TrunkVariation";
+        public static string VertexOcclusion => "_VertexOcclusion";
     }
 }

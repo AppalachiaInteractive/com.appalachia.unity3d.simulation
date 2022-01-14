@@ -16,6 +16,8 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Input
     [Serializable]
     public class InputTexture : AppalachiaSimpleBase
     {
+        #region Fields and Autoproperties
+
         [PreviewField(ObjectFieldAlignment.Left, Height = 82f), HideLabel, InlineProperty]
         [HorizontalGroup("TEX", MaxWidth = 96f)]
         [PropertySpace]
@@ -39,14 +41,17 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Input
 
         [SerializeField, HideInInspector]
         private bool _importSettingsCached;
-        
+
+        #endregion
+
         public string ActivateProcessingTextureImporterSettings(TextureSize maxTextureSize)
         {
             using (BUILD_TIME.INPUT_TEX.ActivateProcessingTextureImporterSettings.Auto())
             {
                 var importer = texture.GetTextureImporter();
 
-                if (importer.isReadable && (importer.textureCompression == TextureImporterCompression.Uncompressed))
+                if (importer.isReadable &&
+                    (importer.textureCompression == TextureImporterCompression.Uncompressed))
                 {
                     return null;
                 }
@@ -59,7 +64,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Input
                     _maxTextureSize = importer.maxTextureSize;
                     _importSettingsCached = true;
                 }
-                
+
                 importer.isReadable = true;
                 importer.textureCompression = TextureImporterCompression.Uncompressed;
                 importer.alphaSource = TextureImporterAlphaSource.FromInput;
@@ -68,6 +73,26 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Input
                 importer.WriteSettings();
 
                 return importer.assetPath;
+            }
+        }
+
+        public InputTextureUsageElement GetUsageData(TextureChannel channel, Rect rect)
+        {
+            using (BUILD_TIME.INPUT_TEX.GetUsageData.Auto())
+            {
+                switch (channel)
+                {
+                    case TextureChannel.R:
+                        return new InputTextureUsageElement(profile.red, texture, 0, rect);
+                    case TextureChannel.G:
+                        return new InputTextureUsageElement(profile.green, texture, 1, rect);
+                    case TextureChannel.B:
+                        return new InputTextureUsageElement(profile.blue, texture, 2, rect);
+                    case TextureChannel.A:
+                        return new InputTextureUsageElement(profile.alpha, texture, 3, rect);
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(channel), channel, null);
+                }
             }
         }
 
@@ -95,29 +120,6 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Input
                 importer.WriteSettings();
 
                 return importer.assetPath;
-            }
-        }
-        
-
-        public InputTextureUsageElement GetUsageData(
-         TextureChannel channel,
-         Rect rect)
-        {
-            using (BUILD_TIME.INPUT_TEX.GetUsageData.Auto())
-            {
-                switch (channel)
-                {
-                    case TextureChannel.R:
-                        return new InputTextureUsageElement(profile.red, texture, 0, rect);
-                    case TextureChannel.G:
-                        return new InputTextureUsageElement(profile.green, texture, 1, rect);
-                    case TextureChannel.B:
-                        return new InputTextureUsageElement(profile.blue, texture, 2, rect);
-                    case TextureChannel.A:
-                        return new InputTextureUsageElement(profile.alpha, texture, 3, rect);
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(channel), channel, null);
-                }
             }
         }
     }

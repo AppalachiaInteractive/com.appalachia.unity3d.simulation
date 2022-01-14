@@ -10,6 +10,8 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Output
 {
     public class DefaultShaderResource : SingletonAppalachiaTreeObject<DefaultShaderResource>
     {
+        #region Fields and Autoproperties
+
         [InlineProperty, HideLabel, Title("Branch Shader Set")]
         public OutputShaderSelectionSet branchShaderSet;
 
@@ -21,13 +23,16 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Output
 
         [InlineProperty, HideLabel, Title("Shadow Shader Set")]
         public OutputShaderSelectionSet shadowShaderSet;
+
         public Shader logShader;
         public AmplifyImpostorBakePreset impostorPreset;
+
+        #endregion
 
         protected override async AppaTask Initialize(Initializer initializer)
         {
             await base.Initialize(initializer);
-            
+
             for (var i = branchShaderSet.Count - 1; i >= 0; i--)
             {
                 if (branchShaderSet[i] == null)
@@ -35,7 +40,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Output
                     branchShaderSet.RemoveAt(i);
                 }
             }
-        
+
             for (var i = tiledShaderSet.Count - 1; i >= 0; i--)
             {
                 if (tiledShaderSet[i] == null)
@@ -43,7 +48,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Output
                     tiledShaderSet.RemoveAt(i);
                 }
             }
-        
+
             for (var i = atlasShaderSet.Count - 1; i >= 0; i--)
             {
                 if (atlasShaderSet[i] == null)
@@ -51,7 +56,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Output
                     atlasShaderSet.RemoveAt(i);
                 }
             }
-        
+
             for (var i = shadowShaderSet.Count - 1; i >= 0; i--)
             {
                 if (shadowShaderSet[i] == null)

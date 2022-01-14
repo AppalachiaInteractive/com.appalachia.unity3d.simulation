@@ -414,8 +414,6 @@ namespace Appalachia.Simulation.Trees
                 dataState = DataState.Dirty;
 
                 SetDirtyStates();
-
-                AssetDatabaseManager.SaveAssets();
             }
             catch (Exception ex)
             {

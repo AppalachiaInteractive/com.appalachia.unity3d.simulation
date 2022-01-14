@@ -1,7 +1,6 @@
 #region
 
 using System;
-using Appalachia.CI.Integration.Assets;
 using Appalachia.Core.Attributes;
 using Appalachia.Core.Attributes.Editing;
 using Appalachia.Core.Collections.Native;
@@ -9,9 +8,7 @@ using Appalachia.Core.Filtering;
 using Appalachia.Core.Math.Smoothing;
 using Appalachia.Core.Objects.Behaviours;
 using Appalachia.Core.Objects.Initialization;
-using Appalachia.Core.Preferences.Globals;
 using Appalachia.Core.Shading;
-using Appalachia.Editing.Debugging.Handle;
 using Appalachia.Jobs;
 using Appalachia.Jobs.MeshData;
 using Appalachia.Simulation.Buoyancy.Data;
@@ -23,11 +20,7 @@ using Appalachia.Simulation.Physical;
 using Appalachia.Simulation.Physical.Integration;
 using Appalachia.Simulation.Physical.Sampling;
 using Appalachia.Simulation.Wind;
-using Appalachia.Spatial.Voxels;
-using Appalachia.Spatial.Voxels.Gizmos;
 using Appalachia.Utility.Async;
-using Appalachia.Utility.Constants;
-using Appalachia.Utility.Execution;
 using Appalachia.Utility.Extensions;
 using Appalachia.Utility.Strings;
 using Sirenix.OdinInspector;
@@ -35,7 +28,6 @@ using Unity.Burst;
 using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Profiling;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -48,7 +40,7 @@ namespace Appalachia.Simulation.Buoyancy
     [RequireComponent(typeof(RigidbodyDensityManager))]
     [ExecutionOrder(ExecutionOrders.Buoyant)]
     [CallStaticConstructorInEditor]
-    public class Buoyant : InstancedAppalachiaBehaviour<Buoyant>
+    public partial class Buoyant : InstancedAppalachiaBehaviour<Buoyant>
     {
         static Buoyant()
         {
@@ -59,12 +51,13 @@ namespace Appalachia.Simulation.Buoyancy
                 i => _mainBuoyancyVoxelsDataStoreLookup = i
             );
             RegisterDependency<MainBuoyancyDataCollection>(i => _mainBuoyancyDataCollection = i);
-            RegisterDependency<BuoyancyVoxelDataGizmoSettings>(i => _buoyancyVoxelDataGizmoSettings = i);
-            RegisterDependency<MainVoxelDataGizmoSettingsCollection>(
-                i => _mainVoxelDataGizmoSettingsCollection = i
-            );
+
             RegisterDependency<GlobalWindManager>(i => _globalWindManager = i);
             RegisterDependency<MeshObjectManager>(i => _meshObjectManager = i);
+
+#if UNITY_EDITOR
+            RegisterEditorDependencies();
+#endif
         }
 
         #region Static Fields and Autoproperties
@@ -74,7 +67,6 @@ namespace Appalachia.Simulation.Buoyancy
         private static GlobalWindManager _globalWindManager;
         private static MainBuoyancyDataCollection _mainBuoyancyDataCollection;
         private static MainBuoyancyVoxelsDataStoreLookup _mainBuoyancyVoxelsDataStoreLookup;
-        private static MainVoxelDataGizmoSettingsCollection _mainVoxelDataGizmoSettingsCollection;
 
         private static MeshObjectManager _meshObjectManager;
 
@@ -215,21 +207,17 @@ namespace Appalachia.Simulation.Buoyancy
 
         public WaterPhysicsCoefficients waterPhysicsCoefficients => _waterPhysicsCoefficients;
 
-#if UNITY_EDITOR
-        private bool _canDirectRegister => PhysicsSimulator.IsSimulationActive && (_water == null);
-#endif
-
         #region Event Functions
 
         private void Update()
         {
             using (_PRF_Update.Auto())
             {
-                if (!DependenciesAreReady || !FullyInitialized)
+                if (ShouldSkipUpdate)
                 {
                     return;
                 }
-                
+
                 if (buoyancyData == null)
                 {
                     return;
@@ -515,113 +503,88 @@ namespace Appalachia.Simulation.Buoyancy
 
         protected override async AppaTask Initialize(Initializer initializer)
         {
-            using (_PRF_Initialize.Auto())
-            {
-                await base.Initialize(initializer);
+            await base.Initialize(initializer);
 
 #if UNITY_EDITOR
-                if (buoyancyData == null)
-                {
-                    var mesh = _meshObjectManager.GetCheapestMesh(gameObject);
-
-                    AssetDatabaseManager.TryGetGUIDAndLocalFileIdentifier(mesh, out var key, out var _);
-
-                    buoyancyData = _mainBuoyancyDataCollection.Lookup.GetOrLoadOrCreateNew(
-                        key,
-                        ZString.Format("{0}_{1}", mesh.name, key)
-                    );
-
-                    buoyancyData.mesh = mesh;
-
-                    buoyancyData.MarkAsModified();
-                    EditorSceneManager.MarkSceneDirty(gameObject.scene);
-                }
-                else if (buoyancyData.mesh == null)
-                {
-                    buoyancyData.mesh = _meshObjectManager.GetCheapestMesh(gameObject);
-
-                    buoyancyData.MarkAsModified();
-                    EditorSceneManager.MarkSceneDirty(gameObject.scene);
-                }
+            await InitializeEditor(initializer);
 #endif
 
-                buoyancyData.Prepare();
+            buoyancyData.Prepare();
 
-                body = GetComponent<Rigidbody>();
+            body = GetComponent<Rigidbody>();
 
-                if (!TryGetComponent(out body))
-                {
-                    body = gameObject.AddComponent<Rigidbody>();
-                    Context.Log.Error(
-                        ZString.Format(
-                            "Buoyancy:Object \"{0}\" had no Rigidbody. Rigidbody has been added.",
-                            name
-                        )
-                    );
-                }
-
-                gameObject.GetOrCreateComponent(ref densityManager);
-
-                if (voxels != null)
-                {
-                    voxels.SafeDispose();
-                }
-
-                body.ResetCenterOfMass();
-                body.centerOfMass += buoyancyData.centerOfMassOffset;
-
-                var persistence = _mainBuoyancyVoxelsDataStoreLookup.Lookup.GetOrLoadOrCreateNew(
-                    buoyancyData.name,
-                    buoyancyData.name
+            if (!TryGetComponent(out body))
+            {
+                body = gameObject.AddComponent<Rigidbody>();
+                Context.Log.Error(
+                    ZString.Format(
+                        "Buoyancy:Object \"{0}\" had no Rigidbody. Rigidbody has been added.",
+                        name
+                    )
                 );
-
-                var renderers = this.FilterComponentsFromChildren<MeshRenderer>().RunFilter();
-                var colliders = this.FilterComponentsFromChildren<Collider>()
-                                    .ActiveOnly()
-                                    .NoTriggers()
-                                    .RunFilter();
-
-                var shouldRestore = persistence.ShouldRestore(
-                    buoyancyData.voxelResolution,
-                    buoyancyData.voxelPopulationStyle,
-                    colliders,
-                    renderers
-                );
-
-                voxels = new BuoyancyVoxels(buoyancyData.name);
-                voxels.dataStore = persistence;
-
-                if (shouldRestore)
-                {
-                    voxels.RestoreFromDataStore(_transform, colliders, renderers, activeRatio);
-                }
-                else if (buoyancyData.buoyancyType == BuoyancyType.PhysicalVoxel)
-                {
-                    voxels = BuoyancyVoxels.Voxelize(
-                        voxels,
-                        buoyancyData.voxelPopulationStyle,
-                        _transform,
-                        colliders,
-                        renderers,
-                        buoyancyData.voxelResolution
-                    );
-
-                    densityManager.volume = voxels.worldVolume;
-                }
-                else
-                {
-                    var bounds = colliders.GetEncompassingBounds();
-                    bounds.Encapsulate(renderers.GetEncompassingBounds());
-
-                    voxels = BuoyancyVoxels.VoxelizeSingle(voxels, _transform, bounds, body.centerOfMass);
-                }
-
-                voxels.centerOfMass = body.centerOfMass;
-
-                jobHandle = voxels.SetupPhysical();
-
-                _initialized = true;
             }
+
+            gameObject.GetOrCreateComponent(ref densityManager);
+
+            if (voxels != null)
+            {
+                voxels.SafeDispose();
+            }
+
+            body.ResetCenterOfMass();
+            body.centerOfMass += buoyancyData.centerOfMassOffset;
+
+            var persistence = _mainBuoyancyVoxelsDataStoreLookup.Lookup.GetOrLoadOrCreateNew(
+                buoyancyData.name,
+                buoyancyData.name
+            );
+
+            var renderers = this.FilterComponentsFromChildren<MeshRenderer>().RunFilter();
+            var colliders = this.FilterComponentsFromChildren<Collider>()
+                                .ActiveOnly()
+                                .NoTriggers()
+                                .RunFilter();
+
+            var shouldRestore = persistence.ShouldRestore(
+                buoyancyData.voxelResolution,
+                buoyancyData.voxelPopulationStyle,
+                colliders,
+                renderers
+            );
+
+            voxels = new BuoyancyVoxels(buoyancyData.name);
+            voxels.dataStore = persistence;
+
+            if (shouldRestore)
+            {
+                voxels.RestoreFromDataStore(_transform, colliders, renderers, activeRatio);
+            }
+            else if (buoyancyData.buoyancyType == BuoyancyType.PhysicalVoxel)
+            {
+                voxels = BuoyancyVoxels.Voxelize(
+                    voxels,
+                    buoyancyData.voxelPopulationStyle,
+                    _transform,
+                    colliders,
+                    renderers,
+                    buoyancyData.voxelResolution
+                );
+
+                densityManager.volume = voxels.worldVolume;
+            }
+            else
+            {
+                var bounds = colliders.GetEncompassingBounds();
+                bounds.Encapsulate(renderers.GetEncompassingBounds());
+
+                voxels = BuoyancyVoxels.VoxelizeSingle(voxels, _transform, bounds, body.centerOfMass);
+            }
+
+            voxels.centerOfMass = body.centerOfMass;
+
+            jobHandle = voxels.SetupPhysical();
+
+            _initialized = true;
         }
 
         protected override void UpdateInstancedProperties(MaterialPropertyBlock block, Material m)
@@ -641,27 +604,22 @@ namespace Appalachia.Simulation.Buoyancy
 
         protected override async AppaTask WhenDestroyed()
         {
+            await base.WhenDestroyed();
+
             using (_PRF_OnDestroy.Auto())
             {
-                await base.WhenDestroyed();
-
                 CleanUp();
             }
         }
 
         protected override async AppaTask WhenDisabled()
-
         {
-            using (_PRF_OnDisable.Auto())
+            await base.WhenDisabled();
+
+            using (_PRF_WhenDisabled.Auto())
             {
-                await base.WhenDisabled();
-
 #if UNITY_EDITOR
-
-                if (AppalachiaApplication.IsCompiling || AppalachiaApplication.IsPlayingOrWillPlay)
-                {
-                    CleanUp();
-                }
+                WhenDisabledEditor();
 #endif
                 if ((originalBodyData == null) || (body == null))
                 {
@@ -684,8 +642,7 @@ namespace Appalachia.Simulation.Buoyancy
                 }
 
 #if UNITY_EDITOR
-                PhysicsSimulator.onSimulationEnd -= Disable;
-                PhysicsSimulator.onSimulationEnd += Disable;
+                WhenEnabledEditor();
 #endif
 
                 if (body == null)
@@ -725,10 +682,6 @@ namespace Appalachia.Simulation.Buoyancy
         {
             using (_PRF_CleanUp.Auto())
             {
-#if UNITY_EDITOR
-                PhysicsSimulator.onSimulationEnd -= Disable;
-#endif
-
                 jobHandle.Complete();
 
                 if (voxels != null)
@@ -762,15 +715,7 @@ namespace Appalachia.Simulation.Buoyancy
                 _airDensityMetadata = default;
 
 #if UNITY_EDITOR
-                _gizmo_cumulatv_ForceLines = default;
-                _gizmo_waterLines = default;
-                _gizmo_hydrosta_ForceLines = default;
-                _gizmo_viscosWR_ForceLines = default;
-                _gizmo_presrDrg_ForceLines = default;
-                _gizmo_airResis_ForceLines = default;
-                _gizmo_windResi_ForceLines = default;
-                _gizmo_waveDrft_ForceLines = default;
-                _gizmo_slamming_ForceLines = default;
+                CleanUpEditor();
 #endif
             }
         }
@@ -782,36 +727,18 @@ namespace Appalachia.Simulation.Buoyancy
 
         #region Profiling
 
-        private const string _PRF_PFX = nameof(Buoyant) + ".";
+        private static readonly ProfilerMarker _PRF_CleanUp = new(_PRF_PFX + nameof(CleanUp));
 
-        private static readonly ProfilerMarker _PRF_Initialize =
-            new ProfilerMarker(_PRF_PFX + nameof(Initialize));
+        private static readonly ProfilerMarker _PRF_OnDestroy = new(_PRF_PFX + nameof(OnDestroy));
+        private static readonly ProfilerMarker _PRF_OnDisable = new(_PRF_PFX + nameof(OnDisable));
 
         private static readonly ProfilerMarker _PRF_OnEnable = new(_PRF_PFX + nameof(OnEnable));
 
         private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs =
             new(_PRF_PFX + nameof(ScheduleBuoyancyJobs));
 
-        private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_Initialize =
-            new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".Initialize");
-
-        private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_PositionDataUpdate =
-            new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".PositionDataUpdate");
-
-        private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_CompletePhysical =
-            new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".CompletePhysical");
-
-        private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_Synchronize =
-            new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".Synchronize");
-
-        private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_JobHandleComplete =
-            new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".JobHandleComplete");
-
-        private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_ResetCenterOfMass =
-            new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".ResetCenterOfMass");
-
-        private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_WaterUpdateSamples =
-            new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".WaterUpdateSamples");
+        private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_AggregateForceAndTorqueJob =
+            new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".AggregateForceAndTorqueJob");
 
         private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_CalculateForcesJob =
             new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".CalculateForcesJob");
@@ -819,557 +746,44 @@ namespace Appalachia.Simulation.Buoyancy
         private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_CalculateSubmersionJob =
             new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".CalculateSubmersionJob");
 
+        private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_CombinedDependencies =
+            new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".CombinedDependencies");
+
+        private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_CompletePhysical =
+            new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".CompletePhysical");
+
+        private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_Initialize =
+            new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".Initialize");
+
         private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_InitializeParameters =
             new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".InitializeParameters");
+
+        private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_JobHandleComplete =
+            new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".JobHandleComplete");
 
         private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_MaterialVariables =
             new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".MaterialVariables");
 
-        private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_UpdatePhysical =
-            new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".UpdatePhysical");
+        private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_PositionDataUpdate =
+            new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".PositionDataUpdate");
 
-        private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_AggregateForceAndTorqueJob =
-            new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".AggregateForceAndTorqueJob");
+        private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_ResetCenterOfMass =
+            new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".ResetCenterOfMass");
 
         private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_ResetForceAndTorqueJob =
             new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".ResetForceAndTorqueJob");
 
-        private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_CombinedDependencies =
-            new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".CombinedDependencies");
+        private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_Synchronize =
+            new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".Synchronize");
 
-        private static readonly ProfilerMarker _PRF_Update = new(_PRF_PFX + nameof(Update));
-        private static readonly ProfilerMarker _PRF_OnDisable = new(_PRF_PFX + nameof(OnDisable));
-        private static readonly ProfilerMarker _PRF_OnDestroy = new(_PRF_PFX + nameof(OnDestroy));
-        private static readonly ProfilerMarker _PRF_CleanUp = new(_PRF_PFX + nameof(CleanUp));
+        private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_UpdatePhysical =
+            new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".UpdatePhysical");
+
+        private static readonly ProfilerMarker _PRF_ScheduleBuoyancyJobs_WaterUpdateSamples =
+            new(_PRF_PFX + nameof(ScheduleBuoyancyJobs) + ".WaterUpdateSamples");
 
         private static readonly ProfilerMarker _PRF_UpdateDrag = new(_PRF_PFX + nameof(UpdateDrag));
 
         #endregion
-
-#if UNITY_EDITOR
-        [ButtonGroup]
-        [EnableIf(nameof(_canDirectRegister))]
-        public void DirectRegister()
-        {
-            var waters = FindObjectsOfType<Water>();
-            for (var i = 0; i < waters.Length; i++)
-            {
-                var water = waters[i];
-
-                var voxelBounds = buoyancyData.voxelPopulationStyle == VoxelPopulationStyle.Colliders
-                    ? this.FilterComponentsFromChildren<Collider>()
-                          .ActiveOnly()
-                          .NoTriggers()
-                          .RunFilter()
-                          .GetEncompassingBounds()
-                    : this.FilterComponentsFromChildren<MeshRenderer>()
-                          .ActiveOnly()
-                          .RunFilter()
-                          .GetEncompassingBounds();
-
-                if (water.waterBounds.Intersects(voxelBounds))
-                {
-                    water.InitiateBuoyancy(this);
-                    break;
-                }
-            }
-        }
-
-        [ButtonGroup]
-        public void ExecuteReset()
-        {
-            CleanUp();
-            OnEnable();
-        }
-#endif
-
-#if UNITY_EDITOR
-
-        [FoldoutGroup("Gizmos")]
-        [NonSerialized]
-        [ShowInInspector]
-        [SmartLabel]
-        [OnValueChanged(nameof(DoDisableRenderers))]
-        public bool disableRenderers;
-
-        private void DoDisableRenderers()
-        {
-            var renderers_ = (disableRenderers
-                ? this.FilterComponentsFromChildren<Renderer>().ActiveOnly()
-                : this.FilterComponentsFromChildren<Renderer>().InactiveOnly()).RunFilter();
-
-            for (var i = 0; i < renderers_.Length; i++)
-            {
-                var renderer_ = renderers_[i];
-
-                renderer_.enabled = !disableRenderers;
-            }
-        }
-
-        #region Gizmos
-
-        [FoldoutGroup("Gizmos")]
-        [NonSerialized]
-        [ShowInInspector]
-        [SmartLabel]
-        [InlineEditor]
-        private VoxelDataGizmoSettings _voxelGizmoSettings;
-
-        [FoldoutGroup("Gizmos")]
-        [NonSerialized]
-        [ShowInInspector]
-        [SmartLabel]
-        [InlineEditor]
-        private static BuoyancyVoxelDataGizmoSettings _buoyancyVoxelDataGizmoSettings;
-
-        private static readonly ProfilerMarker _PRF_OnDrawGizmos = new(_PRF_PFX + nameof(OnDrawGizmos));
-
-        private void OnDrawGizmos()
-        {
-            using (_PRF_OnDrawGizmos.Auto())
-            {
-                if (!enabled)
-                {
-                    return;
-                }
-
-                if (!_buoyancyVoxelDataGizmoSettings.drawGizmos ||
-                    !_buoyancyVoxelDataGizmoSettings.drawSelectedGizmos)
-                {
-                    return;
-                }
-
-                if (!_initialized)
-                {
-                    return;
-                }
-
-                var position = body.worldCenterOfMass;
-                if (_buoyancyVoxelDataGizmoSettings.drawCumulativeForceGizmos)
-                {
-                    SmartHandles.DrawLine(
-                        position,
-                        position + (cumulativeForce / body.mass),
-                        ColorPrefs.Instance.Buoyancy_CumulativeForce.v
-                    );
-
-                    SmartHandles.DrawLine(
-                        position,
-                        position + (cumulativeTorque / body.mass),
-                        ColorPrefs.Instance.Buoyancy_CumulativeTorque.v
-                    );
-                }
-
-                if (_water == null)
-                {
-                    return;
-                }
-
-                if (_buoyancyVoxelDataGizmoSettings.drawCumulativeWaterLevelGizmos)
-                {
-                    var waterPosition = position;
-
-                    waterPosition.y = _water.GetWorldHeightAt(position);
-                    SmartHandles.DrawLine(
-                        position,
-                        waterPosition,
-                        ColorPrefs.Instance.Buoyancy_CumulativeToSurface.v
-                    );
-                }
-            }
-        }
-
-        [NonSerialized] private Vector3[] _gizmo_waterLines;
-        [NonSerialized] private Vector3[] _gizmo_cumulatv_ForceLines;
-        [NonSerialized] private Vector3[] _gizmo_hydrosta_ForceLines;
-        [NonSerialized] private Vector3[] _gizmo_viscosWR_ForceLines;
-        [NonSerialized] private Vector3[] _gizmo_presrDrg_ForceLines;
-        [NonSerialized] private Vector3[] _gizmo_airResis_ForceLines;
-        [NonSerialized] private Vector3[] _gizmo_windResi_ForceLines;
-        [NonSerialized] private Vector3[] _gizmo_waveDrft_ForceLines;
-        [NonSerialized] private Vector3[] _gizmo_slamming_ForceLines;
-
-        private static readonly ProfilerMarker _PRF_OnDrawGizmosSelected =
-            new(_PRF_PFX + nameof(OnDrawGizmosSelected));
-
-        private void OnDrawGizmosSelected()
-        {
-            using (_PRF_OnDrawGizmosSelected.Auto())
-            {
-                if (!enabled)
-                {
-                    return;
-                }
-
-                if (!_buoyancyVoxelDataGizmoSettings.drawGizmos ||
-                    !_buoyancyVoxelDataGizmoSettings.drawSelectedGizmos)
-                {
-                    return;
-                }
-
-                var voxelLength = voxels.count;
-
-                if (voxelLength == 0)
-                {
-                    return;
-                }
-
-                jobHandle.Complete();
-
-                if (_voxelGizmoSettings == null)
-                {
-                    var lookup = _mainVoxelDataGizmoSettingsCollection.Lookup;
-
-                    _voxelGizmoSettings = lookup.GetOrLoadOrCreateNew(
-                        VoxelDataGizmoStyle.Buoyancy,
-                        nameof(VoxelDataGizmoStyle.Buoyancy)
-                    );
-                }
-
-                voxels.DrawGizmos(_voxelGizmoSettings);
-
-                if (_buoyancyVoxelDataGizmoSettings.drawSelectedCenterOfMass)
-                {
-                    Gizmos.color = ColorPrefs.Instance.Buoyancy_CenterOfMass.v;
-                    var com = body.worldCenterOfMass;
-
-                    var size = _buoyancyVoxelDataGizmoSettings.gizmoCenterOfMassSize;
-                    Gizmos.DrawWireSphere(com, size);
-                }
-
-                var length = voxels.elementDatas.Length;
-
-                if (length == 0)
-                {
-                    return;
-                }
-
-                var drawSelectedSubmersionPositions =
-                    _buoyancyVoxelDataGizmoSettings.drawSelectedSubmersionPositions;
-                var gizmoSubmersionBaseSize = _buoyancyVoxelDataGizmoSettings.gizmoSubmersionBaseSize;
-                var gizmoSubmersionFlexSize = _buoyancyVoxelDataGizmoSettings.gizmoSubmersionFlexSize;
-
-                var drawSelectedForcePositions = _buoyancyVoxelDataGizmoSettings.drawSelectedForcePositions;
-                var gizmoForceBaseSize = _buoyancyVoxelDataGizmoSettings.gizmoForceBaseSize;
-                var gizmoForceFlexSize = _buoyancyVoxelDataGizmoSettings.gizmoForceFlexSize;
-                var gizmoForceSizeLimit = _buoyancyVoxelDataGizmoSettings.gizmoForceSizeLimit;
-
-                if (drawSelectedForcePositions)
-                {
-                    Gizmos.color = ColorPrefs.Instance.Buoyancy_ForcePositions.v;
-
-                    for (var i = 0; i < length; i++)
-                    {
-                        var voxel = voxels.voxels[i];
-                        var buoyancyVoxel = voxels.elementDatas[i];
-
-                        var water = voxel.worldPosition.value;
-                        water.y -= buoyancyVoxel.distanceToSurface;
-
-                        var forceGizmoSize = gizmoForceBaseSize +
-                                             (gizmoForceBaseSize *
-                                              gizmoForceFlexSize *
-                                              math.length(buoyancyVoxel.force));
-                        forceGizmoSize = math.clamp(forceGizmoSize, 0f, gizmoForceSizeLimit);
-                        SmartHandles.DrawWireCube(voxel.worldPosition.value, forceGizmoSize);
-                    }
-                }
-
-                if (drawSelectedSubmersionPositions)
-                {
-                    Gizmos.color = ColorPrefs.Instance.Buoyancy_SubmersionPositions.v;
-
-                    for (var i = 0; i < length; i++)
-                    {
-                        var voxel = voxels.voxels[i];
-                        var buoyancyVoxel = voxels.elementDatas[i];
-
-                        var water = voxel.worldPosition.value;
-                        water.y -= buoyancyVoxel.distanceToSurface;
-
-                        var submersionGizmoSize = gizmoSubmersionBaseSize +
-                                                  (gizmoSubmersionFlexSize * buoyancyVoxel.submersion.value);
-
-                        SmartHandles.DrawWireCube(voxel.worldPosition.value, submersionGizmoSize);
-                    }
-                }
-
-                if (_buoyancyVoxelDataGizmoSettings.drawSelectedWaterLines)
-                {
-                    for (var i = 0; i < length; i++)
-                    {
-                        var voxel = voxels.voxels[i];
-                        var buoyancyVoxel = voxels.elementDatas[i];
-
-                        var water = voxel.worldPosition.value;
-                        water.y -= buoyancyVoxel.distanceToSurface;
-
-                        if (_gizmo_waterLines == null)
-                        {
-                            _gizmo_waterLines = new Vector3[length * 2];
-                        }
-
-                        _gizmo_waterLines[i * 2] = voxel.worldPosition.value;
-                        _gizmo_waterLines[(i * 2) + 1] = water;
-                    }
-
-                    UnityEditor.Handles.color = ColorPrefs.Instance.Buoyancy_WaterLines.v;
-                    UnityEditor.Handles.DrawLines(_gizmo_waterLines);
-                }
-
-                var drawSelected_cumulatv_ForceLines = _buoyancyVoxelDataGizmoSettings.drawSelectedForceLines;
-                var drawSelected_hydrosta_ForceLines =
-                    _buoyancyVoxelDataGizmoSettings.drawSelectedHydrostaticForceLines;
-                var drawSelected_viscosWR_ForceLines = _buoyancyVoxelDataGizmoSettings
-                   .drawSelectedViscousWaterResistanceForceLines;
-                var drawSelected_presrDrg_ForceLines =
-                    _buoyancyVoxelDataGizmoSettings.drawSelectedPressureDragForceLines;
-                var drawSelected_airResis_ForceLines =
-                    _buoyancyVoxelDataGizmoSettings.drawSelectedAirResistanceForceLines;
-                var drawSelected_windResi_ForceLines =
-                    _buoyancyVoxelDataGizmoSettings.drawSelectedWindResistanceForceLines;
-                var drawSelected_waveDrft_ForceLines =
-                    _buoyancyVoxelDataGizmoSettings.drawSelectedWaveDriftingForceLines;
-                var drawSelected_slamming_ForceLines =
-                    _buoyancyVoxelDataGizmoSettings.drawSelectedSlammingForceLines;
-
-                var drawAnyForceLine =
-                    ((buoyancyData.buoyancyType == BuoyancyType.Physical) ||
-                     (buoyancyData.buoyancyType == BuoyancyType.PhysicalVoxel)) &&
-                    (drawSelected_cumulatv_ForceLines ||
-                     drawSelected_hydrosta_ForceLines ||
-                     drawSelected_viscosWR_ForceLines ||
-                     drawSelected_presrDrg_ForceLines ||
-                     drawSelected_airResis_ForceLines ||
-                     drawSelected_windResi_ForceLines ||
-                     drawSelected_waveDrft_ForceLines ||
-                     drawSelected_slamming_ForceLines);
-
-                if (drawAnyForceLine)
-                {
-                    var lineScale = Vector3.one * _buoyancyVoxelDataGizmoSettings.drawSelectedForceLinesScale;
-                    var lineOffset = float3c.forward_right *
-                                     _buoyancyVoxelDataGizmoSettings.drawSelectedForceLinesOffset;
-
-                    for (var i = 0; i < length; i++)
-                    {
-                        var voxel = voxels.voxels[i];
-                        var buoyancyVoxel = voxels.elementDatas[i];
-
-                        var water = voxel.worldPosition.value;
-                        water.y -= buoyancyVoxel.distanceToSurface;
-
-                        if (drawSelected_cumulatv_ForceLines && (_gizmo_cumulatv_ForceLines == null))
-                        {
-                            _gizmo_cumulatv_ForceLines = new Vector3[length * 2];
-                        }
-
-                        if (drawSelected_hydrosta_ForceLines && (_gizmo_hydrosta_ForceLines == null))
-                        {
-                            _gizmo_hydrosta_ForceLines = new Vector3[length * 2];
-                        }
-
-                        if (drawSelected_viscosWR_ForceLines && (_gizmo_viscosWR_ForceLines == null))
-                        {
-                            _gizmo_viscosWR_ForceLines = new Vector3[length * 2];
-                        }
-
-                        if (drawSelected_presrDrg_ForceLines && (_gizmo_presrDrg_ForceLines == null))
-                        {
-                            _gizmo_presrDrg_ForceLines = new Vector3[length * 2];
-                        }
-
-                        if (drawSelected_airResis_ForceLines && (_gizmo_airResis_ForceLines == null))
-                        {
-                            _gizmo_airResis_ForceLines = new Vector3[length * 2];
-                        }
-
-                        if (drawSelected_windResi_ForceLines && (_gizmo_windResi_ForceLines == null))
-                        {
-                            _gizmo_windResi_ForceLines = new Vector3[length * 2];
-                        }
-
-                        if (drawSelected_waveDrft_ForceLines && (_gizmo_waveDrft_ForceLines == null))
-                        {
-                            _gizmo_waveDrft_ForceLines = new Vector3[length * 2];
-                        }
-
-                        if (drawSelected_slamming_ForceLines && (_gizmo_slamming_ForceLines == null))
-                        {
-                            _gizmo_slamming_ForceLines = new Vector3[length * 2];
-                        }
-
-                        var indexA = i * 2;
-
-                        var pos = voxel.worldPosition.value;
-
-                        var cumulatv_base = pos + (lineOffset * 0);
-                        var hydrosta_base = pos + (lineOffset * 1);
-                        var viscosWR_base = pos + (lineOffset * 2);
-                        var presrDrg_base = pos + (lineOffset * 3);
-                        var airResis_base = pos + (lineOffset * 4);
-                        var windResi_base = pos + (lineOffset * 5);
-                        var waveDrft_base = pos + (lineOffset * 6);
-                        var slamming_base = pos + (lineOffset * 7);
-
-                        if (drawSelected_cumulatv_ForceLines)
-                        {
-                            _gizmo_cumulatv_ForceLines[indexA] = cumulatv_base;
-                        }
-
-                        if (drawSelected_hydrosta_ForceLines)
-                        {
-                            _gizmo_hydrosta_ForceLines[indexA] = hydrosta_base;
-                        }
-
-                        if (drawSelected_viscosWR_ForceLines)
-                        {
-                            _gizmo_viscosWR_ForceLines[indexA] = viscosWR_base;
-                        }
-
-                        if (drawSelected_presrDrg_ForceLines)
-                        {
-                            _gizmo_presrDrg_ForceLines[indexA] = presrDrg_base;
-                        }
-
-                        if (drawSelected_airResis_ForceLines)
-                        {
-                            _gizmo_airResis_ForceLines[indexA] = airResis_base;
-                        }
-
-                        if (drawSelected_windResi_ForceLines)
-                        {
-                            _gizmo_windResi_ForceLines[indexA] = windResi_base;
-                        }
-
-                        if (drawSelected_waveDrft_ForceLines)
-                        {
-                            _gizmo_waveDrft_ForceLines[indexA] = waveDrft_base;
-                        }
-
-                        if (drawSelected_slamming_ForceLines)
-                        {
-                            _gizmo_slamming_ForceLines[indexA] = slamming_base;
-                        }
-
-                        var indexB = indexA + 1;
-
-                        if (drawSelected_cumulatv_ForceLines)
-                        {
-                            _gizmo_cumulatv_ForceLines[indexB] = cumulatv_base +
-                                                                 (lineScale *
-                                                                  (buoyancyVoxel.force / body.mass));
-                        }
-
-                        if (drawSelected_hydrosta_ForceLines)
-                        {
-                            _gizmo_hydrosta_ForceLines[indexB] = hydrosta_base +
-                                                                 (lineScale *
-                                                                  (buoyancyVoxel.hydrostaticForce /
-                                                                   body.mass));
-                        }
-
-                        if (drawSelected_viscosWR_ForceLines)
-                        {
-                            _gizmo_viscosWR_ForceLines[indexB] = viscosWR_base +
-                                                                 (lineScale *
-                                                                  (buoyancyVoxel.viscousWaterResistanceForce /
-                                                                   body.mass));
-                        }
-
-                        if (drawSelected_presrDrg_ForceLines)
-                        {
-                            _gizmo_presrDrg_ForceLines[indexB] = presrDrg_base +
-                                                                 (lineScale *
-                                                                  (buoyancyVoxel.pressureDragForce /
-                                                                   body.mass));
-                        }
-
-                        if (drawSelected_airResis_ForceLines)
-                        {
-                            _gizmo_airResis_ForceLines[indexB] = airResis_base +
-                                                                 (lineScale *
-                                                                  (buoyancyVoxel.airResistanceForce /
-                                                                   body.mass));
-                        }
-
-                        if (drawSelected_windResi_ForceLines)
-                        {
-                            _gizmo_windResi_ForceLines[indexB] = windResi_base +
-                                                                 (lineScale *
-                                                                  (buoyancyVoxel.windResistanceForce /
-                                                                   body.mass));
-                        }
-
-                        if (drawSelected_waveDrft_ForceLines)
-                        {
-                            _gizmo_waveDrft_ForceLines[indexB] = waveDrft_base +
-                                                                 (lineScale *
-                                                                  (buoyancyVoxel.waveDriftingForce /
-                                                                   body.mass));
-                        }
-
-                        if (drawSelected_slamming_ForceLines)
-                        {
-                            _gizmo_slamming_ForceLines[indexB] = slamming_base +
-                                                                 (lineScale *
-                                                                  (buoyancyVoxel.slammingForce / body.mass));
-                        }
-                    }
-
-                    if (drawSelected_cumulatv_ForceLines)
-                    {
-                        UnityEditor.Handles.color = ColorPrefs.Instance.Buoyancy_cumulatvForceLines.v;
-                        UnityEditor.Handles.DrawLines(_gizmo_cumulatv_ForceLines);
-                    }
-
-                    if (drawSelected_hydrosta_ForceLines)
-                    {
-                        UnityEditor.Handles.color = ColorPrefs.Instance.Buoyancy_hydrostaForceLines.v;
-                        UnityEditor.Handles.DrawLines(_gizmo_hydrosta_ForceLines);
-                    }
-
-                    if (drawSelected_viscosWR_ForceLines)
-                    {
-                        UnityEditor.Handles.color = ColorPrefs.Instance.Buoyancy_viscosWRForceLines.v;
-                        UnityEditor.Handles.DrawLines(_gizmo_viscosWR_ForceLines);
-                    }
-
-                    if (drawSelected_presrDrg_ForceLines)
-                    {
-                        UnityEditor.Handles.color = ColorPrefs.Instance.Buoyancy_presrDrgForceLines.v;
-                        UnityEditor.Handles.DrawLines(_gizmo_presrDrg_ForceLines);
-                    }
-
-                    if (drawSelected_airResis_ForceLines)
-                    {
-                        UnityEditor.Handles.color = ColorPrefs.Instance.Buoyancy_airResisForceLines.v;
-                        UnityEditor.Handles.DrawLines(_gizmo_airResis_ForceLines);
-                    }
-
-                    if (drawSelected_windResi_ForceLines)
-                    {
-                        UnityEditor.Handles.color = ColorPrefs.Instance.Buoyancy_windResiForceLines.v;
-                        UnityEditor.Handles.DrawLines(_gizmo_windResi_ForceLines);
-                    }
-
-                    if (drawSelected_waveDrft_ForceLines)
-                    {
-                        UnityEditor.Handles.color = ColorPrefs.Instance.Buoyancy_waveDrftForceLines.v;
-                        UnityEditor.Handles.DrawLines(_gizmo_waveDrft_ForceLines);
-                    }
-
-                    if (drawSelected_slamming_ForceLines)
-                    {
-                        UnityEditor.Handles.color = ColorPrefs.Instance.Buoyancy_slammingForceLines.v;
-                        UnityEditor.Handles.DrawLines(_gizmo_slamming_ForceLines);
-                    }
-                }
-            }
-        }
-
-        #endregion
-
-#endif
     }
 }
