@@ -117,7 +117,7 @@ namespace Appalachia.Simulation.Trees.Core
                 {
                     using (_PRF_Initialize.Auto())
                     {
-                        gameObject.GetOrCreateComponent(ref rigidbodyDensityManager);
+                        gameObject.GetOrAddComponent(ref rigidbodyDensityManager);
                     }
                 }
             );

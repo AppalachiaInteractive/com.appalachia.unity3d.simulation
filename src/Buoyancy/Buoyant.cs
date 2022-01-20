@@ -524,7 +524,7 @@ namespace Appalachia.Simulation.Buoyancy
                 );
             }
 
-            gameObject.GetOrCreateComponent(ref densityManager);
+            gameObject.GetOrAddComponent(ref densityManager);
 
             if (voxels != null)
             {
