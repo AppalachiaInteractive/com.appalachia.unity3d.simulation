@@ -27,7 +27,7 @@ namespace Appalachia.Simulation.ReactionSystem.Base
         {
             using (_PRF_GetPosition.Auto())
             {
-                return _transform.position + offset;
+                return Transform.position + offset;
             }
         }
 
@@ -62,9 +62,6 @@ namespace Appalachia.Simulation.ReactionSystem.Base
         #endregion
 
 #if UNITY_EDITOR
-
-        private static readonly ProfilerMarker _PRF_OnDrawGizmosSelected =
-            new(_PRF_PFX + nameof(OnDrawGizmosSelected));
 
         private void OnDrawGizmosSelected()
         {

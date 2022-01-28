@@ -79,7 +79,7 @@ namespace Appalachia.Simulation.Physical.Integration
             {
                 if (_rigidbody == null)
                 {
-                    _rigidbody = _transform.GetComponent<Rigidbody>();
+                    _rigidbody = Transform.GetComponent<Rigidbody>();
                 }
 
                 if (_rigidbody == null)
@@ -152,7 +152,7 @@ namespace Appalachia.Simulation.Physical.Integration
 
                 if (_rigidbody == null)
                 {
-                    _rigidbody = _transform.GetComponent<Rigidbody>();
+                    _rigidbody = Transform.GetComponent<Rigidbody>();
                 }
 
                 if (firstPosition == Vector3.zero)
@@ -210,7 +210,7 @@ namespace Appalachia.Simulation.Physical.Integration
 
                 var forceVector = GetForceVector();
 
-                var pos = _transform.position;
+                var pos = Transform.position;
 
                 SmartHandles.DrawLine(pos, pos + forceVector, Color.red);
             }
@@ -287,7 +287,7 @@ namespace Appalachia.Simulation.Physical.Integration
             {
                 if (_rigidbody == null)
                 {
-                    _rigidbody = _transform.GetComponent<Rigidbody>();
+                    _rigidbody = Transform.GetComponent<Rigidbody>();
                 }
 
                 _rigidbody.useGravity = false;
@@ -311,7 +311,7 @@ namespace Appalachia.Simulation.Physical.Integration
             {
                 if (_rigidbody == null)
                 {
-                    _rigidbody = _transform.GetComponent<Rigidbody>();
+                    _rigidbody = Transform.GetComponent<Rigidbody>();
                 }
 
                 _rigidbody.useGravity = true;
@@ -335,7 +335,7 @@ namespace Appalachia.Simulation.Physical.Integration
             {
                 if (_rigidbody == null)
                 {
-                    _rigidbody = _transform.GetComponent<Rigidbody>();
+                    _rigidbody = Transform.GetComponent<Rigidbody>();
                 }
 
                 _rigidbody.Sleep();
@@ -350,7 +350,7 @@ namespace Appalachia.Simulation.Physical.Integration
             {
                 if (_rigidbody == null)
                 {
-                    _rigidbody = _transform.GetComponent<Rigidbody>();
+                    _rigidbody = Transform.GetComponent<Rigidbody>();
                 }
 
                 _rigidbody.velocity = Vector3.zero;
@@ -366,7 +366,7 @@ namespace Appalachia.Simulation.Physical.Integration
             {
                 if (_rigidbody == null)
                 {
-                    _rigidbody = _transform.GetComponent<Rigidbody>();
+                    _rigidbody = Transform.GetComponent<Rigidbody>();
                 }
 
                 _rigidbody.angularVelocity = Vector3.zero;
@@ -381,7 +381,7 @@ namespace Appalachia.Simulation.Physical.Integration
             {
                 if (_rigidbody == null)
                 {
-                    _rigidbody = _transform.GetComponent<Rigidbody>();
+                    _rigidbody = Transform.GetComponent<Rigidbody>();
                 }
 
                 _rigidbody.velocity = Vector3.zero;
@@ -396,7 +396,7 @@ namespace Appalachia.Simulation.Physical.Integration
             {
                 if (_rigidbody == null)
                 {
-                    _rigidbody = _transform.GetComponent<Rigidbody>();
+                    _rigidbody = Transform.GetComponent<Rigidbody>();
                 }
 
                 _rigidbody.WakeUp();
@@ -429,7 +429,7 @@ namespace Appalachia.Simulation.Physical.Integration
 
                 if (forceLocal)
                 {
-                    forceVector = _transform.TransformVector(forceVector);
+                    forceVector = Transform.TransformVector(forceVector);
                 }
 
                 forceVector = forceVector.normalized;
@@ -450,11 +450,11 @@ namespace Appalachia.Simulation.Physical.Integration
 
                 if (originalPosition != Vector3.zero)
                 {
-                    _transform.position = originalPosition;
+                    Transform.position = originalPosition;
                 }
                 else if (firstPosition != Vector3.zero)
                 {
-                    _transform.position = firstPosition;
+                    Transform.position = firstPosition;
                 }
             }
         }
@@ -467,7 +467,7 @@ namespace Appalachia.Simulation.Physical.Integration
             {
                 if (_rigidbody == null)
                 {
-                    _rigidbody = _transform.GetComponent<Rigidbody>();
+                    _rigidbody = Transform.GetComponent<Rigidbody>();
                 }
 
                 StopMovement();
@@ -497,9 +497,6 @@ namespace Appalachia.Simulation.Physical.Integration
 
         private static readonly ProfilerMarker _PRF_GetForceVector =
             new ProfilerMarker(_PRF_PFX + nameof(GetForceVector));
-
-        private static readonly ProfilerMarker _PRF_OnDrawGizmosSelected =
-            new ProfilerMarker(_PRF_PFX + nameof(OnDrawGizmosSelected));
 
         private static readonly ProfilerMarker _PRF_ResetPosition =
             new ProfilerMarker(_PRF_PFX + nameof(ResetPosition));

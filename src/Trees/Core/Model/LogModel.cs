@@ -299,6 +299,9 @@ namespace Appalachia.Simulation.Trees.Core.Model
 
         private void OnDrawGizmos()
         {
+            if (!enabled) return;
+            if (ShouldSkipUpdate) return;
+            
             if (container == null)
             {
                 return;

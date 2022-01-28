@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Appalachia.Core.Attributes;
+using Appalachia.Core.Objects.Availability;
 using Appalachia.Globals.Shading;
 using Appalachia.Simulation.Trees.Generation.Texturing.Output;
 using UnityEngine;
@@ -11,7 +12,9 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading.OutputShaders
     {
         static OutputMaterialShader()
         {
-            GSR.InstanceAvailable += i => _GSR = i;
+            RegisterInstanceCallbacks.For<OutputMaterialShader>()
+                                     .When.Object<GSR>()
+                                     .IsAvailableThen(i => _GSR = i);
         }
 
         #region Static Fields and Autoproperties

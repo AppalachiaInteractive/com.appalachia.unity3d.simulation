@@ -1,5 +1,6 @@
 using System;
 using Appalachia.Core.Attributes;
+using Appalachia.Core.Objects.Availability;
 using Appalachia.Simulation.Trees.Core.Settings;
 using Appalachia.Simulation.Trees.Generation.Texturing.Materials.Output;
 using Appalachia.Simulation.Trees.ResponsiveUI;
@@ -14,7 +15,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Base
     {
         static TreeMaterial()
         {
-            DefaultShaderResource.InstanceAvailable += i => _defaultShaderResource = i;
+            RegisterInstanceCallbacks.WithoutSorting().When.Object<DefaultShaderResource>().IsAvailableThen( i => _defaultShaderResource = i);
         }
 
         protected TreeMaterial(int materialID, ResponsiveSettingsType settingsType) : base(settingsType)

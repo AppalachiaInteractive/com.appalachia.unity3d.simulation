@@ -299,7 +299,7 @@ namespace Appalachia.Simulation.Buoyancy
                     {
                         voxelCount = voxels.count;
                         metadata = waterPhysicsCoefficients.data;
-                        localToWorldMatrix = _transform.localToWorldMatrix;
+                        localToWorldMatrix = Transform.localToWorldMatrix;
                         waterDensity = waterDensityMetadata.densityKGPerCubicMeter;
                         airDensity = airDensityMetadata.densityKGPerCubicMeter;
                         var gravity = Physics.gravity;
@@ -557,14 +557,14 @@ namespace Appalachia.Simulation.Buoyancy
 
             if (shouldRestore)
             {
-                voxels.RestoreFromDataStore(_transform, colliders, renderers, activeRatio);
+                voxels.RestoreFromDataStore(Transform, colliders, renderers, activeRatio);
             }
             else if (buoyancyData.buoyancyType == BuoyancyType.PhysicalVoxel)
             {
                 voxels = BuoyancyVoxels.Voxelize(
                     voxels,
                     buoyancyData.voxelPopulationStyle,
-                    _transform,
+                    Transform,
                     colliders,
                     renderers,
                     buoyancyData.voxelResolution
@@ -577,7 +577,7 @@ namespace Appalachia.Simulation.Buoyancy
                 var bounds = colliders.GetEncompassingBounds();
                 bounds.Encapsulate(renderers.GetEncompassingBounds());
 
-                voxels = BuoyancyVoxels.VoxelizeSingle(voxels, _transform, bounds, body.centerOfMass);
+                voxels = BuoyancyVoxels.VoxelizeSingle(voxels, Transform, bounds, body.centerOfMass);
             }
 
             voxels.centerOfMass = body.centerOfMass;

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Appalachia.Core.Attributes;
+using Appalachia.Core.Objects.Availability;
 using Appalachia.Core.Types;
 using Appalachia.Simulation.Trees.Core;
 using Appalachia.Simulation.Trees.Core.Settings;
@@ -27,7 +28,7 @@ namespace Appalachia.Simulation.Trees.Hierarchy.Collections
     {
         static HierarchyCollection()
         {
-            TreePresets.InstanceAvailable += i => _treePresets = i;
+            RegisterInstanceCallbacks.WithoutSorting().When.Object<TreePresets>().IsAvailableThen( i => _treePresets = i);
         }
 
         private static TreePresets _treePresets;

@@ -1,5 +1,6 @@
 using System;
 using Appalachia.Core.Attributes;
+using Appalachia.Core.Objects.Availability;
 using Appalachia.Core.Preferences;
 using Appalachia.Core.Preferences.Globals;
 using Appalachia.Simulation.Core.Metadata.Density;
@@ -13,8 +14,8 @@ namespace Appalachia.Simulation.Core.Selections
     {
         static LookupSelectionGenerator()
         {
-            PhysicsMaterialsCollection.InstanceAvailable += i => _physicsMaterialsCollection = i;
-            DensityMetadataCollection.InstanceAvailable += i => _densityMetadataCollection = i;
+            RegisterInstanceCallbacks.WithoutSorting().When.Object<PhysicsMaterialsCollection>().IsAvailableThen( i => _physicsMaterialsCollection = i);
+            RegisterInstanceCallbacks.WithoutSorting().When.Object<DensityMetadataCollection>().IsAvailableThen( i => _densityMetadataCollection = i);
         }
 
         #region Static Fields and Autoproperties

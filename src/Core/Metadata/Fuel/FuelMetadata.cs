@@ -9,10 +9,10 @@ namespace Appalachia.Simulation.Trees.Simulation.Fuel
     {
         public float btuPerKgGreen;
         public float btuPerKgDry;
-        [Range(0.5f, 2.2f)] public float densityMultiplier;
-        [Range(0.5f, 2.2f)] public float smokeMultiplier;
-        [Range(120, 200)] public int charTemperature = 120;
-        [Range(150, 400)] public int ignitionTemperature = 200;
+        [PropertyRange(0.5f, 2.2f)] public float densityMultiplier;
+        [PropertyRange(0.5f, 2.2f)] public float smokeMultiplier;
+        [PropertyRange(120, 200)] public int charTemperature = 120;
+        [PropertyRange(150, 400)] public int ignitionTemperature = 200;
         public FuelBurnRate burnRate;
         public FuelBurnScale burnScale;
         

@@ -1,4 +1,5 @@
 using Appalachia.Core.Attributes;
+using Appalachia.Core.Objects.Availability;
 using Appalachia.Simulation.Trees.Core.Model;
 using Appalachia.Simulation.Trees.Icons;
 using Appalachia.Simulation.Trees.UI.Gizmos;
@@ -13,7 +14,7 @@ namespace Appalachia.Simulation.Trees.UI
         static SerializationReconciler()
         {
             EditorApplication.delayCall += Update;
-            TreeGizmoDelegate.InstanceAvailable += i => _treeGizmoDelegate = i;
+            RegisterInstanceCallbacks.WithoutSorting().When.Object<TreeGizmoDelegate>().IsAvailableThen( i => _treeGizmoDelegate = i);
         }
 
         #region Static Fields and Autoproperties

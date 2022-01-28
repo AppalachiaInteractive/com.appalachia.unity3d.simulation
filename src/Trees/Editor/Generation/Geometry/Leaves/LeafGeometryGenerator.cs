@@ -1,4 +1,5 @@
 using Appalachia.Core.Attributes;
+using Appalachia.Core.Objects.Availability;
 using Appalachia.Simulation.Trees.Build.Execution;
 using Appalachia.Simulation.Trees.Core;
 using Appalachia.Simulation.Trees.Core.Geometry;
@@ -31,7 +32,9 @@ namespace Appalachia.Simulation.Trees.Generation.Geometry.Leaves
 
         static LeafGeometryGenerator()
         {
-            LeafUVRectCollection.InstanceAvailable += i => _leafUVRectCollection = i;
+            RegisterInstanceCallbacks.WithoutSorting()
+                                     .When.Object<LeafUVRectCollection>()
+                                     .IsAvailableThen(i => _leafUVRectCollection = i);
         }
 
         #region Static Fields and Autoproperties

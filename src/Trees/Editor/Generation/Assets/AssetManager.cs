@@ -3,6 +3,7 @@ using Appalachia.CI.Constants;
 using Appalachia.CI.Integration.Assets;
 using Appalachia.Core.Attributes;
 using Appalachia.Core.Labels;
+using Appalachia.Core.Objects.Availability;
 using Appalachia.Editing.Scene.Prefabs;
 using Appalachia.Rendering.Prefabs.Rendering.MultiStage.Trees;
 using Appalachia.Rendering.Prefabs.Rendering.Replacement;
@@ -28,8 +29,12 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
     {
         static AssetManager()
         {
-            PrefabReplacementCollection.InstanceAvailable += i => _prefabReplacementCollection = i;
-            TreeGlobalSettings.InstanceAvailable += i => _treeGlobalSettings = i;
+            RegisterInstanceCallbacks.WithoutSorting()
+                                     .When.Object<PrefabReplacementCollection>()
+                                     .IsAvailableThen(i => _prefabReplacementCollection = i);
+            RegisterInstanceCallbacks.WithoutSorting()
+                                     .When.Object<TreeGlobalSettings>()
+                                     .IsAvailableThen(i => _treeGlobalSettings = i);
         }
 
         #region Static Fields and Autoproperties

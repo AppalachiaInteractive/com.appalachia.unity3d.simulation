@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Appalachia.Core.Attributes;
+using Appalachia.Core.Objects.Availability;
 using Appalachia.Simulation.Trees.Build.Execution;
 using Appalachia.Simulation.Trees.Core.Geometry;
 using Appalachia.Simulation.Trees.Core.Shape;
@@ -20,7 +21,7 @@ namespace Appalachia.Simulation.Trees.Generation.Meshing
     {
         static MeshGenerator()
         {
-            DefaultMaterialResource.InstanceAvailable += i => _defaultMaterialResource = i;
+            RegisterInstanceCallbacks.WithoutSorting().When.Object<DefaultMaterialResource>().IsAvailableThen( i => _defaultMaterialResource = i);
         }
 
         #region Static Fields and Autoproperties

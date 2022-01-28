@@ -1,4 +1,5 @@
 using Appalachia.Core.Attributes;
+using Appalachia.Core.Objects.Availability;
 using Appalachia.Simulation.Trees.Core.Serialization;
 using Appalachia.Simulation.Trees.Core.Settings;
 using Appalachia.Simulation.Trees.Extensions;
@@ -12,9 +13,15 @@ namespace Appalachia.Simulation.Trees.Settings
     {
         static TypeBasedSettings()
         {
-            DefaultMaterialResource.InstanceAvailable += i => _defaultMaterialResource = i;
-            DefaultShaderResource.InstanceAvailable += i => _defaultShaderResource = i;
-            TreeGlobalSettings.InstanceAvailable += i => _treeGlobalSettings = i;
+            RegisterInstanceCallbacks.For<T>()
+                                     .When.Object<DefaultMaterialResource>()
+                                     .IsAvailableThen(i => _defaultMaterialResource = i);
+            RegisterInstanceCallbacks.For<T>()
+                                     .When.Object<DefaultShaderResource>()
+                                     .IsAvailableThen(i => _defaultShaderResource = i);
+            RegisterInstanceCallbacks.For<T>()
+                                     .When.Object<TreeGlobalSettings>()
+                                     .IsAvailableThen(i => _treeGlobalSettings = i);
         }
 
         #region Static Fields and Autoproperties

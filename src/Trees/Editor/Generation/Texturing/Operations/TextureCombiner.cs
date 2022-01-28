@@ -6,6 +6,7 @@ using System.Linq;
 using Appalachia.CI.Constants;
 using Appalachia.CI.Integration.Assets;
 using Appalachia.Core.Attributes;
+using Appalachia.Core.Objects.Availability;
 using Appalachia.Globals.Shading;
 using Appalachia.Simulation.Trees.Build.Execution;
 using Appalachia.Simulation.Trees.Generation.Texturing.Atlassing;
@@ -27,7 +28,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Operations
     {
         static TextureCombiner()
         {
-            GSR.InstanceAvailable += i => _GSR = i;
+            RegisterInstanceCallbacks.WithoutSorting().When.Object<GSR>().IsAvailableThen( i => _GSR = i);
         }
 
         #region Static Fields and Autoproperties

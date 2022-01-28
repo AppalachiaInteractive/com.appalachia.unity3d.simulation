@@ -1,6 +1,7 @@
 using Appalachia.CI.Integration.Assets;
 using Appalachia.Core.Attributes;
 using Appalachia.Core.Debugging;
+using Appalachia.Core.Objects.Availability;
 using Appalachia.Editing.Debugging;
 using Appalachia.Simulation.Trees.Core.Model;
 using Appalachia.Simulation.Trees.Extensions;
@@ -16,9 +17,9 @@ namespace Appalachia.Simulation.Trees.UI.Species
     {
         static TreeModelViewToolbar()
         {
-            TreeGizmoDelegate.InstanceAvailable += i => _treeGizmoDelegate = i;
-            TreeGizmoStyle.InstanceAvailable += i => _treeGizmoStyle = i;
-            RendererDebuggingSettings.InstanceAvailable += i => _rendererDebuggingSettings = i;
+            RegisterInstanceCallbacks.WithoutSorting().When.Object<TreeGizmoDelegate>().IsAvailableThen( i => _treeGizmoDelegate = i);
+            RegisterInstanceCallbacks.WithoutSorting().When.Object<TreeGizmoStyle>().IsAvailableThen( i => _treeGizmoStyle = i);
+            RegisterInstanceCallbacks.WithoutSorting().When.Object<RendererDebuggingSettings>().IsAvailableThen( i => _rendererDebuggingSettings = i);
         }
 
         #region Static Fields and Autoproperties

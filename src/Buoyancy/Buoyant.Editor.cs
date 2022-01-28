@@ -144,11 +144,6 @@ namespace Appalachia.Simulation.Buoyancy
 
         #region Profiling
 
-        private static readonly ProfilerMarker _PRF_OnDrawGizmos = new(_PRF_PFX + nameof(OnDrawGizmos));
-
-        private static readonly ProfilerMarker _PRF_OnDrawGizmosSelected =
-            new(_PRF_PFX + nameof(OnDrawGizmosSelected));
-
         private static readonly ProfilerMarker _PRF_InitializeEditor =
             new ProfilerMarker(_PRF_PFX + nameof(InitializeEditor));
 

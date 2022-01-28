@@ -8,6 +8,7 @@ using Appalachia.CI.Constants;
 using Appalachia.CI.Integration.Assets;
 using Appalachia.Core.Attributes;
 using Appalachia.Core.Extensions;
+using Appalachia.Core.Objects.Availability;
 using Appalachia.Core.Shading;
 using Appalachia.Globals.Shading;
 using Appalachia.Simulation.Core.Metadata.Tree.Types;
@@ -52,8 +53,10 @@ namespace Appalachia.Simulation.Trees.Build.Execution
     {
         static TreeBuildManager()
         {
-            TreeSpeciesEditorSelection.InstanceAvailable += i => _treeSpeciesEditorSelection = i;
-            GSR.InstanceAvailable += i => _GSR = i;
+            RegisterInstanceCallbacks.WithoutSorting()
+                                     .When.Object<TreeSpeciesEditorSelection>()
+                                     .IsAvailableThen(i => _treeSpeciesEditorSelection = i);
+            RegisterInstanceCallbacks.WithoutSorting().When.Object<GSR>().IsAvailableThen(i => _GSR = i);
         }
 
         #region Static Fields and Autoproperties

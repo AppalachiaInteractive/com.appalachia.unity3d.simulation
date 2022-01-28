@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Appalachia.Core.Attributes;
+using Appalachia.Core.Objects.Availability;
 using Appalachia.Simulation.Trees.Core;
 using Appalachia.Simulation.Trees.Core.Editing;
 using Appalachia.Simulation.Trees.Core.Seeds;
@@ -24,7 +25,7 @@ namespace Appalachia.Simulation.Trees.UI.Base
     {
         static HierarchyBaseEditor()
         {
-            TreeGraphSettings.InstanceAvailable += i => _treeGraphSettings = i;
+            RegisterInstanceCallbacks.WithoutSorting().When.Object<TreeGraphSettings>().IsAvailableThen( i => _treeGraphSettings = i);
         }
 
         #region Static Fields and Autoproperties

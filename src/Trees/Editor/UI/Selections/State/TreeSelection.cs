@@ -1,5 +1,6 @@
 using System;
 using Appalachia.Core.Attributes;
+using Appalachia.Core.Objects.Availability;
 using Appalachia.Simulation.Core.Metadata.Tree.Types;
 using Appalachia.Simulation.Trees.UI.Selections.Dropdown;
 
@@ -11,7 +12,7 @@ namespace Appalachia.Simulation.Trees.UI.Selections.State
     {
         static TreeSelection()
         {
-            TreeDataContainerSelection.InstanceAvailable += i => _treeDataContainerSelection = i;
+            RegisterInstanceCallbacks.WithoutSorting().When.Object<TreeDataContainerSelection>().IsAvailableThen( i => _treeDataContainerSelection = i);
         }
 
         #region Static Fields and Autoproperties

@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using Appalachia.CI.Integration.Assets;
 using Appalachia.Core.Attributes;
+using Appalachia.Core.Objects.Availability;
 using Appalachia.Core.Objects.Initialization;
 using Appalachia.Core.Types;
 using Appalachia.Simulation.Trees.Build.Cost;
@@ -36,7 +37,9 @@ namespace Appalachia.Simulation.Trees
 
         static TSEDataContainer()
         {
-            DefaultShaderResource.InstanceAvailable += i => _defaultShaderResource = i;
+            RegisterInstanceCallbacks.For<TSEDataContainer>()
+                                     .When.Object<DefaultShaderResource>()
+                                     .IsAvailableThen(i => _defaultShaderResource = i);
         }
 
         #region Static Fields and Autoproperties
@@ -111,7 +114,7 @@ namespace Appalachia.Simulation.Trees
 
         public abstract void SetDirtyStates();
 
-        public abstract void SettingsChanged(SettingsUpdateTarget target);
+        public new abstract void SettingsChanged(SettingsUpdateTarget target);
 
         [DebuggerStepThrough]
         public override string ToString()
@@ -168,8 +171,6 @@ namespace Appalachia.Simulation.Trees
         #region Profiling
 
         private const string _PRF_PFX = nameof(TSEDataContainer) + ".";
-
-        
 
         private static readonly ProfilerMarker _PRF_Save = new ProfilerMarker(_PRF_PFX + nameof(Save));
 

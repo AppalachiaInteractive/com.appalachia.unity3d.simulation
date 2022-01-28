@@ -1,5 +1,6 @@
 using System;
 using Appalachia.Core.Attributes;
+using Appalachia.Core.Objects.Availability;
 using Appalachia.Simulation.Trees.Build.Requests;
 using Appalachia.Simulation.Trees.Extensions;
 using Appalachia.Simulation.Trees.ResponsiveUI;
@@ -12,7 +13,7 @@ namespace Appalachia.Simulation.Trees.Build.RequestManagers
     {
         static TreeBuildRequestManager()
         {
-            TreeSpeciesEditorSelection.InstanceAvailable += i => _treeSpeciesEditorSelection = i;
+            RegisterInstanceCallbacks.WithoutSorting().When.Object<TreeSpeciesEditorSelection>().IsAvailableThen( i => _treeSpeciesEditorSelection = i);
         }
 
         #region Static Fields and Autoproperties

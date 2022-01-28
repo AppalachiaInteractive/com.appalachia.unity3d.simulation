@@ -1,5 +1,6 @@
 using Appalachia.Core.Attributes;
 using Appalachia.Core.Extensions;
+using Appalachia.Core.Objects.Availability;
 using Appalachia.Core.Shading;
 using Appalachia.Globals.Shading;
 using Appalachia.Simulation.ReactionSystem.Base;
@@ -21,7 +22,9 @@ namespace Appalachia.Simulation.ReactionSystem.TouchBend
 
         static TouchBendCurrentStateMotion()
         {
-            GSR.InstanceAvailable += i => _GSR = i;
+            RegisterInstanceCallbacks.For<TouchBendCurrentStateMotion>()
+                                     .When.Object<GSR>()
+                                     .IsAvailableThen(i => _GSR = i);
         }
 
         #region Static Fields and Autoproperties

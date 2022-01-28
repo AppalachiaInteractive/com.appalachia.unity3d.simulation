@@ -1,5 +1,6 @@
 using System.Linq;
 using Appalachia.Core.Attributes;
+using Appalachia.Core.Objects.Availability;
 using Appalachia.Simulation.Trees.Extensions;
 using Appalachia.Simulation.Trees.Generation.Texturing.Materials.Input;
 using Appalachia.Simulation.Trees.Generation.Texturing.Materials.Management;
@@ -19,7 +20,9 @@ namespace Appalachia.Simulation.Trees.UI.UV
     {
         static TreeUVSidebarCollection()
         {
-            LeafUVRectCollection.InstanceAvailable += i => _leafUVRectCollection = i;
+            RegisterInstanceCallbacks.WithoutSorting()
+                                     .When.Object<LeafUVRectCollection>()
+                                     .IsAvailableThen(i => _leafUVRectCollection = i);
         }
 
         #region Static Fields and Autoproperties

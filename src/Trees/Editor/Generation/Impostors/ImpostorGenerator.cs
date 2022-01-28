@@ -4,6 +4,7 @@ using AmplifyImpostors;
 using Appalachia.CI.Constants;
 using Appalachia.CI.Integration.Assets;
 using Appalachia.Core.Attributes;
+using Appalachia.Core.Objects.Availability;
 using Appalachia.Simulation.Trees.Definition;
 using Appalachia.Simulation.Trees.Extensions;
 using Appalachia.Simulation.Trees.Generation.Assets;
@@ -22,7 +23,7 @@ namespace Appalachia.Simulation.Trees.Generation.Impostors
     {
         static ImpostorGenerator()
         {
-            DefaultShaderResource.InstanceAvailable += i => _defaultShaderResource = i;
+            RegisterInstanceCallbacks.WithoutSorting().When.Object<DefaultShaderResource>().IsAvailableThen( i => _defaultShaderResource = i);
         }
 
         #region Static Fields and Autoproperties

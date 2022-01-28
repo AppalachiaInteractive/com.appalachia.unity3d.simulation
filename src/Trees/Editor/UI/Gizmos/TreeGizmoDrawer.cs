@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Appalachia.Core.Attributes;
+using Appalachia.Core.Objects.Availability;
 using Appalachia.Editing.Debugging.Handle;
 using Appalachia.Simulation.Trees.Core;
 using Appalachia.Simulation.Trees.Core.Model;
@@ -25,8 +26,8 @@ namespace Appalachia.Simulation.Trees.UI.Gizmos
     {
         static TreeGizmoDrawer()
         {
-            TreeGizmoStyle.InstanceAvailable += i => _treeGizmoStyle = i;
-            TreeSpeciesEditorSelection.InstanceAvailable += i => _treeSpeciesEditorSelection = i;
+            RegisterInstanceCallbacks.WithoutSorting().When.Object<TreeGizmoStyle>().IsAvailableThen( i => _treeGizmoStyle = i);
+            RegisterInstanceCallbacks.WithoutSorting().When.Object<TreeSpeciesEditorSelection>().IsAvailableThen( i => _treeSpeciesEditorSelection = i);
         }
 
         private static TreeGizmoStyle _treeGizmoStyle;

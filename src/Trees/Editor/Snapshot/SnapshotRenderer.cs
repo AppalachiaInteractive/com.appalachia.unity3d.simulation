@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Appalachia.Core.Attributes;
+using Appalachia.Core.Objects.Availability;
 using Appalachia.Simulation.Trees.Generation.Spline;
 using UnityEditor;
 using UnityEngine;
@@ -21,7 +22,7 @@ namespace Appalachia.Simulation.Trees.Snapshot
 
         static SnapshotRenderer()
         {
-            SnapshotShaders.InstanceAvailable += i => _snapshotShaders = i;
+            RegisterInstanceCallbacks.WithoutSorting().When.Object<SnapshotShaders>().IsAvailableThen( i => _snapshotShaders = i);
         }
 
         #region Static Fields and Autoproperties

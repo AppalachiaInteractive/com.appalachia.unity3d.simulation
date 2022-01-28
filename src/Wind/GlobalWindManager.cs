@@ -169,7 +169,7 @@ namespace Appalachia.Simulation.Wind
         [TitleGroup("Wind")]
         [FoldoutGroup("Wind/Physics")]
         [ShowInInspector]
-        public float3 WindDirection => _transform.forward;
+        public float3 WindDirection => Transform.forward;
 
         /// <summary>
         ///     Fw = pd A
@@ -393,7 +393,7 @@ namespace Appalachia.Simulation.Wind
 
                 var rotation = Quaternion.AngleAxis(update, Vector3.up);
 
-                targetHeading = _transform.rotation * rotation;
+                targetHeading = Transform.rotation * rotation;
                 nextHeadingUpdateTime = time +
                                         Random.Range(
                                             _globalWindParametersGroup.Current.headingChangeInterval.x,
@@ -402,8 +402,8 @@ namespace Appalachia.Simulation.Wind
             }
             else
             {
-                _transform.rotation = Quaternion.Slerp(
-                    _transform.rotation,
+                Transform.rotation = Quaternion.Slerp(
+                    Transform.rotation,
                     targetHeading,
                     _globalWindParametersGroup.Current.headingUpdateSpeed
                 );
@@ -549,7 +549,7 @@ namespace Appalachia.Simulation.Wind
                 using (_PRF_SetGlobalShaderProperties_SetShaderProps.Auto())
                 {
                     Shader.SetGlobalFloat(GSPL.Get(GSC.WIND._WIND_AUDIO_INFLUENCE), audioInfluence);
-                    Shader.SetGlobalVector(GSPL.Get(GSC.WIND._WIND_DIRECTION), _transform.forward);
+                    Shader.SetGlobalVector(GSPL.Get(GSC.WIND._WIND_DIRECTION), Transform.forward);
                     Shader.SetGlobalFloat(GSPL.Get(GSC.WIND._WIND_BASE_AMPLITUDE),     param.baseAmplitude);
                     Shader.SetGlobalFloat(GSPL.Get(GSC.WIND._WIND_BASE_TO_GUST_RATIO), param.baseToGustRatio);
 

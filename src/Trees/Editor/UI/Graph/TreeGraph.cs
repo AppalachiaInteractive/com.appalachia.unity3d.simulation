@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Appalachia.Core.Attributes;
+using Appalachia.Core.Objects.Availability;
 using Appalachia.Simulation.Trees.Core;
 using Appalachia.Simulation.Trees.Core.Editing;
 using Appalachia.Simulation.Trees.Definition.Interfaces;
@@ -20,7 +21,7 @@ namespace Appalachia.Simulation.Trees.UI.Graph
     {
         static TreeGraph()
         {
-            TreeSpeciesEditorSelection.InstanceAvailable += i => _treeSpeciesEditorSelection = i;
+            RegisterInstanceCallbacks.WithoutSorting().When.Object<TreeSpeciesEditorSelection>().IsAvailableThen( i => _treeSpeciesEditorSelection = i);
         }
 
         private static TreeSpeciesEditorSelection _treeSpeciesEditorSelection;

@@ -7,6 +7,7 @@ using System.Linq;
 using Appalachia.CI.Constants;
 using Appalachia.CI.Integration.Assets;
 using Appalachia.Core.Attributes;
+using Appalachia.Core.Objects.Availability;
 using Appalachia.Simulation.Core.Metadata.Tree.Types;
 using Appalachia.Simulation.Trees.Build.Cost;
 using Appalachia.Simulation.Trees.Build.Requests;
@@ -44,7 +45,7 @@ namespace Appalachia.Simulation.Trees.Build.Execution
     {
         static BranchBuildManager()
         {
-            TreeSpeciesEditorSelection.InstanceAvailable += i => _treeSpeciesEditorSelection = i;
+            RegisterInstanceCallbacks.WithoutSorting().When.Object<TreeSpeciesEditorSelection>().IsAvailableThen( i => _treeSpeciesEditorSelection = i);
         }
 
         #region Static Fields and Autoproperties

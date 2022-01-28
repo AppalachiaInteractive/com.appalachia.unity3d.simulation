@@ -345,7 +345,7 @@ namespace Appalachia.Simulation.Buoyancy
                 _index = new BuoyancyLookup();
             }
 
-            var allColliders = _transform.FilterComponents<Collider>(true).NoTriggers().RunFilter();
+            var allColliders = Transform.FilterComponents<Collider>(true).NoTriggers().RunFilter();
 
             foreach (var c in allColliders)
             {
@@ -507,7 +507,7 @@ namespace Appalachia.Simulation.Buoyancy
 
                 if ((_triggers == null) || (_triggers.Length == 0) || anyTriggerNull)
                 {
-                    _triggers = _transform.FilterComponents<Collider>(true).OnlyTriggers().RunFilter();
+                    _triggers = Transform.FilterComponents<Collider>(true).OnlyTriggers().RunFilter();
 
                     for (var i = 0; i < _triggers.Length; i++)
                     {
@@ -535,7 +535,7 @@ namespace Appalachia.Simulation.Buoyancy
                 if (_voxels == null)
                 {
                     voxelResolution = math.clamp(voxelResolution, _voxelResolutionMin, _voxelResolutionMax);
-                    _voxels = Voxels<WaterVoxel>.Voxelize(_transform, _triggers, voxelResolution);
+                    _voxels = Voxels<WaterVoxel>.Voxelize(Transform, _triggers, voxelResolution);
                 }
             }
         }

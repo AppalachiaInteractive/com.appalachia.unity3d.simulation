@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Appalachia.CI.Integration.Assets;
 using Appalachia.Core.Attributes;
+using Appalachia.Core.Objects.Availability;
 using Appalachia.Core.Objects.Initialization;
 using Appalachia.Editing.Labels;
 using Appalachia.Rendering.Prefabs.Core;
@@ -43,10 +44,10 @@ namespace Appalachia.Simulation.Trees
     {
         static TreeDataContainer()
         {
-            LabelSets.InstanceAvailable += i => _labelSets = i;
-            PrefabRenderingSetCollection.InstanceAvailable += i => _prefabRenderingSetCollection = i;
-            PrefabReplacementCollection.InstanceAvailable += i => _prefabReplacementCollection = i;
-            PrefabRenderingManager.InstanceAvailable += i => _prefabRenderingManager = i;
+            RegisterInstanceCallbacks.For<TreeDataContainer>().When.Object<LabelSets>().IsAvailableThen( i => _labelSets = i);
+            RegisterInstanceCallbacks.For<TreeDataContainer>().When.Object<PrefabRenderingSetCollection>().IsAvailableThen( i => _prefabRenderingSetCollection = i);
+            RegisterInstanceCallbacks.For<TreeDataContainer>().When.Object<PrefabReplacementCollection>().IsAvailableThen( i => _prefabReplacementCollection = i);
+            RegisterInstanceCallbacks.For<TreeDataContainer>().When.Behaviour<PrefabRenderingManager>().IsAvailableThen( i => _prefabRenderingManager = i);
         }
 
         #region Static Fields and Autoproperties

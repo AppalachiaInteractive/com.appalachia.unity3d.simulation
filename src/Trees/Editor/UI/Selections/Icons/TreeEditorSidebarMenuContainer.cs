@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Appalachia.Core.Attributes;
+using Appalachia.Core.Objects.Availability;
 using Appalachia.Simulation.Trees.Icons;
 using Appalachia.Simulation.Trees.UI.Selections.State;
 using Sirenix.OdinInspector.Editor;
@@ -14,7 +15,7 @@ namespace Appalachia.Simulation.Trees.UI.Selections.Icons
     {
         static TreeEditorSidebarMenuContainer()
         {
-            TreeSpeciesEditorSelection.InstanceAvailable += i => _treeSpeciesEditorSelection = i;
+            RegisterInstanceCallbacks.WithoutSorting().When.Object<TreeSpeciesEditorSelection>().IsAvailableThen( i => _treeSpeciesEditorSelection = i);
         }
 
         protected TreeEditorSidebarMenuContainer(
