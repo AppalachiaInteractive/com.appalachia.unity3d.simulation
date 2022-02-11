@@ -3,8 +3,8 @@
 using System;
 using Appalachia.Core.Attributes;
 using Appalachia.Core.Attributes.Editing;
-using Appalachia.Core.Filtering;
 using Appalachia.Core.Math.Smoothing;
+using Appalachia.Core.Objects.Filtering;
 using Appalachia.Core.Objects.Initialization;
 using Appalachia.Core.Objects.Root;
 using Appalachia.Simulation.Buoyancy.Collections;
@@ -18,6 +18,7 @@ using Appalachia.Spatial.Voxels.VoxelTypes;
 using Appalachia.Utility.Async;
 using Appalachia.Utility.Execution;
 using Appalachia.Utility.Extensions;
+using Appalachia.Utility.Timing;
 using Sirenix.OdinInspector;
 using Unity.Jobs;
 using Unity.Mathematics;
@@ -43,8 +44,6 @@ namespace Appalachia.Simulation.Buoyancy
 
         static Water()
         {
-            
-
             RegisterDependency<MainVoxelDataGizmoSettingsCollection>(
                 i => _mainVoxelDataGizmoSettingsCollection = i
             );
@@ -105,7 +104,7 @@ namespace Appalachia.Simulation.Buoyancy
         {
             using (_PRF_FixedUpdate.Auto())
             {
-                FixedUpdate(Time.fixedDeltaTime);
+                FixedUpdate(CoreClock.Instance.FixedDeltaTime);
             }
         }
 
@@ -387,7 +386,6 @@ namespace Appalachia.Simulation.Buoyancy
 
             using (_PRF_WhenDisabled.Auto())
             {
-
 #if UNITY_EDITOR
                 if (AppalachiaApplication.IsCompiling || AppalachiaApplication.IsPlayingOrWillPlay)
                 {

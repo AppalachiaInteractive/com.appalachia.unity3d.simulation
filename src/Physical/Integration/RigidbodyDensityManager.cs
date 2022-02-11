@@ -1,7 +1,7 @@
 using System;
 using Appalachia.Core.Attributes;
 using Appalachia.Core.Attributes.Editing;
-using Appalachia.Core.Filtering;
+using Appalachia.Core.Objects.Filtering;
 using Appalachia.Core.Objects.Initialization;
 using Appalachia.Core.Objects.Root;
 using Appalachia.Simulation.Core.Metadata.Density;
@@ -21,8 +21,6 @@ namespace Appalachia.Simulation.Physical.Integration
     {
         static RigidbodyDensityManager()
         {
-            
-
             RegisterDependency<PhysicsMaterialsCollection>(i => _physicsMaterialsCollection = i);
         }
 

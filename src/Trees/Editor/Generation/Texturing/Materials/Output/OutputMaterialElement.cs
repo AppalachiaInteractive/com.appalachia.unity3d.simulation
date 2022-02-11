@@ -71,7 +71,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Output
 
         public void OnDeserialization(object sender)
         {
-            _selectedShader.OnShaderChanged += () => FinalizeMaterial(_atlas);
+            _selectedShader.OnShaderChanged.Event += () => FinalizeMaterial(_atlas);
         }
 
         #endregion

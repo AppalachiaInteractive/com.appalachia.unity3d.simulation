@@ -31,9 +31,9 @@ namespace Appalachia.Simulation.Buoyancy
     
             //What's the position of the sphere
             //Positive if above water, negative if below water
-            //float bottomDistToWater = WaterController.current.DistanceToWater(splashBottom.position, Time.time);
+            //float bottomDistToWater = WaterController.current.DistanceToWater(splashBottom.position, CoreClock.Instance.Time);
     
-            //float topDistToWater = WaterController.current.DistanceToWater(splashTop.position, Time.time);
+            //float topDistToWater = WaterController.current.DistanceToWater(splashTop.position, CoreClock.Instance.Time);
     
             //Only add foam if one is above water and the other is below
             if (topDistToWater > 0f && bottomDistToWater < 0f)

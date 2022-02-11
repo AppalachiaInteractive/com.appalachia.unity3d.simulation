@@ -12,6 +12,7 @@ using Appalachia.Simulation.Core.Metadata.Wind;
 using Appalachia.Utility.Async;
 using Appalachia.Utility.Execution;
 using Appalachia.Utility.Extensions;
+using Appalachia.Utility.Timing;
 using Sirenix.OdinInspector;
 using Unity.Mathematics;
 using Unity.Profiling;
@@ -258,7 +259,7 @@ namespace Appalachia.Simulation.Wind
                 if (!AppalachiaApplication.IsPlayingOrWillPlay || param.realtimeUpdate)
                 {
 #endif
-                    SetGlobalShaderProperties(Time.deltaTime, param);
+                    SetGlobalShaderProperties(CoreClock.Instance.DeltaTime, param);
 
                     var enviro = EnviroSky.instance;
 
@@ -383,7 +384,7 @@ namespace Appalachia.Simulation.Wind
 
         private void ExecuteHeadingStepUpdate(bool forceUpdate)
         {
-            var time = Time.time;
+            var time = CoreClock.Instance.Time;
             if ((time > nextHeadingUpdateTime) || forceUpdate)
             {
                 var update = Random.Range(

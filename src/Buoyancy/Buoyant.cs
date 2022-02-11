@@ -4,9 +4,9 @@ using System;
 using Appalachia.Core.Attributes;
 using Appalachia.Core.Attributes.Editing;
 using Appalachia.Core.Collections.Native;
-using Appalachia.Core.Filtering;
 using Appalachia.Core.Math.Smoothing;
 using Appalachia.Core.Objects.Behaviours;
+using Appalachia.Core.Objects.Filtering;
 using Appalachia.Core.Objects.Initialization;
 using Appalachia.Core.Shading;
 using Appalachia.Jobs;
@@ -23,6 +23,7 @@ using Appalachia.Simulation.Wind;
 using Appalachia.Utility.Async;
 using Appalachia.Utility.Extensions;
 using Appalachia.Utility.Strings;
+using Appalachia.Utility.Timing;
 using Sirenix.OdinInspector;
 using Unity.Burst;
 using Unity.Jobs;
@@ -234,7 +235,7 @@ namespace Appalachia.Simulation.Buoyancy
                     var vec = t.position;
                     vec.y = _water.GetWorldHeightAt(vec) + buoyancyData.waterLevelOffset;
                     t.position = vec;
-                    t.up = Vector3.Slerp(t.up, Vector3.up, Time.deltaTime);
+                    t.up = Vector3.Slerp(t.up, Vector3.up, CoreClock.Instance.DeltaTime);
                 }
 
                 UpdateAllInstancedProperties();

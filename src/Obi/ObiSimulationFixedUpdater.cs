@@ -1,4 +1,5 @@
 using Appalachia.Simulation.Core;
+using Appalachia.Utility.Timing;
 using Obi;
 using UnityEngine;
 
@@ -25,15 +26,15 @@ namespace Appalachia.Simulation.Obi
         private void Update()
         {
             ObiProfiler.EnableProfiler();
-            Interpolate(Time.fixedDeltaTime, accumulatedTime);
+            Interpolate(CoreClock.Instance.FixedDeltaTime, accumulatedTime);
             ObiProfiler.DisableProfiler();
 
-            accumulatedTime += Time.deltaTime;
+            accumulatedTime += CoreClock.Instance.DeltaTime;
         }
 
         private void FixedUpdate()
         {
-            FixedUpdate(Time.fixedDeltaTime);
+            FixedUpdate(CoreClock.Instance.FixedDeltaTime);
         }
 
         private void FixedUpdate(float deltaTime)

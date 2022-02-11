@@ -1,8 +1,8 @@
 using System;
 using System.Diagnostics;
 using Appalachia.Core.Attributes.Editing;
-using Appalachia.Core.Extensions;
 using Appalachia.Utility.Extensions;
+using Appalachia.Utility.Timing;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -23,7 +23,7 @@ namespace Appalachia.Simulation.Physical
 
         public PositiongDataInstant(Rigidbody body, float4x4 ltw)
         {
-            time = Time.time;
+            time = CoreClock.Instance.Time;
             localToWorld = ltw;
             position = body.position;
             rotation = body.rotation;

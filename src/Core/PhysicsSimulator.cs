@@ -5,6 +5,7 @@
 using Appalachia.Core.Attributes;
 using Appalachia.Utility.Constants;
 using Appalachia.Utility.Execution;
+using Appalachia.Utility.Timing;
 using Unity.Profiling;
 using UnityEngine;
 
@@ -79,14 +80,14 @@ namespace Appalachia.Simulation.Core
                     return;
                 }
 
-                _elapsed += Time.deltaTime;
+                _elapsed += CoreClock.Instance.DeltaTime;
                 _frames += 1;
 
-                if (_elapsed >= Time.fixedDeltaTime)
+                if (_elapsed >= CoreClock.Instance.FixedDeltaTime)
                 {
                     Physics.autoSimulation = false;
-                    onSimulationUpdate?.Invoke(Time.fixedDeltaTime);
-                    Physics.Simulate(Time.fixedDeltaTime);
+                    onSimulationUpdate?.Invoke(CoreClock.Instance.FixedDeltaTime);
+                    Physics.Simulate(CoreClock.Instance.FixedDeltaTime);
 
                     _elapsed = 0;
                     _hits += 1;

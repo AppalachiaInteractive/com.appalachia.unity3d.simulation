@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Appalachia.Simulation.ReactionSystem.Base;
+using Appalachia.Utility.Timing;
 using Unity.Profiling;
 using UnityEngine;
 
@@ -57,7 +58,7 @@ namespace Appalachia.Simulation.ReactionSystem.Cameras
                             throw new NotSupportedException("Set frame interval!");
                         }
 
-                        return ((Time.frameCount + centerIndex) % frameInterval) == 0;
+                        return ((CoreClock.Instance.FrameCount + centerIndex) % frameInterval) == 0;
 
                     default:
                         throw new ArgumentOutOfRangeException(
@@ -92,7 +93,7 @@ namespace Appalachia.Simulation.ReactionSystem.Cameras
                             throw new NotSupportedException("Set frame interval!");
                         }
 
-                        return ((Time.frameCount + cameraIndex) % frameInterval) == 0;
+                        return ((CoreClock.Instance.FrameCount + cameraIndex) % frameInterval) == 0;
 
                     default:
                         throw new ArgumentOutOfRangeException(

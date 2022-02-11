@@ -5,6 +5,7 @@ using Appalachia.Core.Objects.Root;
 using Appalachia.Simulation.Trees.Build.Execution;
 using Appalachia.Simulation.Trees.Build.Requests;
 using Appalachia.Utility.Strings;
+using Appalachia.Utility.Timing;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Build.Cost
@@ -28,8 +29,11 @@ namespace Appalachia.Simulation.Trees.Build.Cost
         public BuildResult buildResult => _buildResult;
         
         public float buildCompleteTime;
-        
-        public float timeSinceBuildComplete => buildResult == BuildResult.InProgress ? 0f : Time.realtimeSinceStartup - buildCompleteTime;
+
+        public float timeSinceBuildComplete =>
+            buildResult == BuildResult.InProgress
+                ? 0f
+                : CoreClock.Instance.RealtimeSinceStartup - buildCompleteTime;
 
         public float buildProgress => _buildCost == 0 ? 0 : _buildCompleted / _buildCost;
         
@@ -43,7 +47,7 @@ namespace Appalachia.Simulation.Trees.Build.Cost
         {
             using (BUILD_TIME.BUILD_PRG_TRCK.InitializeBuildBatch.Auto())
             {
-                _startTime = Time.realtimeSinceStartup;
+                _startTime = CoreClock.Instance.RealtimeSinceStartup;
                 _buildResult = BuildResult.InProgress;
             }
         }
@@ -191,7 +195,7 @@ namespace Appalachia.Simulation.Trees.Build.Cost
                 CompleteBuild();
 
                 _buildResult = successful ? BuildResult.Success : BuildResult.Error;
-                buildCompleteTime = Time.realtimeSinceStartup;
+                buildCompleteTime = CoreClock.Instance.RealtimeSinceStartup;
                 
                 SetBuildMessage();
             }
@@ -204,13 +208,13 @@ namespace Appalachia.Simulation.Trees.Build.Cost
                 case BuildResult.Success:
                     _buildMessage = ZString.Format(
                         "SUCCESS:  {0:##.000} seconds",
-                        Time.realtimeSinceStartup - _startTime
+                        CoreClock.Instance.RealtimeSinceStartup - _startTime
                     );
                     break;
                 case BuildResult.Error:
                     _buildMessage = ZString.Format(
                         "FAILURE:  {0:##.000} seconds",
-                        Time.realtimeSinceStartup - _startTime
+                        CoreClock.Instance.RealtimeSinceStartup - _startTime
                     );
                     break;
                 case BuildResult.InProgress:
@@ -232,7 +236,7 @@ namespace Appalachia.Simulation.Trees.Build.Cost
                         friendly,
                         _categoryConsumed[category],
                         _categoryCounts[category],
-                        Time.realtimeSinceStartup - _startTime
+                        CoreClock.Instance.RealtimeSinceStartup - _startTime
                     );
                     
                     break;
@@ -244,7 +248,7 @@ namespace Appalachia.Simulation.Trees.Build.Cost
 
         public void Validate()
         {
-            var duration = Time.realtimeSinceStartup - _startTime;
+            var duration = CoreClock.Instance.RealtimeSinceStartup - _startTime;
 
             if ((duration > 10) && (_buildCost == 0))
             {

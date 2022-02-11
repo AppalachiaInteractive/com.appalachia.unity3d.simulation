@@ -5,7 +5,7 @@
 using System;
 using Appalachia.CI.Integration.Assets;
 using Appalachia.Core.Attributes.Editing;
-using Appalachia.Core.Filtering;
+using Appalachia.Core.Objects.Filtering;
 using Appalachia.Core.Objects.Initialization;
 using Appalachia.Core.Preferences.Globals;
 using Appalachia.Editing.Debugging.Handle;

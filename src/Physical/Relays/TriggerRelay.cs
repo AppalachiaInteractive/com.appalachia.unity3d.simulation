@@ -1,6 +1,6 @@
 #region
 
-using Appalachia.Core.Filtering;
+using Appalachia.Core.Objects.Filtering;
 using UnityEngine;
 
 #endregion

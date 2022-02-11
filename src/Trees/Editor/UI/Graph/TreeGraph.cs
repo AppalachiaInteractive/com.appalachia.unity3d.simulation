@@ -11,6 +11,7 @@ using Appalachia.Simulation.Trees.Icons;
 using Appalachia.Simulation.Trees.ResponsiveUI;
 using Appalachia.Simulation.Trees.UI.Selections.State;
 using Appalachia.Utility.Strings;
+using Appalachia.Utility.Timing;
 using UnityEditor;
 using UnityEngine;
 
@@ -290,7 +291,7 @@ namespace Appalachia.Simulation.Trees.UI.Graph
                 }
             }
 
-            buildTime = Time.realtimeSinceStartup;
+            buildTime = CoreClock.Instance.RealtimeSinceStartup;
         }
 
         public static void Draw(

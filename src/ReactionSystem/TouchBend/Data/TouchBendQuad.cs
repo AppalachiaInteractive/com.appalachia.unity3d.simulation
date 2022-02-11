@@ -4,8 +4,8 @@ using System.Linq;
 using Appalachia.CI.Integration.Assets;
 using Appalachia.Core.Attributes;
 using Appalachia.Core.Extensions;
-using Appalachia.Core.Layers;
 using Appalachia.Core.Objects.Initialization;
+using Appalachia.Core.Objects.Layers;
 using Appalachia.Core.Objects.Root;
 using Appalachia.Core.Shading;
 using Appalachia.Core.Types.Enums;
@@ -14,6 +14,7 @@ using Appalachia.Jobs.TextureJobs.Jobs.GaussianBlur;
 using Appalachia.Jobs.TextureJobs.Structures;
 using Appalachia.Utility.Async;
 using Appalachia.Utility.Strings;
+using Appalachia.Utility.Timing;
 using Sirenix.OdinInspector;
 using Unity.Jobs;
 using Unity.Profiling;
@@ -290,7 +291,7 @@ namespace Appalachia.Simulation.ReactionSystem.TouchBend.Data
                 var t = transform;
                 var p = t.position;
 
-                targetVelocity = (p - lastPosition).magnitude / Time.deltaTime;
+                targetVelocity = (p - lastPosition).magnitude / CoreClock.Instance.DeltaTime;
 
                 velocity = Mathf.Lerp(velocity, targetVelocity, velocityChangeSpeed);
                 renderMaterial.SetFloat(GSC.TOUCHBEND._VELOCITY, velocity);

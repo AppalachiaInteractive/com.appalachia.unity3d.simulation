@@ -1,5 +1,7 @@
 using System;
 using System.Linq;
+using Appalachia.Core.Events;
+using Appalachia.Core.Events.Extensions;
 using Appalachia.Simulation.Trees.Build.Execution;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -9,9 +11,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading.OutputShaders
     [Serializable]
     public sealed class OutputShaderSelection
     {
-        public delegate void shaderEventDelegate();
-
-        public event shaderEventDelegate OnShaderChanged;
+        public AppaEvent.Data OnShaderChanged;
 
         public OutputShaderSelection(IOutputMaterialShader materialShader)
         {
@@ -87,7 +87,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading.OutputShaders
                             _shaderKey = _materialShader?.Name;
                         }
 
-                        OnShaderChanged?.Invoke();
+                        OnShaderChanged.RaiseEvent();
                     };
                 }
 

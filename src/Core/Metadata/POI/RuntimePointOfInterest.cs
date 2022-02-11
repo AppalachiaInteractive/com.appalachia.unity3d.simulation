@@ -1,5 +1,5 @@
 using System;
-using Appalachia.Core.Layers;
+using Appalachia.Core.Objects.Layers;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Core.Metadata.POI

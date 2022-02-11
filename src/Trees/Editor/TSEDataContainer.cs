@@ -114,7 +114,7 @@ namespace Appalachia.Simulation.Trees
 
         public abstract void SetDirtyStates();
 
-        public new abstract void SettingsChanged(SettingsUpdateTarget target);
+        public abstract void SettingsChanged(SettingsUpdateTarget target);
 
         [DebuggerStepThrough]
         public override string ToString()
