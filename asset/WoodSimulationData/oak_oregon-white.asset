@@ -12,11 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebc057f721a531a4992e9e7eea91f2b2, type: 3}
   m_Name: oak_oregon-white
   m_EditorClassIdentifier: 
-  _cachedName: 
-  _niceName: 
+  _cachedName: oak_oregon-white
+  _niceName: Oak_oregon-white
   _initializer:
     _tags: []
     _resetToken: 
+  _objectId:
+    _increment: 12632101
+    _machine: 14129404
+    _timestamp: 1645121938
+    _pid: -14768
   id: 134
   _category: Oak
   densityMetadata: {fileID: 11400000, guid: 7b7a7b901548d614b8d0bc8f110f70d8, type: 2}

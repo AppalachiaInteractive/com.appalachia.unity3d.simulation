@@ -12,11 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 773aa34ad01d5be41af9e052481587f0, type: 3}
   m_Name: linden
   m_EditorClassIdentifier: 
-  _cachedName: 
-  _niceName: 
+  _cachedName: linden
+  _niceName: Linden
   _initializer:
     _tags: []
     _resetToken: 
+  _objectId:
+    _increment: 12632128
+    _machine: 14129404
+    _timestamp: 1645121947
+    _pid: -14768
   id: 19
   speciesName: 
   woodData: {fileID: 11400000, guid: 5ade21c9a93477044b281d0d8d9e16d8, type: 2}

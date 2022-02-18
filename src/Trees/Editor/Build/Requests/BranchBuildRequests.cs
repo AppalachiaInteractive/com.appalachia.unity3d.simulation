@@ -9,13 +9,123 @@ namespace Appalachia.Simulation.Trees.Build.Requests
     [Serializable]
     public class BranchBuildRequests : BuildRequest
     {
+        #region Fields and Autoproperties
+
+        [SerializeField] private BuildRequestLevel _ambientOcclusion = BuildRequestLevel.None;
+        [SerializeField] private BuildRequestLevel _distribution = BuildRequestLevel.None;
+        [SerializeField] private BuildRequestLevel _geometry = BuildRequestLevel.None;
         [SerializeField] private BuildRequestLevel _materialGeneration = BuildRequestLevel.None;
         [SerializeField] private BuildRequestLevel _materialProperties = BuildRequestLevel.None;
-        [SerializeField] private BuildRequestLevel _distribution = BuildRequestLevel.None;
         [SerializeField] private BuildRequestLevel _uv = BuildRequestLevel.None;
-        [SerializeField] private BuildRequestLevel _geometry = BuildRequestLevel.None;
-        [SerializeField] private BuildRequestLevel _ambientOcclusion = BuildRequestLevel.None;
-        
+
+        #endregion
+
+        /// <inheritdoc />
+        public override BuildRequestLevel requestLevel
+        {
+            get
+            {
+                using (BUILD_TIME.SPC_BUILD_REQ.BuildLevel.Auto())
+                {
+                    var rqst = BuildRequestLevel.None;
+
+                    rqst = rqst.Max(materialGeneration);
+                    if (rqst == BuildRequestLevel.InitialPass)
+                    {
+                        return rqst;
+                    }
+
+                    rqst = rqst.Max(materialProperties);
+                    if (rqst == BuildRequestLevel.InitialPass)
+                    {
+                        return rqst;
+                    }
+
+                    rqst = rqst.Max(distribution);
+                    if (rqst == BuildRequestLevel.InitialPass)
+                    {
+                        return rqst;
+                    }
+
+                    rqst = rqst.Max(uv);
+                    if (rqst == BuildRequestLevel.InitialPass)
+                    {
+                        return rqst;
+                    }
+
+                    rqst = rqst.Max(geometry);
+                    if (rqst == BuildRequestLevel.InitialPass)
+                    {
+                        return rqst;
+                    }
+
+                    rqst = rqst.Max(ambientOcclusion);
+                    if (rqst == BuildRequestLevel.InitialPass)
+                    {
+                        return rqst;
+                    }
+
+                    return rqst;
+                }
+            }
+        }
+
+        public BuildRequestLevel ambientOcclusion
+        {
+            get => _ambientOcclusion.Max(geometry);
+            set
+            {
+                if (value == BuildRequestLevel.None)
+                {
+                    _ambientOcclusion = BuildRequestLevel.None;
+                }
+
+                if (value < _ambientOcclusion)
+                {
+                    return;
+                }
+
+                _ambientOcclusion = value;
+            }
+        }
+
+        public BuildRequestLevel distribution
+        {
+            get => _distribution;
+            set
+            {
+                if (value == BuildRequestLevel.None)
+                {
+                    _distribution = BuildRequestLevel.None;
+                }
+
+                if (value < _distribution)
+                {
+                    return;
+                }
+
+                _distribution = value;
+            }
+        }
+
+        public BuildRequestLevel geometry
+        {
+            get => _geometry;
+            set
+            {
+                if (value == BuildRequestLevel.None)
+                {
+                    _geometry = BuildRequestLevel.None;
+                }
+
+                if (value < _geometry)
+                {
+                    return;
+                }
+
+                _geometry = value;
+            }
+        }
 
         public BuildRequestLevel materialGeneration
         {
@@ -26,8 +136,12 @@ namespace Appalachia.Simulation.Trees.Build.Requests
                 {
                     _materialGeneration = BuildRequestLevel.None;
                 }
-                if (value < _materialGeneration) return;
-                
+
+                if (value < _materialGeneration)
+                {
+                    return;
+                }
+
                 _materialGeneration = value;
             }
         }
@@ -41,24 +155,13 @@ namespace Appalachia.Simulation.Trees.Build.Requests
                 {
                     _materialProperties = BuildRequestLevel.None;
                 }
-                if (value < _materialProperties) return;
-                
-                _materialProperties = value;
-            }
-        }
 
-        public BuildRequestLevel distribution
-        {
-            get => _distribution;
-            set
-            {
-                if (value == BuildRequestLevel.None)
+                if (value < _materialProperties)
                 {
-                    _distribution = BuildRequestLevel.None;
+                    return;
                 }
-                if (value < _distribution) return;
-                
-                _distribution = value;
+
+                _materialProperties = value;
             }
         }
 
@@ -71,76 +174,19 @@ namespace Appalachia.Simulation.Trees.Build.Requests
                 {
                     _uv = BuildRequestLevel.None;
                 }
-                if (value < _uv) return;
-                
+
+                if (value < _uv)
+                {
+                    return;
+                }
+
                 _uv = value;
             }
         }
-        
-        public BuildRequestLevel geometry
-        {
-            get => _geometry;
-            set
-            {
-                if (value == BuildRequestLevel.None)
-                {
-                    _geometry = BuildRequestLevel.None;
-                }
-                if (value < _geometry) return;
-                
-                _geometry = value;
-            }
-        }
-        
-        public BuildRequestLevel ambientOcclusion
-        {
-            get =>_ambientOcclusion.Max(geometry);
-            set
-            {
-                if (value == BuildRequestLevel.None)
-                {
-                    _ambientOcclusion = BuildRequestLevel.None;
-                }
-                if (value < _ambientOcclusion) return;
-                
-                _ambientOcclusion = value;
-            }
-        }
-  
-        public override BuildRequestLevel requestLevel
-        {
-            get
-            {
-                using (BUILD_TIME.SPC_BUILD_REQ.BuildLevel.Auto())
-                {
-                    BuildRequestLevel rqst = BuildRequestLevel.None;
 
-                    rqst = rqst.Max(materialGeneration);
-                    if (rqst == BuildRequestLevel.InitialPass) return rqst;
-
-                    rqst = rqst.Max(materialProperties);
-                    if (rqst == BuildRequestLevel.InitialPass) return rqst;
-
-                    rqst = rqst.Max(distribution);
-                    if (rqst == BuildRequestLevel.InitialPass) return rqst;
-
-                    rqst = rqst.Max(uv);
-                    if (rqst == BuildRequestLevel.InitialPass) return rqst;
-
-                    rqst = rqst.Max(geometry);
-                    if (rqst == BuildRequestLevel.InitialPass) return rqst;
-
-                    rqst = rqst.Max(ambientOcclusion);
-                    if (rqst == BuildRequestLevel.InitialPass) return rqst;
-
-                    return rqst;
-                }
-            }
-        }
-        
+        /// <inheritdoc />
         public override IEnumerable<BuildCost> GetBuildCosts(BuildRequestLevel level)
         {
-
             if (materialGeneration >= level)
             {
                 yield return new BuildCost(BuildCategory.MaterialGeneration);
@@ -160,7 +206,7 @@ namespace Appalachia.Simulation.Trees.Build.Requests
             {
                 yield return new BuildCost(BuildCategory.UV);
             }
-            
+
             if (geometry >= level)
             {
                 yield return new BuildCost(BuildCategory.HighQualityGeometry);
@@ -174,13 +220,14 @@ namespace Appalachia.Simulation.Trees.Build.Requests
             {
                 yield return new BuildCost(BuildCategory.AmbientOcclusion);
             }
-            
+
             if (ShouldBuildMesh(level))
             {
                 yield return new BuildCost(BuildCategory.Mesh);
             }
         }
 
+        /// <inheritdoc />
         public override bool ShouldBuild(BuildCategory category, BuildRequestLevel level)
         {
             switch (category)
@@ -194,7 +241,7 @@ namespace Appalachia.Simulation.Trees.Build.Requests
                 case BuildCategory.UV:
                     return uv >= level;
                 case BuildCategory.HighQualityGeometry:
-                    return  geometry >= level;
+                    return geometry >= level;
                 case BuildCategory.AmbientOcclusion:
                     return ambientOcclusion >= level;
                 default:
@@ -202,31 +249,58 @@ namespace Appalachia.Simulation.Trees.Build.Requests
             }
         }
 
-        protected override void SetAllFromTo(BuildRequestLevel from, BuildRequestLevel to)
-        {
-            if (_materialGeneration == from) _materialGeneration = to;
-            if (_materialProperties == from) _materialProperties = to;
-            if (_distribution == from) _distribution = to;
-            if (_uv == from) _uv = to;
-            if (_geometry == from) _geometry = to;
-            if (_ambientOcclusion == from) _ambientOcclusion = to;
-        }
-
         public bool ShouldBuildGeometry(BuildRequestLevel level)
         {
-            if (geometry == level) return true;
-            
+            if (geometry == level)
+            {
+                return true;
+            }
+
             return false;
         }
 
         public bool ShouldBuildLowQualityGeometry(BuildRequestLevel level)
         {
-            return ((distribution == level) && (level > geometry));
+            return (distribution == level) && (level > geometry);
         }
-        
+
         public bool ShouldBuildMesh(BuildRequestLevel level)
         {
             return requestLevel == level;
+        }
+
+        /// <inheritdoc />
+        protected override void SetAllFromTo(BuildRequestLevel from, BuildRequestLevel to)
+        {
+            if (_materialGeneration == from)
+            {
+                _materialGeneration = to;
+            }
+
+            if (_materialProperties == from)
+            {
+                _materialProperties = to;
+            }
+
+            if (_distribution == from)
+            {
+                _distribution = to;
+            }
+
+            if (_uv == from)
+            {
+                _uv = to;
+            }
+
+            if (_geometry == from)
+            {
+                _geometry = to;
+            }
+
+            if (_ambientOcclusion == from)
+            {
+                _ambientOcclusion = to;
+            }
         }
     }
 }

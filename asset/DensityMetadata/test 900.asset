@@ -12,12 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27f402b5f299425b8811f4aa1879a37f, type: 3}
   m_Name: test 900
   m_EditorClassIdentifier: 
-  _cachedName: 
-  _niceName: 
+  _cachedName: test 900
+  _niceName: Test 900
   _initializer:
     _tags:
     - profileName
     _resetToken: 
+  _objectId:
+    _increment: 12632102
+    _machine: 14129404
+    _timestamp: 1645121938
+    _pid: -14768
   id: 233
   profileName: test 900
   _category: _Test

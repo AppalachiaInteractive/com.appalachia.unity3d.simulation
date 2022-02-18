@@ -9,10 +9,10 @@ namespace Appalachia.Simulation.Buoyancy.Data
     public class BuoyancyDataCollection : AppalachiaObjectLookupCollection<string, BuoyancyData, stringList,
         BuoyancyDataList, BuoyancyDataLookup, BuoyancyDataCollection>
     {
-        
-        
+        /// <inheritdoc />
         public override bool HasDefault => false;
 
+        /// <inheritdoc />
         protected override string GetUniqueKeyFromValue(BuoyancyData value)
         {
             return value.meshGUID;

@@ -2,9 +2,7 @@ using System;
 using Appalachia.CI.Integration.Assets;
 using Appalachia.Simulation.Trees.Core.Settings;
 using Appalachia.Simulation.Trees.ResponsiveUI;
-using Appalachia.Utility.Extensions;
 using Sirenix.OdinInspector;
-using UnityEditor;
 
 namespace Appalachia.Simulation.Trees.Settings
 {
@@ -12,6 +10,28 @@ namespace Appalachia.Simulation.Trees.Settings
     [Title("Mesh & Prefab Generation", TitleAlignment = TitleAlignments.Centered)]
     public class MeshSettings : ResponsiveSettings
     {
+        public MeshSettings(ResponsiveSettingsType settingsType) : base(settingsType)
+        {
+        }
+
+        #region Fields and Autoproperties
+
+        [PropertyTooltip("Should normals be recalculated when producing the mesh?")]
+        [HorizontalGroup("B")]
+        [InfoBox("Recalculate Normals", InfoMessageType.None), HideLabel]
+        [OnValueChanged(nameof(MeshSettingsChanged))]
+
+        //[ToggleLeft]
+        public bool recalculateNormals;
+
+        [PropertyTooltip("Should tangents be recalculated when producing the mesh?")]
+        [HorizontalGroup("B")]
+        [InfoBox("Recalculate Tangents", InfoMessageType.None), HideLabel]
+        [OnValueChanged(nameof(MeshSettingsChanged))]
+
+        //[ToggleLeft]
+        public bool recalculateTangents;
+
         [PropertyTooltip("The normal value to use when generating leaf billboards.")]
         [PropertyRange(0f, 1f)]
         [HorizontalGroup("A", .5f)]
@@ -27,20 +47,6 @@ namespace Appalachia.Simulation.Trees.Settings
         public float generatedPlaneNormalFactor = 0.8f;
 
         [PropertyTooltip("Should normals be recalculated when producing the mesh?")]
-        [HorizontalGroup("B")]
-        [InfoBox("Recalculate Normals", InfoMessageType.None), HideLabel]
-        [OnValueChanged(nameof(MeshSettingsChanged))]
-        //[ToggleLeft]
-        public bool recalculateNormals;
-
-        [PropertyTooltip("Should tangents be recalculated when producing the mesh?")]
-        [HorizontalGroup("B")]
-        [InfoBox("Recalculate Tangents", InfoMessageType.None), HideLabel]
-        [OnValueChanged(nameof(MeshSettingsChanged))]
-        //[ToggleLeft]
-        public bool recalculateTangents;
-        
-        [PropertyTooltip("Should normals be recalculated when producing the mesh?")]
         [PropertyRange(0f, 179f)]
         [HorizontalGroup("C")]
         [InfoBox("Hard Edge Angle", InfoMessageType.None), HideLabel]
@@ -55,10 +61,10 @@ namespace Appalachia.Simulation.Trees.Settings
         [OnValueChanged(nameof(MeshSettingsChanged))]
         [EnableIf(nameof(recalculateNormals))]
         public int groupingScale = 100000;
-        
-        public MeshSettings(ResponsiveSettingsType settingsType) : base(settingsType)
-        {
-        }
+
+        #endregion
+
+        /// <inheritdoc />
         public override void CopySettingsTo(ResponsiveSettings t)
         {
             if (t is MeshSettings cast)
@@ -70,7 +76,9 @@ namespace Appalachia.Simulation.Trees.Settings
                 cast.generatedBillboardNormalFactor = generatedBillboardNormalFactor;
                 cast.generatedPlaneNormalFactor = generatedPlaneNormalFactor;
             }
-        }[Button]
+        }
+
+        [Button]
         public void PushToAll()
         {
             var trees = AssetDatabaseManager.FindAssets("t:TreeDataContainer");

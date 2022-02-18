@@ -171,6 +171,7 @@ namespace Appalachia.Simulation.Physical.Integration
 #endif
         }
 
+        /// <inheritdoc />
         protected override async AppaTask Initialize(Initializer initializer)
         {
             await base.Initialize(initializer);

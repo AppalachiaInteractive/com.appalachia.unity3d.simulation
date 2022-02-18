@@ -1,23 +1,30 @@
-using System.Collections.Generic;
 using Appalachia.Simulation.ReactionSystem.Base;
 using Appalachia.Simulation.ReactionSystem.Cameras;
 using UnityEngine;
 
 namespace Appalachia.Simulation.ReactionSystem.Terrains
 {
-    public class GrassDepressionCamera : ReactionSubsystemSingleCameraSingleLocation
+    public class GrassDepressionCamera : ReactionSubsystemSingleCameraSingleLocation<GrassDepressionCamera>
     {
-        private const string _systemName = "TERRAIN_GRASS_DEPRESSION";
+        #region Constants and Static Readonly
 
-        protected override string SubsystemName => _systemName;
+        private const string SYSTEM_NAME = "TERRAIN_GRASS_DEPRESSION";
 
+        #endregion
+
+        /// <inheritdoc />
         public override bool AutomaticRender => true;
 
+        /// <inheritdoc />
+        protected override string SubsystemName => SYSTEM_NAME;
+
+        /// <inheritdoc />
         public override bool IsManualRenderingRequired(SubsystemCameraComponent cam)
         {
             return false;
         }
 
+        /// <inheritdoc />
         protected override void OnBeforeInitialization()
         {
             var terrains = FindObjectsOfType<Terrain>();
@@ -40,18 +47,16 @@ namespace Appalachia.Simulation.ReactionSystem.Terrains
                     otherTerrain.transform.lossyScale
                 );
 
-                if (terrainCenter.subsystems == null)
-                {
-                    terrainCenter.subsystems = new List<ReactionSubsystemBase>();
-                }
-
-                if (!terrainCenter.subsystems.Contains(this))
-                {
-                    terrainCenter.subsystems.Add(this);
-                }
+                terrainCenter.EnsureSubsystemIsAdded(this);
             }
         }
 
+        /// <inheritdoc />
+        protected override void OnInitializationComplete()
+        {
+        }
+
+        /// <inheritdoc />
         protected override void OnInitializationStart()
         {
             var terrains = FindObjectsOfType<Terrain>();
@@ -63,15 +68,11 @@ namespace Appalachia.Simulation.ReactionSystem.Terrains
                 var terrain = terrains[0];
                 var terrainData = terrain.terrainData;
 
-                Group.orthographicSize =
-                    (int) (terrainData.bounds.extents.x * terrain.transform.lossyScale.x);
+                Group.orthographicSize = (int)(terrainData.bounds.extents.x * terrain.transform.lossyScale.x);
             }
         }
 
-        protected override void OnInitializationComplete()
-        {
-        }
-
+        /// <inheritdoc />
         protected override void OnRenderComplete()
         {
         }

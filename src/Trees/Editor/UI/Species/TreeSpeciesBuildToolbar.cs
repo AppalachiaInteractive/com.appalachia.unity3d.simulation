@@ -6,7 +6,11 @@ namespace Appalachia.Simulation.Trees.UI.Species
 {
     public class TreeSpeciesBuildToolbar : BaseBuildToolbar<TreeDataContainer>
     {
+        #region Static Fields and Autoproperties
+
         private static TreeSpeciesBuildToolbar _instance;
+
+        #endregion
 
         public static TreeSpeciesBuildToolbar instance
         {
@@ -21,48 +25,58 @@ namespace Appalachia.Simulation.Trees.UI.Species
             }
         }
 
-        protected override QualityMode GetQuality(TreeDataContainer data)
-        {
-            return data.settings.qualityMode;
-        }
-
-        protected override void SetQuality(TreeDataContainer data, QualityMode mode)
-        {
-            data.settings.qualityMode = mode;
-        }
-
-        protected override void Full()
-        {
-            TreeBuildRequestManager.Full();
-        }
-
-        protected override void Default()
-        {
-            TreeBuildRequestManager.Default();
-        }
-
-        protected override void TextureOnly()
-        {
-            TreeBuildRequestManager.TextureOnly();
-        }
-
+        /// <inheritdoc />
         protected override bool SupportsColliderOnly => true;
 
+        /// <inheritdoc />
+        protected override bool SupportsImpostorOnly => true;
+
+        /// <inheritdoc />
         protected override void CollidersOnly()
         {
             TreeBuildRequestManager.CollidersOnly();
         }
 
-        protected override bool SupportsImpostorOnly => true;
+        /// <inheritdoc />
+        protected override void Default()
+        {
+            TreeBuildRequestManager.Default();
+        }
 
+        /// <inheritdoc />
+        protected override void ForceFull()
+        {
+            TreeBuildRequestManager.ForceFull();
+        }
+
+        /// <inheritdoc />
+        protected override void Full()
+        {
+            TreeBuildRequestManager.Full();
+        }
+
+        /// <inheritdoc />
+        protected override QualityMode GetQuality(TreeDataContainer data)
+        {
+            return data.settings.qualityMode;
+        }
+
+        /// <inheritdoc />
         protected override void ImpostorsOnly()
         {
             TreeBuildRequestManager.ImpostorsOnly();
         }
 
-        protected override void ForceFull()
+        /// <inheritdoc />
+        protected override void SetQuality(TreeDataContainer data, QualityMode mode)
         {
-            TreeBuildRequestManager.ForceFull();
+            data.settings.qualityMode = mode;
+        }
+
+        /// <inheritdoc />
+        protected override void TextureOnly()
+        {
+            TreeBuildRequestManager.TextureOnly();
         }
     }
 }

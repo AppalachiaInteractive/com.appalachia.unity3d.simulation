@@ -116,6 +116,7 @@ namespace Appalachia.Simulation.Trees
 
         public abstract void SettingsChanged(SettingsUpdateTarget target);
 
+        /// <inheritdoc />
         [DebuggerStepThrough]
         public override string ToString()
         {
@@ -129,6 +130,7 @@ namespace Appalachia.Simulation.Trees
             return GetNameBasis().friendlyName;
         }
 
+        /// <inheritdoc />
         public override void UpdateSettingsType(ResponsiveSettingsType t)
         {
             using (_PRF_UpdateSettingsType.Auto())
@@ -161,6 +163,7 @@ namespace Appalachia.Simulation.Trees
 
         protected abstract void SaveAllAssets(bool saveImpostors);
 
+        /// <inheritdoc />
         protected override async AppaTask Initialize(Initializer initializer)
         {
             await base.Initialize(initializer);

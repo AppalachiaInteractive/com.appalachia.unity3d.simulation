@@ -11,7 +11,9 @@ namespace Appalachia.Simulation.Trees.UI.Selections.State
     {
         static LogSelection()
         {
-            RegisterInstanceCallbacks.WithoutSorting().When.Object<LogDataContainerSelection>().IsAvailableThen( i => _logDataContainerSelection = i);
+            RegisterInstanceCallbacks.WithoutSorting()
+                                     .When.Object<LogDataContainerSelection>()
+                                     .IsAvailableThen(i => _logDataContainerSelection = i);
         }
 
         #region Static Fields and Autoproperties
@@ -20,6 +22,7 @@ namespace Appalachia.Simulation.Trees.UI.Selections.State
 
         #endregion
 
+        /// <inheritdoc />
         public override LogDataContainerSelection selection
         {
             get

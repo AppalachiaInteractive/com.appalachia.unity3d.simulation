@@ -1,8 +1,10 @@
+using System;
 using Appalachia.Core.Objects.Root;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Generation.Texturing.Specifications
 {
+    [Serializable]
     public class TexturePixel : AppalachiaSimpleBase
     {
         #region Fields and Autoproperties

@@ -67,21 +67,6 @@ namespace Appalachia.Simulation.Trees.UI.Selections.Dropdown
             }
         }
 
-        #region Event Functions
-
-        protected override async AppaTask WhenEnabled()
-        {
-            if (AppalachiaApplication.IsPlayingOrWillPlay)
-            {
-                return;
-            }
-
-            await base.WhenEnabled();
-            Refresh();
-        }
-
-        #endregion
-
         public void Refresh()
         {
             var searchString = ZString.Format("t: {0}", typeof(T).GetReadableName());
@@ -110,6 +95,18 @@ namespace Appalachia.Simulation.Trees.UI.Selections.Dropdown
             }
 
             _selected = t;
+            Refresh();
+        }
+
+        /// <inheritdoc />
+        protected override async AppaTask WhenEnabled()
+        {
+            if (AppalachiaApplication.IsPlayingOrWillPlay)
+            {
+                return;
+            }
+
+            await base.WhenEnabled();
             Refresh();
         }
     }

@@ -6,32 +6,70 @@ using Appalachia.Simulation.Trees.Core.Shape;
 
 namespace Appalachia.Simulation.Trees.Shape.Collections
 {
-
     [Serializable]
     public class LogShapes : ShapeCollection<LogShapes>
     {
-        public List<TrunkShapeData> trunkShapes;
-        public List<BranchShapeData> branchShapes;
-
         public LogShapes()
         {
             trunkShapes = new List<TrunkShapeData>();
             branchShapes = new List<BranchShapeData>();
         }
 
+        #region Fields and Autoproperties
+
+        public List<BranchShapeData> branchShapes;
+        public List<TrunkShapeData> trunkShapes;
+
+        #endregion
+
+        /// <inheritdoc />
+        public override IList this[int i]
+        {
+            get
+            {
+                if ((i < 0) || (i > 1))
+                {
+                    throw new IndexOutOfRangeException("Range must be between 0 and 3");
+                }
+
+                if (i == 0)
+                {
+                    return trunkShapes;
+                }
+
+                return branchShapes;
+            }
+        }
+
+        /// <inheritdoc />
+        public override void CopyPropertiesToClone(LogShapes clone)
+        {
+            clone.branchShapes = branchShapes;
+            clone.trunkShapes = trunkShapes;
+        }
+
+        /// <inheritdoc />
         public override IEnumerator<ShapeData> GetEnumerator()
         {
             foreach (var shape in trunkShapes)
             {
                 yield return shape;
             }
+
             foreach (var shape in branchShapes)
             {
                 yield return shape;
             }
         }
-        
 
+        /// <inheritdoc />
+        protected override void ClearInternal()
+        {
+            trunkShapes.Clear();
+            branchShapes.Clear();
+        }
+
+        /// <inheritdoc />
         protected override ShapeData CreateNewShape(
             TreeComponentType type,
             int hierarchyID,
@@ -59,14 +97,15 @@ namespace Appalachia.Simulation.Trees.Shape.Collections
 
                     byHierarchyID[hierarchyID].Add(branch);
                     byHierarchyIDAndParentID[hierarchyID][parentShapeID].Add(branch);
-                    
+
                     return branch;
 
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }
         }
-        
+
+        /// <inheritdoc />
         protected override IEnumerable<ShapeData> GetShapesInternal(TreeComponentType type)
         {
             switch (type)
@@ -79,7 +118,8 @@ namespace Appalachia.Simulation.Trees.Shape.Collections
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }
         }
-        
+
+        /// <inheritdoc />
         protected override void RemoveShape(ShapeData shape)
         {
             switch (shape.type)
@@ -93,32 +133,6 @@ namespace Appalachia.Simulation.Trees.Shape.Collections
                 default:
                     throw new ArgumentOutOfRangeException(nameof(shape.type), shape.type, null);
             }
-        }
-
-        public override void CopyPropertiesToClone(LogShapes clone)
-        {
-            clone.branchShapes = branchShapes;
-            clone.trunkShapes = trunkShapes;
-        }
-
-        public override IList this[int i]
-        {
-            get
-            {
-                if ((i < 0) || (i > 1))
-                {
-                    throw new IndexOutOfRangeException("Range must be between 0 and 3");
-                }
-
-                if (i == 0) return trunkShapes;
-                return branchShapes;
-            }
-        }
-
-        protected override void ClearInternal()
-        {
-            trunkShapes.Clear();
-            branchShapes.Clear();
         }
     }
 }

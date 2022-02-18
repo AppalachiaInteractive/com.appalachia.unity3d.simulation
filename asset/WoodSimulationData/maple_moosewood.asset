@@ -17,6 +17,11 @@ MonoBehaviour:
   _initializer:
     _tags: []
     _resetToken: 
+  _objectId:
+    _increment: 0
+    _machine: 0
+    _timestamp: 0
+    _pid: 0
   id: 49
   _category: Maple
   densityMetadata: {fileID: 11400000, guid: c22ffc62bc7813a4faa3a3b9cc5ad62b, type: 2}

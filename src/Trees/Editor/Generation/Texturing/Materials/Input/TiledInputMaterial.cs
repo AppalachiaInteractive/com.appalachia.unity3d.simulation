@@ -19,13 +19,22 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Input
 
         #endregion
 
+        /// <inheritdoc />
         public override bool eligibleAsBranch => true;
+
+        /// <inheritdoc />
         public override bool eligibleAsBreak => _eligibleAsBreak;
+
+        /// <inheritdoc />
         public override bool eligibleAsFrond => false;
+
+        /// <inheritdoc />
         public override bool eligibleAsLeaf => false;
 
+        /// <inheritdoc />
         public override MaterialContext MaterialContext => MaterialContext.TiledInputMaterial;
 
+        /// <inheritdoc />
         public override Rect GetRect(Vector2 inputSize, Vector2 outputSize)
         {
             var scale = outputSize / inputSize;

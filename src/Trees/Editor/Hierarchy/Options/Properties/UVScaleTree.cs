@@ -10,6 +10,14 @@ namespace Appalachia.Simulation.Trees.Hierarchy.Options.Properties
         {
         }
 
+        /// <inheritdoc />
+        public override UVScale CloneElement(UVScale model)
+        {
+            return model.Clone();
+        }
+
+        #region ICloneable<UVScaleTree> Members
+
         public UVScaleTree Clone()
         {
             var clone = new UVScaleTree(CloneElement(defaultValue));
@@ -18,9 +26,6 @@ namespace Appalachia.Simulation.Trees.Hierarchy.Options.Properties
             return clone;
         }
 
-        public override UVScale CloneElement(UVScale model)
-        {
-            return model.Clone();
-        }
+        #endregion
     }
 }

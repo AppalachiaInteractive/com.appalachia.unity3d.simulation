@@ -9,33 +9,42 @@ namespace Appalachia.Simulation.Trees.Shape
     [Serializable]
     public abstract class BarkShapeData : ShapeData
     {
-        public float breakOffset;
-        public bool breakInverted;
-        public float capRange;
-        public SplineData spline;
-
-        public List<List<BranchRing>> branchRings;
-
-        protected BarkShapeData(int shapeID, int hierarchyID, int parentShapeID) : base(shapeID, hierarchyID, parentShapeID)
+        protected BarkShapeData(int shapeID, int hierarchyID, int parentShapeID) : base(
+            shapeID,
+            hierarchyID,
+            parentShapeID
+        )
         {
             spline = new SplineData();
             branchRings = new List<List<BranchRing>>();
         }
-        
+
+        #region Fields and Autoproperties
+
+        public bool breakInverted;
+        public float breakOffset;
+        public float capRange;
+
+        public List<List<BranchRing>> branchRings;
+        public SplineData spline;
+
+        #endregion
+
+        /// <inheritdoc />
         protected override void Clone(ShapeData shapeData)
         {
             var s = shapeData as BarkShapeData;
             s.spline = spline;
             s.capRange = capRange;
             s.breakOffset = breakOffset;
-            
+
             s.branchRings = new List<List<BranchRing>>();
-            
+
             foreach (var br in branchRings)
             {
                 var nlod = new List<BranchRing>();
                 s.branchRings.Add(nlod);
-                
+
                 foreach (var lod in br)
                 {
                     nlod.Add(lod.Clone());
@@ -43,7 +52,7 @@ namespace Appalachia.Simulation.Trees.Shape
             }
         }
 
-
+        /// <inheritdoc />
         protected override void SetUpInternal()
         {
             breakOffset = 1f;

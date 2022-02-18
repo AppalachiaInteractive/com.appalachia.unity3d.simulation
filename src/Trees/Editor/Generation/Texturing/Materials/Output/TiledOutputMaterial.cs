@@ -35,10 +35,12 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Output
 
         #endregion
 
+        /// <inheritdoc />
         public override MaterialContext MaterialContext => MaterialContext.TiledOutputMaterial;
 
         public int inputMaterialID => _inputMaterialID;
 
+        /// <inheritdoc />
         protected override OutputShaderSelectionSet defaultShaders => _defaultShaderResource.tiledShaderSet;
     }
 }

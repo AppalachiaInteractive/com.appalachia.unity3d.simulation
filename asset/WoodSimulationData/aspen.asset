@@ -17,6 +17,11 @@ MonoBehaviour:
   _initializer:
     _tags: []
     _resetToken: 
+  _objectId:
+    _increment: 0
+    _machine: 0
+    _timestamp: 0
+    _pid: 0
   id: 84
   _category: Poplar
   densityMetadata: {fileID: 11400000, guid: c768f83080a678e4384a46e1b3be1d27, type: 2}

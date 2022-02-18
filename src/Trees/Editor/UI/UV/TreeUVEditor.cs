@@ -1,6 +1,5 @@
 #region
 
-using Appalachia.Core.Extensions;
 using Appalachia.Simulation.Trees.Generation.Texturing.Materials.Management;
 using Appalachia.Simulation.Trees.UI.Species;
 using Appalachia.Utility.Extensions;
@@ -11,8 +10,13 @@ namespace Appalachia.Simulation.Trees.UI.UV
 {
     public class TreeUVEditor : UVEditor<TreeDataContainer>
     {
+        #region Fields and Autoproperties
+
         private TreeDataContainer _container;
 
+        #endregion
+
+        /// <inheritdoc />
         public override TreeDataContainer container
         {
             get
@@ -31,20 +35,10 @@ namespace Appalachia.Simulation.Trees.UI.UV
                     ResetState();
                     _container = TreeSpeciesEditor._tree;
                 }
-                
+
                 return _container;
             }
             set => _container = value;
-        }
-
-        protected override TreeDataContainer GetContainer()
-        {
-            return container;
-        }
-
-        protected override InputMaterialCache GetData()
-        {
-            return container.materials.inputMaterialCache;
         }
 
         public static void OpenInstance()
@@ -53,9 +47,21 @@ namespace Appalachia.Simulation.Trees.UI.UV
             {
                 instance = GetWindow<TreeUVEditor>();
             }
-            
+
             instance.position = instance.position.AlignCenter(700, 700);
             instance.container = TreeSpeciesEditor._tree;
+        }
+
+        /// <inheritdoc />
+        protected override TreeDataContainer GetContainer()
+        {
+            return container;
+        }
+
+        /// <inheritdoc />
+        protected override InputMaterialCache GetData()
+        {
+            return container.materials.inputMaterialCache;
         }
     }
 }

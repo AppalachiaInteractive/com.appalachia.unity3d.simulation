@@ -36,6 +36,7 @@ namespace Appalachia.Simulation.Trees.Settings
         {
         }
 
+        /// <inheritdoc />
         public override void UpdateSettingsType(ResponsiveSettingsType t)
         {
             this.HandleResponsiveUpdate(t);

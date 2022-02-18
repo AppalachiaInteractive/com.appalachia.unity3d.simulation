@@ -8,21 +8,10 @@ using UnityEngine;
 namespace Appalachia.Simulation.ReactionSystem.Cameras
 {
     [Serializable]
-    public abstract class ReactionSubsystemMultipleCameras : ReactionSubsystemCamera
+    public abstract class ReactionSubsystemMultipleCameras<T> : ReactionSubsystemCamera<T>
+        where T : ReactionSubsystemMultipleCameras<T>
     {
-        private const string _PRF_PFX = nameof(ReactionSubsystemMultipleCameras) + ".";
-
-        private static readonly ProfilerMarker _PRF_OnInitialization =
-            new(_PRF_PFX + nameof(OnInitialization));
-
-        private static readonly ProfilerMarker _PRF_InitializeUpdateLoop =
-            new(_PRF_PFX + nameof(InitializeUpdateLoop));
-
-        private static readonly ProfilerMarker _PRF_DoUpdateLoop =
-            new(_PRF_PFX + nameof(DoUpdateLoop));
-
-        private static readonly ProfilerMarker _PRF_TeardownSubsystem =
-            new(_PRF_PFX + nameof(TeardownSubsystem));
+        #region Fields and Autoproperties
 
         [ListDrawerSettings]
         [OnValueChanged(nameof(Initialize), true)]
@@ -31,21 +20,126 @@ namespace Appalachia.Simulation.ReactionSystem.Cameras
 
         [FoldoutGroup("Preview")]
         [PropertyOrder(-100)]
-        [PropertyRange(0, nameof(_renderTextureMax))]
+        [PropertyRange(0, nameof(RenderTextureMax))]
         public int selectedRenderTexture;
 
-        private int _renderTextureMax => cameraComponents.Count - 1;
+        #endregion
 
-        protected override bool showRenderTexture =>
-            (cameraComponents != null) &&
-            (cameraComponents.Count > 0) &&
+        /// <inheritdoc />
+        public override RenderTexture RenderTexture => cameraComponents[selectedRenderTexture].RenderTexture;
+
+        /// <inheritdoc />
+        protected override bool ShowRenderTexture =>
+            cameraComponents is { Count: > 0 } &&
             (selectedRenderTexture > 0) &&
             (selectedRenderTexture < cameraComponents.Count) &&
-            cameraComponents[selectedRenderTexture].showRenderTexture;
+            cameraComponents[selectedRenderTexture].ShowRenderTexture;
 
-        public override RenderTexture renderTexture =>
-            cameraComponents[selectedRenderTexture].renderTexture;
+        private int RenderTextureMax => cameraComponents.Count - 1;
 
+        protected abstract void OnBeforeInitialization();
+
+        protected abstract void OnInitializationComplete(SubsystemCameraComponent cam);
+
+        protected abstract void OnInitializationStart(SubsystemCameraComponent cam);
+
+        protected abstract void OnRenderComplete(SubsystemCameraComponent camera);
+
+        protected abstract void OnRenderStart(SubsystemCameraComponent camera);
+
+        protected abstract void OnUpdateLoopStart();
+
+        protected abstract bool ShouldRenderCamera(
+            SubsystemCameraComponent cam,
+            int cameraIndex,
+            int totalCameras);
+
+        /// <inheritdoc />
+        protected override void DoUpdateLoop()
+        {
+            using (_PRF_DoUpdateLoop.Auto())
+            {
+                OnUpdateLoopStart();
+
+                for (var i = 0; i < cameraComponents.Count; i++)
+                {
+                    var cameraComponent = cameraComponents[i];
+
+                    if (!ShouldRenderCamera(cameraComponent, i, cameraComponents.Count))
+                    {
+                        continue;
+                    }
+
+                    if (AutomaticRender)
+                    {
+                        OnRenderStart(cameraComponent);
+
+                        cameraComponent.renderCamera.enabled = true;
+
+                        if (cameraComponent.hasReplacementShader && !cameraComponent.shaderReplaced)
+                        {
+                            cameraComponent.renderCamera.SetReplacementShader(ReplacementShader, null);
+                            cameraComponent.shaderReplaced = true;
+                        }
+
+                        OnRenderComplete(cameraComponent);
+                    }
+                    else
+                    {
+                        cameraComponent.renderCamera.enabled = false;
+
+                        if (!IsManualRenderingRequired(cameraComponent))
+                        {
+                            return;
+                        }
+
+                        OnRenderStart(cameraComponent);
+
+                        if (cameraComponent.hasReplacementShader)
+                        {
+                            cameraComponent.renderCamera.RenderWithShader(
+                                ReplacementShader,
+                                ReplacementShaderTag
+                            );
+                        }
+                        else
+                        {
+                            cameraComponent.renderCamera.Render();
+                        }
+
+                        OnRenderComplete(cameraComponent);
+                    }
+                }
+            }
+        }
+
+        /// <inheritdoc />
+        protected override bool InitializeUpdateLoop()
+        {
+            using (_PRF_InitializeUpdateLoop.Auto())
+            {
+                var successful = false;
+
+                for (var i = 0; i < cameraComponents.Count; i++)
+                {
+                    var cameraComponent = cameraComponents[i];
+
+                    cameraComponent.centerPresent = cameraComponent.center != null;
+                    cameraComponent.renderCameraPresent = cameraComponent.renderCamera != null;
+
+                    if (cameraComponent.centerPresent && cameraComponent.renderCameraPresent)
+                    {
+                        successful = true;
+
+                        cameraComponent.hasReplacementShader = ReplacementShader != null;
+                    }
+                }
+
+                return successful;
+            }
+        }
+
+        /// <inheritdoc />
         protected override void OnInitialization()
         {
             using (_PRF_OnInitialization.Auto())
@@ -76,8 +170,7 @@ namespace Appalachia.Simulation.ReactionSystem.Cameras
 
                     if (!cameraComponent.renderCamera)
                     {
-                        cameraComponent.renderCamera =
-                            SubsystemCameraComponent.CreateCamera(this, objName);
+                        cameraComponent.renderCamera = SubsystemCameraComponent.CreateCamera(this, objName);
                     }
 
                     if (cameraComponent.renderCamera)
@@ -94,109 +187,7 @@ namespace Appalachia.Simulation.ReactionSystem.Cameras
             }
         }
 
-        protected override bool InitializeUpdateLoop()
-        {
-            using (_PRF_InitializeUpdateLoop.Auto())
-            {
-                var successful = false;
-
-                for (var i = 0; i < cameraComponents.Count; i++)
-                {
-                    var cameraComponent = cameraComponents[i];
-
-                    cameraComponent.centerPresent = cameraComponent.center != null;
-                    cameraComponent.renderCameraPresent = cameraComponent.renderCamera != null;
-
-                    if (cameraComponent.centerPresent && cameraComponent.renderCameraPresent)
-                    {
-                        successful = true;
-
-                        cameraComponent.hasReplacementShader = replacementShader != null;
-                    }
-                }
-
-                return successful;
-            }
-        }
-
-        protected override void DoUpdateLoop()
-        {
-            using (_PRF_DoUpdateLoop.Auto())
-            {
-                OnUpdateLoopStart();
-
-                for (var i = 0; i < cameraComponents.Count; i++)
-                {
-                    var cameraComponent = cameraComponents[i];
-
-                    if (!ShouldRenderCamera(cameraComponent, i, cameraComponents.Count))
-                    {
-                        continue;
-                    }
-
-                    if (AutomaticRender)
-                    {
-                        OnRenderStart(cameraComponent);
-
-                        cameraComponent.renderCamera.enabled = true;
-
-                        if (cameraComponent.hasReplacementShader && !cameraComponent.shaderReplaced)
-                        {
-                            cameraComponent.renderCamera.SetReplacementShader(
-                                replacementShader,
-                                null
-                            );
-                            cameraComponent.shaderReplaced = true;
-                        }
-
-                        OnRenderComplete(cameraComponent);
-                    }
-                    else
-                    {
-                        cameraComponent.renderCamera.enabled = false;
-
-                        if (!IsManualRenderingRequired(cameraComponent))
-                        {
-                            return;
-                        }
-
-                        OnRenderStart(cameraComponent);
-
-                        if (cameraComponent.hasReplacementShader)
-                        {
-                            cameraComponent.renderCamera.RenderWithShader(
-                                replacementShader,
-                                replacementShaderTag
-                            );
-                        }
-                        else
-                        {
-                            cameraComponent.renderCamera.Render();
-                        }
-
-                        OnRenderComplete(cameraComponent);
-                    }
-                }
-            }
-        }
-
-        protected abstract void OnBeforeInitialization();
-
-        protected abstract void OnInitializationStart(SubsystemCameraComponent cam);
-
-        protected abstract void OnInitializationComplete(SubsystemCameraComponent cam);
-
-        protected abstract void OnUpdateLoopStart();
-
-        protected abstract bool ShouldRenderCamera(
-            SubsystemCameraComponent cam,
-            int cameraIndex,
-            int totalCameras);
-
-        protected abstract void OnRenderStart(SubsystemCameraComponent camera);
-
-        protected abstract void OnRenderComplete(SubsystemCameraComponent camera);
-
+        /// <inheritdoc />
         protected override void TeardownSubsystem()
         {
             using (_PRF_TeardownSubsystem.Auto())
@@ -220,5 +211,20 @@ namespace Appalachia.Simulation.ReactionSystem.Cameras
                 }
             }
         }
+
+        #region Profiling
+
+        private static readonly ProfilerMarker _PRF_DoUpdateLoop = new(_PRF_PFX + nameof(DoUpdateLoop));
+
+        private static readonly ProfilerMarker _PRF_InitializeUpdateLoop =
+            new(_PRF_PFX + nameof(InitializeUpdateLoop));
+
+        private static readonly ProfilerMarker _PRF_OnInitialization =
+            new(_PRF_PFX + nameof(OnInitialization));
+
+        private static readonly ProfilerMarker _PRF_TeardownSubsystem =
+            new(_PRF_PFX + nameof(TeardownSubsystem));
+
+        #endregion
     }
 }

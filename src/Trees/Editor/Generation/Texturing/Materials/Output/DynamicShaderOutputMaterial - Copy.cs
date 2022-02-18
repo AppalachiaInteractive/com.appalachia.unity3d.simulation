@@ -51,7 +51,8 @@ namespace Appalachia.Simulation.Trees.Metadata.Texturing.Materials.Output
 
         protected abstract Shader defaultShader { get; }
 
-        public override Shader GetShader(int lod)
+        /// <inheritdoc />
+public override Shader GetShader(int lod)
         {
             if (_shaders == null)
             {
@@ -68,7 +69,8 @@ namespace Appalachia.Simulation.Trees.Metadata.Texturing.Materials.Output
             return _shaders;
         }
 
-        protected override Material CreateMaterialInternal(int lod)
+        /// <inheritdoc />
+protected override Material CreateMaterialInternal(int lod)
         {
             using (BUILD_TIME.OUT_MAT.CreateMaterialInternal.Auto())
             {
@@ -108,7 +110,8 @@ namespace Appalachia.Simulation.Trees.Metadata.Texturing.Materials.Output
             }
         }
         
-        public override void FinalizeMaterial()
+        /// <inheritdoc />
+public override void FinalizeMaterial()
         {
             using (BUILD_TIME.OUT_MAT.UpdateMaterial.Auto())
             {

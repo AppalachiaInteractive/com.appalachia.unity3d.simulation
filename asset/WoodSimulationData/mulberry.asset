@@ -12,11 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebc057f721a531a4992e9e7eea91f2b2, type: 3}
   m_Name: mulberry
   m_EditorClassIdentifier: 
-  _cachedName: 
-  _niceName: 
+  _cachedName: mulberry
+  _niceName: Mulberry
   _initializer:
     _tags: []
     _resetToken: 
+  _objectId:
+    _increment: 12632127
+    _machine: 14129404
+    _timestamp: 1645121947
+    _pid: -14768
   id: 130
   _category: Deciduous
   densityMetadata: {fileID: 11400000, guid: 9340a8c3226b593468528e8c80c55d8a, type: 2}

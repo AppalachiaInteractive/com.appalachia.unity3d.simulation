@@ -5,18 +5,24 @@ namespace Appalachia.Simulation.ReactionSystem.Cameras
 {
     [Serializable]
     public abstract class
-        ReactionSubsystemMultipleCamerasShotSelector : ReactionSubsystemMultipleCameras
+        ReactionSubsystemMultipleCamerasShotSelector<T> : ReactionSubsystemMultipleCameras<T>
+        where T : ReactionSubsystemMultipleCamerasShotSelector<T>
     {
+        #region Fields and Autoproperties
+
         [PropertyRange(1, 300)]
-        [ShowIf(nameof(_selectionModeXFrames))]
+        [ShowIf(nameof(SelectionModeXFrames))]
         public int frameShotInterval = 4;
 
         private SubsystemCameraShotSelector shotSelector;
-        public abstract SubsystemCameraShotSelectionMode selectionMode { get; }
 
-        private bool _selectionModeXFrames =>
-            selectionMode == SubsystemCameraShotSelectionMode.EveryXFrames;
+        #endregion
 
+        public abstract SubsystemCameraShotSelectionMode SelectionMode { get; }
+
+        private bool SelectionModeXFrames => SelectionMode == SubsystemCameraShotSelectionMode.EveryXFrames;
+
+        /// <inheritdoc />
         protected override void OnUpdateLoopStart()
         {
             if (shotSelector == default)
@@ -27,13 +33,14 @@ namespace Appalachia.Simulation.ReactionSystem.Cameras
             shotSelector.InitiateCheck(cameraComponents.Count);
         }
 
+        /// <inheritdoc />
         protected override bool ShouldRenderCamera(
             SubsystemCameraComponent cam,
             int cameraIndex,
             int totalCameras)
         {
             return shotSelector.ShouldRenderCamera(
-                selectionMode,
+                SelectionMode,
                 cam,
                 cameraIndex,
                 totalCameras,

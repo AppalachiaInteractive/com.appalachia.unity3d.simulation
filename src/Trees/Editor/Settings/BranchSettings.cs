@@ -50,6 +50,7 @@ namespace Appalachia.Simulation.Trees.Settings
             return instance;
         }
 
+        /// <inheritdoc />
         public override void CopySettingsTo(BranchSettings t)
         {
             ao.CopySettingsTo(t.ao);

@@ -17,6 +17,11 @@ MonoBehaviour:
   _initializer:
     _tags: []
     _resetToken: 
+  _objectId:
+    _increment: 0
+    _machine: 0
+    _timestamp: 0
+    _pid: 0
   id: 83
   _category: Ash
   densityMetadata: {fileID: 11400000, guid: 6a934975b2e386d44b4259468f5970c3, type: 2}

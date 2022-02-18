@@ -17,6 +17,11 @@ MonoBehaviour:
   _initializer:
     _tags: []
     _resetToken: 
+  _objectId:
+    _increment: 0
+    _machine: 0
+    _timestamp: 0
+    _pid: 0
   id: 100
   _category: Oak
   densityMetadata: {fileID: 11400000, guid: 99c58c167f6e5ab42932d0cff7191fa8, type: 2}

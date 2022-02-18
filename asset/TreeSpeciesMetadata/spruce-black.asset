@@ -17,6 +17,11 @@ MonoBehaviour:
   _initializer:
     _tags: []
     _resetToken: 
+  _objectId:
+    _increment: 0
+    _machine: 0
+    _timestamp: 0
+    _pid: 0
   id: 34
   speciesName: 
   woodData: {fileID: 11400000, guid: ccfba644e529a4b4bb872fc1f00895a6, type: 2}

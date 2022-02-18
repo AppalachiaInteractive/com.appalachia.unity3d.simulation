@@ -15,15 +15,20 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading.OutputShaders
 
         #region Fields and Autoproperties
 
+        /// <inheritdoc />
         public override LazyShader Shader { get; } = new LazyShader(_GSR.shadowShaders[0]);
+
+        /// <inheritdoc />
         public override string Name { get; } = Key;
 
         #endregion
 
+        /// <inheritdoc />
         public override void FinalizeSettings(Material material, bool atlas)
         {
         }
 
+        /// <inheritdoc />
         public override IEnumerable<OutputTextureProfile> GetOutputProfiles(bool atlas)
         {
             return new[] { OutputTextureProfileFactory.Get(TextureMap.Albedo, "_MainTex", atlas), };

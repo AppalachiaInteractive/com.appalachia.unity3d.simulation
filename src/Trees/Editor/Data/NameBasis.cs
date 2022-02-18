@@ -62,12 +62,15 @@ namespace Appalachia.Simulation.Trees.Data
             }
         }
 
+        /// <inheritdoc />
         protected override string DefaultName => DEFAULT_NAME;
 
+        /// <inheritdoc />
         public override void InitializeFromParent(AppalachiaObject parent)
         {
         }
 
+        /// <inheritdoc />
         public override void UpdateSettingsType(ResponsiveSettingsType t)
         {
         }

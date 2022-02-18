@@ -17,6 +17,11 @@ MonoBehaviour:
   _initializer:
     _tags: []
     _resetToken: 
+  _objectId:
+    _increment: 0
+    _machine: 0
+    _timestamp: 0
+    _pid: 0
   id: 150
   _category: Conifer
   densityMetadata: {fileID: 11400000, guid: 98a18cc3e4ef97d45bf8051166e88734, type: 2}

@@ -7,90 +7,36 @@ using UnityEngine;
 namespace Appalachia.Simulation.ReactionSystem.Cameras
 {
     [Serializable]
-    public abstract class ReactionSubsystemSingleCamera : ReactionSubsystemCamera
+    public abstract class ReactionSubsystemSingleCamera<T> : ReactionSubsystemCamera<T>
+        where T : ReactionSubsystemSingleCamera<T>
     {
-        private const string _PRF_PFX = nameof(ReactionSubsystemSingleCamera) + ".";
-
-        private static readonly ProfilerMarker _PRF_OnInitialization =
-            new(_PRF_PFX + nameof(OnInitialization));
-
-        private static readonly ProfilerMarker _PRF_InitializeUpdateLoop =
-            new(_PRF_PFX + nameof(InitializeUpdateLoop));
-
-        private static readonly ProfilerMarker _PRF_DoUpdateLoop =
-            new(_PRF_PFX + nameof(DoUpdateLoop));
+        #region Fields and Autoproperties
 
         [FoldoutGroup("Camera")]
         [SmartLabel]
         [OnValueChanged(nameof(InitializeSynchronous))]
         public SubsystemCameraComponent cameraComponent;
 
-        public override RenderTexture renderTexture =>
-            showRenderTexture ? cameraComponent.renderCamera.targetTexture : null;
+        #endregion
 
-        protected override bool showRenderTexture => cameraComponent.showRenderTexture;
+        /// <inheritdoc />
+        public override RenderTexture RenderTexture =>
+            ShowRenderTexture ? cameraComponent.renderCamera.targetTexture : null;
 
-        protected override void OnInitialization()
-        {
-            using (_PRF_OnInitialization.Auto())
-            {
-                OnBeforeInitialization();
+        /// <inheritdoc />
+        protected override bool ShowRenderTexture => cameraComponent.ShowRenderTexture;
 
-                EnsureSubsystemCenterIsPrepared(cameraComponent, this);
+        protected abstract void OnBeforeInitialization();
 
-                if (cameraComponent.center == null)
-                {
-                    Context.Log.Error("Must assign system center.");
+        protected abstract void OnInitializationComplete();
 
-                    return;
-                }
+        protected abstract void OnInitializationStart();
 
-                if (string.IsNullOrWhiteSpace(SubsystemName))
-                {
-                    Context.Log.Error("Must define system name.");
-                }
+        protected abstract void OnRenderComplete();
 
-                gameObject.name = SubsystemName;
+        protected abstract void OnRenderStart();
 
-                if (!cameraComponent.renderCamera)
-                {
-                    cameraComponent.renderCamera =
-                        SubsystemCameraComponent.CreateCamera(this, SubsystemName);
-                }
-
-                if (cameraComponent.renderCamera)
-                {
-                    cameraComponent.renderCamera.enabled = true;
-                }
-
-                OnInitializationStart();
-
-                SubsystemCameraComponent.UpdateCamera(this, cameraComponent.renderCamera);
-
-                OnInitializationComplete();
-            }
-        }
-
-        protected override bool InitializeUpdateLoop()
-        {
-            using (_PRF_InitializeUpdateLoop.Auto())
-            {
-                var successful = false;
-
-                cameraComponent.centerPresent = cameraComponent.center != null;
-                cameraComponent.renderCameraPresent = cameraComponent.renderCamera != null;
-
-                if (cameraComponent.centerPresent && cameraComponent.renderCameraPresent)
-                {
-                    successful = true;
-
-                    cameraComponent.hasReplacementShader = replacementShader != null;
-                }
-
-                return successful;
-            }
-        }
-
+        /// <inheritdoc />
         protected override void DoUpdateLoop()
         {
             using (_PRF_DoUpdateLoop.Auto())
@@ -103,7 +49,7 @@ namespace Appalachia.Simulation.ReactionSystem.Cameras
 
                     if (cameraComponent.hasReplacementShader && !cameraComponent.shaderReplaced)
                     {
-                        cameraComponent.renderCamera.SetReplacementShader(replacementShader, null);
+                        cameraComponent.renderCamera.SetReplacementShader(ReplacementShader, null);
                         cameraComponent.shaderReplaced = true;
                     }
 
@@ -123,8 +69,8 @@ namespace Appalachia.Simulation.ReactionSystem.Cameras
                     if (cameraComponent.hasReplacementShader)
                     {
                         cameraComponent.renderCamera.RenderWithShader(
-                            replacementShader,
-                            replacementShaderTag
+                            ReplacementShader,
+                            ReplacementShaderTag
                         );
                     }
                     else
@@ -137,16 +83,69 @@ namespace Appalachia.Simulation.ReactionSystem.Cameras
             }
         }
 
-        protected abstract void OnBeforeInitialization();
+        /// <inheritdoc />
+        protected override bool InitializeUpdateLoop()
+        {
+            using (_PRF_InitializeUpdateLoop.Auto())
+            {
+                var successful = false;
 
-        protected abstract void OnInitializationStart();
+                cameraComponent.centerPresent = cameraComponent.center != null;
+                cameraComponent.renderCameraPresent = cameraComponent.renderCamera != null;
 
-        protected abstract void OnInitializationComplete();
+                if (cameraComponent.centerPresent && cameraComponent.renderCameraPresent)
+                {
+                    successful = true;
 
-        protected abstract void OnRenderStart();
+                    cameraComponent.hasReplacementShader = ReplacementShader != null;
+                }
 
-        protected abstract void OnRenderComplete();
+                return successful;
+            }
+        }
 
+        /// <inheritdoc />
+        protected override void OnInitialization()
+        {
+            using (_PRF_OnInitialization.Auto())
+            {
+                OnBeforeInitialization();
+
+                EnsureSubsystemCenterIsPrepared(cameraComponent, this as T);
+
+                if (cameraComponent.center == null)
+                {
+                    Context.Log.Error("Must assign system center.");
+
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(SubsystemName))
+                {
+                    Context.Log.Error("Must define system name.");
+                }
+
+                gameObject.name = SubsystemName;
+
+                if (!cameraComponent.renderCamera)
+                {
+                    cameraComponent.renderCamera = SubsystemCameraComponent.CreateCamera(this, SubsystemName);
+                }
+
+                if (cameraComponent.renderCamera)
+                {
+                    cameraComponent.renderCamera.enabled = true;
+                }
+
+                OnInitializationStart();
+
+                SubsystemCameraComponent.UpdateCamera(this, cameraComponent.renderCamera);
+
+                OnInitializationComplete();
+            }
+        }
+
+        /// <inheritdoc />
         protected override void TeardownSubsystem()
         {
             if (cameraComponent.renderCamera)
@@ -162,5 +161,17 @@ namespace Appalachia.Simulation.ReactionSystem.Cameras
                 }
             }
         }
+
+        #region Profiling
+
+        private static readonly ProfilerMarker _PRF_DoUpdateLoop = new(_PRF_PFX + nameof(DoUpdateLoop));
+
+        private static readonly ProfilerMarker _PRF_InitializeUpdateLoop =
+            new(_PRF_PFX + nameof(InitializeUpdateLoop));
+
+        private static readonly ProfilerMarker _PRF_OnInitialization =
+            new(_PRF_PFX + nameof(OnInitialization));
+
+        #endregion
     }
 }

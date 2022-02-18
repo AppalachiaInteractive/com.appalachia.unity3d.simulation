@@ -9,11 +9,8 @@ namespace Appalachia.Simulation.Trees.Hierarchy
     [Serializable]
     public sealed class BranchHierarchyData : CollaredBarkHierarchyData
     {
-        public BranchHierarchyData(int hierarchyID, int parentHierarchyID, ResponsiveSettingsType type) : base(
-            hierarchyID,
-            parentHierarchyID,
-            type
-        )
+        public BranchHierarchyData(int hierarchyID, int parentHierarchyID, ResponsiveSettingsType type) :
+            base(hierarchyID, parentHierarchyID, type)
         {
         }
 
@@ -34,8 +31,10 @@ namespace Appalachia.Simulation.Trees.Hierarchy
         {
         }
 
+        /// <inheritdoc />
         public override TreeComponentType type => TreeComponentType.Branch;
 
+        /// <inheritdoc />
         protected override void CopyInternalGenerationSettings(HierarchyData model)
         {
             var cast = model as BranchHierarchyData;

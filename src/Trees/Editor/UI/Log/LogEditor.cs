@@ -26,10 +26,18 @@ namespace Appalachia.Simulation.Trees.UI.Log
     {
         static LogEditor()
         {
-            RegisterInstanceCallbacks.WithoutSorting().When.Object<TreeSpeciesEditorSelection>().IsAvailableThen( i => _treeSpeciesEditorSelection = i);
-            RegisterInstanceCallbacks.WithoutSorting().When.Object<TreeGizmoDelegate>().IsAvailableThen( i => _treeGizmoDelegate = i);
-            RegisterInstanceCallbacks.WithoutSorting().When.Object<TreeGizmoStyle>().IsAvailableThen( i => _treeGizmoStyle = i);
-            RegisterInstanceCallbacks.WithoutSorting().When.Object<RendererDebuggingSettings>().IsAvailableThen( i => _rendererDebuggingSettings = i);
+            RegisterInstanceCallbacks.WithoutSorting()
+                                     .When.Object<TreeSpeciesEditorSelection>()
+                                     .IsAvailableThen(i => _treeSpeciesEditorSelection = i);
+            RegisterInstanceCallbacks.WithoutSorting()
+                                     .When.Object<TreeGizmoDelegate>()
+                                     .IsAvailableThen(i => _treeGizmoDelegate = i);
+            RegisterInstanceCallbacks.WithoutSorting()
+                                     .When.Object<TreeGizmoStyle>()
+                                     .IsAvailableThen(i => _treeGizmoStyle = i);
+            RegisterInstanceCallbacks.WithoutSorting()
+                                     .When.Object<RendererDebuggingSettings>()
+                                     .IsAvailableThen(i => _rendererDebuggingSettings = i);
         }
 
         #region Static Fields and Autoproperties
@@ -113,6 +121,7 @@ namespace Appalachia.Simulation.Trees.UI.Log
 
         #region Event Functions
 
+        /// <inheritdoc />
         protected override void OnDisable()
         {
             var instanceID = GetInstanceID();
@@ -155,6 +164,7 @@ namespace Appalachia.Simulation.Trees.UI.Log
 
         #endregion
 
+        /// <inheritdoc />
         public override void OnInspectorGUI()
         {
             try
@@ -486,6 +496,7 @@ namespace Appalachia.Simulation.Trees.UI.Log
             }
         }
 
+        /// <inheritdoc />
         protected override void OnHeaderGUI()
         {
         }

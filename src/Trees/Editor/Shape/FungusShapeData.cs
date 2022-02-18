@@ -7,21 +7,26 @@ namespace Appalachia.Simulation.Trees.Shape
     [Serializable]
     public sealed class FungusShapeData : ShapeData
     {
-        public override TreeComponentType type => TreeComponentType.Fungus;
-
-
-        protected override ShapeData GetNew()
+        public FungusShapeData(int shapeID, int hierarchyID, int parentShapeID) : base(
+            shapeID,
+            hierarchyID,
+            parentShapeID
+        )
         {
-            return new FungusShapeData(shapeID, hierarchyID, parentShapeID);
         }
 
+        /// <inheritdoc />
+        public override TreeComponentType type => TreeComponentType.Fungus;
+
+        /// <inheritdoc />
         protected override void Clone(ShapeData shapeData)
         {
         }
 
-        public FungusShapeData(int shapeID, int hierarchyID, int parentShapeID) : base(shapeID, hierarchyID, parentShapeID)
+        /// <inheritdoc />
+        protected override ShapeData GetNew()
         {
-            
+            return new FungusShapeData(shapeID, hierarchyID, parentShapeID);
         }
     }
 }

@@ -221,6 +221,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Output
             );
         }
 
+        /// <inheritdoc />
         [DebuggerStepThrough]
         public override bool Equals(object obj)
         {
@@ -242,6 +243,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Output
             return Equals((OutputTextureSetting)obj);
         }
 
+        /// <inheritdoc />
         [DebuggerStepThrough]
         public override int GetHashCode()
         {

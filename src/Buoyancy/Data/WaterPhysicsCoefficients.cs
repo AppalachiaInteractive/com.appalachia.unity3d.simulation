@@ -17,16 +17,20 @@ namespace Appalachia.Simulation.Buoyancy.Data
 
         #endregion
 
+        /// <inheritdoc />
         protected override async AppaTask WhenEnabled()
         {
             await base.WhenEnabled();
 
-            if (data == default)
+            using (_PRF_WhenEnabled.Auto())
             {
-                data = new WaterPhysicsCoefficentData(1.0f);
-            }
+                if (data == default)
+                {
+                    data = new WaterPhysicsCoefficentData(1.0f);
+                }
 
-            data.ConfirmRanges();
+                data.ConfirmRanges();
+            }
         }
     }
 }

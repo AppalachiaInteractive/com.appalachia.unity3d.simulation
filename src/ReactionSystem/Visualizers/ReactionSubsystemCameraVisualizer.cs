@@ -1,6 +1,6 @@
 #if UNITY_EDITOR
 using Appalachia.Core.Extensions;
-using Appalachia.Simulation.ReactionSystem.Cameras;
+using Appalachia.Simulation.ReactionSystem.Contracts;
 using Appalachia.Spatial.Visualizers;
 using Sirenix.OdinInspector;
 using Unity.Mathematics;
@@ -8,28 +8,26 @@ using UnityEngine;
 
 namespace Appalachia.Simulation.ReactionSystem.Visualizers
 {
-    public class ReactionSubsystemCameraVisualizer : InstancedIndirectSpatialMapVisualization
+    public sealed class
+        ReactionSubsystemCameraVisualizer : InstancedIndirectSpatialMapVisualization<
+            ReactionSubsystemCameraVisualizer>
     {
-        [PropertyOrder(-200)] public ReactionSubsystemCamera subsystem;
+        #region Fields and Autoproperties
 
-        protected override bool ShouldRegenerate =>
-            (subsystem != null) && subsystem.AutomaticRender;
+        [PropertyOrder(-200)] public IReactionSubsystemCamera subsystem;
 
-        protected override bool CanVisualize =>
-            (subsystem != null) && (subsystem.renderTexture != null);
+        #endregion
 
+        /// <inheritdoc />
         protected override bool CanGenerate => subsystem != null;
 
-        protected override void PrepareInitialGeneration()
-        {
-            texture = subsystem.renderTexture.ToTexture2D();
-        }
+        /// <inheritdoc />
+        protected override bool CanVisualize => (subsystem != null) && (subsystem.RenderTexture != null);
 
-        protected override void PrepareSubsequentGenerations()
-        {
-            texture = subsystem.renderTexture.ToTexture2D();
-        }
+        /// <inheritdoc />
+        protected override bool ShouldRegenerate => (subsystem != null) && subsystem.AutomaticRender;
 
+        /// <inheritdoc />
         protected override void GetVisualizationInfo(
             Vector3 position,
             float4 color,
@@ -40,6 +38,18 @@ namespace Appalachia.Simulation.ReactionSystem.Visualizers
             height = position.y;
             rotation = Quaternion.identity;
             scale = Vector3.one;
+        }
+
+        /// <inheritdoc />
+        protected override void PrepareInitialGeneration()
+        {
+            texture = subsystem.RenderTexture.ToTexture2D();
+        }
+
+        /// <inheritdoc />
+        protected override void PrepareSubsequentGenerations()
+        {
+            texture = subsystem.RenderTexture.ToTexture2D();
         }
     }
 }

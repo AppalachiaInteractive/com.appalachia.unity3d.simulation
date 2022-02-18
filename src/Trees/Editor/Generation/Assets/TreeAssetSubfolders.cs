@@ -63,14 +63,17 @@ namespace Appalachia.Simulation.Trees.Generation.Assets
 
         #endregion
 
+        /// <inheritdoc />
         protected override string DefaultName => DEFAULT_NAME;
 
+        /// <inheritdoc />
         public override void InitializeFromParent(AppalachiaObject p)
         {
             parent = p as TSEDataContainer;
             Update();
         }
 
+        /// <inheritdoc />
         public override void UpdateSettingsType(ResponsiveSettingsType t)
         {
         }

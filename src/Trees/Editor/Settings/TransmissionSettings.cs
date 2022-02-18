@@ -2,7 +2,6 @@ using System;
 using Appalachia.CI.Integration.Assets;
 using Appalachia.Simulation.Trees.Core.Settings;
 using Appalachia.Simulation.Trees.ResponsiveUI;
-using Appalachia.Utility.Extensions;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -12,20 +11,16 @@ namespace Appalachia.Simulation.Trees.Settings
     [Title("Transmission", TitleAlignment = TitleAlignments.Centered)]
     public class TransmissionSettings : ResponsiveSettings
     {
-        [PropertyTooltip(
-            "Should the leaf material transmission property color be calculated automatically?")]
+        public TransmissionSettings(ResponsiveSettingsType settingsType) : base(settingsType)
+        {
+        }
+
+        #region Fields and Autoproperties
+
+        [PropertyTooltip("Should the leaf material transmission property color be calculated automatically?")]
         [ToggleLeft]
         [OnValueChanged(nameof(MaterialPropertiesChanged))]
         public bool setTransmissionColorsAutomatically = true;
-        
-        [PropertyTooltip("The brightness of the leaf transmission color.")]
-        [EnableIf(nameof(setTransmissionColorsAutomatically))]
-        [HorizontalGroup("A", .5f)]
-        [PropertyRange(0.1f, .95f)]
-        [InfoBox("Automatic Transmission Brightness", InfoMessageType.None), HideLabel]
-        [OnValueChanged(nameof(MaterialPropertiesChanged))]
-        public float automaticTransmissionColorBrightness = .8f;
-
 
         [PropertyTooltip("The leaf transmission color.")]
         [DisableIf(nameof(setTransmissionColorsAutomatically))]
@@ -34,10 +29,17 @@ namespace Appalachia.Simulation.Trees.Settings
         [OnValueChanged(nameof(MaterialPropertiesChanged))]
         public Color transmissionColor = new Color(.7f, .8f, .6f, 1f);
 
-        public TransmissionSettings(ResponsiveSettingsType settingsType) : base(settingsType)
-        {
-        }
-        
+        [PropertyTooltip("The brightness of the leaf transmission color.")]
+        [EnableIf(nameof(setTransmissionColorsAutomatically))]
+        [HorizontalGroup("A", .5f)]
+        [PropertyRange(0.1f, .95f)]
+        [InfoBox("Automatic Transmission Brightness", InfoMessageType.None), HideLabel]
+        [OnValueChanged(nameof(MaterialPropertiesChanged))]
+        public float automaticTransmissionColorBrightness = .8f;
+
+        #endregion
+
+        /// <inheritdoc />
         public override void CopySettingsTo(ResponsiveSettings t)
         {
             if (t is TransmissionSettings cast)
@@ -47,7 +49,7 @@ namespace Appalachia.Simulation.Trees.Settings
                 cast.setTransmissionColorsAutomatically = setTransmissionColorsAutomatically;
             }
         }
-        
+
         [Button]
         public void PushToAll()
         {

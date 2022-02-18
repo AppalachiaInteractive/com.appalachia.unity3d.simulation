@@ -17,6 +17,11 @@ MonoBehaviour:
   _initializer:
     _tags: []
     _resetToken: 
+  _objectId:
+    _increment: 0
+    _machine: 0
+    _timestamp: 0
+    _pid: 0
   id: 98
   _category: Fruit
   densityMetadata: {fileID: 11400000, guid: 7ead7e9f172d38b448a368137f03bf6b, type: 2}

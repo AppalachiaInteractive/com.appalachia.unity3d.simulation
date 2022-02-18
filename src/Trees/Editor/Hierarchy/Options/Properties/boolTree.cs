@@ -9,7 +9,14 @@ namespace Appalachia.Simulation.Trees.Hierarchy.Options.Properties
         {
         }
 
-      
+        /// <inheritdoc />
+        public override bool CloneElement(bool model)
+        {
+            return model;
+        }
+
+        #region ICloneable<boolTree> Members
+
         public boolTree Clone()
         {
             var clone = new boolTree(CloneElement(defaultValue));
@@ -18,9 +25,6 @@ namespace Appalachia.Simulation.Trees.Hierarchy.Options.Properties
             return clone;
         }
 
-        public override bool CloneElement(bool model)
-        {
-            return model;
-        }
+        #endregion
     }
 }

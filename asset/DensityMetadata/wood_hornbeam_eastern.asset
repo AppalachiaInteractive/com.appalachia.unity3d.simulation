@@ -18,6 +18,11 @@ MonoBehaviour:
     _tags:
     - profileName
     _resetToken: 
+  _objectId:
+    _increment: 0
+    _machine: 0
+    _timestamp: 0
+    _pid: 0
   id: 177
   profileName: wood_hornbeam_eastern
   _category: Wood

@@ -12,11 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebc057f721a531a4992e9e7eea91f2b2, type: 3}
   m_Name: pine_sugar
   m_EditorClassIdentifier: 
-  _cachedName: 
-  _niceName: 
+  _cachedName: pine_sugar
+  _niceName: Pine_sugar
   _initializer:
     _tags: []
     _resetToken: 
+  _objectId:
+    _increment: 12632111
+    _machine: 14129404
+    _timestamp: 1645121942
+    _pid: -14768
   id: 146
   _category: Pine
   densityMetadata: {fileID: 11400000, guid: 3331bb53e7a57dc46ab0084dea3e2a3c, type: 2}

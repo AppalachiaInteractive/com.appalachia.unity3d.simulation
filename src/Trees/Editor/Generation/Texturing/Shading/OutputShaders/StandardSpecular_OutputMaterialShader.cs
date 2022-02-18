@@ -9,11 +9,15 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading.OutputShaders
     {
         #region Fields and Autoproperties
 
+        /// <inheritdoc />
         public override LazyShader Shader { get; } = new LazyShader("Standard (Specular setup)");
+
+        /// <inheritdoc />
         public override string Name { get; } = "Standard (Specular setup)";
 
         #endregion
 
+        /// <inheritdoc />
         public override void FinalizeSettings(Material material, bool atlas)
         {
             material.SetFloat("_SmoothnessTextureChannel", 0f);
@@ -34,6 +38,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading.OutputShaders
             }
         }
 
+        /// <inheritdoc />
         public override IEnumerable<OutputTextureProfile> GetOutputProfiles(bool atlas)
         {
             return new[]

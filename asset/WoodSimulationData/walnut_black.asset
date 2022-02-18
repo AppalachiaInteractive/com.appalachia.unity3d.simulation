@@ -17,6 +17,11 @@ MonoBehaviour:
   _initializer:
     _tags: []
     _resetToken: 
+  _objectId:
+    _increment: 0
+    _machine: 0
+    _timestamp: 0
+    _pid: 0
   id: 154
   _category: Nut
   densityMetadata: {fileID: 11400000, guid: 180c1d2711d38d34184affd53c0e9588, type: 2}

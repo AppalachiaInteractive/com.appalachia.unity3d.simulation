@@ -17,6 +17,11 @@ MonoBehaviour:
   _initializer:
     _tags: []
     _resetToken: 
+  _objectId:
+    _increment: 0
+    _machine: 0
+    _timestamp: 0
+    _pid: 0
   _category: Common
   labelBackgroundColor: {r: 0.2264151, g: 0.2264151, b: 0.2264151, a: 1}
   labelTextColor: {r: 1, g: 1, b: 1, a: 1}

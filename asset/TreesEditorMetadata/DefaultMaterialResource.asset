@@ -17,4 +17,9 @@ MonoBehaviour:
   _initializer:
     _tags: []
     _resetToken: 
+  _objectId:
+    _increment: 0
+    _machine: 0
+    _timestamp: 0
+    _pid: 0
   material: {fileID: 2100000, guid: 7607ac719b7c9f943bb7948adc8d1b0d, type: 2}

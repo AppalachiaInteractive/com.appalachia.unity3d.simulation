@@ -15,11 +15,15 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading.OutputShaders
 
         #region Fields and Autoproperties
 
+        /// <inheritdoc />
         public override LazyShader Shader { get; } = new LazyShader(_GSR.barkShaders[0]);
+
+        /// <inheritdoc />
         public override string Name { get; } = Key;
 
         #endregion
 
+        /// <inheritdoc />
         public override void FinalizeSettings(Material material, bool atlas)
         {
             if (material.GetTexture("_MainTex3"))
@@ -32,6 +36,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading.OutputShaders
             }
         }
 
+        /// <inheritdoc />
         public override IEnumerable<OutputTextureProfile> GetOutputProfiles(bool atlas)
         {
             return new[]

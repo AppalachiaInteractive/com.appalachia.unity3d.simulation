@@ -16,6 +16,7 @@ namespace Appalachia.Simulation.ReactionSystem
 
         #endregion
 
+        /// <inheritdoc />
         protected override async AppaTask Initialize(Initializer initializer)
         {
             await base.Initialize(initializer);
@@ -35,14 +36,8 @@ namespace Appalachia.Simulation.ReactionSystem
                     continue;
                 }
 
-                group.Initialize(this, i);
+                group.OnInitialize(this, i);
             }
         }
-
-        #region Profiling
-
-        
-
-        #endregion
     }
 }

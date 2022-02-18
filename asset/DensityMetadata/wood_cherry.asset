@@ -12,12 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27f402b5f299425b8811f4aa1879a37f, type: 3}
   m_Name: wood_cherry
   m_EditorClassIdentifier: 
-  _cachedName: 
-  _niceName: 
+  _cachedName: wood_cherry
+  _niceName: Wood_cherry
   _initializer:
     _tags:
     - profileName
     _resetToken: 
+  _objectId:
+    _increment: 12632114
+    _machine: 14129404
+    _timestamp: 1645121943
+    _pid: -14768
   id: 157
   profileName: wood_cherry
   _category: Wood

@@ -3,6 +3,7 @@ using Appalachia.CI.Constants;
 using Appalachia.Core.Attributes.Editing;
 using Appalachia.Core.Extensions;
 using Appalachia.Simulation.ReactionSystem.Base;
+using Appalachia.Simulation.ReactionSystem.Contracts;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
 using UnityEngine;
@@ -10,9 +11,31 @@ using UnityEngine;
 namespace Appalachia.Simulation.ReactionSystem.Cameras
 {
     [Serializable]
-    public struct SubsystemCameraComponent 
+    public struct SubsystemCameraComponent
     {
+        #region Static Fields and Autoproperties
+
         [NonSerialized] private static AppaContext _context;
+
+        #endregion
+
+        #region Fields and Autoproperties
+
+        [HideInInspector] public bool centerPresent;
+        [HideInInspector] public bool hasReplacementShader;
+
+        [HideInInspector] public bool renderCameraPresent;
+        [HideInInspector] public bool shaderReplaced;
+
+        [SmartLabel]
+        [HorizontalGroup("Data", .5f)]
+        public Camera renderCamera;
+
+        [SmartLabel]
+        [HorizontalGroup("Data", .5f)]
+        public ReactionSubsystemCenter center;
+
+        #endregion
 
         private static AppaContext Context
         {
@@ -26,35 +49,12 @@ namespace Appalachia.Simulation.ReactionSystem.Cameras
                 return _context;
             }
         }
-        
-        private const string _PRF_PFX = nameof(SubsystemCameraComponent) + ".";
 
-        private static readonly ProfilerMarker _PRF_CreateCamera =
-            new(_PRF_PFX + nameof(CreateCamera));
+        public bool ShowRenderTexture => renderCamera != null;
 
-        private static readonly ProfilerMarker _PRF_UpdateCamera =
-            new(_PRF_PFX + nameof(UpdateCamera));
+        public RenderTexture RenderTexture => ShowRenderTexture ? renderCamera.targetTexture : null;
 
-        private static readonly ProfilerMarker _PRF_GetCameraRootPosition =
-            new(_PRF_PFX + nameof(GetCameraRootPosition));
-
-        [SmartLabel]
-        [HorizontalGroup("Data", .5f)]
-        public ReactionSubsystemCenter center;
-
-        [SmartLabel]
-        [HorizontalGroup("Data", .5f)]
-        public Camera renderCamera;
-
-        [HideInInspector] public bool renderCameraPresent;
-        [HideInInspector] public bool centerPresent;
-        [HideInInspector] public bool hasReplacementShader;
-        [HideInInspector] public bool shaderReplaced;
-
-        public RenderTexture renderTexture => showRenderTexture ? renderCamera.targetTexture : null;
-        public bool showRenderTexture => renderCamera != null;
-
-        public static Camera CreateCamera(ReactionSubsystemCamera baseCamera, string cameraName)
+        public static Camera CreateCamera(IReactionSubsystemCamera baseCamera, string cameraName)
         {
             using (_PRF_CreateCamera.Auto())
             {
@@ -64,7 +64,7 @@ namespace Appalachia.Simulation.ReactionSystem.Cameras
                     return null;
                 }
 
-                var baseTransform = baseCamera.transform;
+                var baseTransform = baseCamera.Transform;
 
                 var cameraTransform = baseTransform.Find(cameraName);
 
@@ -72,14 +72,13 @@ namespace Appalachia.Simulation.ReactionSystem.Cameras
 
                 if (!cameraTransform)
                 {
-                    var cameraGO = new GameObject(cameraName);
+                    var cameraGo = new GameObject(cameraName);
 
-                    cameraGO.transform.SetParent(baseTransform, false);
-                    cameraGO.transform.position = baseCamera.cameraOffset;
-                    cameraGO.transform.rotation =
-                        Quaternion.LookRotation(baseCamera.cameraDirection);
+                    cameraGo.transform.SetParent(baseTransform, false);
+                    cameraGo.transform.position = baseCamera.CameraOffset;
+                    cameraGo.transform.rotation = Quaternion.LookRotation(baseCamera.CameraDirection);
 
-                    var tempEditorCamera = cameraGO.AddComponent<Camera>();
+                    var tempEditorCamera = cameraGo.AddComponent<Camera>();
                     tempEditorCamera.orthographicSize = 50f;
                     subsystemCamera = tempEditorCamera;
                 }
@@ -94,7 +93,7 @@ namespace Appalachia.Simulation.ReactionSystem.Cameras
             }
         }
 
-        public static void UpdateCamera(ReactionSubsystemCamera baseCamera, Camera subsystemCamera)
+        public static void UpdateCamera(IReactionSubsystemCamera baseCamera, Camera subsystemCamera)
         {
             using (_PRF_UpdateCamera.Auto())
             {
@@ -103,7 +102,7 @@ namespace Appalachia.Simulation.ReactionSystem.Cameras
                     return;
                 }
 
-                if (baseCamera.hideCamera)
+                if (baseCamera.HideCamera)
                 {
                     subsystemCamera.gameObject.hideFlags = HideFlags.HideInHierarchy;
                 }
@@ -115,22 +114,22 @@ namespace Appalachia.Simulation.ReactionSystem.Cameras
                 subsystemCamera.farClipPlane = 10000;
                 subsystemCamera.nearClipPlane = -10000;
                 subsystemCamera.depth = -100;
-                subsystemCamera.clearFlags = baseCamera.clearFlags;
-                subsystemCamera.backgroundColor = baseCamera.backgroundColor;
+                subsystemCamera.clearFlags = baseCamera.ClearFlags;
+                subsystemCamera.backgroundColor = baseCamera.BackgroundColor;
                 subsystemCamera.renderingPath = RenderingPath.Forward;
                 subsystemCamera.useOcclusionCulling = true;
                 subsystemCamera.orthographic = true;
-                subsystemCamera.orthographicSize = baseCamera.orthographicSize;
-                subsystemCamera.cullingMask = baseCamera.cullingMask;
+                subsystemCamera.orthographicSize = baseCamera.OrthographicSize;
+                subsystemCamera.cullingMask = baseCamera.CullingMask;
                 subsystemCamera.allowMSAA = false;
                 subsystemCamera.allowHDR = false;
                 subsystemCamera.stereoTargetEye = StereoTargetEyeMask.None;
 
                 subsystemCamera.targetTexture = subsystemCamera.targetTexture.Recreate(
-                    baseCamera.renderTextureQuality,
-                    baseCamera.renderTextureFormat,
-                    baseCamera.filterMode,
-                    baseCamera.cullingMask
+                    baseCamera.RenderTextureQuality,
+                    baseCamera.RenderTextureFormat,
+                    baseCamera.FilterMode,
+                    baseCamera.CullingMask
                 );
             }
         }
@@ -147,5 +146,18 @@ namespace Appalachia.Simulation.ReactionSystem.Cameras
                 return Vector3.zero;
             }
         }
+
+        #region Profiling
+
+        private const string _PRF_PFX = nameof(SubsystemCameraComponent) + ".";
+
+        private static readonly ProfilerMarker _PRF_CreateCamera = new(_PRF_PFX + nameof(CreateCamera));
+
+        private static readonly ProfilerMarker _PRF_UpdateCamera = new(_PRF_PFX + nameof(UpdateCamera));
+
+        private static readonly ProfilerMarker _PRF_GetCameraRootPosition =
+            new(_PRF_PFX + nameof(GetCameraRootPosition));
+
+        #endregion
     }
 }

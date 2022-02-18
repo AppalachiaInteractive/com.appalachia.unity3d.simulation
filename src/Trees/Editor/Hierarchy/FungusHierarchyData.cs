@@ -12,40 +12,33 @@ namespace Appalachia.Simulation.Trees.Hierarchy
     [Serializable]
     public sealed class FungusHierarchyData : HierarchyData
     {
+        public FungusHierarchyData(int hierarchyID, int parentHierarchyID, ResponsiveSettingsType type) :
+            base(hierarchyID, parentHierarchyID, type)
+
+        {
+            geometry = new FungusSettings(type);
+        }
+
+        #region Fields and Autoproperties
+
         [TreeHeader, PropertyOrder(0)]
+
         //[FoldoutGroup("Shape", false)]
         [TabGroup("Shape", Paddingless = true)]
         public FungusSettings geometry;
 
+        #endregion
+
+        /// <inheritdoc />
         public override TreeComponentType type => TreeComponentType.Fungus;
 
-        protected override Object[] GetExternalObjects()
-        {
-            return new Object[] {geometry.prefab.prefab};
-        }
-
-        public FungusHierarchyData(int hierarchyID, int parentHierarchyID, ResponsiveSettingsType type) : base(
-            hierarchyID,
-            parentHierarchyID,
-            type)
-        
-        {
-            geometry = new FungusSettings(type);
-        }
-        
-        
-        protected override void CopyInternalGenerationSettings(HierarchyData model)
-        {
-            var cast = model as FungusHierarchyData;
-            geometry = cast.geometry.Clone();
-        }
-        
         /*public override void ToggleCheckboxes(bool enabled)
         {
             distribution.ToggleCheckboxes(enabled);
             geometry.ToggleCheckboxes(enabled);
         }*/
-        
+
+        /// <inheritdoc />
         public override string GetSortKey()
         {
             if ((geometry.prefab != null) && (geometry.prefab.prefab != null))
@@ -54,6 +47,19 @@ namespace Appalachia.Simulation.Trees.Hierarchy
             }
 
             return ZString.Format("{0:0000}", hierarchyID);
+        }
+
+        /// <inheritdoc />
+        protected override void CopyInternalGenerationSettings(HierarchyData model)
+        {
+            var cast = model as FungusHierarchyData;
+            geometry = cast.geometry.Clone();
+        }
+
+        /// <inheritdoc />
+        protected override Object[] GetExternalObjects()
+        {
+            return new Object[] { geometry.prefab.prefab };
         }
     }
 }

@@ -52,6 +52,7 @@ namespace Appalachia.Simulation.Trees
 
         #endregion
 
+        /// <inheritdoc />
         public override ResponsiveSettingsType settingsType => ResponsiveSettingsType.Branch;
 
         public BuildRequestLevel requestLevel => buildRequest.requestLevel;
@@ -75,31 +76,37 @@ namespace Appalachia.Simulation.Trees
             set => _samplePoints = value;
         }
 
+        /// <inheritdoc />
         public override void BuildDefault()
         {
             BranchBuildRequestManager.Default();
         }
 
+        /// <inheritdoc />
         public override void BuildForceFull()
         {
             BranchBuildRequestManager.ForceFull();
         }
 
+        /// <inheritdoc />
         public override void BuildFull()
         {
             BranchBuildRequestManager.Full();
         }
 
+        /// <inheritdoc />
         public override void CopyHierarchiesFrom(TSEDataContainer dc)
         {
             (dc as BranchDataContainer)?.branch.hierarchies.CopyHierarchiesTo(branch.hierarchies);
         }
 
+        /// <inheritdoc />
         public override void CopySettingsFrom(TSEDataContainer dc)
         {
             (dc as BranchDataContainer)?.settings.CopySettingsTo(settings);
         }
 
+        /// <inheritdoc />
         public override NameBasis GetNameBasis()
         {
             if (branch == null)
@@ -110,12 +117,14 @@ namespace Appalachia.Simulation.Trees
             return branch.nameBasis;
         }
 
+        /// <inheritdoc />
         public override void RebuildStructures()
         {
             branch.hierarchies.Rebuild();
             branch.shapes.Rebuild();
         }
 
+        /// <inheritdoc />
         public override void SetDirtyStates()
         {
             MarkAsModified();
@@ -167,6 +176,7 @@ namespace Appalachia.Simulation.Trees
             }
         }
 
+        /// <inheritdoc />
         public override void SettingsChanged(SettingsUpdateTarget target)
         {
             BranchBuildRequestManager.SettingsChanged(target);
@@ -203,6 +213,8 @@ namespace Appalachia.Simulation.Trees
         }
 
         [Button, HideIf(nameof(initialized))]
+
+        /// <inheritdoc />
         protected override async AppaTask Initialize(Initializer initializer)
         {
             try
@@ -289,11 +301,13 @@ namespace Appalachia.Simulation.Trees
             }
         }
 
+        /// <inheritdoc />
         protected override void SaveAllAssets(bool saveImpostors)
         {
             AssetManager.SaveAllAssets(this);
         }
 
+        /// <inheritdoc />
         protected override async AppaTask WhenDisabled()
 
         {

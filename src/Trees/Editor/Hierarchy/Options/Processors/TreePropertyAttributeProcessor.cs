@@ -11,31 +11,10 @@ using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Hierarchy.Options.Processors
 {
-
-
     [ResolverPriority(500)]
     public class TreePropertyAttributeProcessor : OdinAttributeProcessor
     {
-        public override void ProcessSelfAttributes(
-            InspectorProperty property,
-            List<Attribute> attributes)
-        {
-            if (property.Info.TypeOfValue == null) return;
-
-            var match = typeof(TreeProperty).IsAssignableFrom(property.Info.TypeOfValue);
-
-            if (match)
-            {
-                for (var i = attributes.Count - 1; i >= 0; i--)
-                {
-                    if (ShouldPushToChildren(attributes[i]))
-                    {
-                        attributes.Remove(attributes[i]);
-                    }
-                }
-            }
-        }
-
+        /// <inheritdoc />
         public override void ProcessChildMemberAttributes(
             InspectorProperty parentProperty,
             MemberInfo member,
@@ -94,12 +73,35 @@ namespace Appalachia.Simulation.Trees.Hierarchy.Options.Processors
             }
         }
 
+        /// <inheritdoc />
+        public override void ProcessSelfAttributes(InspectorProperty property, List<Attribute> attributes)
+        {
+            if (property.Info.TypeOfValue == null)
+            {
+                return;
+            }
+
+            var match = typeof(TreeProperty).IsAssignableFrom(property.Info.TypeOfValue);
+
+            if (match)
+            {
+                for (var i = attributes.Count - 1; i >= 0; i--)
+                {
+                    if (ShouldPushToChildren(attributes[i]))
+                    {
+                        attributes.Remove(attributes[i]);
+                    }
+                }
+            }
+        }
+
         private static bool ShouldPushToChildren(Attribute a)
         {
             if (a is OnValueChangedAttribute)
             {
                 return true;
             }
+
             if (a is PropertyRangeAttribute)
             {
                 return true;

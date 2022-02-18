@@ -12,7 +12,9 @@ namespace Appalachia.Simulation.Trees.UI.Selections.State
     {
         static TreeSelection()
         {
-            RegisterInstanceCallbacks.WithoutSorting().When.Object<TreeDataContainerSelection>().IsAvailableThen( i => _treeDataContainerSelection = i);
+            RegisterInstanceCallbacks.WithoutSorting()
+                                     .When.Object<TreeDataContainerSelection>()
+                                     .IsAvailableThen(i => _treeDataContainerSelection = i);
         }
 
         #region Static Fields and Autoproperties
@@ -28,6 +30,7 @@ namespace Appalachia.Simulation.Trees.UI.Selections.State
 
         #endregion
 
+        /// <inheritdoc />
         public override TreeDataContainerSelection selection
         {
             get

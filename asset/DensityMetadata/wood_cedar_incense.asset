@@ -12,12 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27f402b5f299425b8811f4aa1879a37f, type: 3}
   m_Name: wood_cedar_incense
   m_EditorClassIdentifier: 
-  _cachedName: 
-  _niceName: 
+  _cachedName: wood_cedar_incense
+  _niceName: Wood_cedar_incense
   _initializer:
     _tags:
     - profileName
     _resetToken: 
+  _objectId:
+    _increment: 12632113
+    _machine: 14129404
+    _timestamp: 1645121943
+    _pid: -14768
   id: 155
   profileName: wood_cedar_incense
   _category: Wood

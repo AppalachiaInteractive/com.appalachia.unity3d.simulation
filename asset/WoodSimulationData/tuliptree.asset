@@ -17,6 +17,11 @@ MonoBehaviour:
   _initializer:
     _tags: []
     _resetToken: 
+  _objectId:
+    _increment: 0
+    _machine: 0
+    _timestamp: 0
+    _pid: 0
   id: 79
   _category: Magnolia
   densityMetadata: {fileID: 11400000, guid: ebccb47dd1f6e8c4b96374fb5f58b276, type: 2}

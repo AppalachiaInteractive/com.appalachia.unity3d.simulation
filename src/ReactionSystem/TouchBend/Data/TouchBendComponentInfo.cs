@@ -41,6 +41,7 @@ namespace Appalachia.Simulation.ReactionSystem.TouchBend.Data
             return !Equals(left, right);
         }
 
+        /// <inheritdoc />
         [DebuggerStepThrough]
         public override bool Equals(object obj)
         {
@@ -62,6 +63,7 @@ namespace Appalachia.Simulation.ReactionSystem.TouchBend.Data
             return Equals((TouchBendComponentInfo)obj);
         }
 
+        /// <inheritdoc />
         [DebuggerStepThrough]
         public override int GetHashCode()
         {

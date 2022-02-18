@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using Appalachia.CI.Integration.Assets;
 using Appalachia.Simulation.Trees.Core.Settings;
 using Appalachia.Simulation.Trees.ResponsiveUI;
-using Appalachia.Utility.Extensions;
 using Sirenix.OdinInspector;
-using UnityEditor;
 
 namespace Appalachia.Simulation.Trees.Settings
 {
@@ -13,62 +11,6 @@ namespace Appalachia.Simulation.Trees.Settings
     [Title("Levels Of Detail & Quality", TitleAlignment = TitleAlignments.Centered)]
     public class LevelOfDetailSettingsCollection : ResponsiveSettings
     {
-        [PropertyTooltip("The levels of detail to use when rendering this tree.")]
-        [ListDrawerSettings(AddCopiesLastElement = false,
-            AlwaysAddDefaultValue = false,
-            CustomAddFunction = nameof(AddLevelOfDetailSetting),
-            Expanded = false, 
-            DraggableItems = false)]
-        public List<LevelOfDetailSettings> levelsOfDetail;
-
-        [BoxGroup("Impostor Settings"), InlineProperty, HideLabel, PropertyOrder(-100)]
-        public ImpostorSettings impostor;
-
-        [PropertyTooltip("Should a shadow caster mesh be created?."), PropertyOrder(-99)]
-        public bool shadowCaster;
-
-        public LevelOfDetailSettings this[int index] => levelsOfDetail[index];
-
-        public int levels => levelsOfDetail.Count;
-
-        public void SetIndices()
-        {
-            if (impostor == null)
-            {
-                impostor = new ImpostorSettings(settingsType);
-            }
-            
-            for (var i = 0; i < levelsOfDetail.Count; i++)
-            {
-                levelsOfDetail[i].level = i;
-            }
-        }
-
-        private LevelOfDetailSettings AddLevelOfDetailSetting()
-        {
-            var newLOD = new LevelOfDetailSettings(levelsOfDetail.Count, settingsType);
-            
-            if (levelsOfDetail.Count == 0)
-            {
-                
-            }
-            else
-            {
-                var last = levelsOfDetail[levelsOfDetail.Count - 1];
-
-                newLOD.leafFullness = last.leafFullness * .75f;
-                newLOD.showFruit = last.showFruit;
-                newLOD.showKnots = last.showKnots;
-                newLOD.branchesGeometryQuality = last.branchesGeometryQuality * .5f;
-                newLOD.leafGeometryQuality = last.leafGeometryQuality * .5f;
-                newLOD.rootsGeometryQuality = last.rootsGeometryQuality * .5f;
-                newLOD.trunkGeometryQuality = last.trunkGeometryQuality * .5f;
-                newLOD.doubleSidedLeafGeometry = last.doubleSidedLeafGeometry;
-            }
-
-            return newLOD;
-        }
-
         public LevelOfDetailSettingsCollection(ResponsiveSettingsType settingsType) : base(settingsType)
         {
             impostor = new ImpostorSettings(settingsType);
@@ -76,9 +18,8 @@ namespace Appalachia.Simulation.Trees.Settings
 
             if (settingsType == ResponsiveSettingsType.Tree)
             {
-                
                 var lod0 = new LevelOfDetailSettings(0, settingsType);
-                
+
                 var lod1 = new LevelOfDetailSettings(1, settingsType)
                 {
                     branchesGeometryQuality = .5f,
@@ -108,7 +49,7 @@ namespace Appalachia.Simulation.Trees.Settings
             }
             else if (settingsType == ResponsiveSettingsType.Branch)
             {
-                var lod0 = new LevelOfDetailSettings(0, settingsType);                
+                var lod0 = new LevelOfDetailSettings(0, settingsType);
 
                 levelsOfDetail.Add(lod0);
             }
@@ -133,14 +74,39 @@ namespace Appalachia.Simulation.Trees.Settings
             }
         }
 
+        #region Fields and Autoproperties
+
+        [PropertyTooltip("Should a shadow caster mesh be created?."), PropertyOrder(-99)]
+        public bool shadowCaster;
+
+        [BoxGroup("Impostor Settings"), InlineProperty, HideLabel, PropertyOrder(-100)]
+        public ImpostorSettings impostor;
+
+        [PropertyTooltip("The levels of detail to use when rendering this tree.")]
+        [ListDrawerSettings(
+            AddCopiesLastElement = false,
+            AlwaysAddDefaultValue = false,
+            CustomAddFunction = nameof(AddLevelOfDetailSetting),
+            Expanded = false,
+            DraggableItems = false
+        )]
+        public List<LevelOfDetailSettings> levelsOfDetail;
+
+        #endregion
+
+        public int levels => levelsOfDetail.Count;
+
+        public LevelOfDetailSettings this[int index] => levelsOfDetail[index];
+
+        /// <inheritdoc />
         public override void CopySettingsTo(ResponsiveSettings t)
         {
             if (t is LevelOfDetailSettingsCollection cast)
             {
                 impostor.CopySettingsTo(cast.impostor);
-                
+
                 cast.levelsOfDetail.Clear();
-                
+
                 for (var i = 0; i < levelsOfDetail.Count; i++)
                 {
                     var newLOD = new LevelOfDetailSettings(i, settingsType);
@@ -151,10 +117,10 @@ namespace Appalachia.Simulation.Trees.Settings
                 }
             }
         }
-        
+
         [Button]
         public void PushToAll()
-        { 
+        {
             var trees = AssetDatabaseManager.FindAssets("t:TreeDataContainer");
 
             for (var i = 0; i < trees.Length; i++)
@@ -164,7 +130,7 @@ namespace Appalachia.Simulation.Trees.Settings
                 var treePath = AssetDatabaseManager.GUIDToAssetPath(treeGuid);
 
                 var tree = AssetDatabaseManager.LoadAssetAtPath<TreeDataContainer>(treePath);
-                
+
                 var settings = tree.settings.lod;
 
                 if (settings == this)
@@ -176,9 +142,46 @@ namespace Appalachia.Simulation.Trees.Settings
 
                 tree.MarkAsModified();
                 tree.settings.MarkAsModified();
-                
+
                 tree.Save();
             }
+        }
+
+        public void SetIndices()
+        {
+            if (impostor == null)
+            {
+                impostor = new ImpostorSettings(settingsType);
+            }
+
+            for (var i = 0; i < levelsOfDetail.Count; i++)
+            {
+                levelsOfDetail[i].level = i;
+            }
+        }
+
+        private LevelOfDetailSettings AddLevelOfDetailSetting()
+        {
+            var newLOD = new LevelOfDetailSettings(levelsOfDetail.Count, settingsType);
+
+            if (levelsOfDetail.Count == 0)
+            {
+            }
+            else
+            {
+                var last = levelsOfDetail[levelsOfDetail.Count - 1];
+
+                newLOD.leafFullness = last.leafFullness * .75f;
+                newLOD.showFruit = last.showFruit;
+                newLOD.showKnots = last.showKnots;
+                newLOD.branchesGeometryQuality = last.branchesGeometryQuality * .5f;
+                newLOD.leafGeometryQuality = last.leafGeometryQuality * .5f;
+                newLOD.rootsGeometryQuality = last.rootsGeometryQuality * .5f;
+                newLOD.trunkGeometryQuality = last.trunkGeometryQuality * .5f;
+                newLOD.doubleSidedLeafGeometry = last.doubleSidedLeafGeometry;
+            }
+
+            return newLOD;
         }
     }
 }

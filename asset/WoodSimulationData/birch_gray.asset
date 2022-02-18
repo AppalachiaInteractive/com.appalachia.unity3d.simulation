@@ -17,6 +17,11 @@ MonoBehaviour:
   _initializer:
     _tags: []
     _resetToken: 
+  _objectId:
+    _increment: 0
+    _machine: 0
+    _timestamp: 0
+    _pid: 0
   id: 90
   _category: Birch
   densityMetadata: {fileID: 11400000, guid: 5403c686740cb754ca18fd03137d1000, type: 2}

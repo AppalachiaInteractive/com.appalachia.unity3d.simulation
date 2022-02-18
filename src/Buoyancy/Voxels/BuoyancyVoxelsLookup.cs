@@ -9,19 +9,22 @@ namespace Appalachia.Simulation.Buoyancy.Voxels
     public class BuoyancyVoxelsLookup : AppaLookup<string, BuoyancyVoxelsDataStore, stringList,
         BuoyancyVoxelsDataStoreList>
     {
-        protected override string GetDisplayTitle(string key, BuoyancyVoxelsDataStore value)
+        /// <inheritdoc />
+        protected override Color GetDisplayColor(string key, BuoyancyVoxelsDataStore value)
         {
-            return value.identifier;
+            return Color.white;
         }
 
+        /// <inheritdoc />
         protected override string GetDisplaySubtitle(string key, BuoyancyVoxelsDataStore value)
         {
             return value.resolution.ToString();
         }
 
-        protected override Color GetDisplayColor(string key, BuoyancyVoxelsDataStore value)
+        /// <inheritdoc />
+        protected override string GetDisplayTitle(string key, BuoyancyVoxelsDataStore value)
         {
-            return Color.white;
+            return value.identifier;
         }
     }
 }

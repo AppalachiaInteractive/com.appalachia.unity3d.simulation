@@ -10,26 +10,6 @@ namespace Appalachia.Simulation.Trees.Shape.Collections
     [Serializable]
     public class TreeShapes : ShapeCollection<TreeShapes>
     {
-        
-        public List<TrunkShapeData> trunkShapes;
-        public List<BranchShapeData> branchShapes;
-        public List<FruitShapeData> fruitShapes;
-        public List<KnotShapeData> knotShapes;
-        public List<LeafShapeData> leafShapes;
-        public List<RootShapeData> rootShapes;
-        public List<FungusShapeData> fungusShapes;
-
-        public override void CopyPropertiesToClone(TreeShapes clone)
-        {
-            clone.trunkShapes = trunkShapes.Select(t => t.Clone() as TrunkShapeData).ToList();
-            clone.rootShapes = rootShapes.Select(t => t.Clone() as RootShapeData).ToList();
-            clone.branchShapes = branchShapes.Select(t => t.Clone() as BranchShapeData).ToList();
-            clone.leafShapes = leafShapes.Select(t => t.Clone() as LeafShapeData).ToList();
-            clone.fruitShapes = fruitShapes.Select(t => t.Clone() as FruitShapeData).ToList();
-            clone.knotShapes = knotShapes.Select(t => t.Clone() as KnotShapeData).ToList();
-            clone.fungusShapes = fungusShapes.Select(t => t.Clone() as FungusShapeData).ToList();
-        }
-
         public TreeShapes()
         {
             trunkShapes = new List<TrunkShapeData>();
@@ -41,6 +21,81 @@ namespace Appalachia.Simulation.Trees.Shape.Collections
             fungusShapes = new List<FungusShapeData>();
         }
 
+        #region Fields and Autoproperties
+
+        public List<BranchShapeData> branchShapes;
+        public List<FruitShapeData> fruitShapes;
+        public List<FungusShapeData> fungusShapes;
+        public List<KnotShapeData> knotShapes;
+        public List<LeafShapeData> leafShapes;
+        public List<RootShapeData> rootShapes;
+
+        public List<TrunkShapeData> trunkShapes;
+
+        #endregion
+
+        /// <inheritdoc />
+        public override IList this[int i]
+        {
+            get
+            {
+                if ((i < 0) || (i > 6))
+                {
+                    throw new IndexOutOfRangeException("Range must be between 0 and 6");
+                }
+
+                if (i == 0)
+                {
+                    return trunkShapes;
+                }
+
+                if (i == 1)
+                {
+                    return rootShapes;
+                }
+
+                if (i == 2)
+                {
+                    return branchShapes;
+                }
+
+                if (i == 3)
+                {
+                    return knotShapes;
+                }
+
+                if (i == 4)
+                {
+                    return leafShapes;
+                }
+
+                if (i == 5)
+                {
+                    return fruitShapes;
+                }
+
+                if (i == 6)
+                {
+                    return fungusShapes;
+                }
+
+                return fruitShapes;
+            }
+        }
+
+        /// <inheritdoc />
+        public override void CopyPropertiesToClone(TreeShapes clone)
+        {
+            clone.trunkShapes = trunkShapes.Select(t => t.Clone() as TrunkShapeData).ToList();
+            clone.rootShapes = rootShapes.Select(t => t.Clone() as RootShapeData).ToList();
+            clone.branchShapes = branchShapes.Select(t => t.Clone() as BranchShapeData).ToList();
+            clone.leafShapes = leafShapes.Select(t => t.Clone() as LeafShapeData).ToList();
+            clone.fruitShapes = fruitShapes.Select(t => t.Clone() as FruitShapeData).ToList();
+            clone.knotShapes = knotShapes.Select(t => t.Clone() as KnotShapeData).ToList();
+            clone.fungusShapes = fungusShapes.Select(t => t.Clone() as FungusShapeData).ToList();
+        }
+
+        /// <inheritdoc />
         public override IEnumerator<ShapeData> GetEnumerator()
         {
             foreach (var shape in trunkShapes)
@@ -79,6 +134,19 @@ namespace Appalachia.Simulation.Trees.Shape.Collections
             }
         }
 
+        /// <inheritdoc />
+        protected override void ClearInternal()
+        {
+            trunkShapes.Clear();
+            branchShapes.Clear();
+            fruitShapes.Clear();
+            knotShapes.Clear();
+            leafShapes.Clear();
+            rootShapes.Clear();
+            fungusShapes.Clear();
+        }
+
+        /// <inheritdoc />
         protected override ShapeData CreateNewShape(
             TreeComponentType type,
             int hierarchyID,
@@ -168,6 +236,7 @@ namespace Appalachia.Simulation.Trees.Shape.Collections
             }
         }
 
+        /// <inheritdoc />
         protected override IEnumerable<ShapeData> GetShapesInternal(TreeComponentType type)
         {
             switch (type)
@@ -191,6 +260,7 @@ namespace Appalachia.Simulation.Trees.Shape.Collections
             }
         }
 
+        /// <inheritdoc />
         protected override void RemoveShape(ShapeData shape)
         {
             switch (shape.type)
@@ -219,38 +289,6 @@ namespace Appalachia.Simulation.Trees.Shape.Collections
                 default:
                     throw new ArgumentOutOfRangeException(nameof(shape.type), shape.type, null);
             }
-        }
-
-        public override IList this[int i]
-        {
-            get
-            {
-                if ((i < 0) || (i > 6))
-                {
-                    throw new IndexOutOfRangeException("Range must be between 0 and 6");
-                }
-
-                if (i == 0) return trunkShapes;
-                if (i == 1) return rootShapes;
-                if (i == 2) return branchShapes;
-                if (i == 3) return knotShapes;
-                if (i == 4) return leafShapes;
-                if (i == 5) return fruitShapes;
-                if (i == 6) return fungusShapes;
-
-                return fruitShapes;
-            }
-        }
-
-        protected override void ClearInternal()
-        {
-            trunkShapes.Clear();
-            branchShapes.Clear();
-            fruitShapes.Clear();
-            knotShapes.Clear();
-            leafShapes.Clear();
-            rootShapes.Clear();
-            fungusShapes.Clear();
         }
     }
 }

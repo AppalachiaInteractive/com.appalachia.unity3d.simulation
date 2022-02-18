@@ -9,6 +9,14 @@ namespace Appalachia.Simulation.Trees.Hierarchy.Options.Properties
         {
         }
 
+        /// <inheritdoc />
+        public override string CloneElement(string model)
+        {
+            return model;
+        }
+
+        #region ICloneable<stringTree> Members
+
         public stringTree Clone()
         {
             var clone = new stringTree(CloneElement(defaultValue));
@@ -17,9 +25,6 @@ namespace Appalachia.Simulation.Trees.Hierarchy.Options.Properties
             return clone;
         }
 
-        public override string CloneElement(string model)
-        {
-            return model;
-        }
+        #endregion
     }
 }

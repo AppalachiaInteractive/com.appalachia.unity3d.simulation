@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Appalachia.Core.Objects.Root;
 using Appalachia.Simulation.ReactionSystem.Base;
-using Appalachia.Simulation.ReactionSystem.Cameras;
+using Appalachia.Simulation.ReactionSystem.Contracts;
 using Appalachia.Utility.Reflection.Extensions;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
@@ -12,41 +12,49 @@ using Object = UnityEngine.Object;
 namespace Appalachia.Simulation.ReactionSystem
 {
     [Serializable]
-    public class ReactionSubsystemGroup : AppalachiaSimpleBase
+    public class ReactionSubsystemGroup : AppalachiaBase<ReactionSubsystemGroup>
     {
         #region Constants and Static Readonly
 
-        private const string cameraFoldoutName = cameraHideName + "/Camera";
-        private const string cameraHideName = nameof(lockSize);
-        private const string subsystemGroupName = "Create New Subsystems";
-        private const string subsystemHorizontalGroupName = subsystemGroupName + "/Create";
-        private const string subsystemsName = "Subsystems";
-        private const string titleGroupDetailName = titleGroupName + "/Details";
+        private const string CAMERA_FOLDOUT_NAME = CAMERA_HIDE_NAME + "/Camera";
+        private const string CAMERA_HIDE_NAME = nameof(lockSize);
+        private const string SUBSYSTEM_GROUP_NAME = "Create New Subsystems";
+        private const string SUBSYSTEM_HORIZONTAL_GROUP_NAME = SUBSYSTEM_GROUP_NAME + "/Create";
+        private const string SUBSYSTEMS_NAME = "Subsystems";
+        private const string TITLE_GROUP_DETAIL_NAME = TITLE_GROUP_NAME + "/Details";
 
-        private const string titleGroupName = "Group Profile";
+        private const string TITLE_GROUP_NAME = "Group Profile";
 
         #endregion
 
+        public ReactionSubsystemGroup()
+        {
+        }
+
+        public ReactionSubsystemGroup(Object owner) : base(owner)
+        {
+        }
+
         #region Fields and Autoproperties
 
-        [TitleGroup(titleGroupName)]
+        [TitleGroup(TITLE_GROUP_NAME)]
         [OnValueChanged(nameof(InitializeRoot))]
         public string groupName;
 
-        [HorizontalGroup(titleGroupDetailName)]
+        [HorizontalGroup(TITLE_GROUP_DETAIL_NAME)]
         [OnValueChanged(nameof(UpdateActive))]
         public bool enabled;
 
-        [HorizontalGroup(titleGroupDetailName)]
+        [HorizontalGroup(TITLE_GROUP_DETAIL_NAME)]
         [ReadOnly]
         public int groupIndex;
 
-        [TitleGroup(subsystemsName)]
+        [TitleGroup(SUBSYSTEMS_NAME)]
         [ListDrawerSettings(HideAddButton = true)]
-        public List<ReactionSubsystemBase> subsystems;
+        public List<IReactionSubsystem> subsystems;
 
-        [HideIfGroup(cameraHideName)]
-        [FoldoutGroup(cameraFoldoutName)]
+        [HideIfGroup(CAMERA_HIDE_NAME)]
+        [FoldoutGroup(CAMERA_FOLDOUT_NAME)]
         [PropertyRange(1, 4096)]
         [OnValueChanged(nameof(InitializeCamera))]
         public int orthographicSize = 50;
@@ -63,8 +71,8 @@ namespace Appalachia.Simulation.ReactionSystem
 
         private ValueDropdownList<Type> _subsystemTypeList;
 
-        [BoxGroup(subsystemGroupName)]
-        [HorizontalGroup(subsystemHorizontalGroupName, .8f)]
+        [BoxGroup(SUBSYSTEM_GROUP_NAME)]
+        [HorizontalGroup(SUBSYSTEM_HORIZONTAL_GROUP_NAME, .8f)]
         [ValueDropdown(nameof(SubsystemTypeList))]
         [LabelWidth(100)]
         [LabelText("Subsystem")]
@@ -73,20 +81,17 @@ namespace Appalachia.Simulation.ReactionSystem
 
         #endregion
 
-        private bool _canCreateSubsystem => (_mainSystem != null) && (createSubsystemType != null);
+        private bool CanCreateSubsystem => (_mainSystem != null) && (createSubsystemType != null);
 
         private ValueDropdownList<Type> SubsystemTypeList
         {
             get
             {
-                if (_subsystemTypeList == null)
-                {
-                    _subsystemTypeList = new ValueDropdownList<Type>();
-                }
+                _subsystemTypeList ??= new ValueDropdownList<Type>();
 
                 if (_subsystemTypeList.Count == 0)
                 {
-                    var inheritors = typeof(ReactionSubsystemBase).GetAllConcreteInheritors();
+                    var inheritors = typeof(ReactionSubsystemBase<>).GetAllConcreteInheritors();
 
                     for (var i = 0; i < inheritors.Count; i++)
                     {
@@ -100,10 +105,10 @@ namespace Appalachia.Simulation.ReactionSystem
             }
         }
 
-        [BoxGroup(subsystemGroupName)]
-        [HorizontalGroup(subsystemHorizontalGroupName, .1f)]
+        [BoxGroup(SUBSYSTEM_GROUP_NAME)]
+        [HorizontalGroup(SUBSYSTEM_HORIZONTAL_GROUP_NAME, .1f)]
         [Button("Create")]
-        [EnableIf(nameof(_canCreateSubsystem))]
+        [EnableIf(nameof(CanCreateSubsystem))]
         public void CreateNewSubsystem()
         {
             using (_PRF_CreateNewSubsystem.Auto())
@@ -115,13 +120,13 @@ namespace Appalachia.Simulation.ReactionSystem
 
                 var subsystem = child.AddComponent(createSubsystemType);
 
-                subsystems.Add(subsystem as ReactionSubsystemBase);
+                subsystems.Add(subsystem as IReactionSubsystem);
             }
         }
 
-        public void Initialize(ReactionSystem mainSystem, int groupIndex)
+        public void OnInitialize(ReactionSystem mainSystem, int groupIndex)
         {
-            using (_PRF_Initialize.Auto())
+            using (_PRF_OnInitialize.Auto())
             {
                 _mainSystem = mainSystem;
                 this.groupIndex = groupIndex;
@@ -178,10 +183,7 @@ namespace Appalachia.Simulation.ReactionSystem
 
                 if (_mainSystem != null)
                 {
-                    if (_mainSystem.groups == null)
-                    {
-                        _mainSystem.groups = new List<ReactionSubsystemGroup>();
-                    }
+                    _mainSystem.groups ??= new List<ReactionSubsystemGroup>();
 
                     for (var i = 0; i < _mainSystem.groups.Count; i++)
                     {
@@ -189,10 +191,7 @@ namespace Appalachia.Simulation.ReactionSystem
 
                         group.groupIndex = i;
 
-                        if (group.subsystems == null)
-                        {
-                            group.subsystems = new List<ReactionSubsystemBase>();
-                        }
+                        group.subsystems ??= new List<IReactionSubsystem>();
 
                         for (var j = 0; j < group.subsystems.Count; j++)
                         {
@@ -215,13 +214,13 @@ namespace Appalachia.Simulation.ReactionSystem
 
                 if (subsystems == null)
                 {
-                    subsystems = new List<ReactionSubsystemBase>();
+                    subsystems = new List<IReactionSubsystem>();
                     return;
                 }
 
                 if (subsystems.Count == 0)
                 {
-                    var subs = _root.GetComponentsInChildren<ReactionSubsystemBase>();
+                    var subs = _root.GetComponentsInChildren<IReactionSubsystem>();
 
                     foreach (var sub in subs)
                     {
@@ -239,14 +238,14 @@ namespace Appalachia.Simulation.ReactionSystem
                         continue;
                     }
 
-                    if (checkCamera && subsystem is ReactionSubsystemCamera cam)
+                    if (checkCamera && subsystem is IReactionSubsystemCamera cam)
                     {
-                        cam.orthographicSize = orthographicSize;
+                        cam.OrthographicSize = orthographicSize;
                     }
 
                     if (updateActive)
                     {
-                        subsystem.gameObject.SetActive(doEnable);
+                        subsystem.GameObject.SetActive(doEnable);
                     }
 
                     if (initializeSubsystems)
@@ -259,24 +258,23 @@ namespace Appalachia.Simulation.ReactionSystem
 
         #region Profiling
 
-        private const string _PRF_PFX = nameof(ReactionSubsystemGroup) + ".";
-
-        private static readonly ProfilerMarker _PRF_Initialize = new(_PRF_PFX + nameof(Initialize));
+        private static readonly ProfilerMarker _PRF_CreateNewSubsystem =
+            new(_PRF_PFX + nameof(CreateNewSubsystem));
 
         private static readonly ProfilerMarker _PRF_InitializeAll = new(_PRF_PFX + nameof(InitializeAll));
 
-        private static readonly ProfilerMarker _PRF_InitializeRoot = new(_PRF_PFX + nameof(InitializeRoot));
-
         private static readonly ProfilerMarker _PRF_InitializeCamera =
             new(_PRF_PFX + nameof(InitializeCamera));
+
+        private static readonly ProfilerMarker _PRF_InitializeRoot = new(_PRF_PFX + nameof(InitializeRoot));
+
+        private static readonly ProfilerMarker _PRF_OnInitialize =
+            new ProfilerMarker(_PRF_PFX + nameof(OnInitialize));
 
         private static readonly ProfilerMarker _PRF_UpdateActive = new(_PRF_PFX + nameof(UpdateActive));
 
         private static readonly ProfilerMarker _PRF_UpdateSubsystems =
             new(_PRF_PFX + nameof(UpdateSubsystems));
-
-        private static readonly ProfilerMarker _PRF_CreateNewSubsystem =
-            new(_PRF_PFX + nameof(CreateNewSubsystem));
 
         #endregion
     }

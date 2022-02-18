@@ -9,14 +9,21 @@ namespace Appalachia.Simulation.Trees.Settings
     [Title("Material Generation", TitleAlignment = TitleAlignments.Centered)]
     public class MaterialSettings : ResponsiveSettings
     {
-        [PropertyTooltip("Should images be arranged on the atlas based on the mesh " +
-            "area they take up, or equally?")]
+        public MaterialSettings(ResponsiveSettingsType settingsType) : base(settingsType)
+        {
+            defaultMaterials = new DefaultMaterialSettingsPublic(settingsType);
+        }
+
+        #region Fields and Autoproperties
+
+        [PropertyTooltip(
+            "Should images be arranged on the atlas based on the mesh " + "area they take up, or equally?"
+        )]
         [BoxGroup("Atlassing")]
         [ToggleLeft]
         [OnValueChanged(nameof(MaterialGenerationChanged))]
         public bool imageAtlasIsProportionalToArea;
 
-   
         [HideIf(nameof(hideTreeSettings))]
         [PropertyTooltip("Define the materials used when new hierarchies are created.")]
         [FoldoutGroup("Default Materials")]
@@ -24,12 +31,11 @@ namespace Appalachia.Simulation.Trees.Settings
         [OnValueChanged(nameof(MaterialGenerationChanged))]
         public DefaultMaterialSettingsPublic defaultMaterials;
 
+        #endregion
+
         private bool hideTreeSettings => settingsType != ResponsiveSettingsType.Tree;
-        
-        public MaterialSettings(ResponsiveSettingsType settingsType) : base(settingsType)
-        {
-            defaultMaterials = new DefaultMaterialSettingsPublic(settingsType);
-        }
+
+        /// <inheritdoc />
         public override void CopySettingsTo(ResponsiveSettings t)
         {
             if (t is MaterialSettings cast)

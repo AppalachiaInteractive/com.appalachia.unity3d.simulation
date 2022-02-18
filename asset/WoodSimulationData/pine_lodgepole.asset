@@ -17,6 +17,11 @@ MonoBehaviour:
   _initializer:
     _tags: []
     _resetToken: 
+  _objectId:
+    _increment: 0
+    _machine: 0
+    _timestamp: 0
+    _pid: 0
   id: 142
   _category: Pine
   densityMetadata: {fileID: 11400000, guid: d3f4ad1dd4482c14198a8f8b92542e70, type: 2}

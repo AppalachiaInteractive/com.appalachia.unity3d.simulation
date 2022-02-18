@@ -38,6 +38,7 @@ namespace Appalachia.Simulation.Wind
             }
         }
 
+        /// <inheritdoc />
         protected override async AppaTask Initialize(Initializer initializer)
         {
             await base.Initialize(initializer);
@@ -70,9 +71,5 @@ namespace Appalachia.Simulation.Wind
             );
 #endif
         }
-
-        #region Profiling
-
-        #endregion
     }
 }

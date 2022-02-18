@@ -39,16 +39,6 @@ namespace Appalachia.Simulation.Trees.Data
 
         #endregion
 
-        #region Event Functions
-
-        protected override async AppaTask WhenEnabled()
-        {
-            await base.WhenEnabled();
-            Setup();
-        }
-
-        #endregion
-
         [Button]
         public void Setup()
         {
@@ -102,17 +92,31 @@ namespace Appalachia.Simulation.Trees.Data
             }
         }
 
+        /// <inheritdoc />
+        protected override async AppaTask WhenEnabled()
+        {
+            await base.WhenEnabled();
+            using (_PRF_WhenEnabled.Auto())
+            {
+                Setup();
+            }
+        }
+
         #region ISerializationCallbackReceiver Members
 
-        public void OnBeforeSerialize()
+        /// <inheritdoc />
+        public override void OnBeforeSerialize()
         {
             using var scope = APPASERIALIZE.OnBeforeSerialize();
+            base.OnBeforeSerialize();
             Setup();
         }
 
-        public void OnAfterDeserialize()
+        /// <inheritdoc />
+        public override void OnAfterDeserialize()
         {
             using var scope = APPASERIALIZE.OnAfterDeserialize();
+            base.OnBeforeSerialize();
             Setup();
         }
 

@@ -19,10 +19,13 @@ namespace Appalachia.Simulation.Trees.Metadata.Hierarchy.Options.Properties
             return clone;
         }
 
-        public override LimbBreakUVMappingStyle CloneElement(LimbBreakUVMappingStyle model)
+        /// <inheritdoc />
+public override LimbBreakUVMappingStyle CloneElement(LimbBreakUVMappingStyle model)
         {
             return model;
         }
     }
 }
 */
+
+

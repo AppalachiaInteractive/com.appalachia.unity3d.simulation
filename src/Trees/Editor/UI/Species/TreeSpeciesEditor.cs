@@ -31,11 +31,21 @@ namespace Appalachia.Simulation.Trees.UI.Species
     {
         static TreeSpeciesEditor()
         {
-            RegisterInstanceCallbacks.WithoutSorting().When.Object<TreeSpeciesEditorSelection>().IsAvailableThen( i => _treeSpeciesEditorSelection = i);
-            RegisterInstanceCallbacks.WithoutSorting().When.Object<RendererDebuggingSettings>().IsAvailableThen( i => _rendererDebuggingSettings = i);
-            RegisterInstanceCallbacks.WithoutSorting().When.Object<TreeGlobalSettings>().IsAvailableThen( i => _treeGlobalSettings = i);
-            RegisterInstanceCallbacks.WithoutSorting().When.Object<TreeGizmoStyle>().IsAvailableThen( i => _treeGizmoStyle = i);
-            RegisterInstanceCallbacks.WithoutSorting().When.Object<TreeGizmoDelegate>().IsAvailableThen( i => _treeGizmoDelegate = i);
+            RegisterInstanceCallbacks.WithoutSorting()
+                                     .When.Object<TreeSpeciesEditorSelection>()
+                                     .IsAvailableThen(i => _treeSpeciesEditorSelection = i);
+            RegisterInstanceCallbacks.WithoutSorting()
+                                     .When.Object<RendererDebuggingSettings>()
+                                     .IsAvailableThen(i => _rendererDebuggingSettings = i);
+            RegisterInstanceCallbacks.WithoutSorting()
+                                     .When.Object<TreeGlobalSettings>()
+                                     .IsAvailableThen(i => _treeGlobalSettings = i);
+            RegisterInstanceCallbacks.WithoutSorting()
+                                     .When.Object<TreeGizmoStyle>()
+                                     .IsAvailableThen(i => _treeGizmoStyle = i);
+            RegisterInstanceCallbacks.WithoutSorting()
+                                     .When.Object<TreeGizmoDelegate>()
+                                     .IsAvailableThen(i => _treeGizmoDelegate = i);
         }
 
         #region Static Fields and Autoproperties
@@ -137,6 +147,7 @@ namespace Appalachia.Simulation.Trees.UI.Species
 
         #region Event Functions
 
+        /// <inheritdoc />
         protected override void OnEnable()
         {
             base.OnEnable();
@@ -144,6 +155,7 @@ namespace Appalachia.Simulation.Trees.UI.Species
             TreeBuildManager._enabled = true;
         }
 
+        /// <inheritdoc />
         protected override void OnDisable()
         {
             var instanceID = GetInstanceID();
@@ -191,6 +203,7 @@ namespace Appalachia.Simulation.Trees.UI.Species
 
         #endregion
 
+        /// <inheritdoc />
         public override void OnInspectorGUI()
         {
             try
@@ -706,6 +719,7 @@ namespace Appalachia.Simulation.Trees.UI.Species
             }
         }
 
+        /// <inheritdoc />
         protected override void OnHeaderGUI()
         {
         }

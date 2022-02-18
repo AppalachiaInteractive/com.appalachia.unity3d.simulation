@@ -1,3 +1,4 @@
+using System;
 using Appalachia.Core.Extensions;
 using Appalachia.Core.Objects.Root;
 using Appalachia.Simulation.Trees.Generation.Texturing.Materials.Input;
@@ -6,6 +7,7 @@ using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Generation.Texturing.Input
 {
+    [Serializable]
     public class InputTextureUsageElement : AppalachiaSimpleBase
     {
         public InputTextureUsageElement(

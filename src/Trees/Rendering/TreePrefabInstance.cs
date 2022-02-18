@@ -3,6 +3,7 @@
 using System.Linq;
 using Appalachia.Core.Objects.Root;
 using Appalachia.Utility.Async;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -14,39 +15,44 @@ namespace Appalachia.Simulation.Trees.Rendering
     [ExecuteAlways]
     public sealed class TreePrefabInstance : AppalachiaBehaviour<TreePrefabInstance>
     {
+        #region Fields and Autoproperties
+
         public TreePrefabInstanceData instanceData;
 
+        #endregion
+
+        /// <inheritdoc />
         protected override async AppaTask WhenEnabled()
         {
             await base.WhenEnabled();
-            
-            var lightProbeProxyVolume = FindObjectsOfType<LightProbeProxyVolume>()
-                                       .OrderByDescending(lppv => lppv.boundsGlobal.size)
-                                       .FirstOrDefault(
-                                            lppv => lppv.boundsGlobal.Contains(transform.position)
-                                        );
 
-            var renderers = GetComponentsInChildren<MeshRenderer>();
-
-            foreach (var r in renderers)
+            using (_PRF_WhenEnabled.Auto())
             {
-                if ((lightProbeProxyVolume != null) && (r.lightProbeProxyVolumeOverride == null))
+                var lightProbeProxyVolume = FindObjectsOfType<LightProbeProxyVolume>()
+                                           .OrderByDescending(lppv => lppv.boundsGlobal.size)
+                                           .FirstOrDefault(
+                                                lppv => lppv.boundsGlobal.Contains(transform.position)
+                                            );
+
+                var renderers = GetComponentsInChildren<MeshRenderer>();
+
+                foreach (var r in renderers)
                 {
-                    r.lightProbeUsage = LightProbeUsage.UseProxyVolume;
-                    r.lightProbeProxyVolumeOverride = lightProbeProxyVolume.gameObject;
-                }
-                else
-                {
-                    r.lightProbeUsage = LightProbeUsage.BlendProbes;
-                }
+                    if ((lightProbeProxyVolume != null) && (r.lightProbeProxyVolumeOverride == null))
+                    {
+                        r.lightProbeUsage = LightProbeUsage.UseProxyVolume;
+                        r.lightProbeProxyVolumeOverride = lightProbeProxyVolume.gameObject;
+                    }
+                    else
+                    {
+                        r.lightProbeUsage = LightProbeUsage.BlendProbes;
+                    }
 #if UNITY_EDITOR
 
-                UnityEditor.GameObjectUtility.SetStaticEditorFlags(
-                    r.gameObject,
-                    UnityEditor.StaticEditorFlags.ContributeGI
-                );
-                r.receiveGI = ReceiveGI.LightProbes;
+                    GameObjectUtility.SetStaticEditorFlags(r.gameObject, StaticEditorFlags.ContributeGI);
+                    r.receiveGI = ReceiveGI.LightProbes;
 #endif
+                }
             }
         }
     }

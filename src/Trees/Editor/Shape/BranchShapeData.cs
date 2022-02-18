@@ -7,13 +7,18 @@ namespace Appalachia.Simulation.Trees.Shape
     [Serializable]
     public sealed class BranchShapeData : BarkShapeData
     {
-        public override TreeComponentType type => TreeComponentType.Branch;
-
-        protected override ShapeData GetNew()
+        public BranchShapeData(int shapeID, int hierarchyID, int parentShapeID) : base(
+            shapeID,
+            hierarchyID,
+            parentShapeID
+        )
         {
-            return new BranchShapeData(shapeID, hierarchyID, parentShapeID);
         }
 
+        /// <inheritdoc />
+        public override TreeComponentType type => TreeComponentType.Branch;
+
+        /// <inheritdoc />
         protected override void Clone(ShapeData shapeData)
         {
             var s = shapeData as BranchShapeData;
@@ -22,8 +27,10 @@ namespace Appalachia.Simulation.Trees.Shape
             s.breakOffset = breakOffset;
         }
 
-        public BranchShapeData(int shapeID, int hierarchyID, int parentShapeID) : base(shapeID, hierarchyID, parentShapeID)
+        /// <inheritdoc />
+        protected override ShapeData GetNew()
         {
+            return new BranchShapeData(shapeID, hierarchyID, parentShapeID);
         }
     }
 }

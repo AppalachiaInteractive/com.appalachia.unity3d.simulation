@@ -9,42 +9,38 @@ using Object = UnityEngine.Object;
 
 namespace Appalachia.Simulation.Trees.Hierarchy
 {
-    
     [Serializable]
     public sealed class KnotHierarchyData : HierarchyData
     {
+        public KnotHierarchyData(int hierarchyID, int parentHierarchyID, ResponsiveSettingsType type) : base(
+            hierarchyID,
+            parentHierarchyID,
+            type
+        )
+        {
+            geometry = new KnotSettings(type);
+        }
+
+        #region Fields and Autoproperties
+
         [TreeHeader, PropertyOrder(0)]
+
         //[FoldoutGroup("Shape", false)]
         [TabGroup("Shape", Paddingless = true)]
         public KnotSettings geometry;
 
+        #endregion
+
+        /// <inheritdoc />
         public override TreeComponentType type => TreeComponentType.Knot;
 
-        protected override Object[] GetExternalObjects()
-        {
-            return new Object[] {geometry.prefab.prefab};
-        }
-
-        protected override void CopyInternalGenerationSettings(HierarchyData model)
-        {
-            var cast = model as KnotHierarchyData;
-            geometry = cast.geometry.Clone();
-        }
-
-        public KnotHierarchyData(int hierarchyID, int parentHierarchyID, ResponsiveSettingsType type) : base(
-            hierarchyID,
-            parentHierarchyID,
-            type)
-        {
-            geometry = new KnotSettings(type);
-        }
-        
         /*public override void ToggleCheckboxes(bool enabled)
         {
             distribution.ToggleCheckboxes(enabled);
             geometry.ToggleCheckboxes(enabled);
         }*/
-        
+
+        /// <inheritdoc />
         public override string GetSortKey()
         {
             if ((geometry.prefab != null) && (geometry.prefab.prefab != null))
@@ -53,6 +49,19 @@ namespace Appalachia.Simulation.Trees.Hierarchy
             }
 
             return ZString.Format("{0:0000}", hierarchyID);
+        }
+
+        /// <inheritdoc />
+        protected override void CopyInternalGenerationSettings(HierarchyData model)
+        {
+            var cast = model as KnotHierarchyData;
+            geometry = cast.geometry.Clone();
+        }
+
+        /// <inheritdoc />
+        protected override Object[] GetExternalObjects()
+        {
+            return new Object[] { geometry.prefab.prefab };
         }
     }
 }

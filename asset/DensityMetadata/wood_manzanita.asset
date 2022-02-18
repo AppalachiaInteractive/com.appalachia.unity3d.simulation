@@ -12,12 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27f402b5f299425b8811f4aa1879a37f, type: 3}
   m_Name: wood_manzanita
   m_EditorClassIdentifier: 
-  _cachedName: 
-  _niceName: 
+  _cachedName: wood_manzanita
+  _niceName: Wood_manzanita
   _initializer:
     _tags:
     - profileName
     _resetToken: 
+  _objectId:
+    _increment: 12632118
+    _machine: 14129404
+    _timestamp: 1645121944
+    _pid: -14768
   id: 185
   profileName: wood_manzanita
   _category: Wood

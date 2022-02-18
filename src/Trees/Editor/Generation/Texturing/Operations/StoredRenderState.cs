@@ -1,9 +1,11 @@
+using System;
 using Appalachia.Core.Objects.Root;
 using UnityEditor;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Generation.Texturing.Operations
 {
+    [Serializable]
     public class StoredRenderState : AppalachiaSimpleBase
     {
         internal StoredRenderState()
@@ -17,9 +19,9 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Operations
 
         #region Fields and Autoproperties
 
-        private bool fogState;
-        private bool srgbWrite;
-        private RenderTexture texture;
+        [SerializeField] private bool fogState;
+        [SerializeField] private bool srgbWrite;
+        [SerializeField] private RenderTexture texture;
 
         #endregion
 

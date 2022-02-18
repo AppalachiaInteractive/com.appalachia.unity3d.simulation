@@ -18,14 +18,14 @@ namespace Appalachia.Simulation.Trees.Settings
         #region Fields and Autoproperties
 
         [TabGroup("Settings",              "Appearance", Paddingless = true)]
-        [TabGroup("Settings/Appearance/A", "Occlusion", Paddingless = true), InlineProperty, HideLabel]
+        [TabGroup("Settings/Appearance/A", "Occlusion",  Paddingless = true), InlineProperty, HideLabel]
         public AmbientOcclusionSettings ao;
 
         [TabGroup("Settings/Assets/A", "Collision", Paddingless = true), InlineProperty, HideLabel]
         public CollisionSettings collision;
 
         [TabGroup("Settings",          "Assets", Paddingless = true)]
-        [TabGroup("Settings/Assets/A", "LOD", Paddingless = true), InlineProperty, HideLabel]
+        [TabGroup("Settings/Assets/A", "LOD",    Paddingless = true), InlineProperty, HideLabel]
         public LevelOfDetailSettingsCollection lod;
 
         [TabGroup("Settings/Appearance/A", "Materials", Paddingless = true), InlineProperty, HideLabel]
@@ -73,6 +73,7 @@ namespace Appalachia.Simulation.Trees.Settings
             return instance;
         }
 
+        /// <inheritdoc />
         public override void CopySettingsTo(TreeSettings t)
         {
             ao.CopySettingsTo(t.ao);

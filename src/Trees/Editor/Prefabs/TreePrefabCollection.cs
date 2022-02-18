@@ -335,6 +335,7 @@ namespace Appalachia.Simulation.Trees.Prefabs
             }
         }
 
+        /// <inheritdoc />
         protected override async AppaTask Initialize(Initializer initializer)
         {
             await base.Initialize(initializer);

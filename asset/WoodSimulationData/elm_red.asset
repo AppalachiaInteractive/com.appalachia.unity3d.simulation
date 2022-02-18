@@ -17,6 +17,11 @@ MonoBehaviour:
   _initializer:
     _tags: []
     _resetToken: 
+  _objectId:
+    _increment: 0
+    _machine: 0
+    _timestamp: 0
+    _pid: 0
   id: 104
   _category: Elm
   densityMetadata: {fileID: 11400000, guid: ec38db6b4d69d5b4597d035aedf8ff98, type: 2}

@@ -2,9 +2,7 @@ using System;
 using Appalachia.CI.Integration.Assets;
 using Appalachia.Simulation.Trees.Core.Settings;
 using Appalachia.Simulation.Trees.ResponsiveUI;
-using Appalachia.Utility.Extensions;
 using Sirenix.OdinInspector;
-using UnityEditor;
 
 namespace Appalachia.Simulation.Trees.Settings
 {
@@ -12,18 +10,6 @@ namespace Appalachia.Simulation.Trees.Settings
     [Title("Shadow", TitleAlignment = TitleAlignments.Centered)]
     public class ShadowCasterSettings : ResponsiveSettings
     {
-        [PropertyTooltip("Should shadow caster geometry be double sided?")]
-        [OnValueChanged(nameof(GeometrySettingsChanged), true), InlineProperty, HideLabel]
-        public bool doubleSided = true;
-        
-        [PropertyTooltip("Adjust shadow caster mesh quality.")]
-        [OnValueChanged(nameof(GeometrySettingsChanged), true), InlineProperty, HideLabel]
-        public LevelOfDetailSettings quality;
-
-        [PropertyTooltip("Adjust shadow caster mesh properties.")]
-        [OnValueChanged(nameof(GeometrySettingsChanged), true), InlineProperty, HideLabel]
-        public MeshSettings properties;
-        
         public ShadowCasterSettings(ResponsiveSettingsType settingsType) : base(settingsType)
         {
             quality = new LevelOfDetailSettings(100, settingsType)
@@ -44,11 +30,27 @@ namespace Appalachia.Simulation.Trees.Settings
 
             properties = new MeshSettings(settingsType)
             {
-                recalculateNormals = false, 
-                recalculateTangents = false
+                recalculateNormals = false, recalculateTangents = false
             };
         }
-        
+
+        #region Fields and Autoproperties
+
+        [PropertyTooltip("Should shadow caster geometry be double sided?")]
+        [OnValueChanged(nameof(GeometrySettingsChanged), true), InlineProperty, HideLabel]
+        public bool doubleSided = true;
+
+        [PropertyTooltip("Adjust shadow caster mesh quality.")]
+        [OnValueChanged(nameof(GeometrySettingsChanged), true), InlineProperty, HideLabel]
+        public LevelOfDetailSettings quality;
+
+        [PropertyTooltip("Adjust shadow caster mesh properties.")]
+        [OnValueChanged(nameof(GeometrySettingsChanged), true), InlineProperty, HideLabel]
+        public MeshSettings properties;
+
+        #endregion
+
+        /// <inheritdoc />
         public override void CopySettingsTo(ResponsiveSettings t)
         {
             if (t is ShadowCasterSettings cast)
@@ -57,7 +59,9 @@ namespace Appalachia.Simulation.Trees.Settings
                 quality.CopySettingsTo(cast.quality);
                 cast.doubleSided = doubleSided;
             }
-        }[Button]
+        }
+
+        [Button]
         public void PushToAll()
         {
             var trees = AssetDatabaseManager.FindAssets("t:TreeDataContainer");
@@ -85,6 +89,5 @@ namespace Appalachia.Simulation.Trees.Settings
                 tree.Save();
             }
         }
-
     }
 }

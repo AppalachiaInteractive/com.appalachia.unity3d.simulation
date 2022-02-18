@@ -13,22 +13,30 @@ namespace Appalachia.Simulation.Trees.Hierarchy.Collections
     [Serializable]
     public class LogHierarchies : HierarchyCollection<LogHierarchies>
     {
-        [HideInInspector] public List<BranchHierarchyData> branches;
-
         public LogHierarchies()
         {
             branches = new List<BranchHierarchyData>();
         }
 
-        public override int Count =>
-            (branches?.Count ?? 0) + (trunks?.Count ?? 0);
+        #region Fields and Autoproperties
 
-        protected override void ClearInternal()
+        [HideInInspector] public List<BranchHierarchyData> branches;
+
+        #endregion
+
+        /// <inheritdoc />
+        public override int Count => (branches?.Count ?? 0) + (trunks?.Count ?? 0);
+
+        /// <inheritdoc />
+        protected override ResponsiveSettingsType SettingsType => ResponsiveSettingsType.Branch;
+
+        /// <inheritdoc />
+        public override void DeleteHierarchyChain(int hierarchyID, bool rebuildState = true)
         {
-            trunks.Clear();
-            branches.Clear();
+            throw new NotImplementedException();
         }
 
+        /// <inheritdoc />
         public override IEnumerator<HierarchyData> GetEnumerator()
         {
             foreach (var hierarchy in trunks)
@@ -42,6 +50,7 @@ namespace Appalachia.Simulation.Trees.Hierarchy.Collections
             }
         }
 
+        /// <inheritdoc />
         public override IEnumerable<HierarchyData> GetHierarchies(TreeComponentType type)
         {
             switch (type)
@@ -55,52 +64,68 @@ namespace Appalachia.Simulation.Trees.Hierarchy.Collections
             }
         }
 
-        protected override void RemoveHierarchies(HierarchyData hierarchy)
-        {
-            switch (hierarchy.type)
-            {
-                case TreeComponentType.Trunk:
-                    trunks.Remove(hierarchy as TrunkHierarchyData);
-                    break;
-                case TreeComponentType.Branch:
-                    branches.Remove(hierarchy as BranchHierarchyData);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(hierarchy.type), hierarchy.type, null);
-            }
-        }
-
-        public override void UpdateHierarchyParent(HierarchyData hierarchy, HierarchyData parent, bool rebuildState = true)
+        /// <inheritdoc />
+        public override void UpdateHierarchyParent(
+            HierarchyData hierarchy,
+            HierarchyData parent,
+            bool rebuildState = true)
         {
             throw new NotImplementedException();
         }
 
-        public override void DeleteHierarchyChain(int hierarchyID, bool rebuildState = true)
+        public void CopyHierarchiesTo(LogHierarchies th)
         {
-            throw new NotImplementedException();
-        }
-
-        protected override HierarchyData AddHierarchy(int id, int parentID, TreeComponentType type)
-        {
-            HierarchyData newHierarchy;
-            switch (type)
+            if (th == this)
             {
-                case TreeComponentType.Branch:
-                    newHierarchy = new BranchHierarchyData(id, parentID, SettingsType);
-                    branches.Add((BranchHierarchyData) newHierarchy);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
+                return;
             }
 
-            return newHierarchy;
-        }
+            var barkMat = th.trunks.Select(b => b.geometry.barkMaterial).FirstOrDefault(b => b != null);
 
-        protected override ResponsiveSettingsType SettingsType => ResponsiveSettingsType.Branch;
+            if (barkMat == null)
+            {
+                barkMat = th.branches.Select(b => b.geometry.barkMaterial).FirstOrDefault(b => b != null);
+            }
 
-        protected override void DistributionSettingsChanged()
-        {
-            BranchBuildRequestManager.SettingsChanged(SettingsUpdateTarget.Distribution);
+            /*var breakMat = th.trunks.Select(b => b.limb.breakMaterial).FirstOrDefault(b => b != null);
+            
+            if (breakMat == null)
+            {
+                breakMat = th.branches.Select(b => b.limb.breakMaterial).FirstOrDefault(b => b != null);
+            }*/
+
+            th.trunks.Clear();
+            th.branches.Clear();
+
+            th.idGenerator.SetNextID(0);
+
+            for (var i = 0; i < trunks.Count; i++)
+            {
+                var model = trunks[i];
+
+                th.trunks.Add(new TrunkHierarchyData(model.hierarchyID, SettingsType));
+
+                th.trunks[i].CopyGenerationSettings(model);
+                th.trunks[i].geometry.barkMaterial = barkMat;
+
+                //th.trunks[i].limb.breakMaterial = breakMat;
+            }
+
+            for (var i = 0; i < branches.Count; i++)
+            {
+                var model = branches[i];
+
+                th.branches.Add(
+                    new BranchHierarchyData(model.hierarchyID, model.parentHierarchyID, SettingsType)
+                );
+
+                th.branches[i].CopyGenerationSettings(model);
+                th.branches[i].geometry.barkMaterial = barkMat;
+
+                //th.branches[i].limb.breakMaterial = breakMat;
+            }
+
+            th.Rebuild();
         }
 
         public void DeleteHierarchyChain(BranchShapes shapes, int hierarchyID, bool rebuildState = true)
@@ -128,62 +153,51 @@ namespace Appalachia.Simulation.Trees.Hierarchy.Collections
                 Rebuild();
             }
         }
-        
-            
-        
-        public void CopyHierarchiesTo(LogHierarchies th)
+
+        /// <inheritdoc />
+        protected override HierarchyData AddHierarchy(int id, int parentID, TreeComponentType type)
         {
-            if (th == this)
+            HierarchyData newHierarchy;
+            switch (type)
             {
-                return;
-            }
-            
-            var barkMat = th.trunks.Select(b => b.geometry.barkMaterial).FirstOrDefault(b => b != null);
-
-            if (barkMat == null)
-            {
-                barkMat = th.branches.Select(b => b.geometry.barkMaterial).FirstOrDefault(b => b != null);
-            }
-
-            /*var breakMat = th.trunks.Select(b => b.limb.breakMaterial).FirstOrDefault(b => b != null);
-            
-            if (breakMat == null)
-            {
-                breakMat = th.branches.Select(b => b.limb.breakMaterial).FirstOrDefault(b => b != null);
-            }*/
-            
-            th.trunks.Clear();
-            th.branches.Clear();
-            
-            th.idGenerator.SetNextID(0);
-
-            for (var i = 0; i < trunks.Count; i++)
-            {
-                var model = trunks[i];
-                
-                th.trunks.Add(
-                    new TrunkHierarchyData(model.hierarchyID, SettingsType)
-                );
-
-                th.trunks[i].CopyGenerationSettings(model);
-                th.trunks[i].geometry.barkMaterial = barkMat;
-                //th.trunks[i].limb.breakMaterial = breakMat;
+                case TreeComponentType.Branch:
+                    newHierarchy = new BranchHierarchyData(id, parentID, SettingsType);
+                    branches.Add((BranchHierarchyData)newHierarchy);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }
 
-            for (var i = 0; i < branches.Count; i++)
+            return newHierarchy;
+        }
+
+        /// <inheritdoc />
+        protected override void ClearInternal()
+        {
+            trunks.Clear();
+            branches.Clear();
+        }
+
+        /// <inheritdoc />
+        protected override void DistributionSettingsChanged()
+        {
+            BranchBuildRequestManager.SettingsChanged(SettingsUpdateTarget.Distribution);
+        }
+
+        /// <inheritdoc />
+        protected override void RemoveHierarchies(HierarchyData hierarchy)
+        {
+            switch (hierarchy.type)
             {
-                var model = branches[i];
-                
-                th.branches.Add(
-                    new BranchHierarchyData(model.hierarchyID, model.parentHierarchyID, SettingsType)
-                );
-
-                th.branches[i].CopyGenerationSettings(model);
-                th.branches[i].geometry.barkMaterial = barkMat;
-                //th.branches[i].limb.breakMaterial = breakMat;
+                case TreeComponentType.Trunk:
+                    trunks.Remove(hierarchy as TrunkHierarchyData);
+                    break;
+                case TreeComponentType.Branch:
+                    branches.Remove(hierarchy as BranchHierarchyData);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(hierarchy.type), hierarchy.type, null);
             }
-
-            th.Rebuild();
         }
     }
 }

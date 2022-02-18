@@ -17,6 +17,11 @@ MonoBehaviour:
   _initializer:
     _tags: []
     _resetToken: 
+  _objectId:
+    _increment: 0
+    _machine: 0
+    _timestamp: 0
+    _pid: 0
   id: 153
   _category: Unique
   densityMetadata: {fileID: 11400000, guid: 2f154261d6ff6d44f8e954e46d45f353, type: 2}

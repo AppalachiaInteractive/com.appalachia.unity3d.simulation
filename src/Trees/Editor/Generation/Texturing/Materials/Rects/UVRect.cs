@@ -138,6 +138,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Rects
             }
         }
 
+        /// <inheritdoc />
         [DebuggerStepThrough]
         public override string ToString()
         {

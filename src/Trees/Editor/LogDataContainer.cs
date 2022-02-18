@@ -23,6 +23,7 @@ using Appalachia.Utility.Async;
 using Appalachia.Utility.Extensions;
 using Appalachia.Utility.Strings;
 using Sirenix.OdinInspector;
+using Unity.Profiling;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -51,6 +52,7 @@ namespace Appalachia.Simulation.Trees
 
         #endregion
 
+        /// <inheritdoc />
         public override ResponsiveSettingsType settingsType => ResponsiveSettingsType.Log;
 
         public BuildRequestLevel requestLevel
@@ -81,21 +83,25 @@ namespace Appalachia.Simulation.Trees
             }
         }
 
+        /// <inheritdoc />
         public override void BuildDefault()
         {
             LogBuildRequestManager.Default();
         }
 
+        /// <inheritdoc />
         public override void BuildForceFull()
         {
             LogBuildRequestManager.ForceFull();
         }
 
+        /// <inheritdoc />
         public override void BuildFull()
         {
             LogBuildRequestManager.Full();
         }
 
+        /// <inheritdoc />
         public override void CopyHierarchiesFrom(TSEDataContainer tsd)
         {
             if (tsd is LogDataContainer dc)
@@ -104,6 +110,7 @@ namespace Appalachia.Simulation.Trees
             }
         }
 
+        /// <inheritdoc />
         public override void CopySettingsFrom(TSEDataContainer tsd)
         {
             if (tsd is LogDataContainer dc)
@@ -112,6 +119,7 @@ namespace Appalachia.Simulation.Trees
             }
         }
 
+        /// <inheritdoc />
         public override NameBasis GetNameBasis()
         {
             if (log != null)
@@ -122,6 +130,7 @@ namespace Appalachia.Simulation.Trees
             return null;
         }
 
+        /// <inheritdoc />
         public override void RebuildStructures()
         {
             if (material == null)
@@ -150,6 +159,7 @@ namespace Appalachia.Simulation.Trees
             }
         }
 
+        /// <inheritdoc />
         public override void SetDirtyStates()
         {
             MarkAsModified();
@@ -181,6 +191,7 @@ namespace Appalachia.Simulation.Trees
             }
         }
 
+        /// <inheritdoc />
         public override void SettingsChanged(SettingsUpdateTarget target)
         {
             LogBuildRequestManager.SettingsChanged(target);
@@ -362,6 +373,8 @@ namespace Appalachia.Simulation.Trees
         [Button]
         [HideIf(nameof(initialized))]
         [EnableIf(nameof(canInitialize))]
+
+        /// <inheritdoc />
         protected override async AppaTask Initialize(Initializer initializer)
         {
             try
@@ -423,37 +436,42 @@ namespace Appalachia.Simulation.Trees
             }
         }
 
+        /// <inheritdoc />
         protected override void SaveAllAssets(bool saveImpostors)
         {
             AssetManager.SaveAllAssets(this);
         }
 
+        /// <inheritdoc />
         protected override async AppaTask WhenEnabled()
         {
             await base.WhenEnabled();
-            if (HasAssetPath(out _))
+            using (_PRF_WhenEnabled.Auto())
             {
-                if (HasSubAssets(out var subAssets))
+                if (HasAssetPath(out _))
                 {
-                    var nameBasisFound = false;
-
-                    for (var i = subAssets.Length - 1; i >= 0; i--)
+                    if (HasSubAssets(out var subAssets))
                     {
-                        var basis = subAssets[i] as NameBasis;
+                        var nameBasisFound = false;
 
-                        if (basis == null)
+                        for (var i = subAssets.Length - 1; i >= 0; i--)
                         {
-                            continue;
-                        }
+                            var basis = subAssets[i] as NameBasis;
 
-                        if (!nameBasisFound)
-                        {
-                            nameBasisFound = true;
-                            log.nameBasis = basis;
-                            continue;
-                        }
+                            if (basis == null)
+                            {
+                                continue;
+                            }
 
-                        AssetDatabaseManager.RemoveObjectFromAsset(basis);
+                            if (!nameBasisFound)
+                            {
+                                nameBasisFound = true;
+                                log.nameBasis = basis;
+                                continue;
+                            }
+
+                            AssetDatabaseManager.RemoveObjectFromAsset(basis);
+                        }
                     }
                 }
             }
@@ -638,6 +656,15 @@ namespace Appalachia.Simulation.Trees
         {
             CreateNew<LogDataContainer>();
         }
+
+        #endregion
+
+        #region Profiling
+
+        private const string _PRF_PFX = nameof(LogDataContainer) + ".";
+
+        private static readonly ProfilerMarker _PRF_WhenEnabled =
+            new ProfilerMarker(_PRF_PFX + nameof(WhenEnabled));
 
         #endregion
     }

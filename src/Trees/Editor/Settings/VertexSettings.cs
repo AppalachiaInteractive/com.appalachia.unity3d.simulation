@@ -2,7 +2,6 @@ using System;
 using Appalachia.CI.Integration.Assets;
 using Appalachia.Simulation.Trees.Core.Settings;
 using Appalachia.Simulation.Trees.ResponsiveUI;
-using Appalachia.Utility.Extensions;
 using Sirenix.OdinInspector;
 
 namespace Appalachia.Simulation.Trees.Settings
@@ -11,48 +10,59 @@ namespace Appalachia.Simulation.Trees.Settings
     [Title("Vertex", TitleAlignment = TitleAlignments.Centered)]
     public class VertexSettings : ResponsiveSettings
     {
-        [PropertyTooltip(
-            "Whether or not log data should be baked into the vertex colors. (R - bark, G - wood, B - noise 1, A - noise 2")]
-        [ToggleLeft]
-        [OnValueChanged(nameof(VertexDataSettingsChanged))]
-        public bool generate = true;
-        
-        [ShowIfGroup("Log", Condition = nameof(generate))]
-
-        [BoxGroup("Log/Log Settings", CenterLabel = true)]
-        [PropertyTooltip("Adjusts how big the first noise scale is.")]
-        [PropertyRange(0.1f, 100f)] [OnValueChanged(nameof(VertexDataSettingsChanged))]
-        public float noise1Scale = .1f;
-
-        [BoxGroup("Log/Log Settings", CenterLabel = true)]
-        [PropertyTooltip("Adjusts how far the first noise offset is.")]
-        [PropertyRange(0f, 10f)] [OnValueChanged(nameof(VertexDataSettingsChanged))]
-        public float noise1Offset;
-
-        [BoxGroup("Log/Log Settings", CenterLabel = true)]
-        [PropertyTooltip("Adjusts the first noise contrast.")]
-        [PropertyRange(0f, 1f)] [OnValueChanged(nameof(VertexDataSettingsChanged))]
-        public float noise1Contrast = 0.5f;
-        
-        [BoxGroup("Log/Log Settings", CenterLabel = true)]
-        [PropertyTooltip("Adjusts how big the second noise scale is.")]
-        [PropertyRange(0.1f, 100f)] [OnValueChanged(nameof(VertexDataSettingsChanged))]
-        public float noise2Scale = .5f;
-        
-        [BoxGroup("Log/Log Settings", CenterLabel = true)]
-        [PropertyTooltip("Adjusts how far the second noise offset is.")]
-        [PropertyRange(0f, 10f)] [OnValueChanged(nameof(VertexDataSettingsChanged))]
-        public float noise2Offset;
-        
-        [BoxGroup("Log/Log Settings", CenterLabel = true)]
-        [PropertyTooltip("Adjusts the second noise contrast.")]
-        [PropertyRange(0f, 1f)] [OnValueChanged(nameof(VertexDataSettingsChanged))]
-        public float noise2Contrast = 0.5f;
-      
         public VertexSettings(ResponsiveSettingsType settingsType) : base(settingsType)
         {
         }
-        
+
+        #region Fields and Autoproperties
+
+        [PropertyTooltip(
+            "Whether or not log data should be baked into the vertex colors. (R - bark, G - wood, B - noise 1, A - noise 2"
+        )]
+        [ToggleLeft]
+        [OnValueChanged(nameof(VertexDataSettingsChanged))]
+        public bool generate = true;
+
+        [BoxGroup("Log/Log Settings", CenterLabel = true)]
+        [PropertyTooltip("Adjusts the first noise contrast.")]
+        [PropertyRange(0f, 1f)]
+        [OnValueChanged(nameof(VertexDataSettingsChanged))]
+        public float noise1Contrast = 0.5f;
+
+        [BoxGroup("Log/Log Settings", CenterLabel = true)]
+        [PropertyTooltip("Adjusts how far the first noise offset is.")]
+        [PropertyRange(0f, 10f)]
+        [OnValueChanged(nameof(VertexDataSettingsChanged))]
+        public float noise1Offset;
+
+        [ShowIfGroup("Log", Condition = nameof(generate))]
+        [BoxGroup("Log/Log Settings", CenterLabel = true)]
+        [PropertyTooltip("Adjusts how big the first noise scale is.")]
+        [PropertyRange(0.1f, 100f)]
+        [OnValueChanged(nameof(VertexDataSettingsChanged))]
+        public float noise1Scale = .1f;
+
+        [BoxGroup("Log/Log Settings", CenterLabel = true)]
+        [PropertyTooltip("Adjusts the second noise contrast.")]
+        [PropertyRange(0f, 1f)]
+        [OnValueChanged(nameof(VertexDataSettingsChanged))]
+        public float noise2Contrast = 0.5f;
+
+        [BoxGroup("Log/Log Settings", CenterLabel = true)]
+        [PropertyTooltip("Adjusts how far the second noise offset is.")]
+        [PropertyRange(0f, 10f)]
+        [OnValueChanged(nameof(VertexDataSettingsChanged))]
+        public float noise2Offset;
+
+        [BoxGroup("Log/Log Settings", CenterLabel = true)]
+        [PropertyTooltip("Adjusts how big the second noise scale is.")]
+        [PropertyRange(0.1f, 100f)]
+        [OnValueChanged(nameof(VertexDataSettingsChanged))]
+        public float noise2Scale = .5f;
+
+        #endregion
+
+        /// <inheritdoc />
         public override void CopySettingsTo(ResponsiveSettings t)
         {
             if (t is VertexSettings cast)
@@ -66,7 +76,7 @@ namespace Appalachia.Simulation.Trees.Settings
                 cast.noise2Scale = noise2Scale;
             }
         }
-        
+
         [Button]
         public void PushToAll()
         {

@@ -17,6 +17,11 @@ MonoBehaviour:
   _initializer:
     _tags: []
     _resetToken: 
+  _objectId:
+    _increment: 0
+    _machine: 0
+    _timestamp: 0
+    _pid: 0
   id: 113
   _category: Hemlock
   densityMetadata: {fileID: 11400000, guid: 8c22fc47f590d9f4d9369aebe33e8cda, type: 2}

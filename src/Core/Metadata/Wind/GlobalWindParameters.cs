@@ -19,8 +19,6 @@ namespace Appalachia.Simulation.Core.Metadata.Wind
     {
         static GlobalWindParameters()
         {
-            
-            
             RegisterDependency<DensityMetadataCollection>(i => _densityMetadataCollection = i);
         }
 
@@ -151,12 +149,16 @@ namespace Appalachia.Simulation.Core.Metadata.Wind
         [SmartLabel]
         public DensityMetadata airDensity => _densityMetadataCollection.air;
 
+        /// <inheritdoc />
         protected override async AppaTask WhenEnabled()
         {
             await base.WhenEnabled();
-            if (maximumWindSpeed == 0f)
+            using (_PRF_WhenEnabled.Auto())
             {
-                maximumWindSpeed = 25f;
+                if (maximumWindSpeed == 0f)
+                {
+                    maximumWindSpeed = 25f;
+                }
             }
         }
 

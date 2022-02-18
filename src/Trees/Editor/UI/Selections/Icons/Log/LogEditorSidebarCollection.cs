@@ -1,10 +1,16 @@
+using Appalachia.Core.Attributes;
 using Appalachia.Core.Objects.Root;
 
 namespace Appalachia.Simulation.Trees.UI.Selections.Icons.Log
 {
+    [NonSerializable]
     public class LogEditorSidebarCollection : AppalachiaSimpleBase
     {
+        #region Fields and Autoproperties
+
         private LogInstanceSidebarMenu _instanceMenu;
+
+        #endregion
 
         public LogInstanceSidebarMenu instanceMenu
         {
@@ -23,6 +29,5 @@ namespace Appalachia.Simulation.Trees.UI.Selections.Icons.Log
                 return _instanceMenu;
             }
         }
-        
     }
 }

@@ -20,6 +20,7 @@ namespace Appalachia.Simulation.Physical.Relays
 
         protected abstract Collider[] GetColliders();
 
+        /// <inheritdoc />
         protected override async AppaTask WhenDisabled()
         {
             await base.WhenDisabled();
@@ -27,11 +28,15 @@ namespace Appalachia.Simulation.Physical.Relays
             relayingColliders = null;
         }
 
+        /// <inheritdoc />
         protected override async AppaTask WhenEnabled()
         {
             await base.WhenEnabled();
 
-            UpdateRelayingColliders();
+            using (_PRF_WhenEnabled.Auto())
+            {
+                UpdateRelayingColliders();
+            }
         }
 
         [Button]

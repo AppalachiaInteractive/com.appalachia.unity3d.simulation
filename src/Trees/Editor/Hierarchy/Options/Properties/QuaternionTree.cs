@@ -10,6 +10,14 @@ namespace Appalachia.Simulation.Trees.Hierarchy.Options.Properties
         {
         }
 
+        /// <inheritdoc />
+        public override Quaternion CloneElement(Quaternion model)
+        {
+            return model;
+        }
+
+        #region ICloneable<QuaternionTree> Members
+
         public QuaternionTree Clone()
         {
             var clone = new QuaternionTree(CloneElement(defaultValue));
@@ -18,9 +26,6 @@ namespace Appalachia.Simulation.Trees.Hierarchy.Options.Properties
             return clone;
         }
 
-        public override Quaternion CloneElement(Quaternion model)
-        {
-            return model;
-        }
+        #endregion
     }
 }

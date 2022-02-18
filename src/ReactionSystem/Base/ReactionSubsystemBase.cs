@@ -2,43 +2,52 @@ using System;
 using Appalachia.Core.Objects.Initialization;
 using Appalachia.Core.Objects.Root;
 using Appalachia.Core.Types.Enums;
+using Appalachia.Simulation.ReactionSystem.Contracts;
 using Appalachia.Utility.Async;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Appalachia.Simulation.ReactionSystem.Base
 {
     [ExecuteAlways]
     [Serializable]
-    public abstract class ReactionSubsystemBase : AppalachiaBehaviour
+    public abstract class ReactionSubsystemBase<T> : AppalachiaBehaviour<T>, IReactionSubsystem
+        where T : ReactionSubsystemBase<T>
     {
         #region Fields and Autoproperties
 
-        public ReactionSystem mainSystem;
+        [FormerlySerializedAs("mainSystem")]
+        [SerializeField]
+        private ReactionSystem _mainSystem;
 
         [SerializeField] private int _groupIndex;
 
         [SerializeField]
         [FoldoutGroup("Texture")]
         [OnValueChanged(nameof(InitializeSynchronous))]
-        public RenderTextureFormat renderTextureFormat;
+        [FormerlySerializedAs("renderTextureFormat")]
+        private RenderTextureFormat _renderTextureFormat;
 
         [SerializeField]
         [FoldoutGroup("Texture")]
         [OnValueChanged(nameof(InitializeSynchronous))]
-        public RenderQuality renderTextureQuality = RenderQuality.High_1024;
+        [FormerlySerializedAs("renderTextureQuality")]
+        private RenderQuality _renderTextureQuality = RenderQuality.High_1024;
 
         [SerializeField]
         [FoldoutGroup("Texture")]
         [OnValueChanged(nameof(InitializeSynchronous))]
-        public FilterMode filterMode;
+        [FormerlySerializedAs("filterMode")]
+        private FilterMode _filterMode;
 
         [SerializeField]
         [FoldoutGroup("Texture")]
         [OnValueChanged(nameof(InitializeSynchronous))]
         [ValueDropdown(nameof(depths))]
-        public int depth;
+        [FormerlySerializedAs("depth")]
+        private int _depth;
 
         private ValueDropdownList<int> depths = new()
         {
@@ -53,18 +62,11 @@ namespace Appalachia.Simulation.ReactionSystem.Base
 
         #endregion
 
-        [InlineProperty]
-        [ShowInInspector]
-        [PreviewField(ObjectFieldAlignment.Center, Height = 256)]
-        [FoldoutGroup("Preview")]
-        [ShowIf(nameof(showRenderTexture))]
-        public abstract RenderTexture renderTexture { get; }
-
-        protected abstract bool showRenderTexture { get; }
+        protected abstract bool ShowRenderTexture { get; }
 
         protected abstract string SubsystemName { get; }
 
-        protected ReactionSubsystemGroup Group => mainSystem ? mainSystem.groups[_groupIndex] : null;
+        protected ReactionSubsystemGroup Group => _mainSystem ? _mainSystem.groups[_groupIndex] : null;
 
         #region Event Functions
 
@@ -100,20 +102,6 @@ namespace Appalachia.Simulation.ReactionSystem.Base
 
         #endregion
 
-        public void InitializeSubsystem(ReactionSystem system, int groupIndex)
-        {
-            using (_PRF_InitializeSubsystem.Auto())
-            {
-                mainSystem = system;
-                _groupIndex = groupIndex;
-            }
-        }
-
-        public void UpdateGroupIndex(int i)
-        {
-            _groupIndex = i;
-        }
-
         protected abstract void DoUpdateLoop();
 
         protected abstract bool InitializeUpdateLoop();
@@ -122,6 +110,7 @@ namespace Appalachia.Simulation.ReactionSystem.Base
 
         protected abstract void TeardownSubsystem();
 
+        /// <inheritdoc />
         protected override async AppaTask Initialize(Initializer initializer)
         {
             await base.Initialize(initializer);
@@ -133,6 +122,7 @@ namespace Appalachia.Simulation.ReactionSystem.Base
             OnInitialization();
         }
 
+        /// <inheritdoc />
         protected override async AppaTask WhenDisabled()
         {
             await base.WhenDisabled();
@@ -144,20 +134,42 @@ namespace Appalachia.Simulation.ReactionSystem.Base
             }
         }
 
-        #region Profiling
+        #region IReactionSubsystem Members
 
-        private const string _PRF_PFX = nameof(ReactionSubsystemBase) + ".";
+        public ReactionSystem MainSystem => _mainSystem;
+        public RenderTextureFormat RenderTextureFormat => _renderTextureFormat;
+        public RenderQuality RenderTextureQuality => _renderTextureQuality;
+        public FilterMode FilterMode => _filterMode;
+        public int Depth => _depth;
+
+        [InlineProperty]
+        [ShowInInspector]
+        [PreviewField(ObjectFieldAlignment.Center, Height = 256)]
+        [FoldoutGroup("Preview")]
+        [ShowIf(nameof(ShowRenderTexture))]
+        public abstract RenderTexture RenderTexture { get; }
+
+        public void InitializeSubsystem(ReactionSystem system, int groupIndex)
+        {
+            using (_PRF_InitializeSubsystem.Auto())
+            {
+                _mainSystem = system;
+                _groupIndex = groupIndex;
+            }
+        }
+
+        public void UpdateGroupIndex(int i)
+        {
+            _groupIndex = i;
+        }
+
+        #endregion
+
+        #region Profiling
 
         private static readonly ProfilerMarker _PRF_InitializeSubsystem =
             new ProfilerMarker(_PRF_PFX + nameof(InitializeSubsystem));
 
-        private static readonly ProfilerMarker _PRF_WhenDisabled =
-            new ProfilerMarker(_PRF_PFX + nameof(WhenDisabled));
-
-        private static readonly ProfilerMarker _PRF_Update = new ProfilerMarker(_PRF_PFX + nameof(Update));
-
         #endregion
-
-        //public abstract void GetRenderingPosition(out Vector3 minimumPosition, out Vector3 size);
     }
 }

@@ -79,6 +79,7 @@ namespace Appalachia.Simulation.ReactionSystem.TouchBend.Data
         [HideInInspector] public MeshFilter quadFilter;
         [HideInInspector] public MeshRenderer quadRenderer;
 
+        /// <inheritdoc />
         protected override async AppaTask Initialize(Initializer initializer)
         {
             await base.Initialize(initializer);
@@ -92,6 +93,7 @@ namespace Appalachia.Simulation.ReactionSystem.TouchBend.Data
             initializer.Do(this, nameof(UpdateRenderParameters),     () => UpdateRenderParameters());
         }
 
+        /// <inheritdoc />
         protected override async AppaTask WhenDisabled()
         {
             await base.WhenDisabled();
@@ -368,7 +370,7 @@ namespace Appalachia.Simulation.ReactionSystem.TouchBend.Data
         [InlineProperty]
         [PreviewField(ObjectFieldAlignment.Center, Height = 256)]
         [PropertyOrder(21)]
-        public Texture2D savedTexture => info?.texture;
+        public Texture2D SavedTexture => info?.texture;
 
         //[TabGroup("Editor/Textures/A", "Camera", order:3)]
         //[ShowInInspector]
@@ -746,18 +748,18 @@ namespace Appalachia.Simulation.ReactionSystem.TouchBend.Data
             }
         }
 
-        private bool canDilate => (info != null) && (info.texture != null);
+        private bool CanDilate => (info != null) && (info.texture != null);
 
         [BoxGroup("Editor/Asset")]
         [PropertyOrder(91)]
         [PropertyRange(1, 24)]
-        [EnableIf(nameof(canDilate))]
+        [EnableIf(nameof(CanDilate))]
         public int blurRadius = 5;
 
         [PropertyOrder(92)]
         [Button]
         [HorizontalGroup("Editor/Asset/ASSET")]
-        [EnableIf(nameof(canDilate))]
+        [EnableIf(nameof(CanDilate))]
         private void BlurAsset()
         {
             using (_PRF_BlurAsset.Auto())
@@ -831,7 +833,7 @@ namespace Appalachia.Simulation.ReactionSystem.TouchBend.Data
         [PropertyOrder(93)]
         [Button]
         [HorizontalGroup("Editor/Asset/ASSET")]
-        [EnableIf(nameof(canDilate))]
+        [EnableIf(nameof(CanDilate))]
         private void DilateAsset()
         {
             using (_PRF_DilateAsset.Auto())
@@ -943,7 +945,7 @@ namespace Appalachia.Simulation.ReactionSystem.TouchBend.Data
         [PropertyOrder(93)]
         [Button]
         [HorizontalGroup("Editor/Asset/ASSET")]
-        [EnableIf(nameof(canDilate))]
+        [EnableIf(nameof(CanDilate))]
         private void AutoLevelAsset()
         {
             using (_PRF_AutoLevelAsset.Auto())

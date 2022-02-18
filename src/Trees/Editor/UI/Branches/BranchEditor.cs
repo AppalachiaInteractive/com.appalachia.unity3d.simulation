@@ -36,7 +36,9 @@ namespace Appalachia.Simulation.Trees.UI.Branches
     {
         static BranchEditor()
         {
-            RegisterInstanceCallbacks.WithoutSorting().When.Object<TreeSpeciesEditorSelection>().IsAvailableThen( i => _treeSpeciesEditorSelection = i);
+            RegisterInstanceCallbacks.WithoutSorting()
+                                     .When.Object<TreeSpeciesEditorSelection>()
+                                     .IsAvailableThen(i => _treeSpeciesEditorSelection = i);
         }
 
         #region Static Fields and Autoproperties
@@ -125,6 +127,7 @@ namespace Appalachia.Simulation.Trees.UI.Branches
 
         #region Event Functions
 
+        /// <inheritdoc />
         protected override void OnEnable()
         {
             base.OnEnable();
@@ -132,6 +135,7 @@ namespace Appalachia.Simulation.Trees.UI.Branches
             BranchBuildManager._enabled = true;
         }
 
+        /// <inheritdoc />
         protected override void OnDisable()
         {
             if (_previewRenderUtility != null)
@@ -174,6 +178,7 @@ namespace Appalachia.Simulation.Trees.UI.Branches
 
         #endregion
 
+        /// <inheritdoc />
         public override void OnInspectorGUI()
         {
             branchData = target as BranchDataContainer;
@@ -735,6 +740,7 @@ namespace Appalachia.Simulation.Trees.UI.Branches
             }
         }
 
+        /// <inheritdoc />
         protected override void OnHeaderGUI()
         {
         }

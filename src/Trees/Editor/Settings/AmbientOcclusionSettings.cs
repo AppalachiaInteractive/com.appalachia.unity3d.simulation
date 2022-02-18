@@ -3,10 +3,7 @@ using Appalachia.CI.Integration.Assets;
 using Appalachia.Simulation.Trees.Core.Settings;
 using Appalachia.Simulation.Trees.Generation.AmbientOcclusion;
 using Appalachia.Simulation.Trees.ResponsiveUI;
-using Appalachia.Utility.Extensions;
 using Sirenix.OdinInspector;
-using UnityEditor;
-using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Settings
 {
@@ -14,6 +11,16 @@ namespace Appalachia.Simulation.Trees.Settings
     [Title("Ambient Occlusion", TitleAlignment = TitleAlignments.Centered)]
     public class AmbientOcclusionSettings : ResponsiveSettings
     {
+        public AmbientOcclusionSettings(ResponsiveSettingsType settingsType) : base(settingsType)
+        {
+        }
+
+        #region Fields and Autoproperties
+
+        [PropertyTooltip("The type of ambient occlusion to generate.")]
+        [ShowIfGroup("AO", Condition = nameof(showTreeSettings))]
+        [OnValueChanged(nameof(AmbientOcclusionSettingsChanged))]
+        public AmbientOcclusionStyle style;
 
         [PropertyTooltip("Toggles ambient occlusion generation on or off.")]
         [ToggleLeft]
@@ -24,19 +31,13 @@ namespace Appalachia.Simulation.Trees.Settings
         [ToggleLeft]
         [OnValueChanged(nameof(AmbientOcclusionSettingsChanged))]
         public bool generateBakeMesh = true;
-        
-        [PropertyTooltip("The type of ambient occlusion to generate.")]
-        [ShowIfGroup("AO", Condition = nameof(showTreeSettings))]
-        [OnValueChanged(nameof(AmbientOcclusionSettingsChanged))]
-        public AmbientOcclusionStyle style;
 
-        [PropertyTooltip(
-            "The density of generated ambient occlusion.  Higher is darker.")]
+        [PropertyTooltip("The density of generated ambient occlusion.  Higher is darker.")]
         [ShowIf("AO", Condition = nameof(generateAmbientOcclusion))]
         [PropertyRange(0f, 2f)]
         [OnValueChanged(nameof(AmbientOcclusionSettingsChanged))]
         public float density = 1f;
-        
+
         [PropertyTooltip("The distance to fire rays from when sampling ambient occlusion.")]
         [ShowIfGroup("AO", Condition = nameof(showTreeSettings))]
         [ShowIf(nameof(showRaytracing))]
@@ -51,14 +52,14 @@ namespace Appalachia.Simulation.Trees.Settings
         [OnValueChanged(nameof(AmbientOcclusionSettingsChanged))]
         public float raytracingSamples = 16;
 
-        
-        private bool showTreeSettings => (settingsType == ResponsiveSettingsType.Tree) && generateAmbientOcclusion;
+        #endregion
+
         private bool showRaytracing => showTreeSettings && (style == AmbientOcclusionStyle.Raytraced);
 
-        public AmbientOcclusionSettings(ResponsiveSettingsType settingsType) : base(settingsType)
-        {
-        }
+        private bool showTreeSettings =>
+            (settingsType == ResponsiveSettingsType.Tree) && generateAmbientOcclusion;
 
+        /// <inheritdoc />
         public override void CopySettingsTo(ResponsiveSettings t)
         {
             if (t is AmbientOcclusionSettings ao)
@@ -100,6 +101,5 @@ namespace Appalachia.Simulation.Trees.Settings
                 tree.Save();
             }
         }
-
     }
 }

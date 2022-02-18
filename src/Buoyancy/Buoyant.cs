@@ -502,6 +502,7 @@ namespace Appalachia.Simulation.Buoyancy
             }
         }
 
+        /// <inheritdoc />
         protected override async AppaTask Initialize(Initializer initializer)
         {
             await base.Initialize(initializer);
@@ -588,6 +589,7 @@ namespace Appalachia.Simulation.Buoyancy
             _initialized = true;
         }
 
+        /// <inheritdoc />
         protected override void UpdateInstancedProperties(MaterialPropertyBlock block, Material m)
         {
             if ((wetness > 0) || (submersionWetness > 0))
@@ -603,6 +605,7 @@ namespace Appalachia.Simulation.Buoyancy
             }
         }
 
+        /// <inheritdoc />
         protected override async AppaTask WhenDestroyed()
         {
             await base.WhenDestroyed();
@@ -613,6 +616,7 @@ namespace Appalachia.Simulation.Buoyancy
             }
         }
 
+        /// <inheritdoc />
         protected override async AppaTask WhenDisabled()
         {
             await base.WhenDisabled();
@@ -631,12 +635,13 @@ namespace Appalachia.Simulation.Buoyancy
             }
         }
 
+        /// <inheritdoc />
         protected override async AppaTask WhenEnabled()
         {
-            using (_PRF_OnEnable.Auto())
-            {
-                await base.WhenEnabled();
+            await base.WhenEnabled();
 
+            using (_PRF_WhenEnabled.Auto())
+            {
                 if (_water == null)
                 {
                     enabled = false;

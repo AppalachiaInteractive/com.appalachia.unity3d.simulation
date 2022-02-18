@@ -21,7 +21,9 @@ namespace Appalachia.Simulation.Trees.Generation.Meshing
     {
         static MeshGenerator()
         {
-            RegisterInstanceCallbacks.WithoutSorting().When.Object<DefaultMaterialResource>().IsAvailableThen( i => _defaultMaterialResource = i);
+            RegisterInstanceCallbacks.WithoutSorting()
+                                     .When.Object<DefaultMaterialResource>()
+                                     .IsAvailableThen(i => _defaultMaterialResource = i);
         }
 
         #region Static Fields and Autoproperties
@@ -579,12 +581,16 @@ namespace Appalachia.Simulation.Trees.Generation.Meshing
             }
 
             [DebuggerStepThrough]
+
+            /// <inheritdoc />
             public override bool Equals(object obj)
             {
                 return obj is vkey other && Equals(other);
             }
 
             [DebuggerStepThrough]
+
+            /// <inheritdoc />
             public override int GetHashCode()
             {
                 unchecked

@@ -6,44 +6,58 @@ namespace Appalachia.Simulation.ReactionSystem.TouchBend
 {
     [ExecuteAlways]
     [DisallowMultipleComponent]
-    public class TouchBendCurrentStateMaskCamera : ReactionSubsystemSingleCameraSingleLocation
+    public class
+        TouchBendCurrentStateMaskCamera : ReactionSubsystemSingleCameraSingleLocation<
+            TouchBendCurrentStateMaskCamera>
     {
-        private const string _systemName = "TOUCH_BEND_CURRENT_STATE_MASK";
+        #region Constants and Static Readonly
 
-        protected override string SubsystemName => _systemName;
+        private const string SYSTEM_NAME = "TOUCH_BEND_CURRENT_STATE_MASK";
 
+        #endregion
+
+        /// <inheritdoc />
         public override bool AutomaticRender => true;
 
+        /// <inheritdoc />
+        protected override string SubsystemName => SYSTEM_NAME;
+
+        /// <inheritdoc />
         public override bool IsManualRenderingRequired(SubsystemCameraComponent cam)
         {
             return false;
         }
 
+        /// <inheritdoc />
         protected override void OnBeforeInitialization()
         {
         }
 
+        /// <inheritdoc />
+        protected override void OnInitializationComplete()
+        {
+        }
+
+        /// <inheritdoc />
         protected override void OnInitializationStart()
         {
-            if (cullingMask == 0)
+            if (CullingMask == 0)
             {
-                cullingMask = LayerMask.GetMask(LayerMask.LayerToName(29));
+                CullingMask = LayerMask.GetMask(LayerMask.LayerToName(29));
             }
 
             cameraComponent.renderCamera.depth = -90;
         }
 
-        protected override void OnInitializationComplete()
-        {
-        }
-
-        protected override void OnRenderStart()
-        {
-        }
-
+        /// <inheritdoc />
         protected override void OnRenderComplete()
         {
-            Shader.SetGlobalTexture(GSC.TOUCHBEND._TOUCHBEND_CURRENT_STATE_MAP_MASK, renderTexture);
+            Shader.SetGlobalTexture(GSC.TOUCHBEND._TOUCHBEND_CURRENT_STATE_MAP_MASK, RenderTexture);
+        }
+
+        /// <inheritdoc />
+        protected override void OnRenderStart()
+        {
         }
     }
 }

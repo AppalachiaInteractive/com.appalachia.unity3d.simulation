@@ -17,6 +17,11 @@ MonoBehaviour:
   _initializer:
     _tags: []
     _resetToken: 
+  _objectId:
+    _increment: 0
+    _machine: 0
+    _timestamp: 0
+    _pid: 0
   id: 95
   _category: Cedar
   densityMetadata: {fileID: 11400000, guid: 1ec1f67d7bc3b604e87bd8e4610c37ad, type: 2}

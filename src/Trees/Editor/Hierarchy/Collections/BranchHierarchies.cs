@@ -19,7 +19,9 @@ namespace Appalachia.Simulation.Trees.Hierarchy.Collections
     {
         static BranchHierarchies()
         {
-            RegisterInstanceCallbacks.WithoutSorting().When.Object<TreeSpeciesEditorSelection>().IsAvailableThen( i => _treeSpeciesEditorSelection = i);
+            RegisterInstanceCallbacks.WithoutSorting()
+                                     .When.Object<TreeSpeciesEditorSelection>()
+                                     .IsAvailableThen(i => _treeSpeciesEditorSelection = i);
         }
 
         public BranchHierarchies()
@@ -43,11 +45,14 @@ namespace Appalachia.Simulation.Trees.Hierarchy.Collections
 
         #endregion
 
+        /// <inheritdoc />
         public override int Count =>
             (branches?.Count ?? 0) + (fruits?.Count ?? 0) + (leaves?.Count ?? 0) + (trunks?.Count ?? 0);
 
+        /// <inheritdoc />
         protected override ResponsiveSettingsType SettingsType => ResponsiveSettingsType.Branch;
 
+        /// <inheritdoc />
         public override void DeleteHierarchyChain(int hierarchyID, bool rebuildState = true)
         {
             var branchData = _treeSpeciesEditorSelection.branch.selection.selected;
@@ -76,6 +81,7 @@ namespace Appalachia.Simulation.Trees.Hierarchy.Collections
             }
         }
 
+        /// <inheritdoc />
         public override IEnumerator<HierarchyData> GetEnumerator()
         {
             foreach (var hierarchy in trunks)
@@ -99,6 +105,7 @@ namespace Appalachia.Simulation.Trees.Hierarchy.Collections
             }
         }
 
+        /// <inheritdoc />
         public override IEnumerable<HierarchyData> GetHierarchies(TreeComponentType type)
         {
             switch (type)
@@ -116,6 +123,7 @@ namespace Appalachia.Simulation.Trees.Hierarchy.Collections
             }
         }
 
+        /// <inheritdoc />
         public override void UpdateHierarchyParent(
             HierarchyData hierarchy,
             HierarchyData parent,
@@ -244,6 +252,7 @@ namespace Appalachia.Simulation.Trees.Hierarchy.Collections
             }
         }
 
+        /// <inheritdoc />
         protected override HierarchyData AddHierarchy(int id, int parentID, TreeComponentType type)
         {
             HierarchyData newHierarchy;
@@ -268,6 +277,7 @@ namespace Appalachia.Simulation.Trees.Hierarchy.Collections
             return newHierarchy;
         }
 
+        /// <inheritdoc />
         protected override void ClearInternal()
         {
             trunks.Clear();
@@ -276,11 +286,13 @@ namespace Appalachia.Simulation.Trees.Hierarchy.Collections
             fruits.Clear();
         }
 
+        /// <inheritdoc />
         protected override void DistributionSettingsChanged()
         {
             BranchBuildRequestManager.SettingsChanged(SettingsUpdateTarget.Distribution);
         }
 
+        /// <inheritdoc />
         protected override void RemoveHierarchies(HierarchyData hierarchy)
         {
             switch (hierarchy.type)

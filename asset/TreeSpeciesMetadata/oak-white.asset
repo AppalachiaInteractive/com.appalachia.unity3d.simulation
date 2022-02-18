@@ -12,11 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 773aa34ad01d5be41af9e052481587f0, type: 3}
   m_Name: oak-white
   m_EditorClassIdentifier: 
-  _cachedName: 
-  _niceName: 
+  _cachedName: oak-white
+  _niceName: Oak-white
   _initializer:
     _tags: []
     _resetToken: 
+  _objectId:
+    _increment: 12632100
+    _machine: 14129404
+    _timestamp: 1645121937
+    _pid: -14768
   id: 26
   speciesName: 
   woodData: {fileID: 11400000, guid: 148801e9bb87029438599a15d4a7b0cf, type: 2}

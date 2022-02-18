@@ -10,6 +10,14 @@ namespace Appalachia.Simulation.Trees.Hierarchy.Options.Properties
         {
         }
 
+        /// <inheritdoc />
+        public override Vector4 CloneElement(Vector4 model)
+        {
+            return model;
+        }
+
+        #region ICloneable<Vector4Tree> Members
+
         public Vector4Tree Clone()
         {
             var clone = new Vector4Tree(CloneElement(defaultValue));
@@ -18,9 +26,6 @@ namespace Appalachia.Simulation.Trees.Hierarchy.Options.Properties
             return clone;
         }
 
-        public override Vector4 CloneElement(Vector4 model)
-        {
-            return model;
-        }
+        #endregion
     }
 }

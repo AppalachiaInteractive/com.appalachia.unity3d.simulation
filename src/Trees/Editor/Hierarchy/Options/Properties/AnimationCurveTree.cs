@@ -11,11 +11,35 @@ namespace Appalachia.Simulation.Trees.Hierarchy.Options.Properties
         {
         }
 
-        public float Evaluate(float t) => accessor.Evaluate(Mathf.Clamp01(t));
+        /// <inheritdoc />
+        public override AnimationCurve CloneElement(AnimationCurve model)
+        {
+            var curve = new AnimationCurve
+            {
+                keys = model.keys.ToArray(),
+                preWrapMode = model.preWrapMode,
+                postWrapMode = model.postWrapMode
+            };
 
-        public float EvaluateClamped(float t, float min, float max) => Mathf.Clamp(Evaluate(t), min, max);
+            return curve;
+        }
 
-        public float EvaluateClamped01(float t) => EvaluateClamped(t, 0, 1);
+        public float Evaluate(float t)
+        {
+            return accessor.Evaluate(Mathf.Clamp01(t));
+        }
+
+        public float EvaluateClamped(float t, float min, float max)
+        {
+            return Mathf.Clamp(Evaluate(t), min, max);
+        }
+
+        public float EvaluateClamped01(float t)
+        {
+            return EvaluateClamped(t, 0, 1);
+        }
+
+        #region ICloneable<AnimationCurveTree> Members
 
         public AnimationCurveTree Clone()
         {
@@ -25,16 +49,6 @@ namespace Appalachia.Simulation.Trees.Hierarchy.Options.Properties
             return clone;
         }
 
-        public override AnimationCurve CloneElement(AnimationCurve model)
-        {
-             var curve = new AnimationCurve
-             {
-                 keys = model.keys.ToArray(),
-                 preWrapMode = model.preWrapMode,
-                 postWrapMode = model.postWrapMode
-             };
-
-             return curve;
-        }
+        #endregion
     }
 }

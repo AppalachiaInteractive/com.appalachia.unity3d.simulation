@@ -8,9 +8,39 @@ namespace Appalachia.Simulation.Trees.Build.Requests
     [Serializable]
     public class LogBuildRequest : BuildRequest
     {
+        #region Fields and Autoproperties
+
         private BuildRequestLevel _distribution = BuildRequestLevel.None;
         private BuildRequestLevel _materialProperties = BuildRequestLevel.None;
-  
+
+        #endregion
+
+        /// <inheritdoc />
+        public override BuildRequestLevel requestLevel
+        {
+            get
+            {
+                using (BUILD_TIME.SPC_BUILD_REQ.BuildLevel.Auto())
+                {
+                    var rqst = BuildRequestLevel.None;
+
+                    rqst = rqst.Max(distribution);
+                    if (rqst == BuildRequestLevel.InitialPass)
+                    {
+                        return rqst;
+                    }
+
+                    rqst = rqst.Max(materialProperties);
+                    if (rqst == BuildRequestLevel.InitialPass)
+                    {
+                        return rqst;
+                    }
+
+                    return rqst;
+                }
+            }
+        }
+
         public BuildRequestLevel distribution
         {
             get => _distribution;
@@ -20,8 +50,12 @@ namespace Appalachia.Simulation.Trees.Build.Requests
                 {
                     _distribution = BuildRequestLevel.None;
                 }
-                if (value < _distribution) return;
-                
+
+                if (value < _distribution)
+                {
+                    return;
+                }
+
                 _distribution = value;
             }
         }
@@ -35,40 +69,34 @@ namespace Appalachia.Simulation.Trees.Build.Requests
                 {
                     _materialProperties = BuildRequestLevel.None;
                 }
-                if (value < _materialProperties) return;
-                
+
+                if (value < _materialProperties)
+                {
+                    return;
+                }
+
                 _materialProperties = value;
             }
         }
 
-        public override BuildRequestLevel requestLevel
-        {
-            get
-            {
-                using (BUILD_TIME.SPC_BUILD_REQ.BuildLevel.Auto())
-                {
-                    BuildRequestLevel rqst = BuildRequestLevel.None;
-
-                    rqst = rqst.Max(distribution);
-                    if (rqst == BuildRequestLevel.InitialPass) return rqst;
-
-                    rqst = rqst.Max(materialProperties);
-                    if (rqst == BuildRequestLevel.InitialPass) return rqst;
-
-                    return rqst;
-                }
-            }
-        }
-
+        /// <inheritdoc />
         public override IEnumerable<BuildCost> GetBuildCosts(BuildRequestLevel level)
         {
             using (BUILD_TIME.SPC_BUILD_REQ.GetBuildCosts.Auto())
             {
-                if (distribution >= level) yield return new BuildCost(BuildCategory.Distribution);
-                if (materialProperties >= level) yield return new BuildCost(BuildCategory.MaterialProperties);
+                if (distribution >= level)
+                {
+                    yield return new BuildCost(BuildCategory.Distribution);
+                }
+
+                if (materialProperties >= level)
+                {
+                    yield return new BuildCost(BuildCategory.MaterialProperties);
+                }
             }
         }
-        
+
+        /// <inheritdoc />
         public override bool ShouldBuild(BuildCategory category, BuildRequestLevel level)
         {
             using (BUILD_TIME.SPC_BUILD_REQ.ShouldBuild.Auto())
@@ -84,11 +112,19 @@ namespace Appalachia.Simulation.Trees.Build.Requests
                 }
             }
         }
-        
+
+        /// <inheritdoc />
         protected override void SetAllFromTo(BuildRequestLevel from, BuildRequestLevel to)
         {
-            if (_distribution == from) _distribution = to;
-            if (_materialProperties == from) _materialProperties = to;
+            if (_distribution == from)
+            {
+                _distribution = to;
+            }
+
+            if (_materialProperties == from)
+            {
+                _materialProperties = to;
+            }
         }
     }
 }

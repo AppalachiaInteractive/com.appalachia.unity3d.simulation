@@ -18,6 +18,11 @@ MonoBehaviour:
     _tags:
     - defaultValue
     _resetToken: 
+  _objectId:
+    _increment: 0
+    _machine: 0
+    _timestamp: 0
+    _pid: 0
   defaultValue: {fileID: 11400000, guid: f803a3a31ee99c747a374387681c4749, type: 2}
   _all:
     _capacityIncreaseMultiplier: 2

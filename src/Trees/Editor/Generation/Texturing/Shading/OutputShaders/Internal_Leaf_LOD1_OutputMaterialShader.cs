@@ -9,11 +9,14 @@ namespace Appalachia.Simulation.Trees.Metadata.Texturing.Shading.OutputShaders
     public class Internal_Leaf_LOD1_OutputMaterialShader : OutputMaterialShader
     {
         public static string Key = _GSR.leafShaders[1].name;
-        public override string Name { get; } = Key;
+        /// <inheritdoc />
+public override string Name { get; } = Key;
         
-        public override LazyShader Shader { get; } = new LazyShader(_GSR.leafShaders[1]);
+        /// <inheritdoc />
+public override LazyShader Shader { get; } = new LazyShader(_GSR.leafShaders[1]);
 
-        public override IEnumerable<OutputTextureProfile> GetOutputProfiles(bool atlas) =>
+        /// <inheritdoc />
+public override IEnumerable<OutputTextureProfile> GetOutputProfiles(bool atlas) =>
             new[]
             {
                 OutputTextureProfileFactory.Get(TextureMap.Albedo, "_MainTex", atlas),
@@ -21,7 +24,8 @@ namespace Appalachia.Simulation.Trees.Metadata.Texturing.Shading.OutputShaders
                 OutputTextureProfileFactory.Get(TextureMap.MAOTS, "_MetallicGlossMap", atlas)
             };
         
-        public override void FinalizeSettings(Material material, bool atlas)
+        /// <inheritdoc />
+public override void FinalizeSettings(Material material, bool atlas)
         {
         }
     }

@@ -6,30 +6,20 @@ using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.UI.Selections.Icons.Log
 {
-    
     public class LogInstanceSidebarMenu : LogContextEditorSidebarMenuContainer<LogInstance>
     {
-        public LogInstanceSidebarMenu(OdinMenuStyle menuStyle, OdinMenuTreeDrawingConfig menuConfig, Color menuBackgroundColor, string menuTitle) : base(menuStyle, menuConfig, menuBackgroundColor, menuTitle)
+        public LogInstanceSidebarMenu(
+            OdinMenuStyle menuStyle,
+            OdinMenuTreeDrawingConfig menuConfig,
+            Color menuBackgroundColor,
+            string menuTitle) : base(menuStyle, menuConfig, menuBackgroundColor, menuTitle)
         {
         }
 
-        protected override IList<LogInstance> GetMenuItems()
-        {
-            return log.logInstances;
-        }
-
-        protected override string GetMenuName(LogInstance menuItem)
-        {
-            return menuItem.GetMenuString();
-        }
-
-        protected override TreeIcon GetMenuIcon(LogInstance menuItem)
-        {
-            return TreeIcons.knot;
-        }
-
+        /// <inheritdoc />
         protected override bool HasAdditionalToolbar => true;
 
+        /// <inheritdoc />
         protected override void DrawAdditionalToolbar(float width, float height)
         {
             using (TreeGUI.Layout.Horizontal())
@@ -37,14 +27,11 @@ namespace Appalachia.Simulation.Trees.UI.Selections.Icons.Log
                 TreeGUI.Button.Standard(
                     TreeIcons.plus,
                     "Add new log",
-                    () =>
-                    {
-                        log.AddNewLog();
-                    },
+                    () => { log.AddNewLog(); },
                     TreeGUI.Styles.ButtonLeft,
                     TreeGUI.Layout.Options.MaxWidth(width / 2f).Height(height)
                 );
-                
+
                 TreeGUI.Button.EnableDisable(
                     HasSelection,
                     TreeIcons.x,
@@ -59,6 +46,24 @@ namespace Appalachia.Simulation.Trees.UI.Selections.Icons.Log
                     TreeGUI.Layout.Options.MaxWidth(width / 2f).Height(height)
                 );
             }
+        }
+
+        /// <inheritdoc />
+        protected override TreeIcon GetMenuIcon(LogInstance menuItem)
+        {
+            return TreeIcons.knot;
+        }
+
+        /// <inheritdoc />
+        protected override IList<LogInstance> GetMenuItems()
+        {
+            return log.logInstances;
+        }
+
+        /// <inheritdoc />
+        protected override string GetMenuName(LogInstance menuItem)
+        {
+            return menuItem.GetMenuString();
         }
     }
 }

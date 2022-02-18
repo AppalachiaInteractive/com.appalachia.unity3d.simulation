@@ -10,6 +10,14 @@ namespace Appalachia.Simulation.Trees.Hierarchy.Options.Properties
         {
         }
 
+        /// <inheritdoc />
+        public override floatCurve CloneElement(floatCurve model)
+        {
+            return model.Clone();
+        }
+
+        #region ICloneable<floatCurveTree> Members
+
         public floatCurveTree Clone()
         {
             var clone = new floatCurveTree(CloneElement(defaultValue));
@@ -18,9 +26,6 @@ namespace Appalachia.Simulation.Trees.Hierarchy.Options.Properties
             return clone;
         }
 
-        public override floatCurve CloneElement(floatCurve model)
-        {
-            return model.Clone();
-        }
+        #endregion
     }
 }

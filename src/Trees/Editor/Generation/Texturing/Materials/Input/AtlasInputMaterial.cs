@@ -52,14 +52,22 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Input
 
         #endregion
 
+        /// <inheritdoc />
         public override bool eligibleAsBranch => false;
 
+        /// <inheritdoc />
         public override bool eligibleAsBreak => false;
+
+        /// <inheritdoc />
         public override bool eligibleAsFrond => _eligibleAsFrond;
+
+        /// <inheritdoc />
         public override bool eligibleAsLeaf => _eligibleAsLeaf;
 
+        /// <inheritdoc />
         public override MaterialContext MaterialContext => MaterialContext.AtlasInputMaterial;
 
+        /// <inheritdoc />
         public override Rect GetRect(Vector2 inputSize, Vector2 outputSize)
         {
             return atlasPackedUVRect;

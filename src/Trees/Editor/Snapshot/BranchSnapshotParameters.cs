@@ -104,7 +104,7 @@ namespace Appalachia.Simulation.Trees.Snapshot
 
         #endregion
 
-        public Vector2 textureSizeV2 => new Vector2((int) textureSize, (int) textureSize);
+        public Vector2 textureSizeV2 => new Vector2((int)textureSize, (int)textureSize);
 
         public static BranchSnapshotParameters Create(string folder, NameBasis nameBasis, int index)
         {
@@ -114,6 +114,7 @@ namespace Appalachia.Simulation.Trees.Snapshot
             return instance;
         }
 
+        /// <inheritdoc />
         public override void UpdateSettingsType(ResponsiveSettingsType t)
         {
             branchOutputMaterial.settingsType = t;

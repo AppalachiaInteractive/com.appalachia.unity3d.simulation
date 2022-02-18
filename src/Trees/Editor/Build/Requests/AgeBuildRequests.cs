@@ -7,8 +7,15 @@ namespace Appalachia.Simulation.Trees.Build.Requests
     [Serializable]
     public class AgeBuildRequests : BuildRequest
     {
+        #region Fields and Autoproperties
+
         private BuildRequestLevel _distribution = BuildRequestLevel.None;
-        
+
+        #endregion
+
+        /// <inheritdoc />
+        public override BuildRequestLevel requestLevel => distribution;
+
         public BuildRequestLevel distribution
         {
             get => _distribution;
@@ -19,21 +26,17 @@ namespace Appalachia.Simulation.Trees.Build.Requests
                     _distribution = BuildRequestLevel.None;
                 }
 
-                if (value < _distribution) return;
+                if (value < _distribution)
+                {
+                    return;
+                }
 
                 _distribution = value;
             }
         }
-        
-        public override BuildRequestLevel requestLevel
-        {
-            get
-            {
-                return distribution;
-            }
-        }
 
-        public override  IEnumerable<BuildCost> GetBuildCosts(BuildRequestLevel level)
+        /// <inheritdoc />
+        public override IEnumerable<BuildCost> GetBuildCosts(BuildRequestLevel level)
         {
             if (distribution >= level)
             {
@@ -41,6 +44,7 @@ namespace Appalachia.Simulation.Trees.Build.Requests
             }
         }
 
+        /// <inheritdoc />
         public override bool ShouldBuild(BuildCategory category, BuildRequestLevel level)
         {
             switch (category)
@@ -52,9 +56,13 @@ namespace Appalachia.Simulation.Trees.Build.Requests
             }
         }
 
-        protected override void SetAllFromTo(BuildRequestLevel @from, BuildRequestLevel to)
+        /// <inheritdoc />
+        protected override void SetAllFromTo(BuildRequestLevel from, BuildRequestLevel to)
         {
-            if (_distribution == from) _distribution = to;
+            if (_distribution == from)
+            {
+                _distribution = to;
+            }
         }
     }
 }

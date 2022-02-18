@@ -12,60 +12,9 @@ namespace Appalachia.Simulation.Trees.Hierarchy.Settings
     [Serializable]
     public class FrondSettings : AgeOverrideResponsiveSettings, ICloneable<FrondSettings>
     {
-        
-        [PropertyTooltip("Material for fronds.")]
-        [TreePropertySimple]
-        [OnValueChanged(nameof(MaterialGenerationChanged), true)]
-        [DelayedProperty]
-        public Material frondMaterial;
-        
-        [PropertyTooltip(
-            "Defines the number of fronds per branch. Fronds are always evenly spaced around the branch.")]
-        [TreeProperty]
-        [OnValueChanged(nameof(DistributionSettingsChanged), true)]
-        public intTree frondCount = TreeProperty.New(1);
-
-        [PropertyTooltip("Adjust to crease / fold the fronds.")]
-        [PropertyRange(0f, 1f)]
-        [TreeProperty]
-        [OnValueChanged(nameof(GeometrySettingsChanged), true)]
-        public floatTree frondCrease = TreeProperty.New(0.0f);
-
-        [PropertyTooltip("Defines the starting and ending point of the fronds.")]
-        [MinMaxSlider(0f, 1f)]
-        [TreeProperty]
-        [OnValueChanged(nameof(GeometrySettingsChanged), true)]
-        public Vector2Tree frondRange = TreeProperty.v2(0.1f, 1.0f);
-
-        [PropertyTooltip("Defines rotation around the parent branch.")]
-        [PropertyRange(0f, 1f)]
-        [TreeProperty]
-        [OnValueChanged(nameof(GeometrySettingsChanged), true)]
-        public floatTree frondRotation = TreeProperty.New(0.0f);
-
-        [PropertyTooltip(
-            "The width of the fronds, use the curve to adjust the specific shape along the length of the branch.")]
-        [PropertyRange(0f, 1f)]
-        [TreeCurve(SettingsUpdateTarget.Geometry)]
-        [TreeProperty]
-        [OnValueChanged(nameof(GeometrySettingsChanged), true)]
-        public floatCurveTree frondWidth = TreeProperty.fCurve(1.0f, 1f, 0f);
-        
-        
-        public FrondSettings Clone()
-        {
-            var clone = new FrondSettings(settingsType);
-            clone.frondMaterial = frondMaterial;
-            clone.frondCount = frondCount.Clone();
-            clone.frondCrease = frondCrease.Clone();
-            clone.frondRange = frondRange.Clone();
-            clone.frondRotation = frondRotation.Clone();
-            clone.frondWidth = frondWidth.Clone();
-            return clone;
-        }
-        
         /*
-        public override void ToggleCheckboxes(bool enabled)
+        /// <inheritdoc />
+public override void ToggleCheckboxes(bool enabled)
         {
             frondCount.overridesVisible = enabled;
             frondCrease.overridesVisible = enabled;
@@ -78,6 +27,51 @@ namespace Appalachia.Simulation.Trees.Hierarchy.Settings
         {
         }
 
+        #region Fields and Autoproperties
+
+        [PropertyTooltip(
+            "The width of the fronds, use the curve to adjust the specific shape along the length of the branch."
+        )]
+        [PropertyRange(0f, 1f)]
+        [TreeCurve(SettingsUpdateTarget.Geometry)]
+        [TreeProperty]
+        [OnValueChanged(nameof(GeometrySettingsChanged), true)]
+        public floatCurveTree frondWidth = TreeProperty.fCurve(1.0f, 1f, 0f);
+
+        [PropertyTooltip("Adjust to crease / fold the fronds.")]
+        [PropertyRange(0f, 1f)]
+        [TreeProperty]
+        [OnValueChanged(nameof(GeometrySettingsChanged), true)]
+        public floatTree frondCrease = TreeProperty.New(0.0f);
+
+        [PropertyTooltip("Defines rotation around the parent branch.")]
+        [PropertyRange(0f, 1f)]
+        [TreeProperty]
+        [OnValueChanged(nameof(GeometrySettingsChanged), true)]
+        public floatTree frondRotation = TreeProperty.New(0.0f);
+
+        [PropertyTooltip(
+            "Defines the number of fronds per branch. Fronds are always evenly spaced around the branch."
+        )]
+        [TreeProperty]
+        [OnValueChanged(nameof(DistributionSettingsChanged), true)]
+        public intTree frondCount = TreeProperty.New(1);
+
+        [PropertyTooltip("Material for fronds.")]
+        [TreePropertySimple]
+        [OnValueChanged(nameof(MaterialGenerationChanged), true)]
+        [DelayedProperty]
+        public Material frondMaterial;
+
+        [PropertyTooltip("Defines the starting and ending point of the fronds.")]
+        [MinMaxSlider(0f, 1f)]
+        [TreeProperty]
+        [OnValueChanged(nameof(GeometrySettingsChanged), true)]
+        public Vector2Tree frondRange = TreeProperty.v2(0.1f, 1.0f);
+
+        #endregion
+
+        /// <inheritdoc />
         public override void CopySettingsTo(ResponsiveSettings t)
         {
             if (t is FrondSettings cast)
@@ -90,5 +84,21 @@ namespace Appalachia.Simulation.Trees.Hierarchy.Settings
                 cast.frondWidth = frondWidth.Clone();
             }
         }
+
+        #region ICloneable<FrondSettings> Members
+
+        public FrondSettings Clone()
+        {
+            var clone = new FrondSettings(settingsType);
+            clone.frondMaterial = frondMaterial;
+            clone.frondCount = frondCount.Clone();
+            clone.frondCrease = frondCrease.Clone();
+            clone.frondRange = frondRange.Clone();
+            clone.frondRotation = frondRotation.Clone();
+            clone.frondWidth = frondWidth.Clone();
+            return clone;
+        }
+
+        #endregion
     }
 }

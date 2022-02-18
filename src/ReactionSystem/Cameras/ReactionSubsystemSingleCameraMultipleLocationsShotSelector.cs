@@ -6,19 +6,25 @@ namespace Appalachia.Simulation.ReactionSystem.Cameras
 {
     [Serializable]
     public abstract class
-        ReactionSubsystemSingleCameraMultipleLocationsShotSelector :
-            ReactionSubsystemSingleCameraMultipleLocations
+        ReactionSubsystemSingleCameraMultipleLocationsShotSelector<T> :
+            ReactionSubsystemSingleCameraMultipleLocations<T>
+        where T : ReactionSubsystemSingleCameraMultipleLocationsShotSelector<T>
     {
+        #region Fields and Autoproperties
+
         [PropertyRange(1, 300)]
-        [ShowIf(nameof(_selectionModeXFrames))]
+        [ShowIf(nameof(SelectionModeXFrames))]
         public int frameShotInterval = 4;
 
         private SubsystemCameraShotSelector shotSelector;
-        public abstract SubsystemCameraShotSelectionMode selectionMode { get; }
 
-        private bool _selectionModeXFrames =>
-            selectionMode == SubsystemCameraShotSelectionMode.EveryXFrames;
+        #endregion
 
+        public abstract SubsystemCameraShotSelectionMode SelectionMode { get; }
+
+        private bool SelectionModeXFrames => SelectionMode == SubsystemCameraShotSelectionMode.EveryXFrames;
+
+        /// <inheritdoc />
         protected override ReactionSubsystemCenter GetCurrentSubsystemCenter()
         {
             if (shotSelector == default)
@@ -31,7 +37,7 @@ namespace Appalachia.Simulation.ReactionSystem.Cameras
             for (var i = 0; i < centers.Count; i++)
             {
                 var shouldRender = shotSelector.ShouldRenderAtCenter(
-                    selectionMode,
+                    SelectionMode,
                     centers[i],
                     i,
                     centers.Count,

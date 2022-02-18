@@ -12,12 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27f402b5f299425b8811f4aa1879a37f, type: 3}
   m_Name: animal_amphibian
   m_EditorClassIdentifier: 
-  _cachedName: 
-  _niceName: 
+  _cachedName: animal_amphibian
+  _niceName: Animal_amphibian
   _initializer:
     _tags:
     - profileName
     _resetToken: 
+  _objectId:
+    _increment: 12632133
+    _machine: 14129404
+    _timestamp: 1645121949
+    _pid: -14768
   id: 36
   profileName: animal_amphibian
   _category: Animal

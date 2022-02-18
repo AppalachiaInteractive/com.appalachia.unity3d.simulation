@@ -29,6 +29,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Materials.Output
 
         #endregion
 
+        /// <inheritdoc />
         protected override async AppaTask Initialize(Initializer initializer)
         {
             await base.Initialize(initializer);

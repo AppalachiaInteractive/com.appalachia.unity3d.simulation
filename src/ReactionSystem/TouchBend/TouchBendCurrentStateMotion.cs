@@ -12,11 +12,11 @@ namespace Appalachia.Simulation.ReactionSystem.TouchBend
     [ExecuteAlways]
     [DisallowMultipleComponent]
     [CallStaticConstructorInEditor]
-    public class TouchBendCurrentStateMotion : ReactionSubsystemBase
+    public class TouchBendCurrentStateMotion : ReactionSubsystemBase<TouchBendCurrentStateMotion>
     {
         #region Constants and Static Readonly
 
-        private const string _systemName = "TOUCH_BEND_CURRENT_STATE_MOTION";
+        private const string SYSTEM_NAME = "TOUCH_BEND_CURRENT_STATE_MOTION";
 
         #endregion
 
@@ -63,12 +63,16 @@ namespace Appalachia.Simulation.ReactionSystem.TouchBend
 
         #endregion
 
-        public override RenderTexture renderTexture => _renderTexture;
+        /// <inheritdoc />
+        public override RenderTexture RenderTexture => _renderTexture;
 
-        protected override bool showRenderTexture => _renderTexture != null;
+        /// <inheritdoc />
+        protected override bool ShowRenderTexture => _renderTexture != null;
 
-        protected override string SubsystemName => _systemName;
+        /// <inheritdoc />
+        protected override string SubsystemName => SYSTEM_NAME;
 
+        /// <inheritdoc />
         protected override void DoUpdateLoop()
         {
             var currentMapMinXZ = spatialCamera.mapMinXZ;
@@ -87,6 +91,7 @@ namespace Appalachia.Simulation.ReactionSystem.TouchBend
             _previousMapMinXZ = spatialCamera.mapMinXZ;
         }
 
+        /// <inheritdoc />
         protected override bool InitializeUpdateLoop()
         {
             if (maskCamera == null)
@@ -115,10 +120,10 @@ namespace Appalachia.Simulation.ReactionSystem.TouchBend
             }
 
             _renderTexture = _renderTexture.Recreate(
-                renderTextureQuality,
-                renderTextureFormat,
-                filterMode,
-                depth
+                RenderTextureQuality,
+                RenderTextureFormat,
+                FilterMode,
+                Depth
             );
             _previousRenderTexture = new RenderTexture(_renderTexture);
             motionDecayID = GSPL.Get(GSC.TOUCHBEND._MOTION_DECAY);
@@ -128,10 +133,12 @@ namespace Appalachia.Simulation.ReactionSystem.TouchBend
             return true;
         }
 
+        /// <inheritdoc />
         protected override void OnInitialization()
         {
         }
 
+        /// <inheritdoc />
         protected override void TeardownSubsystem()
         {
         }

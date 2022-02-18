@@ -7,21 +7,26 @@ namespace Appalachia.Simulation.Trees.Shape
     [Serializable]
     public sealed class FruitShapeData : ShapeData
     {
-        public override TreeComponentType type => TreeComponentType.Fruit;
-
-
-        protected override ShapeData GetNew()
+        public FruitShapeData(int shapeID, int hierarchyID, int parentShapeID) : base(
+            shapeID,
+            hierarchyID,
+            parentShapeID
+        )
         {
-            return new FruitShapeData(shapeID, hierarchyID, parentShapeID);
         }
 
+        /// <inheritdoc />
+        public override TreeComponentType type => TreeComponentType.Fruit;
+
+        /// <inheritdoc />
         protected override void Clone(ShapeData shapeData)
         {
         }
 
-        public FruitShapeData(int shapeID, int hierarchyID, int parentShapeID) : base(shapeID, hierarchyID, parentShapeID)
+        /// <inheritdoc />
+        protected override ShapeData GetNew()
         {
-            
+            return new FruitShapeData(shapeID, hierarchyID, parentShapeID);
         }
     }
 }

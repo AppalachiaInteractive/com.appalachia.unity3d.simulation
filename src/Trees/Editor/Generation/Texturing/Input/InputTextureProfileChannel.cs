@@ -74,6 +74,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Input
             return !(left == right);
         }
 
+        /// <inheritdoc />
         [DebuggerStepThrough]
         public override bool Equals(object obj)
         {
@@ -95,6 +96,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Input
             return Equals((InputTextureProfileChannel)obj);
         }
 
+        /// <inheritdoc />
         [DebuggerStepThrough]
         public override int GetHashCode()
         {

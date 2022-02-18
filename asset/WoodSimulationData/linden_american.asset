@@ -17,6 +17,11 @@ MonoBehaviour:
   _initializer:
     _tags: []
     _resetToken: 
+  _objectId:
+    _increment: 0
+    _machine: 0
+    _timestamp: 0
+    _pid: 0
   id: 86
   _category: Deciduous
   densityMetadata: {fileID: 11400000, guid: a19bdd21811fb294f88261a626d9ff8a, type: 2}

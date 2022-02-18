@@ -1,10 +1,12 @@
 using System;
+using Appalachia.Core.Attributes;
 using Appalachia.Core.Objects.Root;
 using UnityEditor;
 using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.UI.Utilities
 {
+    [NonSerializable]
     public class ProgressDisplay : AppalachiaSimpleBase, IDisposable
     {
         public ProgressDisplay(

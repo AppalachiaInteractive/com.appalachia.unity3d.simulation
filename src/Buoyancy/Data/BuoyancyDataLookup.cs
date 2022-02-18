@@ -9,19 +9,22 @@ namespace Appalachia.Simulation.Buoyancy.Data
     [Serializable]
     public class BuoyancyDataLookup : AppaLookup<string, BuoyancyData, stringList, BuoyancyDataList>
     {
-        protected override string GetDisplayTitle(string key, BuoyancyData value)
+        /// <inheritdoc />
+        protected override Color GetDisplayColor(string key, BuoyancyData value)
         {
-            return key;
+            return Color.white;
         }
 
+        /// <inheritdoc />
         protected override string GetDisplaySubtitle(string key, BuoyancyData value)
         {
             return value.name;
         }
 
-        protected override Color GetDisplayColor(string key, BuoyancyData value)
+        /// <inheritdoc />
+        protected override string GetDisplayTitle(string key, BuoyancyData value)
         {
-            return Color.white;
+            return key;
         }
     }
 }

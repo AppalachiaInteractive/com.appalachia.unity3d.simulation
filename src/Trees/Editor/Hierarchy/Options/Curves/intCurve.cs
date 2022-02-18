@@ -31,12 +31,34 @@ namespace Appalachia.Simulation.Trees.Hierarchy.Options.Curves
         {
         }
 
+        /// <inheritdoc />
+        public override int Evaluate(float t)
+        {
+            return (int)curve.Evaluate(Mathf.Clamp01(t));
+        }
+
+        /// <inheritdoc />
+        public override int EvaluateClamped(float t, int min, int max)
+        {
+            return Mathf.Clamp(Evaluate(t), min, max);
+        }
+
+        /// <inheritdoc />
+        public override int EvaluateScaled(float t)
+        {
+            return (int)(curve.Evaluate(Mathf.Clamp01(t)) * value);
+        }
+
+        #region ICloneable<intCurve> Members
+
         public intCurve Clone()
         {
             {
                 var c = new AnimationCurve
                 {
-                    keys = curve.keys.ToArray(), preWrapMode = curve.preWrapMode, postWrapMode = curve.postWrapMode
+                    keys = curve.keys.ToArray(),
+                    preWrapMode = curve.preWrapMode,
+                    postWrapMode = curve.postWrapMode
                 };
 
                 var clone = new intCurve(value, c);
@@ -45,19 +67,6 @@ namespace Appalachia.Simulation.Trees.Hierarchy.Options.Curves
             }
         }
 
-        public override int Evaluate(float t)
-        {
-            return (int) curve.Evaluate(Mathf.Clamp01(t));
-        }
-
-        public override int EvaluateClamped(float t, int min, int max)
-        {
-            return Mathf.Clamp(Evaluate(t), min, max);
-        }
-
-        public override int EvaluateScaled(float t)
-        {
-            return (int) (curve.Evaluate(Mathf.Clamp01(t)) * value);
-        }
+        #endregion
     }
 }

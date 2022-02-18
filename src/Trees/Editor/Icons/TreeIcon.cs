@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using Appalachia.CI.Integration.Assets;
 using Appalachia.CI.Integration.FileSystem;
+using Appalachia.Core.Attributes;
 using Appalachia.Core.Objects.Root;
 using Appalachia.Simulation.Trees.Extensions;
 using Appalachia.Utility.Strings;
@@ -10,6 +11,7 @@ using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.Icons
 {
+    [NonSerializable]
     public class TreeIcon : AppalachiaSimpleBase
     {
         #region Fields and Autoproperties

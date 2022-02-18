@@ -8,39 +8,12 @@ namespace Appalachia.Simulation.Trees.Build.Requests
     [Serializable]
     public class TreeBuildRequest : BuildRequest
     {
+        #region Fields and Autoproperties
+
         private BuildRequestLevel _materialGeneration = BuildRequestLevel.None;
         private BuildRequestLevel _materialProperties = BuildRequestLevel.None;
-        /*private BuildRequestLevel _prefabCreation = BuildRequestLevel.None;*/
-  
-        public BuildRequestLevel materialGeneration
-        {
-            get => _materialGeneration;
-            set
-            {
-                if (value == BuildRequestLevel.None)
-                {
-                    _materialGeneration = BuildRequestLevel.None;
-                }
-                if (value < _materialGeneration) return;
-                
-                _materialGeneration = value;
-            }
-        }
 
-        public BuildRequestLevel materialProperties
-        {
-            get => _materialProperties.Max(materialGeneration);
-            set
-            {
-                if (value == BuildRequestLevel.None)
-                {
-                    _materialProperties = BuildRequestLevel.None;
-                }
-                if (value < _materialProperties) return;
-                
-                _materialProperties = value;
-            }
-        }
+        #endregion
 
         /*
         public BuildRequestLevel prefabCreation
@@ -59,19 +32,26 @@ namespace Appalachia.Simulation.Trees.Build.Requests
             }
         }*/
 
+        /// <inheritdoc />
         public override BuildRequestLevel requestLevel
         {
             get
             {
                 using (BUILD_TIME.SPC_BUILD_REQ.BuildLevel.Auto())
                 {
-                    BuildRequestLevel rqst = BuildRequestLevel.None;
+                    var rqst = BuildRequestLevel.None;
 
                     rqst = rqst.Max(materialGeneration);
-                    if (rqst == BuildRequestLevel.InitialPass) return rqst;
+                    if (rqst == BuildRequestLevel.InitialPass)
+                    {
+                        return rqst;
+                    }
 
                     rqst = rqst.Max(materialProperties);
-                    if (rqst == BuildRequestLevel.InitialPass) return rqst;
+                    if (rqst == BuildRequestLevel.InitialPass)
+                    {
+                        return rqst;
+                    }
 
                     /*
                     requestLevel = requestLevel.Max(prefabCreation);
@@ -81,17 +61,65 @@ namespace Appalachia.Simulation.Trees.Build.Requests
                 }
             }
         }
+        /*private BuildRequestLevel _prefabCreation = BuildRequestLevel.None;*/
 
+        public BuildRequestLevel materialGeneration
+        {
+            get => _materialGeneration;
+            set
+            {
+                if (value == BuildRequestLevel.None)
+                {
+                    _materialGeneration = BuildRequestLevel.None;
+                }
+
+                if (value < _materialGeneration)
+                {
+                    return;
+                }
+
+                _materialGeneration = value;
+            }
+        }
+
+        public BuildRequestLevel materialProperties
+        {
+            get => _materialProperties.Max(materialGeneration);
+            set
+            {
+                if (value == BuildRequestLevel.None)
+                {
+                    _materialProperties = BuildRequestLevel.None;
+                }
+
+                if (value < _materialProperties)
+                {
+                    return;
+                }
+
+                _materialProperties = value;
+            }
+        }
+
+        /// <inheritdoc />
         public override IEnumerable<BuildCost> GetBuildCosts(BuildRequestLevel level)
         {
             using (BUILD_TIME.SPC_BUILD_REQ.GetBuildCosts.Auto())
             {
-                if (materialGeneration >= level) yield return new BuildCost(BuildCategory.MaterialGeneration);
-                if (materialProperties >= level) yield return new BuildCost(BuildCategory.MaterialProperties);
+                if (materialGeneration >= level)
+                {
+                    yield return new BuildCost(BuildCategory.MaterialGeneration);
+                }
+
+                if (materialProperties >= level)
+                {
+                    yield return new BuildCost(BuildCategory.MaterialProperties);
+                }
                 /*if (prefabCreation >= level) yield return new BuildCost(BuildCategory.PrefabCreation);*/
             }
         }
-        
+
+        /// <inheritdoc />
         public override bool ShouldBuild(BuildCategory category, BuildRequestLevel level)
         {
             using (BUILD_TIME.SPC_BUILD_REQ.ShouldBuild.Auto())
@@ -109,11 +137,19 @@ namespace Appalachia.Simulation.Trees.Build.Requests
                 }
             }
         }
-        
+
+        /// <inheritdoc />
         protected override void SetAllFromTo(BuildRequestLevel from, BuildRequestLevel to)
         {
-            if (_materialGeneration == from) _materialGeneration = to;
-            if (_materialProperties == from) _materialProperties = to;
+            if (_materialGeneration == from)
+            {
+                _materialGeneration = to;
+            }
+
+            if (_materialProperties == from)
+            {
+                _materialProperties = to;
+            }
             /*if (_prefabCreation == from) _prefabCreation = to;*/
         }
     }

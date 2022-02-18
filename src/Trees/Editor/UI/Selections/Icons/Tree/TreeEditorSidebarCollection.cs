@@ -1,4 +1,5 @@
 using System.Linq;
+using Appalachia.Core.Attributes;
 using Appalachia.Core.Objects.Root;
 using Appalachia.Simulation.Core.Metadata.Tree.Types;
 using Appalachia.Simulation.Trees.Definition;
@@ -8,8 +9,18 @@ using UnityEngine;
 
 namespace Appalachia.Simulation.Trees.UI.Selections.Icons.Tree
 {
+    [NonSerializable]
     public class TreeEditorSidebarCollection : AppalachiaSimpleBase
     {
+        private enum MenuType
+        {
+            Individual,
+            Age,
+            Stage
+        }
+
+        #region Fields and Autoproperties
+
         private bool _changing;
         private object _lastAgeSelection;
         private object _lastIndividualSelection;
@@ -18,117 +29,63 @@ namespace Appalachia.Simulation.Trees.UI.Selections.Icons.Tree
         private TreeEditorSidebarMenu ageMenu;
         private TreeEditorSidebarMenu stageMenu;
 
-        public TreeIndividual SelectedIndividual => individualMenu?.Selection?.SelectedValue as TreeIndividual;
+        #endregion
+
+        public bool HasSelectedAge => ageMenu?.HasSelection ?? false;
+
+        public bool HasSelectedIndividual => individualMenu?.HasSelection ?? false;
+        public bool HasSelectedStage => stageMenu?.HasSelection ?? false;
 
         public TreeAge SelectedAge => ageMenu?.Selection?.SelectedValue as TreeAge;
 
+        public TreeIndividual SelectedIndividual =>
+            individualMenu?.Selection?.SelectedValue as TreeIndividual;
+
         public TreeStage SelectedStage => stageMenu?.Selection?.SelectedValue as TreeStage;
 
-        public bool HasSelectedIndividual => individualMenu?.HasSelection ?? false;
-        public bool HasSelectedAge => ageMenu?.HasSelection ?? false;
-        public bool HasSelectedStage => stageMenu?.HasSelection ?? false;
-
-        private void RecreateMenusIfNull()
+        public void DrawAgeMenu(
+            TreeDataContainer tree,
+            float menuWidth,
+            float menuItemHeight,
+            float menuButtonWidth,
+            float menuButtonHeight)
         {
-            if ((individualMenu?.MenuItems == null) || individualMenu.MenuItems.Any(m => m == null))
-            {
-                individualMenu = new TreeEditorSidebarMenu(
-                    TreeGUI.MenuStyles.SidebarMenuStyle,
-                    TreeGUI.MenuStyles.SidebarMenuConfig,
-                    TreeGUI.Colors.SidebarMenuBackgroundColor
-                );
+            TreeGUI.Draw.SmallTitle("Ages");
+            ageMenu.Draw(menuItemHeight, maxWidth: menuWidth);
 
-                individualMenu.DefaultMenuStyle = TreeGUI.MenuStyles.SidebarMenuStyle;
-                individualMenu.Selection.SelectionChanged += IndividualOnSelectionChanged;
-            }
-
-            if ((ageMenu?.MenuItems == null) || ageMenu.MenuItems.Any(m => m == null))
-            {
-                ageMenu = new TreeEditorSidebarMenu(
-                    TreeGUI.MenuStyles.SidebarMenuStyle,
-                    TreeGUI.MenuStyles.SidebarMenuConfig,
-                    TreeGUI.Colors.SidebarMenuBackgroundColor
-                );
-
-                ageMenu.DefaultMenuStyle = TreeGUI.MenuStyles.SidebarMenuStyle;
-                ageMenu.Selection.SelectionChanged += AgeOnSelectionChanged;
-            }
-
-            if ((stageMenu?.MenuItems == null) || stageMenu.MenuItems.Any(m => m == null))
-            {
-                stageMenu = new TreeEditorSidebarMenu(
-                    TreeGUI.MenuStyles.SidebarMenuStyle,
-                    TreeGUI.MenuStyles.SidebarMenuConfig,
-                    TreeGUI.Colors.SidebarMenuBackgroundColor
-                );
-
-                stageMenu.DefaultMenuStyle = TreeGUI.MenuStyles.SidebarMenuStyle;
-                stageMenu.Selection.SelectionChanged += StageOnSelectionChanged;
-            }
+            DrawAgeRemoveToolbar(tree, SelectedIndividual, SelectedAge, menuButtonWidth, menuButtonHeight);
         }
 
-        private void ClearMenusIfInvalid(bool requested)
+        public void DrawIndividualMenu(
+            TreeDataContainer tree,
+            float menuWidth,
+            float menuHeight,
+            float menuItemHeight,
+            float menuButtonWidth,
+            float menuButtonHeight)
         {
-            if (requested)
-            {
-                individualMenu.Selection.Clear();
-                ageMenu.Selection.Clear();
-                stageMenu.Selection.Clear();
+            TreeGUI.Draw.SmallTitle("Trees");
+            individualMenu.Draw(menuItemHeight, maxWidth: menuWidth, maxHeight: menuHeight);
 
-                individualMenu.Clear();
-                ageMenu.Clear();
-                stageMenu.Clear();
-            }
+            DrawIndividualAddRemoveToolbar(
+                tree,
+                individualMenu.Selection.SelectedValue as TreeIndividual,
+                (int)menuButtonWidth,
+                menuButtonHeight
+            );
+        }
 
-            if (individualMenu.Selection.Any(s => s == null))
-            {
-                individualMenu = null;
-                ageMenu = null;
-                stageMenu = null;
+        public void DrawStageMenu(
+            TreeDataContainer tree,
+            float menuWidth,
+            float menuItemHeight,
+            float menuButtonWidth,
+            float menuButtonHeight)
+        {
+            TreeGUI.Draw.SmallTitle("Stages");
+            stageMenu.Draw(menuItemHeight, maxWidth: menuWidth);
 
-                return;
-            }
-
-            if (ageMenu.Selection.Any(s => s == null))
-            {
-                ageMenu = null;
-                stageMenu = null;
-
-                return;
-            }
-
-            if (HasSelectedIndividual &&
-                ageMenu.MenuItems.Any(a => (a.Value as TreeAge).individualID != SelectedIndividual.individualID))
-            {
-                ageMenu = null;
-                stageMenu = null;
-
-                return;
-            }
-
-            if (stageMenu.Selection.Any(s => s == null))
-            {
-                stageMenu = null;
-
-                return;
-            }
-
-            if ((stageMenu != null) &&
-                HasSelectedIndividual &&
-                stageMenu.MenuItems.Any(a => (a.Value as TreeStage).individualID != SelectedIndividual.individualID))
-            {
-                stageMenu = null;
-
-                return;
-            }
-
-
-            if ((stageMenu != null) &&
-                HasSelectedAge &&
-                stageMenu.MenuItems.Any(a => (a.Value as TreeStage).ageType != SelectedAge.ageType))
-            {
-                stageMenu = null;
-            }
+            DrawStageRemoveToolbar(tree, SelectedAge, SelectedStage, menuButtonWidth, menuButtonHeight);
         }
 
         public void RepopulateMenus(TreeDataContainer tree, bool force, bool clear)
@@ -287,7 +244,10 @@ namespace Appalachia.Simulation.Trees.UI.Selections.Icons.Tree
                     stageMenu.Add(variant.GetMenuString(), variant, variant.GetIcon(true).icon);
                 }
 
-                currentStageSelectionIndex = Mathf.Max(currentStageSelectionIndex, stageMenu.MenuItems.Count - 1);
+                currentStageSelectionIndex = Mathf.Max(
+                    currentStageSelectionIndex,
+                    stageMenu.MenuItems.Count - 1
+                );
 
                 if (currentStageSelectionIndex > 0)
                 {
@@ -325,29 +285,23 @@ namespace Appalachia.Simulation.Trees.UI.Selections.Icons.Tree
             }
         }
 
+        public void Select(int individualID, AgeType ageType, StageType stageType)
+        {
+            individualMenu.SelectWhere(o => (o.Value as TreeIndividual)?.individualID == individualID);
+            ageMenu.SelectWhere(o => (o.Value as TreeAge)?.ageType == ageType);
+            stageMenu.SelectWhere(o => (o.Value as TreeStage)?.stageType == stageType);
+        }
+
+        public void Select(TreeStage stage)
+        {
+            Select(stage.individualID, stage.ageType, stage.stageType);
+        }
+
         public void SelectFirst()
         {
             individualMenu.SelectFirst();
             ageMenu.SelectFirst();
             stageMenu.SelectFirst();
-
-        }
-
-
-        private void IndividualOnSelectionChanged(SelectionChangedType obj)
-        {
-            if (obj == SelectionChangedType.ItemAdded)
-            {
-                if (individualMenu.Selection.SelectedValue == _lastIndividualSelection)
-                {
-                    return;
-                }
-
-                ageMenu.Clear();
-                stageMenu.Clear();
-
-                _lastIndividualSelection = individualMenu.Selection.SelectedValue;
-            }
         }
 
         private void AgeOnSelectionChanged(SelectionChangedType obj)
@@ -365,37 +319,101 @@ namespace Appalachia.Simulation.Trees.UI.Selections.Icons.Tree
             }
         }
 
-        private void StageOnSelectionChanged(SelectionChangedType obj)
+        private void ClearMenusIfInvalid(bool requested)
         {
-            if ((obj == SelectionChangedType.ItemAdded) && stageMenu.HasSelection)
+            if (requested)
             {
-                if (stageMenu.Selection.SelectedValue == _lastStageSelection)
-                {
-                    return;
-                }
+                individualMenu.Selection.Clear();
+                ageMenu.Selection.Clear();
+                stageMenu.Selection.Clear();
 
-                _lastStageSelection = stageMenu.Selection.SelectedValue;
+                individualMenu.Clear();
+                ageMenu.Clear();
+                stageMenu.Clear();
+            }
+
+            if (individualMenu.Selection.Any(s => s == null))
+            {
+                individualMenu = null;
+                ageMenu = null;
+                stageMenu = null;
+
+                return;
+            }
+
+            if (ageMenu.Selection.Any(s => s == null))
+            {
+                ageMenu = null;
+                stageMenu = null;
+
+                return;
+            }
+
+            if (HasSelectedIndividual &&
+                ageMenu.MenuItems.Any(
+                    a => (a.Value as TreeAge).individualID != SelectedIndividual.individualID
+                ))
+            {
+                ageMenu = null;
+                stageMenu = null;
+
+                return;
+            }
+
+            if (stageMenu.Selection.Any(s => s == null))
+            {
+                stageMenu = null;
+
+                return;
+            }
+
+            if ((stageMenu != null) &&
+                HasSelectedIndividual &&
+                stageMenu.MenuItems.Any(
+                    a => (a.Value as TreeStage).individualID != SelectedIndividual.individualID
+                ))
+            {
+                stageMenu = null;
+
+                return;
+            }
+
+            if ((stageMenu != null) &&
+                HasSelectedAge &&
+                stageMenu.MenuItems.Any(a => (a.Value as TreeStage).ageType != SelectedAge.ageType))
+            {
+                stageMenu = null;
             }
         }
 
-
-        public void DrawIndividualMenu(
+        private void DrawAgeRemoveToolbar(
             TreeDataContainer tree,
-            float menuWidth,
-            float menuHeight,
-            float menuItemHeight,
-            float menuButtonWidth,
-            float menuButtonHeight)
+            TreeIndividual individual,
+            TreeAge selected,
+            float width,
+            float height)
         {
-            TreeGUI.Draw.SmallTitle("Trees");
-            individualMenu.Draw(menuItemHeight, maxWidth: menuWidth, maxHeight: menuHeight);
+            using (TreeGUI.Enabled.If(
+                       (selected != null) && (individual != null) && (individual.ageCount > 1)
+                   ))
+            {
+                if (GUILayout.Button(
+                        (GUI.enabled ? TreeIcons.x : TreeIcons.disabledX).Get("Remove selected age"),
+                        TreeGUI.Styles.Button,
+                        TreeGUI.Layout.Options
 
-            DrawIndividualAddRemoveToolbar(
-                tree,
-                individualMenu.Selection.SelectedValue as TreeIndividual,
-                (int) menuButtonWidth,
-                menuButtonHeight
-            );
+                                //.MinWidth(width)
+                               .MaxWidth(width)
+                               .Height(height)
+                    ))
+                {
+                    ageMenu.Clear();
+                    individual.RemoveAge(selected.ageType);
+                    tree.RebuildStructures();
+
+                    tree.dataState = TSEDataContainer.DataState.Dirty;
+                }
+            }
         }
 
         private void DrawIndividualAddRemoveToolbar(
@@ -406,12 +424,11 @@ namespace Appalachia.Simulation.Trees.UI.Selections.Icons.Tree
         {
             using (TreeGUI.Layout.Horizontal())
             {
-
                 if (GUILayout.Button(
-                    TreeIcons.plus.Get("Add new tree"),
-                    TreeGUI.Styles.ButtonLeft,
-                    TreeGUI.Layout.Options /*.MinWidth(width)*/.MaxWidth(width).Height(height)
-                ))
+                        TreeIcons.plus.Get("Add new tree"),
+                        TreeGUI.Styles.ButtonLeft,
+                        TreeGUI.Layout.Options /*.MinWidth(width)*/.MaxWidth(width).Height(height)
+                    ))
                 {
                     tree.AddNewIndividual();
                     tree.RebuildStructures();
@@ -422,14 +439,14 @@ namespace Appalachia.Simulation.Trees.UI.Selections.Icons.Tree
                 using (TreeGUI.Enabled.If(selected != null))
                 {
                     if (GUILayout.Button(
-                        (UnityEngine.GUI.enabled ? TreeIcons.x : TreeIcons.disabledX).Get("Remove selected tree"),
-                        TreeGUI.Styles.ButtonRight,
-                        TreeGUI.Layout.Options
+                            (GUI.enabled ? TreeIcons.x : TreeIcons.disabledX).Get("Remove selected tree"),
+                            TreeGUI.Styles.ButtonRight,
+                            TreeGUI.Layout.Options
 
-                            //.MinWidth(width)
-                            .MaxWidth(width)
-                            .Height(height)
-                    ))
+                                    //.MinWidth(width)
+                                   .MaxWidth(width)
+                                   .Height(height)
+                        ))
                     {
                         individualMenu.Clear();
                         tree.RemoveIndividual(selected.individualID);
@@ -442,76 +459,6 @@ namespace Appalachia.Simulation.Trees.UI.Selections.Icons.Tree
             }
         }
 
-
-        public void DrawAgeMenu(
-            TreeDataContainer tree,
-            float menuWidth,
-            float menuItemHeight,
-            float menuButtonWidth,
-            float menuButtonHeight)
-        {
-            TreeGUI.Draw.SmallTitle("Ages");
-            ageMenu.Draw(menuItemHeight, maxWidth: menuWidth);
-
-            DrawAgeRemoveToolbar(
-                tree,
-                SelectedIndividual,
-                SelectedAge,
-                menuButtonWidth,
-                menuButtonHeight
-            );
-        }
-
-        private void DrawAgeRemoveToolbar(
-            TreeDataContainer tree,
-            TreeIndividual individual,
-            TreeAge selected,
-            float width,
-            float height)
-        {
-            using (TreeGUI.Enabled.If(
-                (selected != null) &&
-                (individual != null) &&
-                (individual.ageCount > 1)
-                ))
-            {
-                if (GUILayout.Button(
-                    (UnityEngine.GUI.enabled ? TreeIcons.x : TreeIcons.disabledX).Get("Remove selected age"),
-                    TreeGUI.Styles.Button,
-                    TreeGUI.Layout.Options
-
-                        //.MinWidth(width)
-                        .MaxWidth(width).Height(height)
-                ))
-                {
-                    ageMenu.Clear();
-                    individual.RemoveAge(selected.ageType);
-                    tree.RebuildStructures();
-
-                    tree.dataState = TSEDataContainer.DataState.Dirty;
-                }
-            }
-        }
-
-        public void DrawStageMenu(
-            TreeDataContainer tree,
-            float menuWidth,
-            float menuItemHeight,
-            float menuButtonWidth,
-            float menuButtonHeight)
-        {
-            TreeGUI.Draw.SmallTitle("Stages");
-            stageMenu.Draw(menuItemHeight, maxWidth: menuWidth);
-
-            DrawStageRemoveToolbar(
-                tree,
-                SelectedAge,
-                SelectedStage,
-                menuButtonWidth,
-                menuButtonHeight
-            );
-        }
-
         private void DrawStageRemoveToolbar(
             TreeDataContainer tree,
             TreeAge age,
@@ -520,17 +467,18 @@ namespace Appalachia.Simulation.Trees.UI.Selections.Icons.Tree
             float height)
         {
             using (TreeGUI.Enabled.If(
-                (selected != null) && (selected.stageType != StageType.Normal) && (age != null)
-            ))
+                       (selected != null) && (selected.stageType != StageType.Normal) && (age != null)
+                   ))
             {
                 if (GUILayout.Button(
-                    (UnityEngine.GUI.enabled ? TreeIcons.x : TreeIcons.disabledX).Get("Remove selected stage"),
-                    TreeGUI.Styles.Button,
-                    TreeGUI.Layout.Options
+                        (GUI.enabled ? TreeIcons.x : TreeIcons.disabledX).Get("Remove selected stage"),
+                        TreeGUI.Styles.Button,
+                        TreeGUI.Layout.Options
 
-                        //.MinWidth(width)
-                        .MaxWidth(width).Height(height)
-                ))
+                                //.MinWidth(width)
+                               .MaxWidth(width)
+                               .Height(height)
+                    ))
                 {
                     stageMenu.Clear();
                     age.RemoveVariant(selected.stageType);
@@ -541,7 +489,6 @@ namespace Appalachia.Simulation.Trees.UI.Selections.Icons.Tree
             }
         }
 
-        
         private object GetCurrentMenuSelection(MenuType change)
         {
             var set = individualMenu.Selection.SelectedValue as TreeIndividual;
@@ -610,23 +557,72 @@ namespace Appalachia.Simulation.Trees.UI.Selections.Icons.Tree
             return stageMenu.Selection.SelectedValue;
         }
 
-        private enum MenuType
+        private void IndividualOnSelectionChanged(SelectionChangedType obj)
         {
-            Individual,
-            Age,
-            Stage
+            if (obj == SelectionChangedType.ItemAdded)
+            {
+                if (individualMenu.Selection.SelectedValue == _lastIndividualSelection)
+                {
+                    return;
+                }
+
+                ageMenu.Clear();
+                stageMenu.Clear();
+
+                _lastIndividualSelection = individualMenu.Selection.SelectedValue;
+            }
         }
 
-        public void Select(int individualID, AgeType ageType, StageType stageType)
+        private void RecreateMenusIfNull()
         {
-            individualMenu.SelectWhere(o => (o.Value as TreeIndividual)?.individualID == individualID);
-            ageMenu.SelectWhere(o => (o.Value as TreeAge)?.ageType == ageType);
-            stageMenu.SelectWhere(o => (o.Value as TreeStage)?.stageType == stageType);
+            if ((individualMenu?.MenuItems == null) || individualMenu.MenuItems.Any(m => m == null))
+            {
+                individualMenu = new TreeEditorSidebarMenu(
+                    TreeGUI.MenuStyles.SidebarMenuStyle,
+                    TreeGUI.MenuStyles.SidebarMenuConfig,
+                    TreeGUI.Colors.SidebarMenuBackgroundColor
+                );
+
+                individualMenu.DefaultMenuStyle = TreeGUI.MenuStyles.SidebarMenuStyle;
+                individualMenu.Selection.SelectionChanged += IndividualOnSelectionChanged;
+            }
+
+            if ((ageMenu?.MenuItems == null) || ageMenu.MenuItems.Any(m => m == null))
+            {
+                ageMenu = new TreeEditorSidebarMenu(
+                    TreeGUI.MenuStyles.SidebarMenuStyle,
+                    TreeGUI.MenuStyles.SidebarMenuConfig,
+                    TreeGUI.Colors.SidebarMenuBackgroundColor
+                );
+
+                ageMenu.DefaultMenuStyle = TreeGUI.MenuStyles.SidebarMenuStyle;
+                ageMenu.Selection.SelectionChanged += AgeOnSelectionChanged;
+            }
+
+            if ((stageMenu?.MenuItems == null) || stageMenu.MenuItems.Any(m => m == null))
+            {
+                stageMenu = new TreeEditorSidebarMenu(
+                    TreeGUI.MenuStyles.SidebarMenuStyle,
+                    TreeGUI.MenuStyles.SidebarMenuConfig,
+                    TreeGUI.Colors.SidebarMenuBackgroundColor
+                );
+
+                stageMenu.DefaultMenuStyle = TreeGUI.MenuStyles.SidebarMenuStyle;
+                stageMenu.Selection.SelectionChanged += StageOnSelectionChanged;
+            }
         }
 
-        public void Select(TreeStage stage)
+        private void StageOnSelectionChanged(SelectionChangedType obj)
         {
-            Select(stage.individualID, stage.ageType, stage.stageType);
+            if ((obj == SelectionChangedType.ItemAdded) && stageMenu.HasSelection)
+            {
+                if (stageMenu.Selection.SelectedValue == _lastStageSelection)
+                {
+                    return;
+                }
+
+                _lastStageSelection = stageMenu.Selection.SelectedValue;
+            }
         }
     }
 }

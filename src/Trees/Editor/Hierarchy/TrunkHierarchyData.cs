@@ -12,17 +12,6 @@ namespace Appalachia.Simulation.Trees.Hierarchy
     [Serializable]
     public sealed class TrunkHierarchyData : BarkHierarchyData
     {
-
-        private bool showTrunk => settingsType != ResponsiveSettingsType.Log;
-        
-        [TreeHeader]
-        [PropertyOrder(100)]
-        //[ShowIfGroup("TR", Condition = nameof(showTrunk), Animate = false)]
-        //[FoldoutGroup("TR/Trunk", false)]
-        [ShowIf(nameof(showTrunk))]
-        [TabGroup("Trunk", Paddingless = true)]
-        public TrunkSettings trunk;
-
         public TrunkHierarchyData(int hierarchyId, ResponsiveSettingsType type) : base(hierarchyId, -1, type)
         {
             trunk = new TrunkSettings(type);
@@ -34,7 +23,14 @@ namespace Appalachia.Simulation.Trees.Hierarchy
             TreeGroupRoot root,
             Material barkMaterial,
             Material breakMaterial,
-            Material frondMaterial) : base(hierarchyID, -1, trunkGroup, barkMaterial, breakMaterial, frondMaterial)
+            Material frondMaterial) : base(
+            hierarchyID,
+            -1,
+            trunkGroup,
+            barkMaterial,
+            breakMaterial,
+            frondMaterial
+        )
         {
             trunk = new TrunkSettings(ResponsiveSettingsType.Tree);
 
@@ -45,8 +41,25 @@ namespace Appalachia.Simulation.Trees.Hierarchy
             parentHierarchyID = -1;
         }
 
+        #region Fields and Autoproperties
+
+        [TreeHeader]
+        [PropertyOrder(100)]
+
+        //[ShowIfGroup("TR", Condition = nameof(showTrunk), Animate = false)]
+        //[FoldoutGroup("TR/Trunk", false)]
+        [ShowIf(nameof(showTrunk))]
+        [TabGroup("Trunk", Paddingless = true)]
+        public TrunkSettings trunk;
+
+        #endregion
+
+        /// <inheritdoc />
         public override TreeComponentType type => TreeComponentType.Trunk;
 
+        private bool showTrunk => settingsType != ResponsiveSettingsType.Log;
+
+        /// <inheritdoc />
         protected override void CopyInternalGenerationSettings(HierarchyData model)
         {
             var cast = model as TrunkHierarchyData;

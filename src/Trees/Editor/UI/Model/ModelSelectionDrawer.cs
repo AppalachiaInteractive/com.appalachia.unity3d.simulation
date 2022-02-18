@@ -17,6 +17,7 @@ namespace Appalachia.Simulation.Trees.UI.Model
 {
     public class ModelSelectionDrawer : OdinValueDrawer<ModelSelection>
     {
+        /// <inheritdoc />
         protected override void DrawPropertyLayout(GUIContent label)
         {
             var selection = ValueEntry.SmartValue;
@@ -27,7 +28,9 @@ namespace Appalachia.Simulation.Trees.UI.Model
             {
                 if (model == null)
                 {
-                    SirenixEditorGUI.ErrorMessageBox("An error occurred.  The tree model container needs to be set.");
+                    SirenixEditorGUI.ErrorMessageBox(
+                        "An error occurred.  The tree model container needs to be set."
+                    );
                     return;
                 }
 
@@ -37,7 +40,9 @@ namespace Appalachia.Simulation.Trees.UI.Model
 
                 if ((datas == null) || (datas.Length == 0))
                 {
-                    SirenixEditorGUI.ErrorMessageBox("An error occurred.  The tree data container can not be found.");
+                    SirenixEditorGUI.ErrorMessageBox(
+                        "An error occurred.  The tree data container can not be found."
+                    );
                     return;
                 }
 
@@ -62,7 +67,9 @@ namespace Appalachia.Simulation.Trees.UI.Model
 
             if ((selection.container == null) || (model._containerSO == null))
             {
-                SirenixEditorGUI.ErrorMessageBox("An error occurred.  The tree model container needs to be set.  It was not found during a search");
+                SirenixEditorGUI.ErrorMessageBox(
+                    "An error occurred.  The tree model container needs to be set.  It was not found during a search"
+                );
                 return;
             }
 
@@ -83,11 +90,11 @@ namespace Appalachia.Simulation.Trees.UI.Model
             var commonAction = new Action(
                 () =>
                 {
-                    EditorSceneManager.MarkSceneDirty(model.gameObject.scene); 
+                    EditorSceneManager.MarkSceneDirty(model.gameObject.scene);
                     EditorApplication.QueuePlayerLoopUpdate();
                     SceneView.RepaintAll();
-                    
-                });
+                }
+            );
 
             using (TreeGUI.Layout.Horizontal())
             {
@@ -109,7 +116,7 @@ namespace Appalachia.Simulation.Trees.UI.Model
                     },
                     TreeGUI.Styles.ButtonLeft,
                     TreeGUI.Layout.Options /*.MinWidth(width)*/
-                        .MaxHeight(32f)
+                           .MaxHeight(32f)
                 );
 
                 var tree = model._containerSO as TreeDataContainer;
@@ -132,9 +139,9 @@ namespace Appalachia.Simulation.Trees.UI.Model
                     },
                     TreeGUI.Styles.ButtonMid,
                     TreeGUI.Layout.Options /*.MinWidth(width)*/
-                        .MaxHeight(32f)
+                           .MaxHeight(32f)
                 );
-                
+
                 TreeGUI.Button.Context(
                     model.autoUpdateSceneView,
                     TreeIcons.unlocked,
@@ -153,12 +160,12 @@ namespace Appalachia.Simulation.Trees.UI.Model
                     },
                     TreeGUI.Styles.ButtonRight,
                     TreeGUI.Layout.Options /*.MinWidth(width)*/
-                        .MaxHeight(32f)
+                           .MaxHeight(32f)
                 );
             }
 
             TreeEditorGenerationToggleMenuManager.DrawAgeToolbar(
-                container, 
+                container,
                 individual,
                 a => individual.HasType(a),
                 a => selection.ageSelection == a,

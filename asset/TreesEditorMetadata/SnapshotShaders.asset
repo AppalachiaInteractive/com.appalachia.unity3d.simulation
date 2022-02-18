@@ -17,6 +17,11 @@ MonoBehaviour:
   _initializer:
     _tags: []
     _resetToken: 
+  _objectId:
+    _increment: 0
+    _machine: 0
+    _timestamp: 0
+    _pid: 0
   albedo: {fileID: 4800000, guid: 30a7d5b0bffc16d4998cedb9cdf5bd3b, type: 3}
   normal: {fileID: 4800000, guid: ff52e152bf7ad74428939b5f22aa0a1f, type: 3}
   surface: {fileID: 4800000, guid: dd42149b3b5fdfc4584bbdbc9403931d, type: 3}

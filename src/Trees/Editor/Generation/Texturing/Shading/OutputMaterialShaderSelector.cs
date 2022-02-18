@@ -29,6 +29,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Shading
             ShowInPopup(200);
         }
 
+        /// <inheritdoc />
         protected override void BuildSelectionTree(OdinMenuTree tree)
         {
             if (source == null)

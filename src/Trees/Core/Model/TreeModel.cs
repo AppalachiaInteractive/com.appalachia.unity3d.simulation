@@ -25,8 +25,6 @@ namespace Appalachia.Simulation.Trees.Core.Model
     {
         static TreeModel()
         {
-            
-            
             RegisterDependency<TreeGizmoStyle>(i => _treeGizmoStyle = i);
         }
 
@@ -363,9 +361,16 @@ namespace Appalachia.Simulation.Trees.Core.Model
 
         private void OnDrawGizmos()
         {
-            if (!enabled) return;
-            if (ShouldSkipUpdate) return;
-            
+            if (!enabled)
+            {
+                return;
+            }
+
+            if (ShouldSkipUpdate)
+            {
+                return;
+            }
+
             if (container == null)
             {
                 return;
@@ -592,8 +597,6 @@ namespace Appalachia.Simulation.Trees.Core.Model
         {
             AssetDatabaseManager.OpenAsset(container as ScriptableObject);
         }
-
-        public GameObject GameObject => gameObject;
 
         public bool MissingContainer => _missingContainer;
 

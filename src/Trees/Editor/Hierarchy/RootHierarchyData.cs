@@ -34,8 +34,10 @@ namespace Appalachia.Simulation.Trees.Hierarchy
         {
         }
 
+        /// <inheritdoc />
         public override TreeComponentType type => TreeComponentType.Root;
 
+        /// <inheritdoc />
         protected override void CopyInternalGenerationSettings(HierarchyData model)
         {
             var cast = model as RootHierarchyData;
@@ -44,7 +46,7 @@ namespace Appalachia.Simulation.Trees.Hierarchy
             limb = cast.limb.Clone();
             curvature = cast.curvature.Clone();
         }
-        
+
         /*public override void ToggleCheckboxes(bool enabled)
         {
             distribution.ToggleCheckboxes(enabled);

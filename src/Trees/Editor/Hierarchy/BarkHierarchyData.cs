@@ -17,64 +17,8 @@ namespace Appalachia.Simulation.Trees.Hierarchy
     [Serializable]
     public abstract class BarkHierarchyData : HierarchyData
     {
-        
-        private bool showLimbEnds => geometry.geometryMode != BranchGeometryMode.Frond;
-        [FormerlySerializedAs("breakage")]
-        //[ShowIfGroup("LE", Condition = nameof(showLimbEnds), Animate = false)]
-        [TreeHeader, PropertyOrder(200)]
-        //[FoldoutGroup("LE/Limb Ends", false)
-        [ShowIf(nameof(showLimbEnds))]
-        [TabGroup("Limb Ends", Paddingless = true)]
-        public LimbSettings limb;
-
-        private bool showCurvature => true;
-        //[ShowIfGroup("CV", Condition = nameof(showCurvature), Animate = false)]
-        [TreeHeader, PropertyOrder(60)]
-        //[FoldoutGroup("CV/Curvature", false)]
-        [ShowIf(nameof(showCurvature))]
-        [TabGroup("Curvature", Paddingless = true)]
-        public CurvatureSettings curvature;
-
-        private bool showShape => true;
-        //[ShowIfGroup("SH", Condition = nameof(showShape), Animate = false)]
-        [TreeHeader, PropertyOrder(0)]
-        //[FoldoutGroup("SH/Shape", false)]
-        [ShowIf(nameof(showShape))]
-        [TabGroup("Shape", Paddingless = true)]
-        public BranchSettings geometry;
-
-
-        public override bool IsFrond =>
-            (geometry.geometryMode == BranchGeometryMode.Frond) ||
-            (geometry.geometryMode == BranchGeometryMode.BranchFrond);
-
-        protected override Object[] GetExternalObjects()
-        {
-            var mats = new List<Object>();
-
-            if (geometry.barkMaterial != null)
-            {
-                mats.Add(geometry.barkMaterial);
-            }
-
-            /*if (limb.breakMaterial != null)
-            {
-                mats.Add(limb.breakMaterial);
-            }*/
-
-            if (geometry.frond.frondMaterial != null)
-            {
-                mats.Add(geometry.frond.frondMaterial);
-            }
-
-            return mats.ToArray();
-        }
-
-        protected BarkHierarchyData(int hierarchyID, int parentHierarchyID, ResponsiveSettingsType type) : base(
-            hierarchyID,
-            parentHierarchyID,
-            type
-        )
+        protected BarkHierarchyData(int hierarchyID, int parentHierarchyID, ResponsiveSettingsType type) :
+            base(hierarchyID, parentHierarchyID, type)
         {
             limb = new LimbSettings(type);
             curvature = new CurvatureSettings(type);
@@ -110,8 +54,8 @@ namespace Appalachia.Simulation.Trees.Hierarchy
             limb.breakingChance.SetValue(group.breakingChance);
             limb.breakingSpot.SetValue(group.breakingSpot);
             limb.capSmoothing.SetValue(group.capSmoothing);
-            //limb.breakMaterial = breakMaterial;
 
+            //limb.breakMaterial = breakMaterial;
 
             geometry = new BranchSettings(ResponsiveSettingsType.Tree);
 
@@ -122,7 +66,6 @@ namespace Appalachia.Simulation.Trees.Hierarchy
             geometry.shorterBranchesAreThinner.SetValue(group.radiusMode);
             geometry.lodQualityMultiplier.SetValue(group.lodQualityMultiplier);
             geometry.geometryMode = group.geometryMode.ToInternal();
-
 
             geometry.frond = new FrondSettings(ResponsiveSettingsType.Tree);
 
@@ -143,10 +86,50 @@ namespace Appalachia.Simulation.Trees.Hierarchy
                 curvature.showThigmotropism = true;
             }
             */
-
-
         }
 
+        #region Fields and Autoproperties
+
+        //[ShowIfGroup("SH", Condition = nameof(showShape), Animate = false)]
+        [TreeHeader, PropertyOrder(0)]
+
+        //[FoldoutGroup("SH/Shape", false)]
+        [ShowIf(nameof(showShape))]
+        [TabGroup("Shape", Paddingless = true)]
+        public BranchSettings geometry;
+
+        //[ShowIfGroup("CV", Condition = nameof(showCurvature), Animate = false)]
+        [TreeHeader, PropertyOrder(60)]
+
+        //[FoldoutGroup("CV/Curvature", false)]
+        [ShowIf(nameof(showCurvature))]
+        [TabGroup("Curvature", Paddingless = true)]
+        public CurvatureSettings curvature;
+
+        [FormerlySerializedAs("breakage")]
+
+        //[ShowIfGroup("LE", Condition = nameof(showLimbEnds), Animate = false)]
+        [TreeHeader, PropertyOrder(200)]
+
+        //[FoldoutGroup("LE/Limb Ends", false)
+        [ShowIf(nameof(showLimbEnds))]
+        [TabGroup("Limb Ends", Paddingless = true)]
+        public LimbSettings limb;
+
+        #endregion
+
+        /// <inheritdoc />
+        public override bool IsFrond =>
+            (geometry.geometryMode == BranchGeometryMode.Frond) ||
+            (geometry.geometryMode == BranchGeometryMode.BranchFrond);
+
+        private bool showCurvature => true;
+
+        private bool showLimbEnds => geometry.geometryMode != BranchGeometryMode.Frond;
+
+        private bool showShape => true;
+
+        /// <inheritdoc />
         public override string GetSortKey()
         {
             if (geometry.barkMaterial != null)
@@ -155,6 +138,29 @@ namespace Appalachia.Simulation.Trees.Hierarchy
             }
 
             return ZString.Format("{0:0000}", hierarchyID);
+        }
+
+        /// <inheritdoc />
+        protected override Object[] GetExternalObjects()
+        {
+            var mats = new List<Object>();
+
+            if (geometry.barkMaterial != null)
+            {
+                mats.Add(geometry.barkMaterial);
+            }
+
+            /*if (limb.breakMaterial != null)
+            {
+                mats.Add(limb.breakMaterial);
+            }*/
+
+            if (geometry.frond.frondMaterial != null)
+            {
+                mats.Add(geometry.frond.frondMaterial);
+            }
+
+            return mats.ToArray();
         }
     }
 }

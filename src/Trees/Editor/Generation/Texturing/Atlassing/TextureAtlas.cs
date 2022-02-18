@@ -26,6 +26,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Atlassing
 
         public Vector2 size => _size;
 
+        /// <inheritdoc />
         [DebuggerStepThrough]
         public override int GetHashCode()
         {

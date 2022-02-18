@@ -105,6 +105,7 @@ namespace Appalachia.Simulation.Trees.Core
             }
         }
 
+        /// <inheritdoc />
         protected override async AppaTask Initialize(Initializer initializer)
         {
             await base.Initialize(initializer);
@@ -165,6 +166,7 @@ namespace Appalachia.Simulation.Trees.Core
             }
         }
 
+        /// <inheritdoc />
         protected override void UpdateInstancedProperties(MaterialPropertyBlock block, Material m)
         {
             using (_PRF_UpdateInstancedProperties.Auto())
@@ -182,8 +184,6 @@ namespace Appalachia.Simulation.Trees.Core
         }
 
         #region Profiling
-
-        
 
         private static readonly ProfilerMarker _PRF_InitializeWithoutModel =
             new ProfilerMarker(_PRF_PFX + nameof(InitializeWithoutModel));

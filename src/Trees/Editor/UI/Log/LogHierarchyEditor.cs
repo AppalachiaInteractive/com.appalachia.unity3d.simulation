@@ -15,7 +15,9 @@ namespace Appalachia.Simulation.Trees.UI.Log
     {
         static LogHierarchyEditor()
         {
-            RegisterInstanceCallbacks.WithoutSorting().When.Object<TreeSpeciesEditorSelection>().IsAvailableThen( i => _treeSpeciesEditorSelection = i);
+            RegisterInstanceCallbacks.WithoutSorting()
+                                     .When.Object<TreeSpeciesEditorSelection>()
+                                     .IsAvailableThen(i => _treeSpeciesEditorSelection = i);
         }
 
         #region Static Fields and Autoproperties
@@ -24,6 +26,7 @@ namespace Appalachia.Simulation.Trees.UI.Log
 
         #endregion
 
+        /// <inheritdoc />
         protected override bool AreHierarchyButtonsEnabled()
         {
             var s = _treeSpeciesEditorSelection.log;
@@ -41,6 +44,7 @@ namespace Appalachia.Simulation.Trees.UI.Log
             return false;
         }
 
+        /// <inheritdoc />
         protected override HierarchyData CreateHierarchy(
             IHierarchyWrite hierarchies,
             TreeComponentType type,
@@ -51,6 +55,7 @@ namespace Appalachia.Simulation.Trees.UI.Log
             return h;
         }
 
+        /// <inheritdoc />
         protected override HierarchyData CreateTrunkHierarchy(IHierarchyWrite hierarchies)
         {
             var h = hierarchies.CreateTrunkHierarchy(null);
@@ -58,11 +63,13 @@ namespace Appalachia.Simulation.Trees.UI.Log
             return h;
         }
 
+        /// <inheritdoc />
         protected override IBasicSelection GetSelection()
         {
             return _treeSpeciesEditorSelection.log;
         }
 
+        /// <inheritdoc />
         protected override void SettingsChanged()
         {
             LogBuildRequestManager.SettingsChanged(SettingsUpdateTarget.Distribution);

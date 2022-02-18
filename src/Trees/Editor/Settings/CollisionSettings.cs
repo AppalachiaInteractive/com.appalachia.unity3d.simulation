@@ -2,9 +2,7 @@ using System;
 using Appalachia.CI.Integration.Assets;
 using Appalachia.Simulation.Trees.Core.Settings;
 using Appalachia.Simulation.Trees.ResponsiveUI;
-using Appalachia.Utility.Extensions;
 using Sirenix.OdinInspector;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -14,35 +12,6 @@ namespace Appalachia.Simulation.Trees.Settings
     [Title("Collision", TitleAlignment = TitleAlignments.Centered)]
     public class CollisionSettings : ResponsiveSettings
     {
-
-        [PropertyTooltip("Toggles collider generation on or off.")]
-        [ToggleLeft]
-        [OnValueChanged(nameof(CollisionSettingsChanged))]
-        public bool generateColliders = true;
-
-        [PropertyTooltip("Minimum spline radius for colliders to be placed on.")]
-        [OnValueChanged(nameof(CollisionSettingsChanged), true)]
-        [MinMaxSlider(.01f, 1f)]
-        public Vector2 minimumSplineRadiusByHeight = new Vector2(.01f, 1f);
-        
-        [PropertyTooltip("Adjust collision mesh quality.")]
-        [OnValueChanged(nameof(CollisionSettingsChanged), true)]
-        public float maximumHeight = 20f;
-        
-        [PropertyTooltip("Adjust collision mesh quality.")]
-        [OnValueChanged(nameof(CollisionSettingsChanged), true)]
-        public float minimumHeight = -.25f;
-        
-        [FormerlySerializedAs("collisionMeshSettings")]
-        [PropertyTooltip("Adjust collision mesh quality.")]
-        [OnValueChanged(nameof(CollisionSettingsChanged), true)]
-        public LevelOfDetailSettings quality;
-
-        [FormerlySerializedAs("collisionMeshSettings2")]
-        [PropertyTooltip("Adjust collision mesh properties.")]
-        [OnValueChanged(nameof(CollisionSettingsChanged), true)]
-        public MeshSettings properties;
-        
         public CollisionSettings(ResponsiveSettingsType settingsType) : base(settingsType)
         {
             quality = new LevelOfDetailSettings(100, settingsType)
@@ -61,9 +30,43 @@ namespace Appalachia.Simulation.Trees.Settings
                 resampleAddOns = false
             };
 
-            properties = new MeshSettings(settingsType) {recalculateNormals = false, recalculateTangents = false};
+            properties =
+                new MeshSettings(settingsType) { recalculateNormals = false, recalculateTangents = false };
         }
 
+        #region Fields and Autoproperties
+
+        [PropertyTooltip("Toggles collider generation on or off.")]
+        [ToggleLeft]
+        [OnValueChanged(nameof(CollisionSettingsChanged))]
+        public bool generateColliders = true;
+
+        [PropertyTooltip("Adjust collision mesh quality.")]
+        [OnValueChanged(nameof(CollisionSettingsChanged), true)]
+        public float maximumHeight = 20f;
+
+        [PropertyTooltip("Adjust collision mesh quality.")]
+        [OnValueChanged(nameof(CollisionSettingsChanged), true)]
+        public float minimumHeight = -.25f;
+
+        [FormerlySerializedAs("collisionMeshSettings")]
+        [PropertyTooltip("Adjust collision mesh quality.")]
+        [OnValueChanged(nameof(CollisionSettingsChanged), true)]
+        public LevelOfDetailSettings quality;
+
+        [FormerlySerializedAs("collisionMeshSettings2")]
+        [PropertyTooltip("Adjust collision mesh properties.")]
+        [OnValueChanged(nameof(CollisionSettingsChanged), true)]
+        public MeshSettings properties;
+
+        [PropertyTooltip("Minimum spline radius for colliders to be placed on.")]
+        [OnValueChanged(nameof(CollisionSettingsChanged), true)]
+        [MinMaxSlider(.01f, 1f)]
+        public Vector2 minimumSplineRadiusByHeight = new Vector2(.01f, 1f);
+
+        #endregion
+
+        /// <inheritdoc />
         public override void CopySettingsTo(ResponsiveSettings t)
         {
             if (t is CollisionSettings cast)
@@ -76,7 +79,7 @@ namespace Appalachia.Simulation.Trees.Settings
                 cast.minimumSplineRadiusByHeight = minimumSplineRadiusByHeight;
             }
         }
-        
+
         [Button]
         public void PushToAll()
         {

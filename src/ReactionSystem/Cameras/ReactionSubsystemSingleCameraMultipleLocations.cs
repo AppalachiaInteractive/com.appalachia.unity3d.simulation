@@ -8,18 +8,19 @@ using UnityEngine;
 namespace Appalachia.Simulation.ReactionSystem.Cameras
 {
     [Serializable]
-    public abstract class
-        ReactionSubsystemSingleCameraMultipleLocations : ReactionSubsystemSingleCamera
+    public abstract class ReactionSubsystemSingleCameraMultipleLocations<T> : ReactionSubsystemSingleCamera<T>
+        where T : ReactionSubsystemSingleCameraMultipleLocations<T>
     {
-        private const string _PRF_PFX =
-            nameof(ReactionSubsystemSingleCameraMultipleLocations) + ".";
-
-        private static readonly ProfilerMarker _PRF_OnRenderStart =
-            new(_PRF_PFX + nameof(OnRenderStart));
+        #region Fields and Autoproperties
 
         [OnValueChanged(nameof(InitializeSynchronous))]
         public List<ReactionSubsystemCenter> centers = new();
 
+        #endregion
+
+        protected abstract ReactionSubsystemCenter GetCurrentSubsystemCenter();
+
+        /// <inheritdoc />
         protected override void OnRenderStart()
         {
             using (_PRF_OnRenderStart.Auto())
@@ -29,14 +30,18 @@ namespace Appalachia.Simulation.ReactionSystem.Cameras
 
                 var tempCameraPosition = cameraComponent.GetCameraRootPosition();
                 var pos = tempCameraPosition;
-                pos += cameraOffset;
+                pos += CameraOffset;
 
                 cameraComponent.renderCamera.transform.position = pos;
                 cameraComponent.renderCamera.transform.rotation =
-                    Quaternion.LookRotation(cameraDirection, Vector3.forward);
+                    Quaternion.LookRotation(CameraDirection, Vector3.forward);
             }
         }
 
-        protected abstract ReactionSubsystemCenter GetCurrentSubsystemCenter();
+        #region Profiling
+
+        private static readonly ProfilerMarker _PRF_OnRenderStart = new(_PRF_PFX + nameof(OnRenderStart));
+
+        #endregion
     }
 }

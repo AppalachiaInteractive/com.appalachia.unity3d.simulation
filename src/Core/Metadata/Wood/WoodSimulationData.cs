@@ -10,8 +10,6 @@ namespace Appalachia.Simulation.Core.Metadata.Wood
 {
     public class WoodSimulationData : CategorizableIdentifiableAppalachiaObject<WoodSimulationData>
     {
-        
-        
         #region Fields and Autoproperties
 
         [BoxGroup("Physical")] public DensityMetadata densityMetadata;
@@ -57,10 +55,14 @@ namespace Appalachia.Simulation.Core.Metadata.Wood
             (densityMetadata == null ? 650f : densityMetadata.densityKGPerCubicMeter) / 1250f;
 
 #if UNITY_EDITOR
+        /// <inheritdoc />
         protected override async AppaTask WhenEnabled()
         {
             await base.WhenEnabled();
-            AssignBestDensity();
+            using (_PRF_WhenEnabled.Auto())
+            {
+                AssignBestDensity();
+            }
         }
 
         private void AssignBestDensity()
@@ -79,7 +81,7 @@ namespace Appalachia.Simulation.Core.Metadata.Wood
                 if (d.name == ZString.Format("wood_{0}", name))
                 {
                     densityMetadata = d;
-                   this.MarkAsModified();
+                    MarkAsModified();
                     return;
                 }
             }

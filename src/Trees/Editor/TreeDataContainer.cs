@@ -44,10 +44,18 @@ namespace Appalachia.Simulation.Trees
     {
         static TreeDataContainer()
         {
-            RegisterInstanceCallbacks.For<TreeDataContainer>().When.Object<LabelSets>().IsAvailableThen( i => _labelSets = i);
-            RegisterInstanceCallbacks.For<TreeDataContainer>().When.Object<PrefabRenderingSetCollection>().IsAvailableThen( i => _prefabRenderingSetCollection = i);
-            RegisterInstanceCallbacks.For<TreeDataContainer>().When.Object<PrefabReplacementCollection>().IsAvailableThen( i => _prefabReplacementCollection = i);
-            RegisterInstanceCallbacks.For<TreeDataContainer>().When.Behaviour<PrefabRenderingManager>().IsAvailableThen( i => _prefabRenderingManager = i);
+            RegisterInstanceCallbacks.For<TreeDataContainer>()
+                                     .When.Object<LabelSets>()
+                                     .IsAvailableThen(i => _labelSets = i);
+            RegisterInstanceCallbacks.For<TreeDataContainer>()
+                                     .When.Object<PrefabRenderingSetCollection>()
+                                     .IsAvailableThen(i => _prefabRenderingSetCollection = i);
+            RegisterInstanceCallbacks.For<TreeDataContainer>()
+                                     .When.Object<PrefabReplacementCollection>()
+                                     .IsAvailableThen(i => _prefabReplacementCollection = i);
+            RegisterInstanceCallbacks.For<TreeDataContainer>()
+                                     .When.Behaviour<PrefabRenderingManager>()
+                                     .IsAvailableThen(i => _prefabRenderingManager = i);
         }
 
         #region Static Fields and Autoproperties
@@ -95,6 +103,7 @@ namespace Appalachia.Simulation.Trees
             (_prefabReplacementCollection != null) &&
             (_prefabRenderingManager != null);
 
+        /// <inheritdoc />
         public override ResponsiveSettingsType settingsType => ResponsiveSettingsType.Tree;
 
         public BuildRequestLevel requestLevel
@@ -125,21 +134,25 @@ namespace Appalachia.Simulation.Trees
             }
         }
 
+        /// <inheritdoc />
         public override void BuildDefault()
         {
             TreeBuildRequestManager.Default();
         }
 
+        /// <inheritdoc />
         public override void BuildForceFull()
         {
             TreeBuildRequestManager.ForceFull();
         }
 
+        /// <inheritdoc />
         public override void BuildFull()
         {
             TreeBuildRequestManager.Full();
         }
 
+        /// <inheritdoc />
         public override void CopyHierarchiesFrom(TSEDataContainer tse)
         {
             if (tse is TreeDataContainer dc)
@@ -148,6 +161,7 @@ namespace Appalachia.Simulation.Trees
             }
         }
 
+        /// <inheritdoc />
         public override void CopySettingsFrom(TSEDataContainer tse)
         {
             if (tse is TreeDataContainer dc)
@@ -156,6 +170,7 @@ namespace Appalachia.Simulation.Trees
             }
         }
 
+        /// <inheritdoc />
         public override NameBasis GetNameBasis()
         {
             if (species != null)
@@ -166,6 +181,7 @@ namespace Appalachia.Simulation.Trees
             return null;
         }
 
+        /// <inheritdoc />
         public override void RebuildStructures()
         {
             species.hierarchies.Rebuild();
@@ -184,6 +200,7 @@ namespace Appalachia.Simulation.Trees
             }
         }
 
+        /// <inheritdoc />
         public override void SetDirtyStates()
         {
             MarkAsModified();
@@ -259,6 +276,7 @@ namespace Appalachia.Simulation.Trees
             }
         }
 
+        /// <inheritdoc />
         public override void SettingsChanged(SettingsUpdateTarget target)
         {
             TreeBuildRequestManager.SettingsChanged(target);
@@ -594,6 +612,8 @@ namespace Appalachia.Simulation.Trees
         [Button]
         [HideIf(nameof(initialized))]
         [EnableIf(nameof(canInitialize))]
+
+        /// <inheritdoc />
         protected override async AppaTask Initialize(Initializer initializer)
         {
             try
@@ -685,6 +705,7 @@ namespace Appalachia.Simulation.Trees
             }
         }
 
+        /// <inheritdoc />
         protected override void SaveAllAssets(bool saveImpostors)
         {
             UpdateRuntimeMetadata();
@@ -692,32 +713,36 @@ namespace Appalachia.Simulation.Trees
             AssetManager.SaveAllAssets(this, saveImpostors);
         }
 
+        /// <inheritdoc />
         protected override async AppaTask WhenEnabled()
         {
             await base.WhenEnabled();
-            if (HasAssetPath(out _))
+            using (_PRF_WhenEnabled.Auto())
             {
-                if (HasSubAssets(out var subAssets))
+                if (HasAssetPath(out _))
                 {
-                    var nameBasisFound = false;
-
-                    for (var i = subAssets.Length - 1; i >= 0; i--)
+                    if (HasSubAssets(out var subAssets))
                     {
-                        var basis = subAssets[i] as NameBasis;
+                        var nameBasisFound = false;
 
-                        if (basis == null)
+                        for (var i = subAssets.Length - 1; i >= 0; i--)
                         {
-                            continue;
-                        }
+                            var basis = subAssets[i] as NameBasis;
 
-                        if (!nameBasisFound)
-                        {
-                            nameBasisFound = true;
-                            species.nameBasis = basis;
-                            continue;
-                        }
+                            if (basis == null)
+                            {
+                                continue;
+                            }
 
-                        AssetDatabaseManager.RemoveObjectFromAsset(basis);
+                            if (!nameBasisFound)
+                            {
+                                nameBasisFound = true;
+                                species.nameBasis = basis;
+                                continue;
+                            }
+
+                            AssetDatabaseManager.RemoveObjectFromAsset(basis);
+                        }
                     }
                 }
             }
@@ -1048,6 +1073,9 @@ namespace Appalachia.Simulation.Trees
         #region Profiling
 
         private const string _PRF_PFX = nameof(TreeDataContainer) + ".";
+
+        private static readonly ProfilerMarker _PRF_WhenEnabled =
+            new ProfilerMarker(_PRF_PFX + nameof(WhenEnabled));
 
         private static readonly ProfilerMarker _PRF_Initialize =
             new ProfilerMarker(_PRF_PFX + nameof(Initialize));

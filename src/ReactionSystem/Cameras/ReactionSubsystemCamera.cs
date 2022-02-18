@@ -1,84 +1,91 @@
 using System;
+using System.Linq;
 using Appalachia.Core.Attributes.Editing;
 using Appalachia.Simulation.ReactionSystem.Base;
+using Appalachia.Simulation.ReactionSystem.Contracts;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Appalachia.Simulation.ReactionSystem.Cameras
 {
     [Serializable]
-    public abstract class ReactionSubsystemCamera : ReactionSubsystemBase
+    public abstract class ReactionSubsystemCamera<T> : ReactionSubsystemBase<T>, IReactionSubsystemCamera
+        where T : ReactionSubsystemCamera<T>
     {
-        private const string _PRF_PFX = nameof(ReactionSubsystemCamera) + ".";
+        #region Fields and Autoproperties
 
-        private static readonly ProfilerMarker _PRF_EnsureSubsystemCenterIsPrepared =
-            new(_PRF_PFX + nameof(EnsureSubsystemCenterIsPrepared));
-
+        [FormerlySerializedAs("replacementShader")]
         [SerializeField]
         [FoldoutGroup("Camera")]
         [SmartLabel]
         [OnValueChanged(nameof(InitializeSynchronous))]
-        public Shader replacementShader;
+        private Shader _replacementShader;
 
+        [FormerlySerializedAs("replacementShaderTag")]
         [SerializeField]
         [FoldoutGroup("Camera")]
         [SmartLabel]
         [OnValueChanged(nameof(InitializeSynchronous))]
-        public string replacementShaderTag;
+        private string _replacementShaderTag;
 
+        [FormerlySerializedAs("cullingMask")]
         [SerializeField]
         [FoldoutGroup("Camera")]
         [SmartLabel]
         [OnValueChanged(nameof(InitializeSynchronous))]
-        public LayerMask cullingMask;
+        private LayerMask _cullingMask;
 
+        [FormerlySerializedAs("cameraOffset")]
         [SerializeField]
         [FoldoutGroup("Camera")]
         [SmartLabel]
         [OnValueChanged(nameof(InitializeSynchronous))]
-        public Vector3 cameraOffset = new(0f, -1000f, 0f);
+        private Vector3 _cameraOffset = new(0f, -1000f, 0f);
 
+        [FormerlySerializedAs("cameraDirection")]
         [SerializeField]
         [FoldoutGroup("Camera")]
         [SmartLabel]
         [OnValueChanged(nameof(InitializeSynchronous))]
-        public Vector3 cameraDirection = Vector3.up;
+        private Vector3 _cameraDirection = Vector3.up;
 
+        [FormerlySerializedAs("backgroundColor")]
         [SerializeField]
         [FoldoutGroup("Camera")]
         [SmartLabel]
         [OnValueChanged(nameof(InitializeSynchronous))]
-        public Color backgroundColor;
+        private Color _backgroundColor;
 
+        [FormerlySerializedAs("clearFlags")]
         [SerializeField]
         [FoldoutGroup("Camera")]
         [SmartLabel]
         [OnValueChanged(nameof(InitializeSynchronous))]
-        public CameraClearFlags clearFlags;
+        private CameraClearFlags _clearFlags;
 
+        [FormerlySerializedAs("orthographicSize")]
         [SerializeField]
         [FoldoutGroup("Camera")]
         [PropertyRange(1, 4096)]
         [SmartLabel]
         [OnValueChanged(nameof(InitializeSynchronous))]
         [ReadOnly]
-        public int orthographicSize = 50;
+        private int _orthographicSize = 50;
 
+        [FormerlySerializedAs("hideCamera")]
         [SerializeField]
         [FoldoutGroup("Camera")]
         [SmartLabel]
         [OnValueChanged(nameof(InitializeSynchronous))]
-        public bool hideCamera = true;
+        private bool _hideCamera = true;
 
-        public abstract bool AutomaticRender { get; }
-
-        // ReSharper disable once UnusedParameter.Global
-        public abstract bool IsManualRenderingRequired(SubsystemCameraComponent cam);
+        #endregion
 
         protected static void EnsureSubsystemCenterIsPrepared(
             SubsystemCameraComponent cam,
-            ReactionSubsystemCamera subsystem)
+            IReactionSubsystemCamera subsystem)
         {
             using (_PRF_EnsureSubsystemCenterIsPrepared.Auto())
             {
@@ -86,10 +93,7 @@ namespace Appalachia.Simulation.ReactionSystem.Cameras
                 {
                     cam.center.ValidateSubsystems();
 
-                    if (!cam.center.subsystems.Contains(subsystem))
-                    {
-                        cam.center.subsystems.Add(subsystem);
-                    }
+                    cam.center.EnsureSubsystemIsAdded(subsystem);
                 }
                 else
                 {
@@ -101,7 +105,7 @@ namespace Appalachia.Simulation.ReactionSystem.Cameras
 
                         c.ValidateSubsystems();
 
-                        if (c.subsystems.Contains(subsystem))
+                        if (c.Subsystems.Contains(subsystem))
                         {
                             cam.center = c;
                         }
@@ -109,5 +113,43 @@ namespace Appalachia.Simulation.ReactionSystem.Cameras
                 }
             }
         }
+
+        #region IReactionSubsystemCamera Members
+
+        public Shader ReplacementShader => _replacementShader;
+        public string ReplacementShaderTag => _replacementShaderTag;
+
+        public LayerMask CullingMask
+        {
+            get => _cullingMask;
+            set => _cullingMask = value;
+        }
+
+        public Vector3 CameraOffset => _cameraOffset;
+        public Vector3 CameraDirection => _cameraDirection;
+        public Color BackgroundColor => _backgroundColor;
+        public CameraClearFlags ClearFlags => _clearFlags;
+
+        public int OrthographicSize
+        {
+            get => _orthographicSize;
+            set => _orthographicSize = value;
+        }
+
+        public bool HideCamera => _hideCamera;
+
+        public abstract bool AutomaticRender { get; }
+
+        // ReSharper disable once UnusedParameter.Global
+        public abstract bool IsManualRenderingRequired(SubsystemCameraComponent cam);
+
+        #endregion
+
+        #region Profiling
+
+        private static readonly ProfilerMarker _PRF_EnsureSubsystemCenterIsPrepared =
+            new(_PRF_PFX + nameof(EnsureSubsystemCenterIsPrepared));
+
+        #endregion
     }
 }

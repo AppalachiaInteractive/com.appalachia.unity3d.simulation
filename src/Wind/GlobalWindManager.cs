@@ -297,6 +297,7 @@ namespace Appalachia.Simulation.Wind
 
         #endregion
 
+        /// <inheritdoc />
         protected override async AppaTask Initialize(Initializer initializer)
         {
             await base.Initialize(initializer);

@@ -17,12 +17,6 @@ namespace Appalachia.Simulation.Trees.Hierarchy
     [Serializable]
     public sealed class LeafHierarchyData : HierarchyData
     {
-        [TreeHeader]
-        [PropertyOrder(0)]
-        //[FoldoutGroup("Shape", false)]
-        [TabGroup("Shape", Paddingless = true)]
-        public LeafSettings geometry;
-
         public LeafHierarchyData(int hierarchyID, int parentHierarchyID, ResponsiveSettingsType type) : base(
             hierarchyID,
             parentHierarchyID,
@@ -41,37 +35,50 @@ namespace Appalachia.Simulation.Trees.Hierarchy
         {
             geometry = new LeafSettings(ResponsiveSettingsType.Tree)
             {
-                prefab = new PrefabSetup(ResponsiveSettingsType.Tree) {prefab = prefab}
+                prefab = new PrefabSetup(ResponsiveSettingsType.Tree) { prefab = prefab }
             };
 
             geometry.leafMaterial = leafMaterial;
             geometry.size.SetValue(group.size);
             geometry.bendFactor.SetValue(0.5f);
 
-            geometry.geometryMode = ((TreeGroupLeaf.GeometryMode) group.geometryMode).ToInternal();
+            geometry.geometryMode = ((TreeGroupLeaf.GeometryMode)group.geometryMode).ToInternal();
         }
 
+        #region Fields and Autoproperties
+
+        [TreeHeader]
+        [PropertyOrder(0)]
+
+        //[FoldoutGroup("Shape", false)]
+        [TabGroup("Shape", Paddingless = true)]
+        public LeafSettings geometry;
+
+        #endregion
+
+        /// <inheritdoc />
         public override TreeComponentType type => TreeComponentType.Leaf;
 
-        protected override Object[] GetExternalObjects()
+        /*public override void ToggleCheckboxes(bool enabled)
         {
-            if (geometry.geometryMode == LeafGeometryMode.Mesh)
-            {
-                return new Object[] {geometry.prefab.prefab};
-            }
+            distribution.ToggleCheckboxes(enabled);
+            geometry.ToggleCheckboxes(enabled);
+        }*/
 
+        /// <inheritdoc />
+        public override string GetSortKey()
+        {
             if (geometry.leafMaterial != null)
             {
-                return new Object[] {geometry.leafMaterial};
+                return geometry.leafMaterial.name;
             }
 
-            return null;
-        }
+            if ((geometry.prefab != null) && (geometry.prefab.prefab != null))
+            {
+                return geometry.prefab.prefab.name;
+            }
 
-        protected override void CopyInternalGenerationSettings(HierarchyData model)
-        {
-            var cast = model as LeafHierarchyData;
-            geometry = cast.geometry.Clone();
+            return ZString.Format("{0:0000}", hierarchyID);
         }
 
         public string GetMenuString()
@@ -88,26 +95,28 @@ namespace Appalachia.Simulation.Trees.Hierarchy
 
             return ZString.Format("{0}", hierarchyID);
         }
-        
-        /*public override void ToggleCheckboxes(bool enabled)
+
+        /// <inheritdoc />
+        protected override void CopyInternalGenerationSettings(HierarchyData model)
         {
-            distribution.ToggleCheckboxes(enabled);
-            geometry.ToggleCheckboxes(enabled);
-        }*/
-        
-        public override string GetSortKey()
+            var cast = model as LeafHierarchyData;
+            geometry = cast.geometry.Clone();
+        }
+
+        /// <inheritdoc />
+        protected override Object[] GetExternalObjects()
         {
+            if (geometry.geometryMode == LeafGeometryMode.Mesh)
+            {
+                return new Object[] { geometry.prefab.prefab };
+            }
+
             if (geometry.leafMaterial != null)
             {
-                return geometry.leafMaterial.name;
+                return new Object[] { geometry.leafMaterial };
             }
 
-            if ((geometry.prefab != null) && (geometry.prefab.prefab != null))
-            {
-                return geometry.prefab.prefab.name;
-            }
-
-            return ZString.Format("{0:0000}", hierarchyID);
+            return null;
         }
     }
 }

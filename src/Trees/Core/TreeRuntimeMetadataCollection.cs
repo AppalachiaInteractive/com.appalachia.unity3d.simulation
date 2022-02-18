@@ -16,6 +16,7 @@ namespace Appalachia.Simulation.Trees.Core
 
         #endregion
 
+        /// <inheritdoc />
         protected override async AppaTask Initialize(Initializer initializer)
         {
             await base.Initialize(initializer);
@@ -27,7 +28,6 @@ namespace Appalachia.Simulation.Trees.Core
             }
 #endif
         }
-
 
 #if UNITY_EDITOR
 
