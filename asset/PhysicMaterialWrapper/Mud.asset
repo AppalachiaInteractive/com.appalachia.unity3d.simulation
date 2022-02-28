@@ -15,6 +15,7 @@ MonoBehaviour:
   _cachedName: Mud
   _niceName: Mud
   _initializer:
+    _initializationCount: 0
     _tags: []
     _resetToken: 
   _objectId:

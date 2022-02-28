@@ -15,6 +15,7 @@ MonoBehaviour:
   _cachedName: pine_sugar
   _niceName: Pine_sugar
   _initializer:
+    _initializationCount: 0
     _tags: []
     _resetToken: 
   _objectId:

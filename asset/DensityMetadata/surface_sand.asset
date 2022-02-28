@@ -15,6 +15,7 @@ MonoBehaviour:
   _cachedName: surface_sand
   _niceName: Surface_sand
   _initializer:
+    _initializationCount: 0
     _tags:
     - profileName
     _resetToken: 

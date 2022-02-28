@@ -15,6 +15,7 @@ MonoBehaviour:
   _cachedName: WaterPhysicsCoefficients
   _niceName: Water Physics Coefficients
   _initializer:
+    _initializationCount: 0
     _tags: []
     _resetToken: 
   _objectId:

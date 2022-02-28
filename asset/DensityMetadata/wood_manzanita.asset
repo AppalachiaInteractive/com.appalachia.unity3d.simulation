@@ -15,6 +15,7 @@ MonoBehaviour:
   _cachedName: wood_manzanita
   _niceName: Wood_manzanita
   _initializer:
+    _initializationCount: 0
     _tags:
     - profileName
     _resetToken: 

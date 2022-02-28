@@ -15,6 +15,7 @@ MonoBehaviour:
   _cachedName: animal_amphibian
   _niceName: Animal_amphibian
   _initializer:
+    _initializationCount: 0
     _tags:
     - profileName
     _resetToken: 

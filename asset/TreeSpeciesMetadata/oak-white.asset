@@ -15,6 +15,7 @@ MonoBehaviour:
   _cachedName: oak-white
   _niceName: Oak-white
   _initializer:
+    _initializationCount: 0
     _tags: []
     _resetToken: 
   _objectId:

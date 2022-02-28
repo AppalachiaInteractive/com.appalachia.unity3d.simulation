@@ -15,6 +15,7 @@ MonoBehaviour:
   _cachedName: Plant
   _niceName: Plant
   _initializer:
+    _initializationCount: 0
     _tags: []
     _resetToken: 
   _objectId:

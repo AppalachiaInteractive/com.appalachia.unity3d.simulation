@@ -15,6 +15,7 @@ MonoBehaviour:
   _cachedName: Water
   _niceName: Water
   _initializer:
+    _initializationCount: 0
     _tags: []
     _resetToken: 
   _objectId:

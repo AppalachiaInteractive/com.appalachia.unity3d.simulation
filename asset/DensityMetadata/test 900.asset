@@ -15,6 +15,7 @@ MonoBehaviour:
   _cachedName: test 900
   _niceName: Test 900
   _initializer:
+    _initializationCount: 0
     _tags:
     - profileName
     _resetToken: 
