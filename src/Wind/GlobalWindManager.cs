@@ -291,6 +291,11 @@ namespace Appalachia.Simulation.Wind
         {
             using (_PRF_FixedUpdate.Auto())
             {
+                if (ShouldSkipUpdate)
+                {
+                    return;
+                }
+                
                 ExecuteHeadingStepUpdate(false);
             }
         }

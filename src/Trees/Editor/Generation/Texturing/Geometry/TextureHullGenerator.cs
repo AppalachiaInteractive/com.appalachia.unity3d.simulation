@@ -59,10 +59,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Geometry
                     _textureHullData = new Dictionary<Texture2D, TextureHullData>();
                 }
 
-                if (_textureHullData.ContainsKey(tex))
-                {
-                    return _textureHullData[tex];
-                }
+                if (_textureHullData.TryGetValue(tex, out var result)) return result;
 
                 var hull = new TextureHullData();
                 _textureHullData.Add(tex, hull);

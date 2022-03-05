@@ -77,13 +77,13 @@ namespace Appalachia.Simulation.Trees.Icons
                                               (!nameVariant.Contains("small") && !fa.Contains("small"))
                                     )
                                    .Select(AssetDatabaseManager.GUIDToAssetPath)
-                                   .OrderBy(fa => fa.eitherPath.Length)
+                                   .OrderBy(fa => fa.EitherPath.Length)
                                    .ToArray();
 
                         if (found.Length > 0)
                         {
-                            _assetPath = found[0].relativePath;
-                            _assetName = AppaPath.GetFileNameWithoutExtension(found[0].relativePath);
+                            _assetPath = found[0].RelativePath;
+                            _assetName = AppaPath.GetFileNameWithoutExtension(found[0].RelativePath);
                             break;
                         }
                     }

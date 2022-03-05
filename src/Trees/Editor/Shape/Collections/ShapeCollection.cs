@@ -546,10 +546,7 @@ namespace Appalachia.Simulation.Trees.Shape.Collections
                 return null;
             }
 
-            if (byParentID.ContainsKey(parentShapeID))
-            {
-                return byParentID[parentShapeID];
-            }
+            if (byParentID.TryGetValue(parentShapeID, out var result)) return result;
 
             return null;
         }

@@ -62,10 +62,7 @@ namespace Appalachia.Simulation.Core.Metadata.Materials
                               );
             }
 
-            if (_lookup.ContainsKey(m))
-            {
-                return _lookup[m];
-            }
+            if (_lookup.TryGetValue(m, out var result)) return result;
 
             return null;
         }

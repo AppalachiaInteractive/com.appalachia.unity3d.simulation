@@ -24,10 +24,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Transmission
 
             var textureID = texture.GetInstanceID();
 
-            if (textureAverages.ContainsKey(textureID))
-            {
-                return textureAverages[textureID];
-            }
+            if (textureAverages.TryGetValue(textureID, out var result)) return result;
 
             var pixels = texture.GetPixels();
 
@@ -54,7 +51,7 @@ namespace Appalachia.Simulation.Trees.Generation.Texturing.Transmission
 
             var average = sum / colors;
 
-            var result = new Color(average.x, average.y, average.z, 1f);
+            result = new Color(average.x, average.y, average.z, 1f);
 
             textureAverages.Add(textureID, result);
 
