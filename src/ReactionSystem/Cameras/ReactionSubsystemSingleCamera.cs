@@ -21,10 +21,10 @@ namespace Appalachia.Simulation.ReactionSystem.Cameras
 
         /// <inheritdoc />
         public override RenderTexture RenderTexture =>
-            ShowRenderTexture ? cameraComponent.renderCamera.targetTexture : null;
+            HideRenderTexture ? null : cameraComponent.renderCamera.targetTexture;
 
         /// <inheritdoc />
-        protected override bool ShowRenderTexture => cameraComponent.ShowRenderTexture;
+        protected override bool HideRenderTexture => cameraComponent.HideRenderTexture;
 
         protected abstract void OnBeforeInitialization();
 
@@ -68,10 +68,7 @@ namespace Appalachia.Simulation.ReactionSystem.Cameras
 
                     if (cameraComponent.hasReplacementShader)
                     {
-                        cameraComponent.renderCamera.RenderWithShader(
-                            ReplacementShader,
-                            ReplacementShaderTag
-                        );
+                        cameraComponent.renderCamera.RenderWithShader(ReplacementShader, ReplacementShaderTag);
                     }
                     else
                     {
@@ -166,11 +163,9 @@ namespace Appalachia.Simulation.ReactionSystem.Cameras
 
         private static readonly ProfilerMarker _PRF_DoUpdateLoop = new(_PRF_PFX + nameof(DoUpdateLoop));
 
-        private static readonly ProfilerMarker _PRF_InitializeUpdateLoop =
-            new(_PRF_PFX + nameof(InitializeUpdateLoop));
+        private static readonly ProfilerMarker _PRF_InitializeUpdateLoop = new(_PRF_PFX + nameof(InitializeUpdateLoop));
 
-        private static readonly ProfilerMarker _PRF_OnInitialization =
-            new(_PRF_PFX + nameof(OnInitialization));
+        private static readonly ProfilerMarker _PRF_OnInitialization = new(_PRF_PFX + nameof(OnInitialization));
 
         #endregion
     }

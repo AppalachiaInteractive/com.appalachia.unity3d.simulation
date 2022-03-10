@@ -48,9 +48,7 @@ namespace Appalachia.Simulation.Trees.Hierarchy.Settings
         public bool disableWind;
 
         [ShowIf(nameof(showBranch))]
-        [PropertyTooltip(
-            "Determines whether the branch comes off of the parent, or from the middle as a fork."
-        )]
+        [PropertyTooltip("Determines whether the branch comes off of the parent, or from the middle as a fork.")]
         [TreeProperty]
         [OnValueChanged(nameof(DistributionSettingsChanged), true)]
         public bool forked;
@@ -117,8 +115,7 @@ namespace Appalachia.Simulation.Trees.Hierarchy.Settings
 
         [PropertyTooltip("The primary bark material.")]
         [TreePropertySimple]
-        [ShowIf(nameof(showBranch))]
-        [HideIf(nameof(hideLog))]
+        [HideIf("@this.hideLog || (!this.hideLog && this.showBranch)")]
         [OnValueChanged(nameof(MaterialGenerationChanged), true)]
         [HorizontalGroup("Z")]
         [DelayedProperty]
@@ -132,8 +129,7 @@ namespace Appalachia.Simulation.Trees.Hierarchy.Settings
 
         [PropertyTooltip("The primary bark material scale.")]
         [TreePropertySimple]
-        [ShowIf(nameof(showBranch))]
-        [HideIf(nameof(hideLog))]
+        [HideIf("@this.hideLog || (!this.hideLog && this.showBranch)")]
         [OnValueChanged(nameof(UVSettingsChanged), true)]
         [HorizontalGroup("Z", .4f), InlineProperty, HideLabel]
         public UVScaleTree barkScale = TreeProperty.uv(1, 1);
@@ -166,8 +162,7 @@ namespace Appalachia.Simulation.Trees.Hierarchy.Settings
             (geometryMode == BranchGeometryMode.Branch) || (geometryMode == BranchGeometryMode.BranchFrond);
 
         private bool showFrond =>
-            ((geometryMode == BranchGeometryMode.Frond) ||
-             (geometryMode == BranchGeometryMode.BranchFrond)) &&
+            ((geometryMode == BranchGeometryMode.Frond) || (geometryMode == BranchGeometryMode.BranchFrond)) &&
             !hideLog;
 
         private bool showSplineStepSize => splineStepMode == SplineStepMode.Fixed;
@@ -209,9 +204,7 @@ namespace Appalachia.Simulation.Trees.Hierarchy.Settings
             foreach (var assetGuid in assets)
             {
                 var material =
-                    AssetDatabaseManager.LoadAssetAtPath<Material>(
-                        AssetDatabaseManager.GUIDToAssetPath(assetGuid)
-                    );
+                    AssetDatabaseManager.LoadAssetAtPath<Material>(AssetDatabaseManager.GUIDToAssetPath(assetGuid));
 
                 foreach (var searchString in SearchStrings)
                 {

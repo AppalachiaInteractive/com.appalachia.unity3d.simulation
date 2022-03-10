@@ -67,7 +67,7 @@ namespace Appalachia.Simulation.ReactionSystem.TouchBend
         public override RenderTexture RenderTexture => _renderTexture;
 
         /// <inheritdoc />
-        protected override bool ShowRenderTexture => _renderTexture != null;
+        protected override bool HideRenderTexture => _renderTexture == null;
 
         /// <inheritdoc />
         protected override string SubsystemName => SYSTEM_NAME;
@@ -119,12 +119,7 @@ namespace Appalachia.Simulation.ReactionSystem.TouchBend
                 mat = new Material(_GSR.touchbendMovement);
             }
 
-            _renderTexture = _renderTexture.Recreate(
-                RenderTextureQuality,
-                RenderTextureFormat,
-                FilterMode,
-                Depth
-            );
+            _renderTexture = _renderTexture.Recreate(RenderTextureQuality, RenderTextureFormat, FilterMode, Depth);
             _previousRenderTexture = new RenderTexture(_renderTexture);
             motionDecayID = GSPL.Get(GSC.TOUCHBEND._MOTION_DECAY);
             motionCutoffID = GSPL.Get(GSC.TOUCHBEND._MOTION_CUTOFF);

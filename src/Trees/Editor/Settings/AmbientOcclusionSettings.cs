@@ -33,7 +33,7 @@ namespace Appalachia.Simulation.Trees.Settings
         public bool generateBakeMesh = true;
 
         [PropertyTooltip("The density of generated ambient occlusion.  Higher is darker.")]
-        [ShowIf("AO", Condition = nameof(generateAmbientOcclusion))]
+        [ShowIf(nameof(generateAmbientOcclusion))]
         [PropertyRange(0f, 2f)]
         [OnValueChanged(nameof(AmbientOcclusionSettingsChanged))]
         public float density = 1f;
@@ -56,8 +56,7 @@ namespace Appalachia.Simulation.Trees.Settings
 
         private bool showRaytracing => showTreeSettings && (style == AmbientOcclusionStyle.Raytraced);
 
-        private bool showTreeSettings =>
-            (settingsType == ResponsiveSettingsType.Tree) && generateAmbientOcclusion;
+        private bool showTreeSettings => (settingsType == ResponsiveSettingsType.Tree) && generateAmbientOcclusion;
 
         /// <inheritdoc />
         public override void CopySettingsTo(ResponsiveSettings t)

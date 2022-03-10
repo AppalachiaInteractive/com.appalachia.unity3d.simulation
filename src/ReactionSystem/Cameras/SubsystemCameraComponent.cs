@@ -50,9 +50,9 @@ namespace Appalachia.Simulation.ReactionSystem.Cameras
             }
         }
 
-        public bool ShowRenderTexture => renderCamera != null;
+        public bool HideRenderTexture => renderCamera == null;
 
-        public RenderTexture RenderTexture => ShowRenderTexture ? renderCamera.targetTexture : null;
+        public RenderTexture RenderTexture => HideRenderTexture ? renderCamera.targetTexture : null;
 
         public static Camera CreateCamera(IReactionSubsystemCamera baseCamera, string cameraName)
         {

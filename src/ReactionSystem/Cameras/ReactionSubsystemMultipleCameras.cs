@@ -29,11 +29,11 @@ namespace Appalachia.Simulation.ReactionSystem.Cameras
         public override RenderTexture RenderTexture => cameraComponents[selectedRenderTexture].RenderTexture;
 
         /// <inheritdoc />
-        protected override bool ShowRenderTexture =>
-            cameraComponents is { Count: > 0 } &&
-            (selectedRenderTexture > 0) &&
-            (selectedRenderTexture < cameraComponents.Count) &&
-            cameraComponents[selectedRenderTexture].ShowRenderTexture;
+        protected override bool HideRenderTexture =>
+            !(cameraComponents is { Count: > 0 } &&
+              (selectedRenderTexture > 0) &&
+              (selectedRenderTexture < cameraComponents.Count) &&
+              cameraComponents[selectedRenderTexture].HideRenderTexture);
 
         private int RenderTextureMax => cameraComponents.Count - 1;
 
@@ -49,10 +49,7 @@ namespace Appalachia.Simulation.ReactionSystem.Cameras
 
         protected abstract void OnUpdateLoopStart();
 
-        protected abstract bool ShouldRenderCamera(
-            SubsystemCameraComponent cam,
-            int cameraIndex,
-            int totalCameras);
+        protected abstract bool ShouldRenderCamera(SubsystemCameraComponent cam, int cameraIndex, int totalCameras);
 
         /// <inheritdoc />
         protected override void DoUpdateLoop()
@@ -97,10 +94,7 @@ namespace Appalachia.Simulation.ReactionSystem.Cameras
 
                         if (cameraComponent.hasReplacementShader)
                         {
-                            cameraComponent.renderCamera.RenderWithShader(
-                                ReplacementShader,
-                                ReplacementShaderTag
-                            );
+                            cameraComponent.renderCamera.RenderWithShader(ReplacementShader, ReplacementShaderTag);
                         }
                         else
                         {
@@ -216,14 +210,11 @@ namespace Appalachia.Simulation.ReactionSystem.Cameras
 
         private static readonly ProfilerMarker _PRF_DoUpdateLoop = new(_PRF_PFX + nameof(DoUpdateLoop));
 
-        private static readonly ProfilerMarker _PRF_InitializeUpdateLoop =
-            new(_PRF_PFX + nameof(InitializeUpdateLoop));
+        private static readonly ProfilerMarker _PRF_InitializeUpdateLoop = new(_PRF_PFX + nameof(InitializeUpdateLoop));
 
-        private static readonly ProfilerMarker _PRF_OnInitialization =
-            new(_PRF_PFX + nameof(OnInitialization));
+        private static readonly ProfilerMarker _PRF_OnInitialization = new(_PRF_PFX + nameof(OnInitialization));
 
-        private static readonly ProfilerMarker _PRF_TeardownSubsystem =
-            new(_PRF_PFX + nameof(TeardownSubsystem));
+        private static readonly ProfilerMarker _PRF_TeardownSubsystem = new(_PRF_PFX + nameof(TeardownSubsystem));
 
         #endregion
     }

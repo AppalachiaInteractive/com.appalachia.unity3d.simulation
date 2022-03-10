@@ -62,7 +62,7 @@ namespace Appalachia.Simulation.ReactionSystem.Base
 
         #endregion
 
-        protected abstract bool ShowRenderTexture { get; }
+        protected abstract bool HideRenderTexture { get; }
 
         protected abstract string SubsystemName { get; }
 
@@ -146,7 +146,7 @@ namespace Appalachia.Simulation.ReactionSystem.Base
         [ShowInInspector]
         [PreviewField(ObjectFieldAlignment.Center, Height = 256)]
         [FoldoutGroup("Preview")]
-        [ShowIf(nameof(ShowRenderTexture))]
+        [HideIf(nameof(HideRenderTexture))]
         public abstract RenderTexture RenderTexture { get; }
 
         public void InitializeSubsystem(ReactionSystem system, int groupIndex)
