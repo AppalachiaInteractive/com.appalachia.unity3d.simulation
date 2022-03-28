@@ -307,8 +307,6 @@ namespace Appalachia.Simulation.Wind
         {
             await base.Initialize(initializer);
 
-            gameObject.name = "Global Wind Manager";
-
             _GSR.InitializeShaderReferences();
 
             _windArrow = gameObject.GetChild(AppalachiaRepository.PrefabAddresses.WIND_ARROW);
